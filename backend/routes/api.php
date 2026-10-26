@@ -162,6 +162,9 @@ Route::post('/verify-sponsor', [AuthController::class, 'verifySponsor']);
 Route::match(['get', 'post'], '/verify-member', [AuthController::class, 'verifyMember']);
 Route::post('/send-otp', [AuthController::class, 'sendOtp']);
 Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('/verify-reset-otp', [AuthController::class, 'verifyResetOtp']);
+Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 
 // Entity Authentication Routes

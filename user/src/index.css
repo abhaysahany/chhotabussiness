@@ -1252,17 +1252,20 @@ body {
   align-items: center;
   justify-content: center;
   padding: 2rem 1rem;
-  background: radial-gradient(circle at 50% 0%, #ede9fe 0%, #f1f5f9 70%);
+  background-color: #F8FAFC;
+  background-image: 
+    radial-gradient(circle at 15% 15%, rgba(15, 76, 129, 0.05) 0%, transparent 45%),
+    radial-gradient(circle at 85% 85%, rgba(255, 122, 0, 0.05) 0%, transparent 45%);
 }
 
 .login-card {
-  background: var(--card-bg);
+  background: #ffffff;
   width: 100%;
   max-width: 440px;
   border-radius: 1.25rem;
   padding: 2.25rem 2rem;
-  box-shadow: 0 20px 40px -15px rgba(99, 102, 241, 0.12), 0 0 1px rgba(0, 0, 0, 0.1);
-  border: 1px solid var(--card-border);
+  box-shadow: 0 10px 25px -5px rgba(15, 76, 129, 0.08), 0 8px 10px -6px rgba(15, 76, 129, 0.04);
+  border: 1px solid #E2E8F0;
 }
 
 .brand-logo-container {
@@ -1276,7 +1279,8 @@ body {
 .brand-icon {
   width: 36px;
   height: 36px;
-  background: #f5f3ff;
+  background: #e8f1f8;
+  color: #0F4C81;
   border-radius: 0.5rem;
   display: flex;
   align-items: center;
@@ -1286,8 +1290,9 @@ body {
 .brand-name {
   font-size: 1.15rem;
   font-weight: 800;
-  letter-spacing: 0.08em;
-  color: #1e1b4b;
+  letter-spacing: -0.02em;
+  color: #0F4C81;
+  font-family: 'Poppins', sans-serif;
 }
 
 .login-header {
@@ -1300,11 +1305,12 @@ body {
   font-weight: 700;
   color: #0f172a;
   margin-bottom: 0.4rem;
+  font-family: 'Poppins', sans-serif;
 }
 
 .welcome-subtitle {
   font-size: 0.875rem;
-  color: var(--text-muted);
+  color: #64748B;
   line-height: 1.4;
 }
 
@@ -1365,17 +1371,17 @@ body {
   width: 100%;
   padding: 0.75rem 1rem;
   font-size: 0.925rem;
-  border: 1px solid var(--input-border);
+  border: 1px solid #e2e8f0;
   border-radius: 0.6rem;
-  background: var(--input-bg);
+  background: #ffffff;
   color: #0f172a;
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .form-input:focus {
-  border-color: var(--accent-indigo);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  border-color: #0F4C81;
+  box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.12);
 }
 
 .toggle-password-btn {
@@ -1392,7 +1398,7 @@ body {
 }
 
 .toggle-password-btn:hover {
-  color: var(--accent-indigo);
+  color: #0F4C81;
 }
 
 .form-options {
@@ -1412,13 +1418,13 @@ body {
 }
 
 .remember-checkbox input {
-  accent-color: var(--accent-indigo);
+  accent-color: #0F4C81;
   width: 16px;
   height: 16px;
 }
 
 .forgot-link {
-  color: #ef4444;
+  color: #FF7A00;
   font-weight: 600;
   text-decoration: none;
   transition: opacity 0.2s ease;
@@ -1430,7 +1436,7 @@ body {
 }
 
 .submit-btn {
-  background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
+  background: #FF7A00;
   color: #ffffff;
   border: none;
   padding: 0.85rem 1rem;
@@ -1440,13 +1446,13 @@ body {
   cursor: pointer;
   margin-top: 0.5rem;
   transition: transform 0.1s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+  box-shadow: 0 4px 12px rgba(255, 122, 0, 0.25);
 }
 
 .submit-btn:hover {
-  opacity: 0.95;
+  background: #E06900;
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.35);
+  box-shadow: 0 6px 16px rgba(255, 122, 0, 0.35);
 }
 
 .submit-btn:disabled {
@@ -1515,7 +1521,7 @@ body {
 .switch-auth-btn {
   background: none;
   border: none;
-  color: var(--accent-indigo);
+  color: #0F4C81;
   font-weight: 700;
   cursor: pointer;
   text-decoration: underline;
@@ -1523,7 +1529,7 @@ body {
 }
 
 .switch-auth-btn:hover {
-  color: var(--accent-purple);
+  color: #FF7A00;
 }
 
 /* Modal Overlay & Card */

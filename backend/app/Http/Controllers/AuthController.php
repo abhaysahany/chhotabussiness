@@ -507,4 +507,138 @@ class AuthController extends Controller
             'message' => 'Successfully logged out',
         ]);
     }
+
+    /**
+     * Send Password Recovery OTP for Users
+     */
+    public function forgotPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Registered email address or user code is required.',
+            ], 422);
+        }
+
+        $input = trim($request->input('email'));
+        $user = User::where('email', $input)
+            ->orWhere('user_code', $input)
+            ->first();
+
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => "No partner account found with '{$input}'. Please check your credentials.",
+            ], 404);
+        }
+
+        $otp = (string) rand(100000, 999999);
+        Cache::put('user_reset_otp_' . $user->id, $otp, now()->addMinutes(15));
+        Cache::put('user_reset_email_' . $user->email, $otp, now()->addMinutes(15));
+
+        return response()->json([
+            'status' => 'success',
+            'message' => "Password reset OTP dispatched to {$user->email} successfully!",
+            'email' => $user->email,
+            'user_name' => $user->name,
+            'otp' => $otp, // Returned for testing & mobile verification ease
+        ], 200);
+    }
+
+    /**
+     * Verify Password Reset OTP
+     */
+    public function verifyResetOtp(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required',
+            'otp' => 'required|string|size:6',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Email and 6-digit OTP code are required.',
+            ], 422);
+        }
+
+        $input = trim($request->input('email'));
+        $user = User::where('email', $input)->orWhere('user_code', $input)->first();
+
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'User account not found.',
+            ], 404);
+        }
+
+        $cachedOtp = Cache::get('user_reset_otp_' . $user->id) ?: Cache::get('user_reset_email_' . $user->email);
+
+        if (!$cachedOtp || $cachedOtp !== $request->input('otp')) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid or expired OTP code. Please request a new code.',
+            ], 400);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'OTP verified successfully! You may now enter your new password.',
+            'verified' => true,
+        ], 200);
+    }
+
+    /**
+     * Reset User Password with Verified OTP
+     */
+    public function resetPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required',
+            'otp' => 'required|string|size:6',
+            'password' => 'required|string|min:6',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Valid email, 6-digit OTP, and new password (min 6 characters) are required.',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $input = trim($request->input('email'));
+        $user = User::where('email', $input)->orWhere('user_code', $input)->first();
+
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'User account not found.',
+            ], 404);
+        }
+
+        $cachedOtp = Cache::get('user_reset_otp_' . $user->id) ?: Cache::get('user_reset_email_' . $user->email);
+
+        if (!$cachedOtp || $cachedOtp !== $request->input('otp')) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid or expired OTP code.',
+            ], 400);
+        }
+
+        $user->password = Hash::make($request->input('password'));
+        $user->save();
+
+        Cache::forget('user_reset_otp_' . $user->id);
+        Cache::forget('user_reset_email_' . $user->email);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Password reset successfully! You can now log in with your new password.',
+        ], 200);
+    }
 }

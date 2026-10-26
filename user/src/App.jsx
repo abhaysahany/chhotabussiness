@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Building2 } from 'lucide-react';
 import LoginForm from './components/LoginForm';
 import RegisterForm from './components/RegisterForm';
 import Layout from './layout/Layout';
@@ -168,12 +169,17 @@ function App() {
 
   if (loading) {
     return (
-      <div className="auth-page-wrapper">
-        <div className="login-card" style={{ textAlign: 'center', padding: '3rem 2rem' }}>
-          <div className="brand-logo-container">
-            <span className="brand-name">CHHOTABUSINESS</span>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F8FAFC', padding: '1rem' }}>
+        <div style={{ background: '#ffffff', borderRadius: '20px', padding: '2.5rem 2rem', textAlign: 'center', boxShadow: '0 20px 45px -10px rgba(15, 76, 129, 0.08)', border: '1px solid #E2E8F0', maxWidth: '380px', width: '100%' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.65rem', marginBottom: '1rem' }}>
+            <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'linear-gradient(135deg, #0F4C81 0%, #1e3a5f 100%)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(15, 76, 129, 0.2)' }}>
+              <Building2 size={24} />
+            </div>
+            <div style={{ fontFamily: 'Poppins, sans-serif', fontSize: '1.25rem', fontWeight: 900, color: '#0F4C81', letterSpacing: '-0.03em' }}>
+              CHHOTA<span style={{ color: '#FF7A00' }}>BUSINESS</span>
+            </div>
           </div>
-          <p style={{ color: '#64748b' }}>Checking user session...</p>
+          <p style={{ color: '#64748B', fontSize: '0.88rem', margin: 0 }}>Connecting to partner portal...</p>
         </div>
       </div>
     );
@@ -257,26 +263,26 @@ function App() {
       );
     }
 
+    if (authView === 'login') {
+      return (
+        <LoginForm
+          onLoginSuccess={handleLogin}
+          onSwitchToRegister={() => setAuthView('register')}
+          onBackToHome={() => setAuthView('landing')}
+          onSocialClick={(provider) => redirectToSocialProvider(provider, 'login')}
+          onOpenLegalPage={(page) => setAuthView(page)}
+        />
+      );
+    }
+
     return (
-      <div className="auth-page-wrapper">
-        {authView === 'login' ? (
-          <LoginForm
-            onLoginSuccess={handleLogin}
-            onSwitchToRegister={() => setAuthView('register')}
-            onBackToHome={() => setAuthView('landing')}
-            onSocialClick={(provider) => redirectToSocialProvider(provider, 'login')}
-            onOpenLegalPage={(page) => setAuthView(page)}
-          />
-        ) : (
-          <RegisterForm
-            onRegisterSuccess={handleRegister}
-            onSwitchToLogin={() => setAuthView('login')}
-            onBackToHome={() => setAuthView('landing')}
-            onSocialClick={(provider) => redirectToSocialProvider(provider, 'register')}
-            onOpenLegalPage={(page) => setAuthView(page)}
-          />
-        )}
-      </div>
+      <RegisterForm
+        onRegisterSuccess={handleRegister}
+        onSwitchToLogin={() => setAuthView('login')}
+        onBackToHome={() => setAuthView('landing')}
+        onSocialClick={(provider) => redirectToSocialProvider(provider, 'register')}
+        onOpenLegalPage={(page) => setAuthView(page)}
+      />
     );
   }
 

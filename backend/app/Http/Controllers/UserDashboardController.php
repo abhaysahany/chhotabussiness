@@ -60,7 +60,7 @@ class UserDashboardController extends Controller
 
         // 5. Rewards Summary from `reward_claims` Database Table
         $rewardsClaimedCount = RewardClaim::where('user_id', $userId)->count() ?: 3;
-        $rewardsClaimedValue = (float) RewardClaim::where('user_id', $userId)->sum('points_redeemed') ?: 45000;
+        $rewardsClaimedValue = (float) RewardClaim::where('user_id', $userId)->sum('points_deducted') ?: 45000;
 
         // 6. Weekly Revenue / Commission Growth Chart Data from Database
         $revenueChart = [
