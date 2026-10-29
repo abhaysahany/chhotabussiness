@@ -1,13 +1,11 @@
-import axios from 'axios';
-
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
+import api from './axios';
 
 /**
  * Fetch live notifications for current user (targeted + broadcast)
  */
 export const getUserNotifications = async (userCode) => {
   try {
-    const res = await axios.get(`${API_BASE_URL}/user/notifications`, {
+    const res = await api.get('/user/notifications', {
       params: { user_code: userCode },
     });
     if (res.data?.status === 'success') {
@@ -25,7 +23,7 @@ export const getUserNotifications = async (userCode) => {
  */
 export const markNotificationRead = async (id, userCode) => {
   try {
-    const res = await axios.post(`${API_BASE_URL}/user/notifications/${id}/read`, {
+    const res = await api.post(`/user/notifications/${id}/read`, {
       user_code: userCode,
     });
     return res.data;
@@ -40,7 +38,7 @@ export const markNotificationRead = async (id, userCode) => {
  */
 export const markAllNotificationsRead = async (userCode) => {
   try {
-    const res = await axios.post(`${API_BASE_URL}/user/notifications/read-all`, {
+    const res = await api.post('/user/notifications/read-all', {
       user_code: userCode,
     });
     return res.data;

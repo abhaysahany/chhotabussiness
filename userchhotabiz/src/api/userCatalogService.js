@@ -1,13 +1,11 @@
-import axios from 'axios';
-
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
+import api from './axios';
 
 /**
  * Fetch all live products from MySQL Database
  */
 export const getUserProducts = async (params = {}) => {
   try {
-    const res = await axios.get(`${API_BASE_URL}/catalog/products`, { params });
+    const res = await api.get('/catalog/products', { params });
     if (res.data?.status === 'success') {
       return res.data.products || [];
     }
@@ -23,7 +21,7 @@ export const getUserProducts = async (params = {}) => {
  */
 export const getUserServices = async (params = {}) => {
   try {
-    const res = await axios.get(`${API_BASE_URL}/catalog/services`, { params });
+    const res = await api.get('/catalog/services', { params });
     if (res.data?.status === 'success') {
       return res.data.services || [];
     }
@@ -39,7 +37,7 @@ export const getUserServices = async (params = {}) => {
  */
 export const getUserCategories = async () => {
   try {
-    const res = await axios.get(`${API_BASE_URL}/catalog/categories`);
+    const res = await api.get('/catalog/categories');
     if (res.data?.status === 'success') {
       return res.data.categories || [];
     }

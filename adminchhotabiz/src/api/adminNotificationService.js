@@ -1,13 +1,11 @@
-import axios from 'axios';
-
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
+import api from './axios';
 
 /**
  * Fetch all sent notification logs and stats
  */
 export const getAdminNotifications = async (params = {}) => {
   try {
-    const res = await axios.get(`${API_BASE_URL}/admin/notifications`, { params });
+    const res = await api.get('/admin/notifications', { params });
     if (res.data?.status === 'success') {
       return res.data;
     }
@@ -23,7 +21,7 @@ export const getAdminNotifications = async (params = {}) => {
  */
 export const sendAdminNotification = async (payload) => {
   try {
-    const res = await axios.post(`${API_BASE_URL}/admin/notifications/send`, payload);
+    const res = await api.post('/admin/notifications/send', payload);
     return res.data;
   } catch (err) {
     console.error('Error sending notification:', err);

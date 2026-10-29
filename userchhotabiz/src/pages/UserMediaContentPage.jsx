@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getUserContentAssets, trackAssetDownload, trackAssetShare } from '../api/userContentService';
+import { API_BASE_URL } from '../api/axios';
 
 function UserMediaContentPage({ user }) {
   const [assets, setAssets] = useState([]);
@@ -74,7 +75,7 @@ function UserMediaContentPage({ user }) {
     }
 
     // Backend proxy attachment stream
-    const proxyUrl = `http://127.0.0.1:8000/api/content-assets/${asset.id}/download-file`;
+    const proxyUrl = `${API_BASE_URL}/content-assets/${asset.id}/download-file`;
     const proxyRes = await fetch(proxyUrl);
     if (!proxyRes.ok) throw new Error('Failed to retrieve file blob.');
     return await proxyRes.blob();
@@ -118,7 +119,7 @@ function UserMediaContentPage({ user }) {
         showToast(`✅ [${asset.title}] saved to your device!`);
       } catch (blobErr) {
         // Fallback to direct anchor stream download
-        const serverDownloadUrl = `http://127.0.0.1:8000/api/content-assets/${asset.id}/download-file`;
+        const serverDownloadUrl = `${API_BASE_URL}/content-assets/${asset.id}/download-file`;
         const link = document.createElement('a');
         link.href = serverDownloadUrl;
         link.setAttribute('download', safeFilename);

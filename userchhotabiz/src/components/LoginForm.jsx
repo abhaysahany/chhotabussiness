@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackToHome }) {
   const [email, setEmail] = useState('user@chhotabusiness.com');
-  const [password, setPassword] = useState('password123');
+  const [password, setPassword] = useState('123456');
   const [rememberMe, setRememberMe] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);

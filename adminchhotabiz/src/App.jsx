@@ -20,6 +20,7 @@ import AdminSendNotificationPage from './components/support/AdminSendNotificatio
 import AdminCategoryPage from './components/entities/AdminCategoryPage';
 import AdminBusinessPage from './components/entities/AdminBusinessPage';
 import AdminFreelancerPage from './components/entities/AdminFreelancerPage';
+import AdminEntityCommissionPage from './components/entities/AdminEntityCommissionPage';
 import AdminProductsPage from './components/products/AdminProductsPage';
 import AdminServicesPage from './components/products/AdminServicesPage';
 import AdminPackagesPage from './components/products/AdminPackagesPage';
@@ -146,6 +147,9 @@ function App() {
 
       case 'entities-freelancers':
         return <AdminFreelancerPage onNavigate={(tab) => setActiveTab(tab)} />;
+
+      case 'entities-commissions':
+        return <AdminEntityCommissionPage onNavigate={(tab) => setActiveTab(tab)} />;
 
       // Products & Services Suite - Separate Pages
       case 'products-catalog':
