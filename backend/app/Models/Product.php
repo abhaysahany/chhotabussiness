@@ -30,4 +30,16 @@ class Product extends Model
         'admin_commission_percent' => 'decimal:2',
         'stock' => 'integer',
     ];
+
+    protected $appends = [
+        'commission_settings',
+    ];
+
+    /**
+     * Resolve authoritative commission settings associated with the product's owner entity.
+     */
+    public function getCommissionSettingsAttribute(): array
+    {
+        return EntityCommissionSetting::resolveForEntity($this->owner_type, $this->owner_name);
+    }
 }

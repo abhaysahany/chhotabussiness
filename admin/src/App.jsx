@@ -148,9 +148,6 @@ function App() {
       case 'entities-freelancers':
         return <AdminFreelancerPage onNavigate={(tab) => setActiveTab(tab)} />;
 
-      case 'entities-commissions':
-        return <AdminEntityCommissionPage onNavigate={(tab) => setActiveTab(tab)} />;
-
       // Products & Services Suite - Separate Pages
       case 'products-catalog':
         return <AdminProductsPage />;
@@ -160,6 +157,10 @@ function App() {
 
       case 'products-packages':
         return <AdminPackagesPage />;
+
+      case 'products-commissions':
+      case 'entities-commissions':
+        return <AdminEntityCommissionPage onNavigate={(tab) => setActiveTab(tab)} />;
 
       // Sales Suite - Separate Pages
       case 'sales-create':
