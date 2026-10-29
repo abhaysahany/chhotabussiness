@@ -4,6 +4,25 @@ import {
   saveEntityCommissionSettings,
 } from '../../api/adminEntityService';
 
+const COMMISSION_DEFAULTS = {
+  direct_percent: 10,
+  level_2_percent: 4,
+  level_3_percent: 3,
+  level_4_percent: 2,
+  level_5_percent: 1,
+  reward_percent: 5,
+};
+
+const resolveRate = (entity, field) => {
+  if (entity?.is_configured && entity[field] !== undefined && entity[field] !== null) {
+    return Number(entity[field]);
+  }
+  if (entity && entity[field] !== undefined && entity[field] !== null && Number(entity[field]) > 0) {
+    return Number(entity[field]);
+  }
+  return COMMISSION_DEFAULTS[field] ?? 0;
+};
+
 function AdminEntityCommissionPage({ onNavigate }) {
   const [entities, setEntities] = useState([]);
   const [summary, setSummary] = useState({
@@ -32,12 +51,12 @@ function AdminEntityCommissionPage({ onNavigate }) {
   // Modal State for full-dialog editing
   const [modalEntity, setModalEntity] = useState(null);
   const [modalForm, setModalForm] = useState({
-    direct_percent: '0',
-    level_1_percent: '0',
-    level_2_percent: '0',
-    level_3_percent: '0',
-    level_4_percent: '0',
-    reward_percent: '0',
+    direct_percent: '10',
+    level_2_percent: '4',
+    level_3_percent: '3',
+    level_4_percent: '2',
+    level_5_percent: '1',
+    reward_percent: '5',
   });
   const [modalValidationErrors, setModalValidationErrors] = useState({});
 
@@ -129,12 +148,12 @@ function AdminEntityCommissionPage({ onNavigate }) {
     const key = getRowKey(entity);
     setEditingRowKey(key);
     setEditValues({
-      direct_percent: entity.direct_percent ?? 0,
-      level_1_percent: entity.level_1_percent ?? 0,
-      level_2_percent: entity.level_2_percent ?? 0,
-      level_3_percent: entity.level_3_percent ?? 0,
-      level_4_percent: entity.level_4_percent ?? 0,
-      reward_percent: entity.reward_percent ?? 0,
+      direct_percent: resolveRate(entity, 'direct_percent'),
+      level_2_percent: resolveRate(entity, 'level_2_percent'),
+      level_3_percent: resolveRate(entity, 'level_3_percent'),
+      level_4_percent: resolveRate(entity, 'level_4_percent'),
+      level_5_percent: resolveRate(entity, 'level_5_percent'),
+      reward_percent: resolveRate(entity, 'reward_percent'),
     });
   };
 
@@ -147,10 +166,10 @@ function AdminEntityCommissionPage({ onNavigate }) {
     const errors = {};
     const fields = [
       { key: 'direct_percent', label: 'Direct Commission' },
-      { key: 'level_1_percent', label: 'Level 1 Commission' },
       { key: 'level_2_percent', label: 'Level 2 Commission' },
       { key: 'level_3_percent', label: 'Level 3 Commission' },
       { key: 'level_4_percent', label: 'Level 4 Commission' },
+      { key: 'level_5_percent', label: 'Level 5 Commission' },
       { key: 'reward_percent', label: 'Reward' },
     ];
 
@@ -184,10 +203,10 @@ function AdminEntityCommissionPage({ onNavigate }) {
       entity_type: entity.entity_type,
       entity_id: entity.entity_id,
       direct_percent: parseFloat(editValues.direct_percent) || 0,
-      level_1_percent: parseFloat(editValues.level_1_percent) || 0,
       level_2_percent: parseFloat(editValues.level_2_percent) || 0,
       level_3_percent: parseFloat(editValues.level_3_percent) || 0,
       level_4_percent: parseFloat(editValues.level_4_percent) || 0,
+      level_5_percent: parseFloat(editValues.level_5_percent) || 0,
       reward_percent: parseFloat(editValues.reward_percent) || 0,
     };
 
@@ -231,12 +250,12 @@ function AdminEntityCommissionPage({ onNavigate }) {
   const handleOpenModal = (entity) => {
     setModalEntity(entity);
     setModalForm({
-      direct_percent: String(entity.direct_percent ?? 0),
-      level_1_percent: String(entity.level_1_percent ?? 0),
-      level_2_percent: String(entity.level_2_percent ?? 0),
-      level_3_percent: String(entity.level_3_percent ?? 0),
-      level_4_percent: String(entity.level_4_percent ?? 0),
-      reward_percent: String(entity.reward_percent ?? 0),
+      direct_percent: String(resolveRate(entity, 'direct_percent')),
+      level_2_percent: String(resolveRate(entity, 'level_2_percent')),
+      level_3_percent: String(resolveRate(entity, 'level_3_percent')),
+      level_4_percent: String(resolveRate(entity, 'level_4_percent')),
+      level_5_percent: String(resolveRate(entity, 'level_5_percent')),
+      reward_percent: String(resolveRate(entity, 'reward_percent')),
     });
     setModalValidationErrors({});
   };
@@ -260,10 +279,10 @@ function AdminEntityCommissionPage({ onNavigate }) {
       entity_type: modalEntity.entity_type,
       entity_id: modalEntity.entity_id,
       direct_percent: parseFloat(modalForm.direct_percent) || 0,
-      level_1_percent: parseFloat(modalForm.level_1_percent) || 0,
       level_2_percent: parseFloat(modalForm.level_2_percent) || 0,
       level_3_percent: parseFloat(modalForm.level_3_percent) || 0,
       level_4_percent: parseFloat(modalForm.level_4_percent) || 0,
+      level_5_percent: parseFloat(modalForm.level_5_percent) || 0,
       reward_percent: parseFloat(modalForm.reward_percent) || 0,
     };
 
@@ -310,6 +329,11 @@ function AdminEntityCommissionPage({ onNavigate }) {
       <div className="pro-page-header" style={{ marginBottom: '1.5rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
+            <div style={{ fontSize: '0.82rem', color: '#64748b', marginBottom: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 500 }}>
+              <span>Products & Services</span>
+              <span>›</span>
+              <span style={{ color: '#4f46e5', fontWeight: 600 }}>Set Commission</span>
+            </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
               <div
                 style={{
@@ -329,11 +353,11 @@ function AdminEntityCommissionPage({ onNavigate }) {
                 </svg>
               </div>
               <h1 className="pro-page-title" style={{ margin: 0, fontSize: '1.65rem', fontWeight: 800 }}>
-                Entity Commission & Reward Settings
+                Set Commission
               </h1>
             </div>
             <p className="pro-page-subtitle" style={{ margin: '0.35rem 0 0 0', color: '#64748b', fontSize: '0.9rem' }}>
-              Configure independent Direct Commission, Level 1–4 Network distribution, and Reward percentages for Business & Freelance Entities.
+              Configure independent Direct Commission, Level 2–5 Network distribution, and Reward percentages applied across Products & Services.
             </p>
           </div>
 
@@ -640,7 +664,7 @@ function AdminEntityCommissionPage({ onNavigate }) {
             >
               <option value="all">All Statuses</option>
               <option value="configured">Custom Rates Configured</option>
-              <option value="default">Default 0% Only</option>
+              <option value="default">Default Rates Only</option>
             </select>
           </div>
 
@@ -676,19 +700,10 @@ function AdminEntityCommissionPage({ onNavigate }) {
                     Entity Type
                   </th>
                   <th style={{ padding: '0.85rem 1rem', textAlign: 'left', fontSize: '0.78rem', textTransform: 'uppercase', color: '#475569' }}>
-                    Entity ID
-                  </th>
-                  <th style={{ padding: '0.85rem 1rem', textAlign: 'left', fontSize: '0.78rem', textTransform: 'uppercase', color: '#475569' }}>
                     Entity Name
-                  </th>
-                  <th style={{ padding: '0.85rem 1rem', textAlign: 'left', fontSize: '0.78rem', textTransform: 'uppercase', color: '#475569' }}>
-                    Registered Email
                   </th>
                   <th style={{ padding: '0.85rem 0.65rem', textAlign: 'center', fontSize: '0.78rem', textTransform: 'uppercase', color: '#475569', minWidth: '95px' }}>
                     Direct (%)
-                  </th>
-                  <th style={{ padding: '0.85rem 0.65rem', textAlign: 'center', fontSize: '0.78rem', textTransform: 'uppercase', color: '#475569', minWidth: '95px' }}>
-                    Level 1 (%)
                   </th>
                   <th style={{ padding: '0.85rem 0.65rem', textAlign: 'center', fontSize: '0.78rem', textTransform: 'uppercase', color: '#475569', minWidth: '95px' }}>
                     Level 2 (%)
@@ -698,6 +713,9 @@ function AdminEntityCommissionPage({ onNavigate }) {
                   </th>
                   <th style={{ padding: '0.85rem 0.65rem', textAlign: 'center', fontSize: '0.78rem', textTransform: 'uppercase', color: '#475569', minWidth: '95px' }}>
                     Level 4 (%)
+                  </th>
+                  <th style={{ padding: '0.85rem 0.65rem', textAlign: 'center', fontSize: '0.78rem', textTransform: 'uppercase', color: '#475569', minWidth: '95px' }}>
+                    Level 5 (%)
                   </th>
                   <th style={{ padding: '0.85rem 0.65rem', textAlign: 'center', fontSize: '0.78rem', textTransform: 'uppercase', color: '#475569', minWidth: '95px' }}>
                     Reward (%)
@@ -710,7 +728,7 @@ function AdminEntityCommissionPage({ onNavigate }) {
               <tbody>
                 {paginatedEntities.length === 0 ? (
                   <tr>
-                    <td colSpan="11" style={{ textAlign: 'center', padding: '3.5rem 1rem', color: '#94a3b8' }}>
+                    <td colSpan="9" style={{ textAlign: 'center', padding: '3.5rem 1rem', color: '#94a3b8' }}>
                       <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🔍</div>
                       <div style={{ fontWeight: 600, fontSize: '1rem', color: '#475569' }}>No entities found matching your search.</div>
                       <p style={{ margin: '0.25rem 0 0', fontSize: '0.85rem' }}>
@@ -724,6 +742,12 @@ function AdminEntityCommissionPage({ onNavigate }) {
                     const isEditing = editingRowKey === rowKey;
                     const isSaving = savingRowKey === rowKey;
                     const isBusiness = entity.entity_type === 'business';
+                    const directVal = resolveRate(entity, 'direct_percent');
+                    const level2Val = resolveRate(entity, 'level_2_percent');
+                    const level3Val = resolveRate(entity, 'level_3_percent');
+                    const level4Val = resolveRate(entity, 'level_4_percent');
+                    const level5Val = resolveRate(entity, 'level_5_percent');
+                    const rewardVal = resolveRate(entity, 'reward_percent');
 
                     return (
                       <tr
@@ -755,24 +779,7 @@ function AdminEntityCommissionPage({ onNavigate }) {
                           </span>
                         </td>
 
-                        {/* 2. Entity ID */}
-                        <td style={{ padding: '0.85rem 1rem' }}>
-                          <code
-                            style={{
-                              background: '#f1f5f9',
-                              color: '#334155',
-                              padding: '0.2rem 0.5rem',
-                              borderRadius: '6px',
-                              fontSize: '0.82rem',
-                              fontWeight: 700,
-                              fontFamily: 'monospace',
-                            }}
-                          >
-                            #{isBusiness ? `B-${entity.entity_id}` : `F-${entity.entity_id}`}
-                          </code>
-                        </td>
-
-                        {/* 3. Entity Name */}
+                        {/* 2. Entity Name */}
                         <td style={{ padding: '0.85rem 1rem' }}>
                           <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.92rem' }}>
                             {entity.entity_name}
@@ -782,19 +789,7 @@ function AdminEntityCommissionPage({ onNavigate }) {
                           </div>
                         </td>
 
-                        {/* 4. Registered Email */}
-                        <td style={{ padding: '0.85rem 1rem' }}>
-                          <div style={{ fontSize: '0.85rem', color: '#334155', fontWeight: 500 }}>
-                            {entity.email}
-                          </div>
-                          {entity.phone && (
-                            <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.1rem' }}>
-                              {entity.phone}
-                            </div>
-                          )}
-                        </td>
-
-                        {/* 5. Direct Commission (%) */}
+                        {/* 3. Direct Commission (%) */}
                         <td style={{ padding: '0.65rem 0.45rem', textAlign: 'center' }}>
                           {isEditing ? (
                             <input
@@ -819,48 +814,15 @@ function AdminEntityCommissionPage({ onNavigate }) {
                               style={{
                                 fontWeight: 700,
                                 fontSize: '0.88rem',
-                                color: entity.direct_percent > 0 ? '#0284c7' : '#94a3b8',
+                                color: entity.is_configured ? '#0284c7' : '#94a3b8',
                               }}
                             >
-                              {entity.direct_percent}%
+                              {directVal}%
                             </span>
                           )}
                         </td>
 
-                        {/* 6. Level 1 Commission (%) */}
-                        <td style={{ padding: '0.65rem 0.45rem', textAlign: 'center' }}>
-                          {isEditing ? (
-                            <input
-                              type="number"
-                              min="0"
-                              max="100"
-                              step="0.1"
-                              value={editValues.level_1_percent}
-                              onChange={(e) => setEditValues({ ...editValues, level_1_percent: e.target.value })}
-                              style={{
-                                width: '75px',
-                                padding: '0.35rem 0.45rem',
-                                textAlign: 'center',
-                                borderRadius: '6px',
-                                border: '1px solid #cbd5e1',
-                                fontSize: '0.85rem',
-                                fontWeight: 700,
-                              }}
-                            />
-                          ) : (
-                            <span
-                              style={{
-                                fontWeight: 700,
-                                fontSize: '0.88rem',
-                                color: entity.level_1_percent > 0 ? '#4f46e5' : '#94a3b8',
-                              }}
-                            >
-                              {entity.level_1_percent}%
-                            </span>
-                          )}
-                        </td>
-
-                        {/* 7. Level 2 Commission (%) */}
+                        {/* 4. Level 2 Commission (%) */}
                         <td style={{ padding: '0.65rem 0.45rem', textAlign: 'center' }}>
                           {isEditing ? (
                             <input
@@ -885,15 +847,15 @@ function AdminEntityCommissionPage({ onNavigate }) {
                               style={{
                                 fontWeight: 700,
                                 fontSize: '0.88rem',
-                                color: entity.level_2_percent > 0 ? '#4f46e5' : '#94a3b8',
+                                color: entity.is_configured ? '#4f46e5' : '#94a3b8',
                               }}
                             >
-                              {entity.level_2_percent}%
+                              {level2Val}%
                             </span>
                           )}
                         </td>
 
-                        {/* 8. Level 3 Commission (%) */}
+                        {/* 5. Level 3 Commission (%) */}
                         <td style={{ padding: '0.65rem 0.45rem', textAlign: 'center' }}>
                           {isEditing ? (
                             <input
@@ -918,15 +880,15 @@ function AdminEntityCommissionPage({ onNavigate }) {
                               style={{
                                 fontWeight: 700,
                                 fontSize: '0.88rem',
-                                color: entity.level_3_percent > 0 ? '#4f46e5' : '#94a3b8',
+                                color: entity.is_configured ? '#4f46e5' : '#94a3b8',
                               }}
                             >
-                              {entity.level_3_percent}%
+                              {level3Val}%
                             </span>
                           )}
                         </td>
 
-                        {/* 9. Level 4 Commission (%) */}
+                        {/* 6. Level 4 Commission (%) */}
                         <td style={{ padding: '0.65rem 0.45rem', textAlign: 'center' }}>
                           {isEditing ? (
                             <input
@@ -951,15 +913,48 @@ function AdminEntityCommissionPage({ onNavigate }) {
                               style={{
                                 fontWeight: 700,
                                 fontSize: '0.88rem',
-                                color: entity.level_4_percent > 0 ? '#4f46e5' : '#94a3b8',
+                                color: entity.is_configured ? '#4f46e5' : '#94a3b8',
                               }}
                             >
-                              {entity.level_4_percent}%
+                              {level4Val}%
                             </span>
                           )}
                         </td>
 
-                        {/* 10. Reward (%) */}
+                        {/* 7. Level 5 Commission (%) */}
+                        <td style={{ padding: '0.65rem 0.45rem', textAlign: 'center' }}>
+                          {isEditing ? (
+                            <input
+                              type="number"
+                              min="0"
+                              max="100"
+                              step="0.1"
+                              value={editValues.level_5_percent}
+                              onChange={(e) => setEditValues({ ...editValues, level_5_percent: e.target.value })}
+                              style={{
+                                width: '75px',
+                                padding: '0.35rem 0.45rem',
+                                textAlign: 'center',
+                                borderRadius: '6px',
+                                border: '1px solid #cbd5e1',
+                                fontSize: '0.85rem',
+                                fontWeight: 700,
+                              }}
+                            />
+                          ) : (
+                            <span
+                              style={{
+                                fontWeight: 700,
+                                fontSize: '0.88rem',
+                                color: entity.is_configured ? '#4f46e5' : '#94a3b8',
+                              }}
+                            >
+                              {level5Val}%
+                            </span>
+                          )}
+                        </td>
+
+                        {/* 8. Reward (%) */}
                         <td style={{ padding: '0.65rem 0.45rem', textAlign: 'center' }}>
                           {isEditing ? (
                             <input
@@ -984,10 +979,10 @@ function AdminEntityCommissionPage({ onNavigate }) {
                               style={{
                                 fontWeight: 700,
                                 fontSize: '0.88rem',
-                                color: entity.reward_percent > 0 ? '#d97706' : '#94a3b8',
+                                color: entity.is_configured ? '#d97706' : '#94a3b8',
                               }}
                             >
-                              {entity.reward_percent}%
+                              {rewardVal}%
                             </span>
                           )}
                         </td>
@@ -1255,28 +1250,6 @@ function AdminEntityCommissionPage({ onNavigate }) {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>
-                    Level 1 Commission (%) <span style={{ color: '#ef4444' }}>*</span>
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    max="100"
-                    step="0.01"
-                    className="form-input"
-                    value={modalForm.level_1_percent}
-                    onChange={(e) => setModalForm({ ...modalForm, level_1_percent: e.target.value })}
-                    style={{ width: '100%', borderRadius: '8px' }}
-                    required
-                  />
-                  {modalValidationErrors.level_1_percent && (
-                    <div style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem' }}>
-                      {modalValidationErrors.level_1_percent}
-                    </div>
-                  )}
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>
                     Level 2 Commission (%) <span style={{ color: '#ef4444' }}>*</span>
                   </label>
                   <input
@@ -1337,6 +1310,28 @@ function AdminEntityCommissionPage({ onNavigate }) {
                   {modalValidationErrors.level_4_percent && (
                     <div style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem' }}>
                       {modalValidationErrors.level_4_percent}
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>
+                    Level 5 Commission (%) <span style={{ color: '#ef4444' }}>*</span>
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    className="form-input"
+                    value={modalForm.level_5_percent}
+                    onChange={(e) => setModalForm({ ...modalForm, level_5_percent: e.target.value })}
+                    style={{ width: '100%', borderRadius: '8px' }}
+                    required
+                  />
+                  {modalValidationErrors.level_5_percent && (
+                    <div style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem' }}>
+                      {modalValidationErrors.level_5_percent}
                     </div>
                   )}
                 </div>

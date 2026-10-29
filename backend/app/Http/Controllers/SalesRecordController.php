@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\SalesRecord;
 use App\Models\SalePayment;
 use App\Models\User;
+use App\Models\Product;
+use App\Models\Service;
+use App\Models\EntityCommissionSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -293,11 +296,40 @@ class SalesRecordController extends Controller
 
         $balanceDue = max(0, round($grossAmount - $advancePayment, 2));
 
-        $adminCommissionPercent = (float) ($request->input('admin_commission_percent') ?? $request->input('adminCommissionPercent') ?? 15);
+        $itemName = $request->input('item');
+        $itemType = $request->input('item_type') ?? $request->input('itemType') ?? 'service';
+        $entityType = $request->input('entity_type') ?? $request->input('entityType') ?? 'business';
+        $entityName = $request->input('entity_name') ?? $request->input('entityName');
+        $entityId = $request->input('entity_id') ?? $request->input('entityId');
+
+        $catalogItem = null;
+        if ($itemType === 'product') {
+            $catalogItem = Product::where('name', $itemName)->first();
+        } else {
+            $catalogItem = Service::where('name', $itemName)->first();
+        }
+
+        $resolvedOwnerType = $catalogItem?->owner_type ?: $entityType;
+        $resolvedOwnerName = $catalogItem?->owner_name ?: $entityName;
+
+        $commissionConfig = EntityCommissionSetting::resolveForEntity(
+            $resolvedOwnerType,
+            $resolvedOwnerName,
+            $entityId ? (int) $entityId : null
+        );
+
+        $directPercent = (float) $commissionConfig['direct_percent'];
+        $levelsTotalPercent = (float) $commissionConfig['network_levels_total'];
+        $totalCommissionPercent = (float) $commissionConfig['total_commission_percent'];
+
+        $adminCommissionPercent = (float) ($catalogItem?->admin_commission_percent ?? $request->input('admin_commission_percent') ?? $request->input('adminCommissionPercent') ?? $totalCommissionPercent);
         
         // Admin commission cut is strictly calculated on the RECEIVED (advance) amount
         $adminCommissionCut = round(($advancePayment * $adminCommissionPercent) / 100, 2);
         $netEntityPayout = round($advancePayment - $adminCommissionCut, 2);
+
+        $directCommission = round(($advancePayment * $directPercent) / 100, 2);
+        $levelCommissionsTotal = round(($advancePayment * $levelsTotalPercent) / 100, 2);
 
         $status = ($balanceDue <= 0 && $advancePayment > 0) ? 'completed' : (($advancePayment > 0) ? 'partial' : 'pending');
 
@@ -306,13 +338,12 @@ class SalesRecordController extends Controller
         $customerFormatted = $request->input('customer') ?? ($customerUserCode ? "{$customerName} ({$customerUserCode})" : $customerName);
         $finalSponsor = !empty($sponsor) ? $sponsor : 'CB100001';
 
-
         $saleData = [
             'invoice_number' => $invoiceNumber,
             'date' => $date,
             'entity_id' => $request->input('entity_id') ?? $request->input('entityId') ?? null,
-            'entity_name' => $request->input('entity_name') ?? $request->input('entityName') ?? 'Skyline Technologies Pvt Ltd',
-            'entity_type' => $request->input('entity_type') ?? $request->input('entityType') ?? 'business',
+            'entity_name' => $resolvedOwnerName ?: ($request->input('entity_name') ?? $request->input('entityName') ?? 'Skyline Technologies Pvt Ltd'),
+            'entity_type' => $resolvedOwnerType ?: 'business',
             'customer_name' => $customerName,
             'customer_email' => $request->input('customer_email') ?? $request->input('customerEmail') ?? null,
             'customer_phone' => $request->input('customer_phone') ?? $request->input('customerPhone') ?? null,
@@ -320,8 +351,7 @@ class SalesRecordController extends Controller
             'customer' => $customerFormatted,
             'sponsor' => $finalSponsor,
             'item' => $request->input('item'),
-
-            'item_type' => $request->input('item_type') ?? $request->input('itemType') ?? 'service',
+            'item_type' => $itemType,
             'category' => $request->input('category') ?? 'Services & Consulting',
             'unit_price' => $unitPrice,
             'quantity' => $quantity,
@@ -337,8 +367,8 @@ class SalesRecordController extends Controller
             'reference_no' => $request->input('reference_no') ?? $request->input('referenceNo') ?? ('UTR-' . rand(100000, 999990)),
             'status' => $status,
             'network_distribution_status' => 'pending_admin_distribution',
-            'direct_commission' => round(($advancePayment * 0.10), 2),
-            'level_commissions_total' => round(($advancePayment * 0.07), 2),
+            'direct_commission' => $directCommission,
+            'level_commissions_total' => $levelCommissionsTotal,
             'team_volume_bv' => $advancePayment,
             'commission_distributed' => false,
         ];
@@ -366,8 +396,8 @@ class SalesRecordController extends Controller
                     'notes' => 'Initial payment received at sale creation',
                     'payment_date' => now(),
                     'network_distribution_status' => 'pending_admin_distribution',
-                    'direct_commission' => round(($advancePayment * 0.10), 2),
-                    'level_commissions_total' => round(($advancePayment * 0.07), 2),
+                    'direct_commission' => $directCommission,
+                    'level_commissions_total' => $levelCommissionsTotal,
                     'team_volume_bv' => $advancePayment,
                     'commission_distributed' => false,
                 ]);
@@ -458,6 +488,16 @@ class SalesRecordController extends Controller
         $adminCommissionCut = round(($amount * $adminCommissionPercent) / 100, 2);
         $netEntityAmount = round($amount - $adminCommissionCut, 2);
 
+        $commissionConfig = EntityCommissionSetting::resolveForEntity(
+            $sale->entity_type,
+            $sale->entity_name,
+            $sale->entity_id ? (int) $sale->entity_id : null
+        );
+        $directPercent = (float) $commissionConfig['direct_percent'];
+        $levelsTotalPercent = (float) $commissionConfig['network_levels_total'];
+        $directCommission = round(($amount * $directPercent) / 100, 2);
+        $levelCommissionsTotal = round(($amount * $levelsTotalPercent) / 100, 2);
+
         $paymentMethod = $request->input('payment_method') ?? $request->input('paymentMethod') ?? 'UPI / PhonePe';
         $referenceNo = $request->input('reference_no') ?? $request->input('referenceNo') ?? ('UTR-' . rand(100000, 999990));
         $notes = $request->input('notes') ?? 'Balance installment received by entity';
@@ -482,8 +522,8 @@ class SalesRecordController extends Controller
                 'notes' => $notes,
                 'payment_date' => now(),
                 'network_distribution_status' => 'pending_admin_distribution',
-                'direct_commission' => round(($amount * 0.10), 2),
-                'level_commissions_total' => round(($amount * 0.07), 2),
+                'direct_commission' => $directCommission,
+                'level_commissions_total' => $levelCommissionsTotal,
                 'team_volume_bv' => $amount,
                 'commission_distributed' => false,
             ]);
@@ -537,6 +577,13 @@ class SalesRecordController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Payment receipt not found'], 404);
         }
 
+        if ($payment->commission_distributed || $payment->network_distribution_status === 'distributed') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Commission has already been distributed for this payment receipt.',
+            ], 400);
+        }
+
         $received = (float) ($payment->amount > 0 ? $payment->amount : 0);
         $adminFeeReceived = (float) ($payment->admin_commission_cut ?? 0);
         $bpRate = (float) ($request->input('bp_value_rate') ?? $request->input('bpValueRate') ?? 10);
@@ -567,93 +614,104 @@ class SalesRecordController extends Controller
         $bpPerLevel = round($totalBp / 20, 2);
         $sponsorCode = $payment->sponsor ?: ($payment->salesRecord->sponsor ?? 'CB100001');
 
-        // Disburse Direct Referral Commission to immediate sponsor in users table
-        $directSponsor = User::where('user_code', $sponsorCode)->first();
-        if ($directSponsor && $referralAmount > 0) {
-            $directSponsor->increment('commission_balance', $referralAmount);
-        }
-
-        // Disburse Equal 10-Level Team Commission to uplines in users table
-        $uplineLevels = [];
-        $currCode = $sponsorCode;
-        for ($lvl = 1; $lvl <= 10; $lvl++) {
-            if (!$currCode) {
-                $uplineLevels[] = [
-                    'level' => $lvl,
-                    'amount' => $teamAmountPerLevel,
-                    'user_code' => 'N/A',
-                    'name' => 'Company Reserve Pool',
-                    'status' => 'credited_to_pool',
-                ];
-                continue;
+        DB::beginTransaction();
+        try {
+            // Disburse Direct Referral Commission to immediate sponsor in users table
+            $directSponsor = User::where('user_code', $sponsorCode)->first();
+            if ($directSponsor && $referralAmount > 0) {
+                $directSponsor->increment('commission_balance', $referralAmount);
             }
 
-            $uplineUser = User::where('user_code', $currCode)->first();
-            if ($uplineUser) {
-                if ($teamAmountPerLevel > 0) {
-                    $uplineUser->increment('commission_balance', $teamAmountPerLevel);
+            // Disburse Equal 10-Level Team Commission to uplines in users table
+            $uplineLevels = [];
+            $currCode = $sponsorCode;
+            for ($lvl = 1; $lvl <= 10; $lvl++) {
+                if (!$currCode) {
+                    $uplineLevels[] = [
+                        'level' => $lvl,
+                        'amount' => $teamAmountPerLevel,
+                        'user_code' => 'N/A',
+                        'name' => 'Company Reserve Pool',
+                        'status' => 'credited_to_pool',
+                    ];
+                    continue;
                 }
-                $uplineLevels[] = [
-                    'level' => $lvl,
-                    'amount' => $teamAmountPerLevel,
-                    'user_code' => $uplineUser->user_code,
-                    'name' => $uplineUser->name,
-                    'status' => 'credited_to_wallet',
-                ];
-                $currCode = $uplineUser->sponsor_id;
-            } else {
-                $uplineLevels[] = [
-                    'level' => $lvl,
-                    'amount' => $teamAmountPerLevel,
-                    'user_code' => 'N/A',
-                    'name' => 'Company Reserve Pool',
-                    'status' => 'credited_to_pool',
-                ];
-                $currCode = null;
+
+                $uplineUser = User::where('user_code', $currCode)->first();
+                if ($uplineUser) {
+                    if ($teamAmountPerLevel > 0) {
+                        $uplineUser->increment('commission_balance', $teamAmountPerLevel);
+                    }
+                    $uplineLevels[] = [
+                        'level' => $lvl,
+                        'amount' => $teamAmountPerLevel,
+                        'user_code' => $uplineUser->user_code,
+                        'name' => $uplineUser->name,
+                        'status' => 'credited_to_wallet',
+                    ];
+                    $currCode = $uplineUser->sponsor_id;
+                } else {
+                    $uplineLevels[] = [
+                        'level' => $lvl,
+                        'amount' => $teamAmountPerLevel,
+                        'user_code' => 'N/A',
+                        'name' => 'Company Reserve Pool',
+                        'status' => 'credited_to_pool',
+                    ];
+                    $currCode = null;
+                }
             }
+
+            $distributionDetails = [
+                'adminFeeReceived' => $adminFeeReceived,
+                'installmentAmount' => $received,
+                'referralPercent' => $referralPercent,
+                'referralAmount' => $referralAmount,
+                'teamPercent' => $teamPercent,
+                'teamTotalAmount' => $teamTotalAmount,
+                'teamAmountPerLevel' => $teamAmountPerLevel,
+                'teamLevels' => 10,
+                'uplineLevels' => $uplineLevels,
+                'bpPercent' => $bpPercent,
+                'totalBp' => $totalBp,
+                'bpPerLevel' => $bpPerLevel,
+                'bpLevels' => 20,
+                'bpValueRate' => $bpRate,
+                'bpMonetaryValue' => $bpMonetaryValue,
+                'totalDistributionPercent' => $totalPercent,
+                'totalDistributionAmount' => $totalDistribution,
+                'adminNetRetained' => round($adminFeeReceived - $totalDistribution, 2),
+                'adminNetRetainedPercent' => round(100 - $totalPercent, 2),
+                'distributedAt' => now()->toDateTimeString(),
+                'paymentReceiptId' => $payment->id,
+                'invoiceNumber' => $payment->invoice_number,
+                'customerName' => $payment->customer_name,
+                'sponsor' => $sponsorCode,
+            ];
+
+            $payment->update([
+                'network_distribution_status' => 'distributed',
+                'direct_commission' => $referralAmount,
+                'level_commissions_total' => $teamTotalAmount,
+                'team_volume_bv' => $totalBp,
+                'commission_distributed' => true,
+                'distribution_details' => $distributionDetails,
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => "Network commissions and Business Points for Receipt #RCPT-{$payment->id} (Invoice {$payment->invoice_number}) successfully disbursed across 10 equal levels to users in database!",
+                'payment' => $payment,
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to distribute payment commission: ' . $e->getMessage(),
+            ], 500);
         }
-
-        $distributionDetails = [
-            'adminFeeReceived' => $adminFeeReceived,
-            'installmentAmount' => $received,
-            'referralPercent' => $referralPercent,
-            'referralAmount' => $referralAmount,
-            'teamPercent' => $teamPercent,
-            'teamTotalAmount' => $teamTotalAmount,
-            'teamAmountPerLevel' => $teamAmountPerLevel,
-            'teamLevels' => 10,
-            'uplineLevels' => $uplineLevels,
-            'bpPercent' => $bpPercent,
-            'totalBp' => $totalBp,
-            'bpPerLevel' => $bpPerLevel,
-            'bpLevels' => 20,
-            'bpValueRate' => $bpRate,
-            'bpMonetaryValue' => $bpMonetaryValue,
-            'totalDistributionPercent' => $totalPercent,
-            'totalDistributionAmount' => $totalDistribution,
-            'adminNetRetained' => round($adminFeeReceived - $totalDistribution, 2),
-            'adminNetRetainedPercent' => round(100 - $totalPercent, 2),
-            'distributedAt' => now()->toDateTimeString(),
-            'paymentReceiptId' => $payment->id,
-            'invoiceNumber' => $payment->invoice_number,
-            'customerName' => $payment->customer_name,
-            'sponsor' => $sponsorCode,
-        ];
-
-        $payment->update([
-            'network_distribution_status' => 'distributed',
-            'direct_commission' => $referralAmount,
-            'level_commissions_total' => $teamTotalAmount,
-            'team_volume_bv' => $totalBp,
-            'commission_distributed' => true,
-            'distribution_details' => $distributionDetails,
-        ]);
-
-        return response()->json([
-            'status' => 'success',
-            'message' => "Network commissions and Business Points for Receipt #RCPT-{$payment->id} (Invoice {$payment->invoice_number}) successfully disbursed across 10 equal levels to users in database!",
-            'payment' => $payment,
-        ]);
     }
 
     /**
@@ -667,6 +725,13 @@ class SalesRecordController extends Controller
 
         if (!$sale) {
             return response()->json(['status' => 'error', 'message' => 'Sale not found'], 404);
+        }
+
+        if ($sale->commission_distributed || $sale->network_distribution_status === 'distributed') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Commission has already been distributed for this sale.',
+            ], 400);
         }
 
         $referralPercent = (float) ($request->input('referral_percent') ?? $request->input('referralPercent') ?? 10);
