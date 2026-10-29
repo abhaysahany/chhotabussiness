@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Service;
 use App\Models\ProductPackage;
+use App\Models\EntityCommissionSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -82,13 +83,25 @@ class ProductCatalogController extends Controller
             $imageUrl = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&auto=format&fit=crop&q=80';
         }
 
+        $ownerType = $request->input('owner_type') ?: 'business';
+        $ownerName = $request->input('owner_name') ?: 'Skyline Technologies Pvt Ltd';
+        $commissionConfig = EntityCommissionSetting::resolveForEntity($ownerType, $ownerName);
+
+        $adminCommissionPercent = $commissionConfig['total_commission_percent'];
+        if ($request->filled('admin_commission_percent') && is_numeric($request->input('admin_commission_percent'))) {
+            $val = (float) $request->input('admin_commission_percent');
+            if ($val >= 0 && $val <= 100) {
+                $adminCommissionPercent = $val;
+            }
+        }
+
         $product = Product::create([
             'name' => $request->input('name'),
             'category' => $request->input('category') ?: 'Software & IT',
-            'owner_type' => $request->input('owner_type') ?: 'business',
-            'owner_name' => $request->input('owner_name') ?: 'Skyline Technologies Pvt Ltd',
+            'owner_type' => $ownerType,
+            'owner_name' => $ownerName,
             'price' => $request->input('price'),
-            'admin_commission_percent' => $request->input('admin_commission_percent') !== null ? $request->input('admin_commission_percent') : 15.00,
+            'admin_commission_percent' => $adminCommissionPercent,
             'stock' => $request->input('stock') !== null ? $request->input('stock') : 50,
             'sku' => $request->input('sku') ?: ('SKU-' . strtoupper(Str::random(6))),
             'status' => $request->input('status') ?: 'active',
@@ -136,13 +149,27 @@ class ProductCatalogController extends Controller
             $imageUrl = $request->input('image');
         }
 
+        $ownerType = $request->input('owner_type') ?: $product->owner_type;
+        $ownerName = $request->input('owner_name') ?: $product->owner_name;
+        $commissionConfig = EntityCommissionSetting::resolveForEntity($ownerType, $ownerName);
+
+        $adminCommissionPercent = $product->admin_commission_percent;
+        if ($request->filled('admin_commission_percent') && is_numeric($request->input('admin_commission_percent'))) {
+            $val = (float) $request->input('admin_commission_percent');
+            if ($val >= 0 && $val <= 100) {
+                $adminCommissionPercent = $val;
+            }
+        } elseif ($commissionConfig['is_custom']) {
+            $adminCommissionPercent = $commissionConfig['total_commission_percent'];
+        }
+
         $product->update([
             'name' => $request->input('name'),
             'category' => $request->input('category') ?: $product->category,
-            'owner_type' => $request->input('owner_type') ?: $product->owner_type,
-            'owner_name' => $request->input('owner_name') ?: $product->owner_name,
+            'owner_type' => $ownerType,
+            'owner_name' => $ownerName,
             'price' => $request->input('price'),
-            'admin_commission_percent' => $request->input('admin_commission_percent') !== null ? $request->input('admin_commission_percent') : $product->admin_commission_percent,
+            'admin_commission_percent' => $adminCommissionPercent,
             'stock' => $request->input('stock') !== null ? $request->input('stock') : $product->stock,
             'sku' => $request->input('sku') ?: $product->sku,
             'status' => $request->input('status') ?: $product->status,
@@ -237,13 +264,30 @@ class ProductCatalogController extends Controller
             $imageUrl = 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400&auto=format&fit=crop&q=80';
         }
 
+        $ownerType = $request->input('owner_type') ?: 'business';
+        $ownerName = $request->input('owner_name') ?: 'ChhotaBusiness Tax Advisory';
+        $commissionConfig = EntityCommissionSetting::resolveForEntity($ownerType, $ownerName);
+
+        $adminCommissionPercent = $commissionConfig['total_commission_percent'];
+        if ($request->filled('admin_commission_percent') && is_numeric($request->input('admin_commission_percent'))) {
+            $val = (float) $request->input('admin_commission_percent');
+            if ($val >= 0 && $val <= 100) {
+                $adminCommissionPercent = $val;
+            }
+        }
+
         $service = Service::create([
             'name' => $request->input('name'),
             'category' => $request->input('category') ?: 'Legal & Compliance',
+<<<<<<< HEAD
             'owner_type' => $request->input('owner_type') ?: 'business',
             'owner_name' => $request->input('owner_name') ?: 'Vyapar Adnet Tax Advisory',
+=======
+            'owner_type' => $ownerType,
+            'owner_name' => $ownerName,
+>>>>>>> fb58c420080770de6eee6f2a63280e24ca568f13
             'price' => $request->input('price'),
-            'admin_commission_percent' => $request->input('admin_commission_percent') !== null ? $request->input('admin_commission_percent') : 20.00,
+            'admin_commission_percent' => $adminCommissionPercent,
             'duration' => $request->input('duration') ?: '3 Business Days',
             'status' => $request->input('status') ?: 'active',
             'image' => $imageUrl,
@@ -289,13 +333,27 @@ class ProductCatalogController extends Controller
             $imageUrl = $request->input('image');
         }
 
+        $ownerType = $request->input('owner_type') ?: $service->owner_type;
+        $ownerName = $request->input('owner_name') ?: $service->owner_name;
+        $commissionConfig = EntityCommissionSetting::resolveForEntity($ownerType, $ownerName);
+
+        $adminCommissionPercent = $service->admin_commission_percent;
+        if ($request->filled('admin_commission_percent') && is_numeric($request->input('admin_commission_percent'))) {
+            $val = (float) $request->input('admin_commission_percent');
+            if ($val >= 0 && $val <= 100) {
+                $adminCommissionPercent = $val;
+            }
+        } elseif ($commissionConfig['is_custom']) {
+            $adminCommissionPercent = $commissionConfig['total_commission_percent'];
+        }
+
         $service->update([
             'name' => $request->input('name'),
             'category' => $request->input('category') ?: $service->category,
-            'owner_type' => $request->input('owner_type') ?: $service->owner_type,
-            'owner_name' => $request->input('owner_name') ?: $service->owner_name,
+            'owner_type' => $ownerType,
+            'owner_name' => $ownerName,
             'price' => $request->input('price'),
-            'admin_commission_percent' => $request->input('admin_commission_percent') !== null ? $request->input('admin_commission_percent') : $service->admin_commission_percent,
+            'admin_commission_percent' => $adminCommissionPercent,
             'duration' => $request->input('duration') ?: $service->duration,
             'status' => $request->input('status') ?: $service->status,
             'image' => $imageUrl,
