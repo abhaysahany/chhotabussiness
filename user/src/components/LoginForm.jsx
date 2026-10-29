@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useBranding } from '../utils/branding';
 import {
   Building2,
   Mail,
@@ -22,14 +23,25 @@ import {
   X,
 } from 'lucide-react';
 import './auth.css';
+import { initiateGoogleCodePopup } from '../utils/googleOAuth';
+import { authenticateWithGoogle } from '../api/userService';
 
-function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackToHome, onOpenLegalPage }) {
-  const [email, setEmail] = useState('user@chhotabusiness.com');
+function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackToHome, onOpenLegalPage, onGoogleSuccess }) {
+  const { appName } = useBranding();
+  const [email, setEmail] = useState('user@addnet.com');
   const [password, setPassword] = useState('password123');
   const [rememberMe, setRememberMe] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+
+  // Google SSO state
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [showRegisterPrompt, setShowRegisterPrompt] = useState(false);
+  const [accountLinkModal, setAccountLinkModal] = useState(null); // { email, code }
+  const [linkPassword, setLinkPassword] = useState('');
+  const [linkingLoading, setLinkingLoading] = useState(false);
+  const [linkError, setLinkError] = useState('');
 
   // Forgot password modal state
   const [showForgotModal, setShowForgotModal] = useState(false);
@@ -39,6 +51,7 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage('');
+    setShowRegisterPrompt(false);
     setLoading(true);
 
     try {
@@ -50,6 +63,76 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
       );
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = () => {
+    setErrorMessage('');
+    setShowRegisterPrompt(false);
+    setAccountLinkModal(null);
+    setGoogleLoading(true);
+
+    initiateGoogleCodePopup({
+      onCodeSuccess: async (code) => {
+        try {
+          const res = await authenticateWithGoogle({
+            code,
+            mode: 'login',
+          });
+          if (onGoogleSuccess) {
+            onGoogleSuccess(res);
+          } else if (onLoginSuccess) {
+            onLoginSuccess(res);
+          }
+        } catch (err) {
+          console.error('Google Sign-In error:', err);
+          const data = err.response?.data;
+          if (data?.requires_registration || err.response?.status === 404) {
+            setErrorMessage(data?.message || 'This Google email is not registered yet. Please register first.');
+            setShowRegisterPrompt(true);
+          } else if (data?.requires_password_link || err.response?.status === 409) {
+            setErrorMessage(data?.message || 'An account with this email already exists. Please log in with your password to link your Google account.');
+            setAccountLinkModal({ email: data?.email || email, code });
+          } else {
+            setErrorMessage(data?.message || err.message || 'Google Sign-In failed. Please try again.');
+          }
+        } finally {
+          setGoogleLoading(false);
+        }
+      },
+      onError: (errMsg) => {
+        setGoogleLoading(false);
+        if (errMsg && !errMsg.toLowerCase().includes('closed')) {
+          setErrorMessage(errMsg);
+        }
+      },
+    });
+  };
+
+  const handleConfirmLink = async (e) => {
+    e.preventDefault();
+    if (!accountLinkModal?.code || !linkPassword) return;
+
+    setLinkingLoading(true);
+    setLinkError('');
+
+    try {
+      const res = await authenticateWithGoogle({
+        code: accountLinkModal.code,
+        mode: 'login',
+        link_password: linkPassword,
+      });
+      setAccountLinkModal(null);
+      if (onGoogleSuccess) {
+        onGoogleSuccess(res);
+      } else if (onLoginSuccess) {
+        onLoginSuccess(res);
+      }
+    } catch (err) {
+      console.error('Account link error:', err);
+      setLinkError(err.response?.data?.message || 'Incorrect password for this account. Please verify and try again.');
+    } finally {
+      setLinkingLoading(false);
     }
   };
 
@@ -94,7 +177,7 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
       <main className="cb-auth-main">
         <div className="cb-auth-container">
           
-          {/* Left Column: ChhotaBusiness Value Showcase (Desktop) */}
+          {/* Left Column: AddNet Value Showcase (Desktop) */}
           <div className="cb-auth-showcase">
             <div>
               {/* Pill Badge */}
@@ -154,7 +237,7 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
                 ))}
               </div>
               <p className="cb-testimonial-quote">
-                "ChhotaBusiness connected our software development agency with over 28 genuine corporate clients within the first 60 days."
+                "{appName} connected our software development agency with over 28 genuine corporate clients within the first 60 days."
               </p>
               <div className="cb-testimonial-author">
                 <div className="cb-author-avatar">R</div>
@@ -176,7 +259,7 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
               </div>
               <div>
                 <div className="cb-auth-logo-text-title">
-                  CHHOTA<span>BUSINESS</span>
+                  {appName}
                 </div>
                 <span className="cb-auth-logo-text-sub">
                   Business Promoter Network
@@ -215,7 +298,19 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
             {errorMessage && (
               <div className="cb-alert-error">
                 <AlertCircle size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
-                <span>{errorMessage}</span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', width: '100%' }}>
+                  <span>{errorMessage}</span>
+                  {showRegisterPrompt && (
+                    <button
+                      type="button"
+                      className="highlight-link"
+                      style={{ textAlign: 'left', fontWeight: '700', padding: 0, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--cb-primary, #0F4C81)' }}
+                      onClick={onSwitchToRegister}
+                    >
+                      Register as Partner with Google →
+                    </button>
+                  )}
+                </div>
               </div>
             )}
 
@@ -236,7 +331,7 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
                     className="cb-input-field"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="partner@chhotabusiness.com"
+                    placeholder="partner@addnet.com"
                     autoComplete="email"
                     required
                   />
@@ -326,15 +421,25 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
             <button
               type="button"
               className="cb-google-sso-btn"
-              onClick={() => onSocialClick && onSocialClick('google')}
+              onClick={handleGoogleSignIn}
+              disabled={loading || googleLoading}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24">
-                <path fill="#ea4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.9C6.2 7.2 8.9 5 12 5z"/>
-                <path fill="#4285f4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/>
-                <path fill="#fbbc05" d="M5.3 14.7c-.2-.7-.4-1.4-.4-2.2s.2-1.5.4-2.2L1.6 7.4C.6 9.4 0 11.6 0 14s.6 4.6 1.6 6.6l3.7-2.9c0-.6.1-1.3.1-2.4z"/>
-                <path fill="#34a853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.1 0-5.8-2.2-6.7-5.3L1.6 16c1.9 3.8 5.8 7 10.4 7z"/>
-              </svg>
-              <span>Continue with Google</span>
+              {googleLoading ? (
+                <>
+                  <Loader2 size={18} className="spin" style={{ animation: 'spin 1s linear infinite' }} />
+                  <span>Connecting to Google...</span>
+                </>
+              ) : (
+                <>
+                  <svg width="18" height="18" viewBox="0 0 24 24">
+                    <path fill="#ea4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.9C6.2 7.2 8.9 5 12 5z"/>
+                    <path fill="#4285f4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/>
+                    <path fill="#fbbc05" d="M5.3 14.7c-.2-.7-.4-1.4-.4-2.2s.2-1.5.4-2.2L1.6 7.4C.6 9.4 0 11.6 0 14s.6 4.6 1.6 6.6l3.7-2.9c0-.6.1-1.3.1-2.4z"/>
+                    <path fill="#34a853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.1 0-5.8-2.2-6.7-5.3L1.6 16c1.9 3.8 5.8 7 10.4 7z"/>
+                  </svg>
+                  <span>Continue with Google</span>
+                </>
+              )}
             </button>
 
             {/* Footer Prompt */}
@@ -354,7 +459,7 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
 
       {/* 3. Bottom Legal Footer */}
       <footer className="cb-auth-bottom-footer">
-        <span>© {new Date().getFullYear()} Chhota Business Pvt. Ltd. All rights reserved.</span>
+        <span>© {new Date().getFullYear()} {appName} Pvt. Ltd. All rights reserved.</span>
         <div style={{ display: 'flex', gap: '1.25rem' }}>
           <a
             href="#terms"
@@ -376,6 +481,137 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
           </a>
         </div>
       </footer>
+
+      {/* Account Linking Modal for Existing Email Accounts */}
+      {accountLinkModal && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.7)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '1rem',
+          }}
+        >
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '20px',
+              maxWidth: '460px',
+              width: '100%',
+              padding: '2rem',
+              boxShadow: '0 25px 50px -12px rgba(15, 76, 129, 0.25)',
+              border: '1px solid #E2E8F0',
+              position: 'relative',
+              animation: 'cbFadeIn 0.25s ease-out',
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => setAccountLinkModal(null)}
+              style={{
+                position: 'absolute',
+                top: '1.25rem',
+                right: '1.25rem',
+                background: '#F1F5F9',
+                border: 'none',
+                borderRadius: '50%',
+                width: '32px',
+                height: '32px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#64748B',
+                cursor: 'pointer',
+              }}
+            >
+              <X size={18} />
+            </button>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
+              <div
+                style={{
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '12px',
+                  background: '#FEF3C7',
+                  color: '#D97706',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <KeyRound size={22} />
+              </div>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>
+                  Link Google Account
+                </h3>
+                <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748B' }}>
+                  Confirm password to link existing account
+                </p>
+              </div>
+            </div>
+
+            <p style={{ fontSize: '0.88rem', color: '#475569', lineHeight: 1.5, marginBottom: '1.25rem' }}>
+              An account with <strong>{accountLinkModal.email}</strong> is already registered. To link your Google login, please enter your existing password to verify ownership.
+            </p>
+
+            {linkError && (
+              <div className="cb-alert-error" style={{ marginBottom: '1rem' }}>
+                <AlertCircle size={16} style={{ flexShrink: 0 }} />
+                <span style={{ fontSize: '0.84rem' }}>{linkError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleConfirmLink}>
+              <div className="cb-form-group">
+                <label className="cb-input-label">Account Password</label>
+                <div className="cb-input-wrapper">
+                  <span className="cb-input-icon">
+                    <Lock size={18} />
+                  </span>
+                  <input
+                    type="password"
+                    className="cb-input-field"
+                    value={linkPassword}
+                    onChange={(e) => setLinkPassword(e.target.value)}
+                    placeholder="Enter existing password"
+                    required
+                    autoFocus
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.25rem' }}>
+                <button
+                  type="button"
+                  className="cb-btn-ghost"
+                  style={{ flex: 1 }}
+                  onClick={() => setAccountLinkModal(null)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="cb-submit-btn"
+                  style={{ flex: 1.5 }}
+                  disabled={linkingLoading || !linkPassword}
+                >
+                  {linkingLoading ? 'Verifying...' : 'Verify & Link'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Forgot Password Modal */}
       {showForgotModal && (
@@ -501,7 +737,7 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
                       className="cb-input-field"
                       value={forgotEmail}
                       onChange={(e) => setForgotEmail(e.target.value)}
-                      placeholder="partner@chhotabusiness.com"
+                      placeholder="partner@addnet.com"
                       required
                     />
                   </div>

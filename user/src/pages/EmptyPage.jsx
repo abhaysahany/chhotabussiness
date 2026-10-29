@@ -1,6 +1,8 @@
 import React from 'react';
+import { useBranding } from '../utils/branding';
 
 function EmptyPage() {
+  const { appName } = useBranding();
   return (
     <div className="page-container">
       {/* Page Header Row matching screenshot */}
@@ -41,7 +43,7 @@ function EmptyPage() {
             </div>
             <h3 className="empty-title">Starter Page Canvas</h3>
             <p className="empty-desc">
-              This is a clean, modern template container for building custom pages inside your <strong>ChhotaBusiness Application</strong>.
+              This is a clean, modern template container for building custom pages inside your <strong>{appName} Application</strong>.
             </p>
 
             <div className="empty-actions">

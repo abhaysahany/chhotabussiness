@@ -36,7 +36,7 @@ function AdminContentLibraryPage() {
     type: 'image',
     category: 'Marketing Banners',
     entity_type: 'chhota_business',
-    entity_name: 'Chhota Business System Entity',
+    entity_name: 'AddNet System Entity',
     file_url: '',
     tags: '',
   });
@@ -136,7 +136,7 @@ function AdminContentLibraryPage() {
         type: asset.type,
         category: asset.category,
         entity_type: asset.entity_type || 'chhota_business',
-        entity_name: asset.entity_name || 'Chhota Business System Entity',
+        entity_name: asset.entity_name || 'AddNet System Entity',
         file_url: asset.file_url || '',
         tags: asset.tags || '',
       });
@@ -148,7 +148,7 @@ function AdminContentLibraryPage() {
         type: 'image',
         category: 'Marketing Banners',
         entity_type: 'chhota_business',
-        entity_name: 'Chhota Business System Entity',
+        entity_name: 'AddNet System Entity',
         file_url: '',
         tags: '',
       });
@@ -344,7 +344,7 @@ function AdminContentLibraryPage() {
             style={{ padding: '0.55rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', background: '#fff' }}
           >
             <option value="all">All Entity Types</option>
-            <option value="chhota_business">Chhota Business Platform</option>
+            <option value="chhota_business">AddNet Platform</option>
             <option value="business">Registered Business Entity</option>
             <option value="freelance">Freelancer Entity</option>
           </select>
@@ -598,7 +598,7 @@ function AdminContentLibraryPage() {
                     value={formData.entity_type}
                     onChange={(e) => {
                       const nextType = e.target.value;
-                      let defaultName = 'Chhota Business System Entity';
+                      let defaultName = 'AddNet System Entity';
                       if (nextType === 'business' && businesses.length > 0) defaultName = businesses[0].business_name;
                       else if (nextType === 'business') defaultName = 'Skyline Technologies Pvt Ltd';
                       if (nextType === 'freelance' && freelancers.length > 0) defaultName = freelancers[0].full_name;
@@ -607,7 +607,7 @@ function AdminContentLibraryPage() {
                     }}
                     style={{ width: '100%', padding: '0.6rem 0.8rem', fontSize: '0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none', background: '#fff' }}
                   >
-                    <option value="chhota_business">🌐 Chhota Business Platform</option>
+                    <option value="chhota_business">🌐 AddNet Platform</option>
                     <option value="business">🏢 Registered Business Entity</option>
                     <option value="freelance">💼 Freelancer Entity</option>
                   </select>

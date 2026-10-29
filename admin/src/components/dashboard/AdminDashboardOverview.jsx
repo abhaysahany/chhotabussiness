@@ -312,7 +312,7 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
     return (data?.recentTransactions || [
       { id: 'INV-2026-881', customer: 'Apex Global Logistics Ltd', entity: 'Skyline Technologies Pvt Ltd', gross: 85000.00, adminFee: 15300.00, netEntity: 69700.00, date: 'Today, 11:45 AM', status: 'completed', paymentMethod: 'Bank Transfer / IMPS' },
       { id: 'INV-2026-882', customer: 'Dr. Meera Nambiar (MedTech)', entity: 'GrowthX Media Solutions', gross: 24500.00, adminFee: 4410.00, netEntity: 20090.00, date: 'Today, 09:20 AM', status: 'completed', paymentMethod: 'UPI Gateway' },
-      { id: 'INV-2026-883', customer: 'Zenith Hospitality Hub', entity: 'ChhotaBusiness Tax Advisory', gross: 45000.00, adminFee: 9000.00, netEntity: 36000.00, date: 'Yesterday, 04:30 PM', status: 'completed', paymentMethod: 'Razorpay NetBanking' },
+      { id: 'INV-2026-883', customer: 'Zenith Hospitality Hub', entity: 'AddNet Tax Advisory', gross: 45000.00, adminFee: 9000.00, netEntity: 36000.00, date: 'Yesterday, 04:30 PM', status: 'completed', paymentMethod: 'Razorpay NetBanking' },
       { id: 'INV-2026-884', customer: 'Kaveri Organic Foods', entity: 'Rohan Sharma (Dev Studio)', gross: 18500.00, adminFee: 2775.00, netEntity: 15725.00, date: '19 Aug 2026', status: 'completed', paymentMethod: 'UPI Instant' },
       { id: 'INV-2026-885', customer: 'Future Academy EdTech', entity: 'Skyline Technologies Pvt Ltd', gross: 120000.00, adminFee: 21600.00, netEntity: 98400.00, date: '18 Aug 2026', status: 'completed', paymentMethod: 'NEFT Corporate Settlement' },
     ]).map((t) => ({
@@ -327,7 +327,7 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
   const merchantPartners = [
     { name: 'Skyline Technologies Pvt Ltd', category: 'IT & Cloud Solutions', gmv: '₹18,40,000', adminCut: '₹3,31,200', count: '48 Invoices', share: '38%' },
     { name: 'GrowthX Media Solutions', category: 'Digital Marketing & Ads', gmv: '₹12,25,000', adminCut: '₹2,20,500', count: '32 Invoices', share: '25%' },
-    { name: 'ChhotaBusiness Tax Advisory', category: 'Corporate & Legal', gmv: '₹9,80,000', adminCut: '₹1,96,000', count: '24 Invoices', share: '20%' },
+    { name: 'AddNet Tax Advisory', category: 'Corporate & Legal', gmv: '₹9,80,000', adminCut: '₹1,96,000', count: '24 Invoices', share: '20%' },
     { name: 'Rohan Sharma (Dev Studio)', category: 'Freelancer App Dev', gmv: '₹8,07,400', adminCut: '₹1,21,110', count: '19 Invoices', share: '17%' },
   ];
 
@@ -1070,7 +1070,7 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
           >
             <div style={{ background: '#3569a7', color: '#ffffff', padding: '1.25rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <div style={{ fontSize: '0.7rem', color: '#ccfbf1', fontWeight: 800, textTransform: 'uppercase' }}>✓ CHHOTABUSINESS VERIFIED INVOICE</div>
+                <div style={{ fontSize: '0.7rem', color: '#ccfbf1', fontWeight: 800, textTransform: 'uppercase' }}>✓ ADDNET VERIFIED INVOICE</div>
                 <h3 style={{ margin: '0.2rem 0 0 0', fontSize: '1.15rem', fontWeight: 800 }}>{selectedInvoice.id}</h3>
               </div>
               <button

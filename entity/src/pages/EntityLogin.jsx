@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useBranding } from '../utils/branding';
 import {
   loginEntity,
   forgotPasswordEntity,
@@ -8,6 +9,7 @@ import {
 } from '../api/entityService';
 
 function EntityLogin() {
+  const { appName } = useBranding();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -219,7 +221,7 @@ function EntityLogin() {
               </linearGradient>
             </defs>
           </svg>
-          <span className="brand-name">ChhotaBiz</span>
+          <span className="brand-name">{appName}</span>
           <span className="brand-badge entity-badge">ENTITY PANEL</span>
         </div>
         <h1 className="auth-title">Entity Portal Sign In</h1>

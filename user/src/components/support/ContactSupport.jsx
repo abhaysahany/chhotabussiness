@@ -38,7 +38,7 @@ function ContactSupport({ user }) {
       city: 'Mumbai (Corporate HQ)',
       address: 'Maker Maxity, Level 12, Bandra Kurla Complex (BKC), Mumbai 400051',
       phone: '+91 022 6800 9000',
-      email: 'mumbai.hq@chhotabiz.com',
+      email: 'mumbai.hq@addnet.com',
       hours: 'Mon - Sat: 9:00 AM - 8:00 PM IST',
       mapBadge: 'Google Maps Verified HQ',
     },
@@ -47,7 +47,7 @@ function ContactSupport({ user }) {
       city: 'Bengaluru (Tech Innovation Hub)',
       address: 'Embassy Tech Village, Outer Ring Road, Bellandur, Bengaluru 560103',
       phone: '+91 080 4500 1200',
-      email: 'blr.office@chhotabiz.com',
+      email: 'blr.office@addnet.com',
       hours: 'Mon - Sat: 9:30 AM - 7:30 PM IST',
       mapBadge: 'R&D Development Center',
     },
@@ -56,7 +56,7 @@ function ContactSupport({ user }) {
       city: 'Delhi NCR (North Regional Office)',
       address: 'DLF Cyber City, Building 10, Tower B, Gurugram 122002',
       phone: '+91 0124 4900 880',
-      email: 'delhi.office@chhotabiz.com',
+      email: 'delhi.office@addnet.com',
       hours: 'Mon - Sat: 9:00 AM - 7:00 PM IST',
       mapBadge: 'Regional Service Desk',
     },
@@ -98,17 +98,17 @@ function ContactSupport({ user }) {
           <div className="metric-icon purple">📞</div>
           <div>
             <span className="metric-title">24x7 Toll-Free Support</span>
-            <h3 className="metric-value" style={{ fontSize: '1rem', color: '#4f46e5' }}>+91 1800-CHHOTA</h3>
+            <h3 className="metric-value" style={{ fontSize: '1rem', color: '#4f46e5' }}>+91 1800-ADDNET</h3>
             <span className="chip-label" style={{ fontSize: '0.725rem' }}>Ext 1 for Payouts • Ext 2 for KYC</span>
           </div>
         </div>
 
         {/* Email */}
-        <div className="metric-box" style={{ cursor: 'pointer' }} onClick={() => copyToClipboard('support@chhotabusiness.com', 'Executive Email')}>
+        <div className="metric-box" style={{ cursor: 'pointer' }} onClick={() => copyToClipboard('support@addnet.com', 'Executive Email')}>
           <div className="metric-icon blue">✉️</div>
           <div>
             <span className="metric-title">Executive Support Email</span>
-            <h3 className="metric-value" style={{ fontSize: '0.925rem', color: '#0284c7' }}>support@chhotabiz.com</h3>
+            <h3 className="metric-value" style={{ fontSize: '0.925rem', color: '#0284c7' }}>support@addnet.com</h3>
             <span className="chip-label" style={{ fontSize: '0.725rem' }}>Direct response &lt; 2 hours</span>
           </div>
         </div>
@@ -296,7 +296,7 @@ function ContactSupport({ user }) {
                 <div className="security-row">
                   <div className="security-row-info">
                     <strong>Level 2: Nodal Officer Escalation</strong>
-                    <p>Email: nodal.officer@chhotabiz.com</p>
+                    <p>Email: nodal.officer@addnet.com</p>
                   </div>
                   <span className="status-badge-success">&lt; 24 Hours</span>
                 </div>

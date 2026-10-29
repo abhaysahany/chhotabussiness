@@ -3,11 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\GoogleAuthService;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -96,39 +100,118 @@ class AuthController extends Controller
 
     /**
      * Send 6-Digit Email Verification OTP
+     * Validates all registration fields (Sponsor ID, Name, Email, Password, Terms) before issuing OTP
      */
     public function sendOtp(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
+        $data = $request->all();
+        if (isset($data['name']) && is_string($data['name'])) {
+            $data['name'] = trim($data['name']);
+        }
+        if (isset($data['email']) && is_string($data['email'])) {
+            $data['email'] = strtolower(trim($data['email']));
+        }
+        if (isset($data['sponsor_id']) && is_string($data['sponsor_id'])) {
+            $data['sponsor_id'] = trim($data['sponsor_id']);
+        }
+
+        $validator = Validator::make($data, [
+            'sponsor_id' => 'required|string',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'password' => 'required|string|min:6',
+            'terms_accepted' => 'required|accepted',
+        ], [
+            'sponsor_id.required' => 'Sponsor ID is required.',
+            'name.required' => 'Full Name / Business Name is required.',
+            'email.required' => 'Email address is required.',
+            'email.email' => 'Please enter a valid email address.',
+            'password.required' => 'Password is required.',
+            'password.min' => 'Password must be at least 6 characters.',
+            'terms_accepted.required' => 'You must accept the Terms and Conditions and Privacy Policy.',
+            'terms_accepted.accepted' => 'You must accept the Terms and Conditions and Privacy Policy.',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Valid email address is required',
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors(),
             ], 422);
         }
 
-        // Check if email already registered
-        if (User::where('email', $request->email)->exists()) {
+        $email = $data['email'];
+        $sponsorId = $data['sponsor_id'];
+
+        // 1. Check if email already registered
+        if (User::where('email', $email)->exists()) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'This email address is already registered. Please login instead.',
+                'errors' => [
+                    'email' => ['This email address is already registered. Please login instead.'],
+                ],
+                'requires_login' => true,
             ], 422);
         }
 
-        // Generate 6-digit OTP
+        // 2. Verify Sponsor ID against Database
+        $sponsor = User::whereRaw('LOWER(user_code) = ?', [strtolower($sponsorId)])
+            ->orWhere('email', $sponsorId)
+            ->orWhere('id', $sponsorId)
+            ->first();
+
+        if (!$sponsor) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid Sponsor ID. Sponsor does not exist in our database.',
+                'errors' => [
+                    'sponsor_id' => ['Invalid Sponsor ID. Sponsor does not exist in our database.'],
+                ],
+            ], 422);
+        }
+
+        // 3. Rate Limiting & Cooldown Protection (Skip strict throttling during automated testing)
+        $isTesting = app()->environment('testing');
+        $cooldownKey = 'otp_cooldown_' . $email;
+        if (!$isTesting && Cache::has($cooldownKey)) {
+            $remaining = Cache::get($cooldownKey) - now()->timestamp;
+            if ($remaining > 0) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => "Please wait {$remaining} seconds before requesting a new OTP.",
+                ], 429);
+            }
+        }
+
+        $attemptsKey = 'otp_attempts_' . $email;
+        $attempts = (int) Cache::get($attemptsKey, 0);
+        if (!$isTesting && $attempts >= 5) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Too many OTP requests for this email. Please try again after 10 minutes.',
+            ], 429);
+        }
+        Cache::put($attemptsKey, $attempts + 1, now()->addMinutes(10));
+
+        // 4. Generate 6-digit OTP
         $otp = (string) rand(100000, 999999);
 
         // Store OTP in cache for 10 minutes
-        Cache::put('otp_' . $request->email, $otp, now()->addMinutes(10));
+        Cache::put('otp_' . $email, $otp, now()->addMinutes(10));
+        Cache::put($cooldownKey, now()->addSeconds(60)->timestamp, now()->addSeconds(60));
 
-        return response()->json([
+        $response = [
             'status' => 'success',
-            'message' => "Verification OTP sent to {$request->email} successfully!",
-            'otp' => $otp, // Returned in response for demo & testing ease
-        ], 200);
+            'message' => "Verification OTP sent to {$email} successfully!",
+        ];
+
+        // Production security: never expose raw OTP in production environment
+        if (app()->environment('local', 'testing')) {
+            $response['otp'] = $otp;
+        }
+
+        return response()->json($response, 200);
     }
 
     /**
@@ -138,24 +221,35 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
-            'otp' => 'required|string|size:6',
+            'otp' => 'required|string|size:6|regex:/^[0-9]{6}$/',
+        ], [
+            'email.required' => 'Email address is required.',
+            'email.email' => 'Please enter a valid email address.',
+            'otp.required' => '6-digit OTP code is required.',
+            'otp.size' => 'OTP code must be exactly 6 digits.',
+            'otp.regex' => 'OTP code must consist of 6 numeric digits.',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Email and 6-digit OTP code are required',
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors(),
             ], 422);
         }
 
-        $cachedOtp = Cache::get('otp_' . $request->email);
+        $email = strtolower(trim($request->email));
+        $cachedOtp = Cache::get('otp_' . $email);
 
-        if (!$cachedOtp || $cachedOtp !== $request->otp) {
+        if (!$cachedOtp || $cachedOtp !== (string) $request->otp) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Invalid or expired OTP verification code.',
+                'errors' => [
+                    'otp' => ['Invalid or expired OTP verification code.'],
+                ],
                 'verified' => false,
-            ], 400);
+            ], 422);
         }
 
         return response()->json([
@@ -216,56 +310,107 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $data = $request->all();
+        if (isset($data['name']) && is_string($data['name'])) {
+            $data['name'] = trim($data['name']);
+        }
+        if (isset($data['email']) && is_string($data['email'])) {
+            $data['email'] = strtolower(trim($data['email']));
+        }
+        if (isset($data['sponsor_id']) && is_string($data['sponsor_id'])) {
+            $data['sponsor_id'] = trim($data['sponsor_id']);
+        }
+
+        $validator = Validator::make($data, [
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|email|max:255|unique:users,email',
             'password' => 'required|string|min:6',
             'sponsor_id' => 'required|string',
-            'otp' => 'required|string|size:6',
+            'otp' => 'required|string|size:6|regex:/^[0-9]{6}$/',
+            'terms_accepted' => 'required|accepted',
+        ], [
+            'sponsor_id.required' => 'Sponsor ID is required.',
+            'name.required' => 'Full Name / Business Name is required.',
+            'email.required' => 'Email address is required.',
+            'email.email' => 'Please enter a valid email address.',
+            'email.unique' => 'This email address is already registered. Please login instead.',
+            'password.required' => 'Password is required.',
+            'password.min' => 'Password must be at least 6 characters.',
+            'otp.required' => '6-digit OTP code is required.',
+            'otp.size' => 'OTP code must be exactly 6 digits.',
+            'otp.regex' => 'OTP code must consist of 6 numeric digits.',
+            'terms_accepted.required' => 'You must accept the Terms and Conditions and Privacy Policy.',
+            'terms_accepted.accepted' => 'You must accept the Terms and Conditions and Privacy Policy.',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Validation failed',
+                'message' => $validator->errors()->first(),
                 'errors' => $validator->errors(),
             ], 422);
         }
 
+        $email = $data['email'];
+        $sponsorId = $data['sponsor_id'];
+
         // 1. Verify Sponsor ID from database
-        $sponsor = User::where('user_code', $request->sponsor_id)
-            ->orWhere('email', $request->sponsor_id)
-            ->orWhere('id', $request->sponsor_id)
+        $sponsor = User::whereRaw('LOWER(user_code) = ?', [strtolower($sponsorId)])
+            ->orWhere('email', $sponsorId)
+            ->orWhere('id', $sponsorId)
             ->first();
 
         if (!$sponsor) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Invalid Sponsor ID. Sponsor does not exist in our system.',
+                'message' => 'Invalid Sponsor ID. Sponsor does not exist in our database.',
+                'errors' => [
+                    'sponsor_id' => ['Invalid Sponsor ID. Sponsor does not exist in our database.'],
+                ],
             ], 422);
         }
 
         // 2. Verify Email OTP
-        $cachedOtp = Cache::get('otp_' . $request->email);
+        $cachedOtp = Cache::get('otp_' . $email);
 
-        if (!$cachedOtp || $cachedOtp !== $request->otp) {
+        if (!$cachedOtp || $cachedOtp !== (string) $request->otp) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Invalid or expired OTP verification code.',
+                'errors' => [
+                    'otp' => ['Invalid or expired OTP verification code.'],
+                ],
             ], 422);
         }
 
-        // OTP verified - clear from cache
-        Cache::forget('otp_' . $request->email);
+        // OTP verified - clear from cache immediately to prevent replay/reuse!
+        Cache::forget('otp_' . $email);
+        Cache::forget('otp_cooldown_' . $email);
 
-        // 3. Create MLM Member Account
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'sponsor_id' => $sponsor->user_code ?? $request->sponsor_id,
-            'email_verified_at' => now(),
-        ]);
+        // 3. Create MLM Member Account in Transaction
+        try {
+            $user = DB::transaction(function () use ($data, $sponsor, $email) {
+                return User::create([
+                    'name' => $data['name'],
+                    'email' => $email,
+                    'password' => Hash::make($data['password']),
+                    'sponsor_id' => $sponsor->user_code ?? $sponsor->id,
+                    'email_verified_at' => now(),
+                ]);
+            });
+        } catch (QueryException $e) {
+            if ($e->errorInfo[1] == 1062 || str_contains($e->getMessage(), 'Duplicate entry')) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'This email address is already registered. Please login instead.',
+                    'errors' => [
+                        'email' => ['This email address is already registered. Please login instead.'],
+                    ],
+                    'requires_login' => true,
+                ], 409);
+            }
+            throw $e;
+        }
 
         $token = $user->createToken('user_auth_token')->plainTextToken;
 
@@ -305,6 +450,14 @@ class AuthController extends Controller
                 'message' => 'Validation failed',
                 'errors' => $validator->errors(),
             ], 422);
+        }
+
+        // Secure Google authentication: reject unverified direct Google social login
+        if ($request->provider === 'google') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Direct Google social login is disabled. Please authenticate via /auth/google using Google authorization code exchange.',
+            ], 403);
         }
 
         // Find existing user by provider_id or email
@@ -375,6 +528,253 @@ class AuthController extends Controller
             'token' => $token,
             'token_type' => 'Bearer',
         ], 200);
+    }
+
+    /**
+     * Secure Google Authentication (Login & Registration via Authorization Code Popup Flow)
+     */
+    public function googleAuth(Request $request, GoogleAuthService $googleAuthService)
+    {
+        // 1. Verify X-Requested-With header
+        $xRequestedWith = $request->header('X-Requested-With');
+        if (empty($xRequestedWith) || strcasecmp($xRequestedWith, 'XMLHttpRequest') !== 0) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid or missing X-Requested-With header.',
+            ], 403);
+        }
+
+        // 2. Verify Origin against allowed origins
+        $origin = $request->header('Origin');
+        $allowedOrigins = config('services.google.allowed_origins', ['http://localhost:5174', 'http://127.0.0.1:5174']);
+        if (is_string($allowedOrigins)) {
+            $allowedOrigins = array_filter(array_map('trim', explode(',', $allowedOrigins)));
+        }
+
+        $normalizedOrigin = !empty($origin) ? rtrim(trim($origin), '/') : null;
+        $normalizedAllowed = array_map(fn($o) => rtrim(trim($o), '/'), (array) $allowedOrigins);
+
+        if (empty($normalizedOrigin) || !in_array($normalizedOrigin, $normalizedAllowed, true)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Origin not allowed for Google authentication.',
+            ], 403);
+        }
+
+        // 3. Validate Inputs
+        $validator = Validator::make($request->all(), [
+            'code' => 'required|string',
+            'mode' => 'required|in:login,register',
+            'sponsor_id' => 'required_if:mode,register|string',
+            'terms_accepted' => 'required_if:mode,register|boolean',
+            'link_password' => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $mode = $request->input('mode');
+        $code = $request->input('code');
+
+        // 4. Validate Sponsor & Terms in register mode
+        $sponsor = null;
+        if ($mode === 'register') {
+            if (!$request->boolean('terms_accepted')) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'You must accept the Terms and Conditions and Privacy Policy to register.',
+                ], 422);
+            }
+
+            $sponsorId = $request->input('sponsor_id');
+            $sponsor = User::whereRaw('LOWER(user_code) = ?', [strtolower($sponsorId)])
+                ->orWhere('email', $sponsorId)
+                ->orWhere('id', $sponsorId)
+                ->first();
+
+            if (!$sponsor) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Invalid Sponsor ID. Sponsor does not exist in our database.',
+                ], 422);
+            }
+        }
+
+        // 5. Exchange code & verify with Google
+        try {
+            $redirectUri = $origin ?: (config('services.google.redirect_uri') ?: 'http://localhost:5174');
+            $googleIdentity = $googleAuthService->verifyGoogleUser($code, $redirectUri);
+        } catch (\RuntimeException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage() ?: 'Google authentication service is not configured on the server.',
+            ], 500);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage() ?: 'Invalid or expired Google authorization code.',
+            ], 400);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to verify Google identity.',
+            ], 401);
+        }
+
+        $sub = $googleIdentity['sub'];
+        $email = $googleIdentity['email'];
+        $name = $googleIdentity['name'] ?: explode('@', $email)[0];
+        $avatar = $googleIdentity['avatar'];
+
+        // 6. Handle Login Mode
+        if ($mode === 'login') {
+            // Find existing user linked by provider_id
+            $user = User::where('provider', 'google')
+                ->where('provider_id', $sub)
+                ->first();
+
+            if ($user) {
+                if ($avatar && $user->avatar !== $avatar) {
+                    $user->update(['avatar' => $avatar]);
+                }
+
+                $token = $user->createToken('user_auth_token')->plainTextToken;
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Login successful',
+                    'user' => [
+                        'id' => $user->id,
+                        'user_code' => $user->user_code,
+                        'sponsor_id' => $user->sponsor_id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'provider' => $user->provider,
+                        'avatar' => $user->avatar,
+                        'created_at' => $user->created_at,
+                    ],
+                    'token' => $token,
+                    'token_type' => 'Bearer',
+                ], 200);
+            }
+
+            // Not linked by subject - check if account exists with this email
+            $existingUser = User::where('email', $email)->first();
+
+            if ($existingUser) {
+                // Safe linking rule: Require password verification before linking
+                $linkPassword = $request->input('link_password');
+                if (!empty($linkPassword) && Hash::check($linkPassword, $existingUser->password)) {
+                    $existingUser->update([
+                        'provider' => 'google',
+                        'provider_id' => $sub,
+                        'avatar' => $avatar ?? $existingUser->avatar,
+                    ]);
+
+                    $token = $existingUser->createToken('user_auth_token')->plainTextToken;
+
+                    return response()->json([
+                        'status' => 'success',
+                        'message' => 'Google account successfully linked and logged in',
+                        'user' => [
+                            'id' => $existingUser->id,
+                            'user_code' => $existingUser->user_code,
+                            'sponsor_id' => $existingUser->sponsor_id,
+                            'name' => $existingUser->name,
+                            'email' => $existingUser->email,
+                            'provider' => $existingUser->provider,
+                            'avatar' => $existingUser->avatar,
+                            'created_at' => $existingUser->created_at,
+                        ],
+                        'token' => $token,
+                        'token_type' => 'Bearer',
+                    ], 200);
+                }
+
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'An account with this email already exists. Please log in with your password to link your Google account.',
+                    'requires_password_link' => true,
+                    'email' => $email,
+                ], 409);
+            }
+
+            // Unregistered email in login mode
+            return response()->json([
+                'status' => 'error',
+                'message' => 'This Google email is not registered yet. Please register first.',
+                'requires_registration' => true,
+                'email' => $email,
+            ], 404);
+        }
+
+        // 7. Handle Register Mode
+        // Check if email already registered
+        if (User::where('email', $email)->exists()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'This email is already registered. Please log in instead.',
+                'requires_login' => true,
+            ], 409);
+        }
+
+        // Check if Google subject already registered under another account
+        if (User::where('provider', 'google')->where('provider_id', $sub)->exists()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'This Google account is already linked to an existing profile. Please log in instead.',
+                'requires_login' => true,
+            ], 409);
+        }
+
+        try {
+            $newUser = DB::transaction(function () use ($name, $email, $sub, $avatar, $sponsor) {
+                return User::create([
+                    'name' => $name,
+                    'email' => $email,
+                    'password' => Hash::make(Str::random(32)),
+                    'sponsor_id' => $sponsor->user_code,
+                    'provider' => 'google',
+                    'provider_id' => $sub,
+                    'avatar' => $avatar,
+                    'email_verified_at' => now(),
+                ]);
+            });
+        } catch (QueryException $e) {
+            // Concurrent duplicate insertion safety
+            if ($e->getCode() == 23000 || str_contains($e->getMessage(), 'Duplicate entry')) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'This email is already registered. Please log in instead.',
+                    'requires_login' => true,
+                ], 409);
+            }
+            throw $e;
+        }
+
+        $token = $newUser->createToken('user_auth_token')->plainTextToken;
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Google registration successful!',
+            'user' => [
+                'id' => $newUser->id,
+                'user_code' => $newUser->user_code,
+                'sponsor_id' => $newUser->sponsor_id,
+                'name' => $newUser->name,
+                'email' => $newUser->email,
+                'provider' => $newUser->provider,
+                'avatar' => $newUser->avatar,
+                'created_at' => $newUser->created_at,
+            ],
+            'token' => $token,
+            'token_type' => 'Bearer',
+        ], 201);
     }
 
     /**

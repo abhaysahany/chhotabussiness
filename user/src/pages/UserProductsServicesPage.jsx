@@ -60,7 +60,7 @@ function UserProductsServicesPage({ user, onNavigate }) {
         badge: s.duration || 'Certified Service',
         image: s.image || 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=600&q=80',
         description: s.description || 'Professional end-to-end execution by verified industry experts.',
-        vendor: s.owner_name || 'ChhotaBusiness Tax Advisory',
+        vendor: s.owner_name || 'AddNet Tax Advisory',
         referralCommissionPercent: 40,
         referralBonusAmount: Math.round(Number(s.price) * 0.06) || 300,
         teamPointsBp: Math.max(15, Math.round(Number(s.price) / 350)),
@@ -98,7 +98,7 @@ function UserProductsServicesPage({ user, onNavigate }) {
   }, [dbItems, activeTab, selectedCategory, searchQuery]);
 
   const copyReferralLink = (item) => {
-    const link = `https://chhotabusiness.com/items/${item.dbId}?type=${item.type}&ref=${userCode}`;
+    const link = `https://addnet.com/items/${item.dbId}?type=${item.type}&ref=${userCode}`;
     navigator.clipboard.writeText(link);
     showToast(`✓ Copied referral link for "${item.title}"!`);
   };
@@ -411,7 +411,7 @@ function UserProductsServicesPage({ user, onNavigate }) {
                 <input
                   type="text"
                   readOnly
-                  value={`https://chhotabusiness.com/items/${selectedItemForShare.id}?ref=${userCode}`}
+                  value={`https://addnet.com/items/${selectedItemForShare.id}?ref=${userCode}`}
                   style={{ flex: 1, padding: '0.6rem 0.9rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem', background: '#f8fafc', fontWeight: 600, color: '#2563eb' }}
                 />
                 <button
@@ -431,7 +431,7 @@ function UserProductsServicesPage({ user, onNavigate }) {
               </span>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
                 <a
-                  href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`Check out ${selectedItemForShare.title} on Chhota Business! https://chhotabusiness.com/items/${selectedItemForShare.id}?ref=${userCode}`)}`}
+                  href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`Check out ${selectedItemForShare.title} on AddNet! https://addnet.com/items/${selectedItemForShare.id}?ref=${userCode}`)}`}
                   target="_blank"
                   rel="noreferrer"
                   style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', padding: '0.55rem', background: '#22c55e', color: '#ffffff', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 700 }}
@@ -439,7 +439,7 @@ function UserProductsServicesPage({ user, onNavigate }) {
                   <span>💬</span> WhatsApp
                 </a>
                 <a
-                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`https://chhotabusiness.com/items/${selectedItemForShare.id}?ref=${userCode}`)}`}
+                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`https://addnet.com/items/${selectedItemForShare.id}?ref=${userCode}`)}`}
                   target="_blank"
                   rel="noreferrer"
                   style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', padding: '0.55rem', background: '#0a66c2', color: '#ffffff', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 700 }}
@@ -447,7 +447,7 @@ function UserProductsServicesPage({ user, onNavigate }) {
                   <span>💼</span> LinkedIn
                 </a>
                 <a
-                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://chhotabusiness.com/items/${selectedItemForShare.id}?ref=${userCode}`)}`}
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://addnet.com/items/${selectedItemForShare.id}?ref=${userCode}`)}`}
                   target="_blank"
                   rel="noreferrer"
                   style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', padding: '0.55rem', background: '#1877f2', color: '#ffffff', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 700 }}
@@ -455,7 +455,7 @@ function UserProductsServicesPage({ user, onNavigate }) {
                   <span>🌐</span> Facebook
                 </a>
                 <a
-                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Get ${selectedItemForShare.title} on Chhota Business! https://chhotabusiness.com/items/${selectedItemForShare.id}?ref=${userCode}`)}`}
+                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Get ${selectedItemForShare.title} on AddNet! https://addnet.com/items/${selectedItemForShare.id}?ref=${userCode}`)}`}
                   target="_blank"
                   rel="noreferrer"
                   style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', padding: '0.55rem', background: '#0f172a', color: '#ffffff', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 700 }}

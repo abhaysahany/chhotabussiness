@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useBranding } from '../../utils/branding';
 
 function EntitySidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogout }) {
+  const { appName } = useBranding();
   const [salesOpen, setSalesOpen] = useState(true);
   const [paymentsOpen, setPaymentsOpen] = useState(true);
   const [payoutsOpen, setPayoutsOpen] = useState(true);
@@ -34,7 +36,7 @@ function EntitySidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLog
           {!collapsed && (
             <div className="entity-brand-text-col">
               <div className="entity-brand-title-row">
-                <span className="sidebar-brand-name">ChhotaBiz</span>
+                <span className="sidebar-brand-name">{appName}</span>
                 <span className="entity-portal-badge">ENTITY</span>
               </div>
               <span className="entity-portal-sub">Partner Workspace</span>

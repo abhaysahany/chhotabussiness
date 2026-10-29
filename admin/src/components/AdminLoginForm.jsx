@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useBranding } from '../utils/branding';
 import {
   adminLogin,
   adminForgotPassword,
@@ -7,6 +8,7 @@ import {
 } from '../api/adminService';
 
 function AdminLoginForm({ onLoginSuccess }) {
+  const { appName } = useBranding();
   const [login, setLogin] = useState('admin');
   const [password, setPassword] = useState('123456');
   const [rememberMe, setRememberMe] = useState(false);
@@ -212,7 +214,7 @@ function AdminLoginForm({ onLoginSuccess }) {
               </linearGradient>
             </defs>
           </svg>
-          <span className="brand-name">ChhotaBiz</span>
+          <span className="brand-name">{appName}</span>
           <span className="brand-badge">ADMIN</span>
         </div>
         <h1 className="auth-title">Administrator Portal</h1>
@@ -447,7 +449,7 @@ function AdminLoginForm({ onLoginSuccess }) {
                     type="text"
                     required
                     className="form-input"
-                    placeholder="e.g. admin@chhotabusiness.com or admin"
+                    placeholder="e.g. admin@addnet.com or admin"
                     value={resetLogin}
                     onChange={(e) => setResetLogin(e.target.value)}
                     style={{ width: '100%' }}
@@ -633,7 +635,7 @@ function AdminLoginForm({ onLoginSuccess }) {
 
       {/* Footer Branding */}
       <footer className="page-footer">
-        © 2026 ChhotaBiz — Powered by Laravel & React
+        © {new Date().getFullYear()} {appName} — Powered by Laravel & React
       </footer>
     </div>
   );

@@ -1,7 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useBranding } from '../utils/branding';
 
 function EntityHelp() {
+  const { appName } = useBranding();
   const navigate = useNavigate();
 
   return (
@@ -76,7 +78,7 @@ function EntityHelp() {
             </svg>
           </div>
           <h3>Sales & Orders Management</h3>
-          <p>Track inquiries from customers across the ChhotaBusiness marketplace and process customer bookings.</p>
+          <p>Track inquiries from customers across the {appName} marketplace and process customer bookings.</p>
         </div>
 
         <div className="help-topic-card">

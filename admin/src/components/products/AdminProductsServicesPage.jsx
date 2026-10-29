@@ -17,7 +17,7 @@ function AdminProductsServicesPage({ initialTab = 'products-catalog', onNavigate
       category: 'Legal & Compliance',
       price: 2999,
       entityType: 'business',
-      entityName: 'ChhotaBusiness Tax Advisory',
+      entityName: 'AddNet Tax Advisory',
       stockOrDuration: '1 Year Subscription',
       status: 'active',
       salesCount: 142,

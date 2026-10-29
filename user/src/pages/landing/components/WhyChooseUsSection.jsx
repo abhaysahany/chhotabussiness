@@ -60,7 +60,7 @@ function WhyChooseUsSection() {
             <span>Market Advantages</span>
           </div>
           <h2 className="cb-section-title">
-            Why Choose Chhota Business?
+            Why Choose AddNet?
           </h2>
           <p className="cb-section-subtitle">
             We operate on a pure win-win promoter model designed to scale your client base with maximum efficiency.

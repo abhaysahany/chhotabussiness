@@ -34,7 +34,7 @@ function HeroSection({ onFindServicesClick, onBecomePartnerClick }) {
 
             {/* Subheadline */}
             <p className="cb-hero-subheadline">
-              We help Software Developers, IT Companies, Tour Operators, Agencies, and Service Providers get genuine customers through our nationwide advertising network. <strong>You only pay a small commission when you get business through Chhota Business.</strong>
+              We help Software Developers, IT Companies, Tour Operators, Agencies, and Service Providers get genuine customers through our nationwide advertising network. <strong>You only pay a small commission when you get business through AddNet.</strong>
             </p>
 
             {/* Primary Action Buttons */}
@@ -154,7 +154,7 @@ function HeroSection({ onFindServicesClick, onBecomePartnerClick }) {
                 </span>
               </div>
 
-              {/* Node 2: Chhota Business Core Hub */}
+              {/* Node 2: AddNet Core Hub */}
               <div
                 style={{
                   background: 'linear-gradient(135deg, #0F4C81 0%, #1e3a5f 100%)',
@@ -168,7 +168,7 @@ function HeroSection({ onFindServicesClick, onBecomePartnerClick }) {
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
                   <Zap size={18} color="#FF7A00" />
-                  <strong style={{ fontSize: '1.05rem', color: '#ffffff' }}>CHHOTA BUSINESS</strong>
+                  <strong style={{ fontSize: '1.05rem', color: '#ffffff' }}>ADDNET</strong>
                 </div>
                 <p style={{ margin: 0, fontSize: '0.78rem', color: '#cbd5e1' }}>
                   Targeted Ad Campaigns • SEO • High-Intent Lead Generation

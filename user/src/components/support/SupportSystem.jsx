@@ -15,7 +15,7 @@ const initialTickets = [
     updatedAt: '2026-08-16T11:45:00',
     user: {
       name: 'Tom Phillip',
-      email: 'tom.phillip@chhotabusiness.com',
+      email: 'tom.phillip@addnet.com',
       user_code: 'CB100001',
     },
     messages: [
@@ -47,7 +47,7 @@ const initialTickets = [
     updatedAt: '2026-08-15T16:10:00',
     user: {
       name: 'Tom Phillip',
-      email: 'tom.phillip@chhotabusiness.com',
+      email: 'tom.phillip@addnet.com',
       user_code: 'CB100001',
     },
     messages: [
@@ -80,7 +80,7 @@ const initialTickets = [
     updatedAt: '2026-08-16T14:00:00',
     user: {
       name: 'Tom Phillip',
-      email: 'tom.phillip@chhotabusiness.com',
+      email: 'tom.phillip@addnet.com',
       user_code: 'CB100001',
     },
     messages: [
@@ -233,7 +233,7 @@ function SupportSystem({ user, defaultView = 'tickets' }) {
       updatedAt: new Date().toISOString(),
       user: {
         name: user?.name || 'Tom Phillip',
-        email: user?.email || 'tom.phillip@chhotabusiness.com',
+        email: user?.email || 'tom.phillip@addnet.com',
         user_code: user?.user_code || 'CB100001',
       },
       messages: [

@@ -289,7 +289,7 @@ function UserMediaContentPage({ user }) {
             style={{ padding: '0.5rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem', outline: 'none', background: '#fff' }}
           >
             <option value="all">All Entities</option>
-            <option value="chhota_business">Chhota Business Platform</option>
+            <option value="chhota_business">AddNet Platform</option>
             <option value="business">Business Entities</option>
             <option value="freelance">Freelancers</option>
           </select>

@@ -20,7 +20,7 @@ function PricingSection({ onSelectPlan }) {
       badge: 'Pay ONLY On Business Generated',
       price: '₹0',
       period: 'No Registration Fee • Zero Upfront Cost',
-      description: 'List your services for free. You ONLY pay a nominal commission when you get actual business through Chhota Business.',
+      description: 'List your services for free. You ONLY pay a nominal commission when you get actual business through AddNet.',
       icon: <Briefcase size={22} color="#0F4C81" />,
       iconBg: '#e8f1f8',
       features: [
@@ -95,7 +95,7 @@ function PricingSection({ onSelectPlan }) {
             Simple, Performance-Driven Model
           </h2>
           <p className="cb-section-subtitle">
-            Joining Chhota Business is <strong>completely free of cost</strong> for Service Providers, Advertisers/Promoters, and End Customers. No hidden subscriptions or upfront fees.
+            Joining AddNet is <strong>completely free of cost</strong> for Service Providers, Advertisers/Promoters, and End Customers. No hidden subscriptions or upfront fees.
           </p>
         </div>
 

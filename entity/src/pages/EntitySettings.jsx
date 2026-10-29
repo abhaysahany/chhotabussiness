@@ -1,6 +1,8 @@
 import React from 'react';
+import { useBranding } from '../utils/branding';
 
 function EntitySettings() {
+  const { appName } = useBranding();
   const user = JSON.parse(localStorage.getItem('entity_user') || '{}');
 
   return (
@@ -22,11 +24,11 @@ function EntitySettings() {
         <div className="auth-form">
           <div className="form-group">
             <label>Entity Owner / Sponsor Name</label>
-            <input className="form-input" defaultValue={user.name || 'ChhotaBusiness Admin Sponsor'} />
+            <input className="form-input" defaultValue={user.name || `${appName} Admin Sponsor`} />
           </div>
           <div className="form-group">
             <label>Registered Email</label>
-            <input className="form-input" defaultValue={user.email || 'user@chhotabusiness.com'} disabled style={{ background: '#f1f5f9' }} />
+            <input className="form-input" defaultValue={user.email || 'partner@addnet.com'} disabled style={{ background: '#f1f5f9' }} />
           </div>
           <div className="form-group">
             <label>Member ID / Entity Code</label>

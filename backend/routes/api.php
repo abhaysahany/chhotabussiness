@@ -22,9 +22,11 @@ Route::get('/status', function () {
         $connected = false;
     }
 
+    $appName = \App\Models\SystemSetting::get('app_name', config('app.name', 'AddNet'));
+
     return response()->json([
         'status' => 'success',
-        'app_name' => config('app.name', 'ChhotaBusiness'),
+        'app_name' => $appName ?: 'AddNet',
         'environment' => config('app.env'),
         'database_status' => $dbStatus,
         'database_connected' => $connected,
@@ -35,9 +37,10 @@ Route::get('/status', function () {
 
 // Admin Panel API Endpoint
 Route::get('/admin/info', function () {
+    $appName = \App\Models\SystemSetting::get('app_name', config('app.name', 'AddNet')) ?: 'AddNet';
     return response()->json([
         'panel' => 'Admin Panel',
-        'message' => 'Welcome to ChhotaBusiness Admin Backend API',
+        'message' => "Welcome to {$appName} Admin Backend API",
         'stats' => [
             'total_users' => 128,
             'active_orders' => 42,
@@ -52,16 +55,17 @@ use App\Http\Controllers\UserDashboardController;
 
 // User Panel API Endpoints
 Route::get('/user/info', function () {
+    $appName = \App\Models\SystemSetting::get('app_name', config('app.name', 'AddNet')) ?: 'AddNet';
     return response()->json([
         'panel' => 'User Panel',
-        'message' => 'Welcome to ChhotaBusiness Customer Portal API',
+        'message' => "Welcome to {$appName} Customer Portal API",
         'services' => [
             'Business Setup',
             'GST Registration',
             'Accounting & Bookkeeping',
             'Tax Filing',
         ],
-        'support_email' => 'support@chhotabusiness.com',
+        'support_email' => 'support@addnet.com',
     ]);
 });
 Route::get('/user/dashboard-stats', [UserDashboardController::class, 'getDashboardStats']);
@@ -158,6 +162,7 @@ Route::get('/user/network/genealogy', [NetworkController::class, 'getGenealogyTr
 // Public Auth & Member Verification Routes
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
+Route::post('/auth/google', [AuthController::class, 'googleAuth']);
 Route::post('/auth/social-login', [AuthController::class, 'socialLogin']);
 Route::post('/verify-sponsor', [AuthController::class, 'verifySponsor']);
 Route::match(['get', 'post'], '/verify-member', [AuthController::class, 'verifyMember']);
@@ -275,6 +280,7 @@ Route::get('/settings', [SystemSettingController::class, 'getSettings']);
 Route::post('/settings', [SystemSettingController::class, 'saveSettings']);
 Route::get('/settings/social-links', [SystemSettingController::class, 'getSocialLinks']);
 Route::post('/settings/social-links', [SystemSettingController::class, 'saveSocialLinks']);
+Route::get('/branding', [SystemSettingController::class, 'getBranding']);
 
 
 
@@ -332,6 +338,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/admin/entity-commission-settings/{entity_type}/{entity_id}', [EntityCommissionSettingController::class, 'show']);
     Route::post('/admin/entity-commission-settings', [EntityCommissionSettingController::class, 'save']);
     Route::put('/admin/entity-commission-settings', [EntityCommissionSettingController::class, 'save']);
+
+    // Admin Application Branding Settings
+    Route::get('/admin/settings/branding', [SystemSettingController::class, 'getBranding']);
+    Route::post('/admin/settings/branding', [SystemSettingController::class, 'saveBranding']);
+    Route::put('/admin/settings/branding', [SystemSettingController::class, 'saveBranding']);
 });
 
 

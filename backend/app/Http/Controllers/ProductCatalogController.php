@@ -241,7 +241,7 @@ class ProductCatalogController extends Controller
             'name' => $request->input('name'),
             'category' => $request->input('category') ?: 'Legal & Compliance',
             'owner_type' => $request->input('owner_type') ?: 'business',
-            'owner_name' => $request->input('owner_name') ?: 'ChhotaBusiness Tax Advisory',
+            'owner_name' => $request->input('owner_name') ?: 'AddNet Tax Advisory',
             'price' => $request->input('price'),
             'admin_commission_percent' => $request->input('admin_commission_percent') !== null ? $request->input('admin_commission_percent') : 20.00,
             'duration' => $request->input('duration') ?: '3 Business Days',

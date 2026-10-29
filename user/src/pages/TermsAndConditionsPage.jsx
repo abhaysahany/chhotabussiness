@@ -8,7 +8,7 @@ function TermsAndConditionsPage({ onNavigate, onAccept }) {
     {
       id: 'acceptance',
       title: '1. Acceptance of Terms & Eligibility',
-      content: `By registering, accessing, or using the ChhotaBusiness Platform (including web portals, mobile interfaces, and associated services), you agree to be bound by these Terms and Conditions and our Privacy Policy. If you do not agree with any part of these terms, you must not register or use the platform.
+      content: `By registering, accessing, or using the AddNet Platform (including web portals, mobile interfaces, and associated services), you agree to be bound by these Terms and Conditions and our Privacy Policy. If you do not agree with any part of these terms, you must not register or use the platform.
       
 To register as an Affiliate Partner or Community Member, you must be at least 18 years of age and legally capable of entering into binding contracts under applicable laws. Registration requires a verified Sponsor ID and a validated Email Address OTP code.`,
     },
@@ -48,14 +48,14 @@ Refunds, cancellations, and replacement requests must adhere to our standardized
       title: '6. Data Privacy, Confidentiality & Intellectual Property',
       content: `We take privacy seriously. Your personal information, payment credentials, and KYC documentation are encrypted and processed strictly in accordance with our Privacy Policy.
       
-All logos, branding, trademarks, design elements, and proprietary software architecture belong exclusively to ChhotaBusiness. Users may not copy, reverse-engineer, or commercially exploit platform assets without prior written consent.`,
+All logos, branding, trademarks, design elements, and proprietary software architecture belong exclusively to AddNet. Users may not copy, reverse-engineer, or commercially exploit platform assets without prior written consent.`,
     },
     {
       id: 'liability',
       title: '7. Limitation of Liability, Disclaimers & Termination',
-      content: `ChhotaBusiness provides the platform on an "as is" and "as available" basis without warranties of uninterrupted service. We are not liable for indirect, incidental, or consequential damages arising from business disruptions or network latency.
+      content: `AddNet provides the platform on an "as is" and "as available" basis without warranties of uninterrupted service. We are not liable for indirect, incidental, or consequential damages arising from business disruptions or network latency.
       
-ChhotaBusiness reserves the right to suspend or terminate accounts that violate these terms, fail compliance audits, or engage in illegal activities.`,
+AddNet reserves the right to suspend or terminate accounts that violate these terms, fail compliance audits, or engage in illegal activities.`,
     },
   ];
 
@@ -86,7 +86,7 @@ ChhotaBusiness reserves the right to suspend or terminate accounts that violate 
               Terms and Conditions
             </h1>
             <p style={{ color: '#94a3b8', fontSize: '0.9rem', maxWidth: '650px', margin: 0 }}>
-              Please review the membership, affiliate governance, and platform operational guidelines for ChhotaBusiness.
+              Please review the membership, affiliate governance, and platform operational guidelines for AddNet.
             </p>
           </div>
 
@@ -156,7 +156,7 @@ ChhotaBusiness reserves the right to suspend or terminate accounts that violate 
               ✓ Registration Acknowledgment
             </h4>
             <p style={{ color: '#64748b', fontSize: '0.85rem', lineHeight: '1.6', margin: '0 0 1rem 0' }}>
-              By submitting the registration form on ChhotaBusiness, you formally confirm that you have read and unconditionally accepted all the operating policies outlined above.
+              By submitting the registration form on AddNet, you formally confirm that you have read and unconditionally accepted all the operating policies outlined above.
             </p>
             {onNavigate && (
               <button

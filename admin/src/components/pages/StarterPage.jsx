@@ -7,7 +7,7 @@ function StarterPage() {
       <div className="page-subheader">
         <h2 className="page-title">Starter</h2>
         <div className="page-breadcrumb">
-          <span>ChhotaBiz</span>
+          <span>AddNet</span>
           <span className="separator">›</span>
           <span>Pages</span>
           <span className="separator">›</span>

@@ -186,10 +186,12 @@ class EntityAuthController extends Controller
      */
     public function info(Request $request)
     {
+        $appName = \App\Models\SystemSetting::get('app_name', config('app.name', 'AddNet')) ?: 'AddNet';
+
         return response()->json([
             'status' => 'success',
             'panel' => 'Entity Panel',
-            'message' => 'Welcome to ChhotaBusiness Entity Portal',
+            'message' => "Welcome to {$appName} Entity Portal",
             'stats' => [
                 'total_businesses' => BusinessEntity::count(),
                 'total_freelancers' => FreelancerEntity::count(),
