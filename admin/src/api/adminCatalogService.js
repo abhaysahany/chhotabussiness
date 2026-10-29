@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
+import api from './axios';
 
 // ==========================================
 // PRODUCTS API
@@ -8,7 +6,7 @@ const API_BASE_URL = 'http://127.0.0.1:8000/api';
 
 export const getAdminProducts = async (params = {}) => {
   try {
-    const res = await axios.get(`${API_BASE_URL}/catalog/products`, { params });
+    const res = await api.get('/catalog/products', { params });
     if (res.data?.status === 'success') {
       return res.data.products || [];
     }
@@ -23,7 +21,7 @@ export const createAdminProduct = async (data) => {
   try {
     const isFormData = data instanceof FormData;
     const config = isFormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : {};
-    const res = await axios.post(`${API_BASE_URL}/catalog/products`, data, config);
+    const res = await api.post('/catalog/products', data, config);
     return res.data;
   } catch (err) {
     console.error('Error creating product:', err);
@@ -36,12 +34,12 @@ export const updateAdminProduct = async (id, data) => {
     const isFormData = data instanceof FormData;
     if (isFormData) {
       data.append('_method', 'PUT');
-      const res = await axios.post(`${API_BASE_URL}/catalog/products/${id}`, data, {
+      const res = await api.post(`/catalog/products/${id}`, data, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       return res.data;
     } else {
-      const res = await axios.put(`${API_BASE_URL}/catalog/products/${id}`, data);
+      const res = await api.put(`/catalog/products/${id}`, data);
       return res.data;
     }
   } catch (err) {
@@ -52,7 +50,7 @@ export const updateAdminProduct = async (id, data) => {
 
 export const deleteAdminProduct = async (id) => {
   try {
-    const res = await axios.delete(`${API_BASE_URL}/catalog/products/${id}`);
+    const res = await api.delete(`/catalog/products/${id}`);
     return res.data;
   } catch (err) {
     console.error('Error deleting product:', err);
@@ -66,7 +64,7 @@ export const deleteAdminProduct = async (id) => {
 
 export const getAdminServices = async (params = {}) => {
   try {
-    const res = await axios.get(`${API_BASE_URL}/catalog/services`, { params });
+    const res = await api.get('/catalog/services', { params });
     if (res.data?.status === 'success') {
       return res.data.services || [];
     }
@@ -81,7 +79,7 @@ export const createAdminService = async (data) => {
   try {
     const isFormData = data instanceof FormData;
     const config = isFormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : {};
-    const res = await axios.post(`${API_BASE_URL}/catalog/services`, data, config);
+    const res = await api.post('/catalog/services', data, config);
     return res.data;
   } catch (err) {
     console.error('Error creating service:', err);
@@ -94,12 +92,12 @@ export const updateAdminService = async (id, data) => {
     const isFormData = data instanceof FormData;
     if (isFormData) {
       data.append('_method', 'PUT');
-      const res = await axios.post(`${API_BASE_URL}/catalog/services/${id}`, data, {
+      const res = await api.post(`/catalog/services/${id}`, data, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       return res.data;
     } else {
-      const res = await axios.put(`${API_BASE_URL}/catalog/services/${id}`, data);
+      const res = await api.put(`/catalog/services/${id}`, data);
       return res.data;
     }
   } catch (err) {
@@ -110,7 +108,7 @@ export const updateAdminService = async (id, data) => {
 
 export const deleteAdminService = async (id) => {
   try {
-    const res = await axios.delete(`${API_BASE_URL}/catalog/services/${id}`);
+    const res = await api.delete(`/catalog/services/${id}`);
     return res.data;
   } catch (err) {
     console.error('Error deleting service:', err);
@@ -124,7 +122,7 @@ export const deleteAdminService = async (id) => {
 
 export const getAdminCategories = async () => {
   try {
-    const res = await axios.get(`${API_BASE_URL}/catalog/categories`);
+    const res = await api.get('/catalog/categories');
     if (res.data?.status === 'success') {
       return res.data.categories || [];
     }

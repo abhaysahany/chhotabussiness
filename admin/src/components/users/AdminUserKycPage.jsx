@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import axios from 'axios';
+import api, { API_BASE_URL } from '../../api/axios';
 
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
+// API_BASE_URL is imported from axios.js
 
 function AdminUserKycPage() {
   const [kycRequests, setKycRequests] = useState([]);
@@ -26,7 +26,7 @@ function AdminUserKycPage() {
   const fetchKycRequests = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${API_BASE_URL}/admin/kyc-requests`, {
+      const res = await api.get('/admin/kyc-requests', {
         params: {
           status: statusFilter,
           search: searchTerm || undefined,
@@ -51,7 +51,7 @@ function AdminUserKycPage() {
   const handleApproveKyc = async (user) => {
     setActionLoading(true);
     try {
-      const res = await axios.post(`${API_BASE_URL}/admin/kyc/${user.id}/approve`);
+      const res = await api.post(`/admin/kyc/${user.id}/approve`);
       if (res.data && res.data.status === 'success') {
         showToast(`✓ KYC approved for ${user.name} (${user.user_code})! Bank/UPI unlocked.`);
         setSelectedKyc(null);
@@ -67,7 +67,7 @@ function AdminUserKycPage() {
   const handleRejectKyc = async (user) => {
     setActionLoading(true);
     try {
-      const res = await axios.post(`${API_BASE_URL}/admin/kyc/${user.id}/reject`, {
+      const res = await api.post(`/admin/kyc/${user.id}/reject`, {
         reason: rejectReason,
       });
       if (res.data && res.data.status === 'success') {

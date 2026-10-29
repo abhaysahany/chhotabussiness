@@ -1,13 +1,11 @@
-import axios from 'axios';
-
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
+import api from './axios';
 
 /**
  * Fetch all reward items from database
  */
 export const getAdminRewards = async (params = {}) => {
   try {
-    const res = await axios.get(`${API_BASE_URL}/admin/rewards`, { params });
+    const res = await api.get('/admin/rewards', { params });
     if (res.data?.status === 'success') {
       return res.data.rewards || [];
     }
@@ -25,7 +23,7 @@ export const createAdminReward = async (payload) => {
   try {
     const isFormData = payload instanceof FormData;
     const headers = isFormData ? { 'Content-Type': 'multipart/form-data' } : {};
-    const res = await axios.post(`${API_BASE_URL}/admin/rewards`, payload, { headers });
+    const res = await api.post('/admin/rewards', payload, { headers });
     return res.data;
   } catch (err) {
     console.error('Error creating reward:', err);
@@ -43,10 +41,10 @@ export const updateAdminReward = async (id, payload) => {
     // For PHP multipart with PUT, POST with _method=PUT or direct POST is safer
     if (isFormData) {
       payload.append('_method', 'PUT');
-      const res = await axios.post(`${API_BASE_URL}/admin/rewards/${id}`, payload, { headers });
+      const res = await api.post(`/admin/rewards/${id}`, payload, { headers });
       return res.data;
     } else {
-      const res = await axios.put(`${API_BASE_URL}/admin/rewards/${id}`, payload);
+      const res = await api.put(`/admin/rewards/${id}`, payload);
       return res.data;
     }
   } catch (err) {
@@ -60,7 +58,7 @@ export const updateAdminReward = async (id, payload) => {
  */
 export const deleteAdminReward = async (id) => {
   try {
-    const res = await axios.delete(`${API_BASE_URL}/admin/rewards/${id}`);
+    const res = await api.delete(`/admin/rewards/${id}`);
     return res.data;
   } catch (err) {
     console.error('Error deleting reward:', err);
@@ -73,7 +71,7 @@ export const deleteAdminReward = async (id) => {
  */
 export const getAdminRewardClaims = async (params = {}) => {
   try {
-    const res = await axios.get(`${API_BASE_URL}/admin/reward-claims`, { params });
+    const res = await api.get('/admin/reward-claims', { params });
     if (res.data?.status === 'success') {
       return res.data.claims || [];
     }
@@ -89,7 +87,7 @@ export const getAdminRewardClaims = async (params = {}) => {
  */
 export const updateAdminClaimStatus = async (id, payload) => {
   try {
-    const res = await axios.post(`${API_BASE_URL}/admin/reward-claims/${id}/status`, payload);
+    const res = await api.post(`/admin/reward-claims/${id}/status`, payload);
     return res.data;
   } catch (err) {
     console.error('Error updating claim status:', err);

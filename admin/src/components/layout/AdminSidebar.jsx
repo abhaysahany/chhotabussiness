@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogout, currentAdmin }) {
-  const [entitiesOpen, setEntitiesOpen] = useState(() => Boolean(activeTab === 'entities-businesses' || activeTab === 'entities-freelancers'));
+  const [entitiesOpen, setEntitiesOpen] = useState(() => Boolean(activeTab === 'entities-businesses' || activeTab === 'entities-freelancers' || activeTab === 'entities-commissions'));
   const [productsOpen, setProductsOpen] = useState(() => Boolean(activeTab?.startsWith('products-') || activeTab?.startsWith('services-')));
   const [salesOpen, setSalesOpen] = useState(() => Boolean(activeTab?.startsWith('sales-')));
   const [paymentsOpen, setPaymentsOpen] = useState(() => Boolean(activeTab?.startsWith('payments-')));
@@ -12,7 +12,7 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
   const [contentOpen, setContentOpen] = useState(() => Boolean(activeTab?.startsWith('content-')));
 
   React.useEffect(() => {
-    if (activeTab === 'entities-businesses' || activeTab === 'entities-freelancers') {
+    if (activeTab === 'entities-businesses' || activeTab === 'entities-freelancers' || activeTab === 'entities-commissions') {
       setEntitiesOpen(true);
     }
     if (activeTab?.startsWith('products-') || activeTab?.startsWith('services-')) {
@@ -109,7 +109,7 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
             {!collapsed && <span className="menu-item-label">Categories</span>}
           </button>
           <button
-            className={`menu-item ${activeTab === 'entities-businesses' || activeTab === 'entities-freelancers' ? 'active' : ''}`}
+            className={`menu-item ${activeTab === 'entities-businesses' || activeTab === 'entities-freelancers' || activeTab === 'entities-commissions' ? 'active' : ''}`}
             onClick={() => setEntitiesOpen(!entitiesOpen)}
           >
             <span className="menu-item-icon">
@@ -141,6 +141,12 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
                 onClick={() => setActiveTab('entities-freelancers')}
               >
                 Register Freelance
+              </button>
+              <button
+                className={`submenu-item ${activeTab === 'entities-commissions' ? 'active' : ''}`}
+                onClick={() => setActiveTab('entities-commissions')}
+              >
+                Commission & Rewards
               </button>
             </div>
           )}

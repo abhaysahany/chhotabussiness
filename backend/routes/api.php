@@ -73,6 +73,7 @@ use App\Http\Controllers\Admin\AdminSupportController;
 use App\Http\Controllers\Admin\EntityCategoryController;
 use App\Http\Controllers\Admin\BusinessEntityController;
 use App\Http\Controllers\Admin\FreelancerEntityController;
+use App\Http\Controllers\Admin\EntityCommissionSettingController;
 
 // Admin Auth Routes
 Route::post('/admin/login', [AdminAuthController::class, 'login']);
@@ -325,6 +326,12 @@ Route::middleware('auth:sanctum')->group(function () {
     // Protected Admin Routes
     Route::get('/admin/me', [AdminAuthController::class, 'me']);
     Route::post('/admin/logout', [AdminAuthController::class, 'logout']);
+
+    // Admin Entity Commission & Reward Settings
+    Route::get('/admin/entity-commission-settings', [EntityCommissionSettingController::class, 'index']);
+    Route::get('/admin/entity-commission-settings/{entity_type}/{entity_id}', [EntityCommissionSettingController::class, 'show']);
+    Route::post('/admin/entity-commission-settings', [EntityCommissionSettingController::class, 'save']);
+    Route::put('/admin/entity-commission-settings', [EntityCommissionSettingController::class, 'save']);
 });
 
 
