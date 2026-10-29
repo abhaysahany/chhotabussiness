@@ -78,3 +78,21 @@ export const deleteFreelancer = async (id) => {
   const response = await api.delete(`/admin/freelancers/${id}`);
   return response.data;
 };
+
+// ----------------------------------------------------
+// 4. Entity Commission & Reward Settings API
+// ----------------------------------------------------
+export const getEntityCommissionSettings = async (params = {}) => {
+  const response = await api.get('/admin/entity-commission-settings', { params });
+  return response.data;
+};
+
+export const getEntityCommissionSetting = async (entityType, entityId) => {
+  const response = await api.get(`/admin/entity-commission-settings/${entityType}/${entityId}`);
+  return response.data;
+};
+
+export const saveEntityCommissionSettings = async (settingsData) => {
+  const response = await api.post('/admin/entity-commission-settings', settingsData);
+  return response.data;
+};

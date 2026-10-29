@@ -8,7 +8,7 @@ import {
 
 function AdminLoginForm({ onLoginSuccess }) {
   const [login, setLogin] = useState('admin');
-  const [password, setPassword] = useState('password123');
+  const [password, setPassword] = useState('123456');
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -53,7 +53,9 @@ function AdminLoginForm({ onLoginSuccess }) {
         err.response?.data?.message ||
         (err.response?.data?.errors
           ? Object.values(err.response.data.errors).flat().join(' ')
-          : 'Invalid email/username or password credentials.');
+          : !err.response
+            ? 'Unable to connect to backend server. Please verify that "php artisan serve" is running on port 8000.'
+            : 'Invalid email/username or password credentials.');
       setError(errMsg);
     } finally {
       setLoading(false);

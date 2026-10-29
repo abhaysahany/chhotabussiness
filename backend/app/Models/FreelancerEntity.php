@@ -43,4 +43,13 @@ class FreelancerEntity extends Model
     {
         return $this->belongsTo(EntityCategory::class, 'entity_category_id');
     }
+
+    /**
+     * Get commission & reward settings for this freelancer entity.
+     */
+    public function commissionSetting()
+    {
+        return $this->hasOne(EntityCommissionSetting::class, 'entity_id')
+                    ->where('entity_type', 'freelancer');
+    }
 }
