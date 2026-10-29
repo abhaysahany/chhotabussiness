@@ -22,7 +22,7 @@ function EntitySupport() {
           <h2 className="content-card-title" style={{ marginBottom: '1rem' }}>Create Support Request</h2>
           {submitted ? (
             <div className="alert" style={{ background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0' }}>
-              Your ticket has been submitted to ChhotaBusiness admin compliance team!
+              Your ticket has been submitted to Vyapar Adnet admin compliance team!
             </div>
           ) : (
             <form onSubmit={(e) => { e.preventDefault(); setSubmitted(true); }} className="auth-form">

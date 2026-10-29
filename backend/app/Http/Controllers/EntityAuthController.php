@@ -189,7 +189,7 @@ class EntityAuthController extends Controller
         return response()->json([
             'status' => 'success',
             'panel' => 'Entity Panel',
-            'message' => 'Welcome to ChhotaBusiness Entity Portal',
+            'message' => 'Welcome to Vyapar Adnet Entity Portal',
             'stats' => [
                 'total_businesses' => BusinessEntity::count(),
                 'total_freelancers' => FreelancerEntity::count(),

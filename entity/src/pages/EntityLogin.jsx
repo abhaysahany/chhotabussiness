@@ -219,7 +219,7 @@ function EntityLogin() {
               </linearGradient>
             </defs>
           </svg>
-          <span className="brand-name">ChhotaBiz</span>
+          <span className="brand-name">Vyapar Adnet</span>
           <span className="brand-badge entity-badge">ENTITY PANEL</span>
         </div>
         <h1 className="auth-title">Entity Portal Sign In</h1>

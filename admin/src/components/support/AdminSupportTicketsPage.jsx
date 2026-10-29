@@ -5,7 +5,7 @@ import {
   updateTicketStatus,
 } from '../../api/adminService';
 
-const LOCAL_STORAGE_KEY = 'chhota_support_tickets_v1';
+const LOCAL_STORAGE_KEY = 'vyapar_support_tickets_v1';
 
 function AdminSupportTicketsPage({ currentAdmin }) {
   const [tickets, setTickets] = useState([]);
@@ -27,7 +27,7 @@ function AdminSupportTicketsPage({ currentAdmin }) {
       let loadedTickets = apiRes.tickets || [];
 
       // Merge local tickets
-      const localData = localStorage.getItem(LOCAL_STORAGE_KEY);
+      const localData = localStorage.getItem(LOCAL_STORAGE_KEY) || localStorage.getItem('chhota_support_tickets_v1');
       if (localData) {
         try {
           const parsed = JSON.parse(localData);

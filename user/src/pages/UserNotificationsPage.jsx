@@ -355,7 +355,7 @@ function UserNotificationsPage({ user, onNavigate }) {
                       <span>🚀 Jump to Action:</span> <u>{n.action_url}</u> <span>→</span>
                     </span>
                   ) : (
-                    <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Chhota Business Official Notice</span>
+                    <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Vyapar Adnet Official Notice</span>
                   )}
 
                   <span style={{ fontSize: '0.72rem', color: n.is_read ? '#94a3b8' : '#16a34a', fontWeight: 600 }}>

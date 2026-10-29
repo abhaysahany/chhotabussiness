@@ -11,16 +11,16 @@ function FaqSection() {
 
   const faqs = [
     {
-      q: 'How does Chhota Business work?',
-      a: 'Chhota Business is a dedicated advertising network and B2B marketplace. Service providers (developers, IT agencies, tour operators, consultants) list their services with us. We run digital marketing and promotional campaigns to drive genuine customers to your listings. When customers contact you, you close the deal and receive direct payment.',
+      q: 'How does Vyapar Adnet work?',
+      a: 'Vyapar Adnet is a dedicated advertising network and B2B marketplace. Service providers (developers, IT agencies, tour operators, consultants) list their services with us. We run digital marketing and promotional campaigns to drive genuine customers to your listings. When customers contact you, you close the deal and receive direct payment.',
     },
     {
       q: 'Who receives the customer payment?',
-      a: 'The customer pays 100% directly to YOU (the Service Provider) via your bank account, official tax invoice, or UPI gateway. Chhota Business never holds your client funds in escrow.',
+      a: 'The customer pays 100% directly to YOU (the Service Provider) via your bank account, official tax invoice, or UPI gateway. Vyapar Adnet never holds your client funds in escrow.',
     },
     {
-      q: 'When do Service Providers pay Chhota Business?',
-      a: 'Service providers ONLY pay when they receive actual business and direct customer payment through Chhota Business. Registration is 100% free, catalog listing is free, and verified leads are delivered with zero upfront charges. If no business is generated, you pay ₹0.',
+      q: 'When do Service Providers pay Vyapar Adnet?',
+      a: 'Service providers ONLY pay when they receive actual business and direct customer payment through Vyapar Adnet. Registration is 100% free, catalog listing is free, and verified leads are delivered with zero upfront charges. If no business is generated, you pay ₹0.',
     },
 
     {

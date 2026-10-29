@@ -70,7 +70,7 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
               <path d="M19 6L29 19.5V6H19Z" fill="url(#nilovaGradSidebar2)" opacity="0.85" />
             </svg>
           </div>
-          {!collapsed && <span className="nilova-brand-text">Chhota Business</span>}
+          {!collapsed && <span className="nilova-brand-text">Vyapar Adnet</span>}
         </div>
       </div>
 
@@ -536,7 +536,7 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
         <div className="sidebar-footer-branding">
           <div className="branding-badge-icon">⚡</div>
           <div className="branding-badge-text">
-            <span className="branding-title">ChhotaBiz Pro</span>
+            <span className="branding-title">Vyapar Adnet Pro</span>
             <span className="branding-sub">Enterprise v2.4.0</span>
           </div>
           <span className="branding-verified-tag">Active ✓</span>

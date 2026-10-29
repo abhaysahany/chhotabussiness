@@ -34,7 +34,7 @@ function EntitySidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLog
           {!collapsed && (
             <div className="entity-brand-text-col">
               <div className="entity-brand-title-row">
-                <span className="sidebar-brand-name">ChhotaBiz</span>
+                <span className="sidebar-brand-name">Vyapar Adnet</span>
                 <span className="entity-portal-badge">ENTITY</span>
               </div>
               <span className="entity-portal-sub">Partner Workspace</span>

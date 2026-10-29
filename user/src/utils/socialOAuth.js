@@ -20,7 +20,7 @@ export const redirectToSocialProvider = (provider = 'google', mode = 'login', on
   const clientId = getGoogleClientId();
 
   if (!clientId || clientId.trim() === '') {
-    const msg = 'Google OAuth Client ID is not configured. Please add your VITE_GOOGLE_CLIENT_ID in userchhotabiz/.env from Google Cloud Console.';
+    const msg = 'Google OAuth Client ID is not configured. Please add your VITE_GOOGLE_CLIENT_ID in user/.env from Google Cloud Console.';
     if (onError) {
       onError(msg);
       return;

@@ -41,7 +41,7 @@ function EmptyPage() {
             </div>
             <h3 className="empty-title">Starter Page Canvas</h3>
             <p className="empty-desc">
-              This is a clean, modern template container for building custom pages inside your <strong>ChhotaBusiness Application</strong>.
+              This is a clean, modern template container for building custom pages inside your <strong>Vyapar Adnet Application</strong>.
             </p>
 
             <div className="empty-actions">

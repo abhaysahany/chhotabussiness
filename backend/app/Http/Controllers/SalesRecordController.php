@@ -62,7 +62,7 @@ class SalesRecordController extends Controller
                     'item' => 'GST Registration & Tax Filing',
                     'category' => 'Legal & Compliance',
                     'item_type' => 'service',
-                    'entity_name' => 'ChhotaBusiness Tax Advisory',
+                    'entity_name' => 'Vyapar Adnet Tax Advisory',
                     'entity_type' => 'business',
                     'unit_price' => 2999,
                     'quantity' => 1,

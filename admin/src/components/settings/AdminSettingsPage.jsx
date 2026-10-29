@@ -3,46 +3,46 @@ import React, { useState, useEffect } from 'react';
 const DEFAULT_SOCIAL_LINKS = {
   youtube: {
     enabled: true,
-    channelUrl: 'https://youtube.com/@chhotabusiness',
-    handle: '@ChhotaBusinessOfficial',
+    channelUrl: 'https://youtube.com/@vyaparadnet',
+    handle: '@VyaparAdnetOfficial',
     followers: '125K+ Subscribers',
     embedVideoUrl: 'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ',
     featuredVideoTitle: 'Platform Compensation Architecture & Scaling Guide',
   },
   instagram: {
     enabled: true,
-    profileUrl: 'https://instagram.com/chhotabusiness_official',
-    handle: '@chhotabusiness_official',
+    profileUrl: 'https://instagram.com/vyaparadnet_official',
+    handle: '@vyaparadnet_official',
     followers: '85K+ Followers',
   },
   whatsapp: {
     enabled: true,
-    channelUrl: 'https://whatsapp.com/channel/chhotabusiness',
-    handle: 'Chhota Business Official Alerts',
+    channelUrl: 'https://whatsapp.com/channel/vyaparadnet',
+    handle: 'Vyapar Adnet Official Alerts',
     followers: '60K+ Members',
   },
   telegram: {
     enabled: true,
-    channelUrl: 'https://t.me/chhotabusiness_network',
-    handle: '@chhotabusiness_network',
+    channelUrl: 'https://t.me/vyaparadnet_network',
+    handle: '@vyaparadnet_network',
     followers: '45K+ Subscribers',
   },
   linkedin: {
     enabled: true,
-    companyUrl: 'https://linkedin.com/company/chhotabusiness',
-    handle: 'Chhota Business System',
+    companyUrl: 'https://linkedin.com/company/vyaparadnet',
+    handle: 'Vyapar Adnet System',
     followers: '25K+ Followers',
   },
   facebook: {
     enabled: true,
-    pageUrl: 'https://facebook.com/chhotabusiness',
-    handle: 'Chhota Business Community',
+    pageUrl: 'https://facebook.com/vyaparadnet',
+    handle: 'Vyapar Adnet Community',
     followers: '90K+ Members',
   },
   twitter: {
     enabled: true,
-    profileUrl: 'https://twitter.com/chhotabiz',
-    handle: '@chhotabiz',
+    profileUrl: 'https://twitter.com/vyaparadnet',
+    handle: '@vyaparadnet',
     followers: '30K+ Followers',
   },
 };
@@ -65,7 +65,7 @@ function AdminSettingsPage() {
     teamLevelsCount: 10, // 10 Levels
     defaultBpPercent: 20, // 20% Business Points value of Admin Platform Fee
     bpLevelsCount: 20, // 20 Levels
-    platformName: 'Chhota Business System',
+    platformName: 'Vyapar Adnet System',
     minWithdrawalAmount: 500,
   });
 

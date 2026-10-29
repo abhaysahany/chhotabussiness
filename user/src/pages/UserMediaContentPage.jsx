@@ -6,7 +6,7 @@ function UserMediaContentPage({ user }) {
   const [assets, setAssets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all'); // 'all' | 'image' | 'video' | 'audio' | 'pdf'
-  const [entityTab, setEntityTab] = useState('all'); // 'all' | 'chhota_business' | 'business' | 'freelance'
+  const [entityTab, setEntityTab] = useState('all'); // 'all' | 'vyapar_adnet' | 'business' | 'freelance'
   const [searchTerm, setSearchTerm] = useState('');
   const [previewingAsset, setPreviewingAsset] = useState(null);
   const [toastMsg, setToastMsg] = useState('');
@@ -202,7 +202,10 @@ function UserMediaContentPage({ user }) {
       (a.tags && a.tags.toLowerCase().includes(searchTerm.toLowerCase()));
 
     const matchesType = activeTab === 'all' || a.type.toLowerCase() === activeTab.toLowerCase();
-    const matchesEntity = entityTab === 'all' || a.entity_type === entityTab;
+    const matchesEntity =
+      entityTab === 'all' ||
+      a.entity_type === entityTab ||
+      (entityTab === 'vyapar_adnet' && a.entity_type === 'chhota_business');
 
     return matchesSearch && matchesType && matchesEntity;
   });
@@ -289,7 +292,7 @@ function UserMediaContentPage({ user }) {
             style={{ padding: '0.5rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem', outline: 'none', background: '#fff' }}
           >
             <option value="all">All Entities</option>
-            <option value="chhota_business">Chhota Business Platform</option>
+            <option value="vyapar_adnet">Vyapar Adnet Platform</option>
             <option value="business">Business Entities</option>
             <option value="freelance">Freelancers</option>
           </select>

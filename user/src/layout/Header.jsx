@@ -301,7 +301,7 @@ function Header({ onToggleSidebar, user, onLogout, onNavigate }) {
             </div>
             <div className="user-details-text">
               <span className="user-name">{user?.name || 'Partner Account'}</span>
-              <span className="user-email">{user?.email || 'partner@chhotabusiness.com'}</span>
+              <span className="user-email">{user?.email || 'partner@vyaparadnet.com'}</span>
             </div>
           </div>
 
@@ -326,7 +326,7 @@ function Header({ onToggleSidebar, user, onLogout, onNavigate }) {
                 </div>
                 <div className="dropdown-user-info">
                   <span className="dropdown-user-name">{user?.name || 'Partner Account'}</span>
-                  <span className="dropdown-user-email">{user?.email || 'partner@chhotabusiness.com'}</span>
+                  <span className="dropdown-user-email">{user?.email || 'partner@vyaparadnet.com'}</span>
                 </div>
               </div>
 

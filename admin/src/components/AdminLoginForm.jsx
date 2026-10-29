@@ -212,7 +212,7 @@ function AdminLoginForm({ onLoginSuccess }) {
               </linearGradient>
             </defs>
           </svg>
-          <span className="brand-name">ChhotaBiz</span>
+          <span className="brand-name">Vyapar Adnet</span>
           <span className="brand-badge">ADMIN</span>
         </div>
         <h1 className="auth-title">Administrator Portal</h1>
@@ -447,7 +447,7 @@ function AdminLoginForm({ onLoginSuccess }) {
                     type="text"
                     required
                     className="form-input"
-                    placeholder="e.g. admin@chhotabusiness.com or admin"
+                    placeholder="e.g. admin@vyaparadnet.com or admin"
                     value={resetLogin}
                     onChange={(e) => setResetLogin(e.target.value)}
                     style={{ width: '100%' }}
@@ -633,7 +633,7 @@ function AdminLoginForm({ onLoginSuccess }) {
 
       {/* Footer Branding */}
       <footer className="page-footer">
-        © 2026 ChhotaBiz — Powered by Laravel & React
+        © 2026 Vyapar Adnet — Powered by Laravel & React
       </footer>
     </div>
   );

@@ -1,4 +1,4 @@
-package com.chhotabusiness.userapp
+package com.vyaparadnet.userapp
 
 import io.flutter.embedding.android.FlutterActivity
 

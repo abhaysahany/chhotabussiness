@@ -193,7 +193,7 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
       <main className="cb-auth-main">
         <div className="cb-auth-container">
           
-          {/* Left Column: ChhotaBusiness Value Showcase (Desktop) */}
+          {/* Left Column: Vyapar Adnet Value Showcase (Desktop) */}
           <div className="cb-auth-showcase">
             <div>
               {/* Top Pill Badge */}
@@ -275,7 +275,7 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
               </div>
               <div>
                 <div className="cb-auth-logo-text-title">
-                  CHHOTA<span>BUSINESS</span>
+                  VYAPAR<span>ADNET</span>
                 </div>
                 <span className="cb-auth-logo-text-sub">
                   Business Promoter Network
@@ -614,7 +614,7 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
 
       {/* 3. Bottom Legal Footer */}
       <footer className="cb-auth-bottom-footer">
-        <span>© {new Date().getFullYear()} Chhota Business Pvt. Ltd. All rights reserved.</span>
+        <span>© {new Date().getFullYear()} Vyapar Adnet Pvt. Ltd. All rights reserved.</span>
         <div style={{ display: 'flex', gap: '1.25rem' }}>
           <a
             href="#terms"
@@ -701,7 +701,7 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
                     {legalModalTab === 'terms' ? 'Terms and Conditions' : 'Privacy Policy'}
                   </h3>
                   <p style={{ margin: 0, fontSize: '0.75rem', color: '#cbd5e1' }}>
-                    Chhota Business Legal & Affiliate Operating Standards
+                    Vyapar Adnet Legal & Affiliate Operating Standards
                   </p>
                 </div>
               </div>
@@ -888,7 +888,7 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
                     4. User Rights & Data Protection
                   </h4>
                   <p style={{ margin: '0' }}>
-                    You have the right to review, update, or request deletion of your account data. Inquiries can be directed to our compliance team at <strong>privacy@chhotabusiness.com</strong>.
+                    You have the right to review, update, or request deletion of your account data. Inquiries can be directed to our compliance team at <strong>privacy@vyaparadnet.com</strong>.
                   </p>
                 </>
               )}

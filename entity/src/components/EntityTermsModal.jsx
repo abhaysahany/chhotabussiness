@@ -223,7 +223,7 @@ function EntityTermsModal({ currentEntity, onAccept, onLogout }) {
                   1. Entity Onboarding & Merchant Scope
                 </h4>
                 <p style={{ margin: 0 }}>
-                  This Partner Agreement governs all Commercial Business Entities and Freelance Service Providers operating within the ChhotaBusiness ecosystem. By accessing the portal, you warrant that all business credentials, GST identification, tax registrations, and identity proof submitted are authentic and legally valid.
+                  This Partner Agreement governs all Commercial Business Entities and Freelance Service Providers operating within the Vyapar Adnet ecosystem. By accessing the portal, you warrant that all business credentials, GST identification, tax registrations, and identity proof submitted are authentic and legally valid.
                 </p>
               </div>
 
@@ -250,7 +250,7 @@ function EntityTermsModal({ currentEntity, onAccept, onLogout }) {
                   4. Marketplace Commissions, Payouts & Settlement Cycles
                 </h4>
                 <p style={{ margin: 0 }}>
-                  ChhotaBusiness deducts the standardized platform facilitation commission and applicable payment gateway processing charges from settled sales. Net earnings are deposited into the entity's verified bank account following the standard clearance window.
+                  Vyapar Adnet deducts the standardized platform facilitation commission and applicable payment gateway processing charges from settled sales. Net earnings are deposited into the entity's verified bank account following the standard clearance window.
                 </p>
               </div>
 
@@ -268,7 +268,7 @@ function EntityTermsModal({ currentEntity, onAccept, onLogout }) {
                   6. Confidentiality, Security & Account Termination
                 </h4>
                 <p style={{ margin: 0 }}>
-                  Customer contact information obtained through the platform must be maintained in strict confidentiality and cannot be used for off-platform solicitation. ChhotaBusiness reserves the right to suspend or terminate entity privileges for violations of these guidelines.
+                  Customer contact information obtained through the platform must be maintained in strict confidentiality and cannot be used for off-platform solicitation. Vyapar Adnet reserves the right to suspend or terminate entity privileges for violations of these guidelines.
                 </p>
               </div>
             </div>
@@ -314,7 +314,7 @@ function EntityTermsModal({ currentEntity, onAccept, onLogout }) {
               }}
             />
             <span>
-              I confirm that I am authorized on behalf of <strong>{entityName}</strong> to accept the ChhotaBusiness Entity Partner Terms and Conditions, Operating Guidelines, and Privacy Policy.
+              I confirm that I am authorized on behalf of <strong>{entityName}</strong> to accept the Vyapar Adnet Entity Partner Terms and Conditions, Operating Guidelines, and Privacy Policy.
             </span>
           </label>
 

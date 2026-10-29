@@ -125,7 +125,7 @@ class AdminDashboardController extends Controller
                 [
                     'id' => 'INV-2026-883',
                     'customer' => 'Zenith Hospitality Hub',
-                    'entity' => 'ChhotaBusiness Tax Advisory',
+                    'entity' => 'Vyapar Adnet Tax Advisory',
                     'gross' => 45000.00,
                     'adminFee' => 9000.00,
                     'netEntity' => 36000.00,

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('type')->default('image'); // image, video, audio, pdf
             $table->string('category'); // Marketing Banners, Promo Videos, Brand Jingles, Marketing Materials, Social Post, etc.
-            $table->string('entity_type')->default('chhota_business'); // chhota_business, business, freelance
+            $table->string('entity_type')->default('vyapar_adnet'); // vyapar_adnet, business, freelance
             $table->string('entity_name'); // Registered entity name or platform name
             $table->text('file_url'); // Direct storage URL or external link
             $table->text('thumbnail')->nullable(); // Preview thumbnail

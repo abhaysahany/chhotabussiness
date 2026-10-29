@@ -34,7 +34,7 @@ function FinalCtaSection({ onRegisterClick, onContactClick }) {
           </h2>
 
           <p>
-            Join over 1,000+ verified software developers, IT companies, digital agencies, and consultants scaling their turnover with Chhota Business.
+            Join over 1,000+ verified software developers, IT companies, digital agencies, and consultants scaling their turnover with Vyapar Adnet.
           </p>
 
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>

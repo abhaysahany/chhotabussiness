@@ -57,7 +57,7 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
               </linearGradient>
             </defs>
           </svg>
-          {!collapsed && <span className="sidebar-brand-name">Chhota Business</span>}
+          {!collapsed && <span className="sidebar-brand-name">Vyapar Adnet</span>}
         </div>
         <button
           className="sidebar-toggle-btn"

@@ -225,7 +225,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
                       CustomTextField(
                         label: 'Registered Email',
-                        hintText: 'partner@chhotabusiness.com',
+                        hintText: 'partner@vyaparadnet.com',
                         controller: _emailController,
                         prefixIcon: Icons.mail_outline_rounded,
                         keyboardType: TextInputType.emailAddress,

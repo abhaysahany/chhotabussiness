@@ -4,11 +4,11 @@ const DEFAULT_PLATFORMS = [
   {
     id: 'youtube',
     name: 'YouTube Channel',
-    handle: '@ChhotaBusinessOfficial',
+    handle: '@VyaparAdnetOfficial',
     followers: '125K+ Subscribers',
     color: '#ef4444',
     bgGradient: 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)',
-    url: 'https://youtube.com/@chhotabusiness',
+    url: 'https://youtube.com/@vyaparadnet',
     buttonText: 'Subscribe on YouTube',
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
@@ -20,11 +20,11 @@ const DEFAULT_PLATFORMS = [
   {
     id: 'instagram',
     name: 'Instagram Profile',
-    handle: '@chhotabusiness_official',
+    handle: '@vyaparadnet_official',
     followers: '85K+ Followers',
     color: '#e1306c',
     bgGradient: 'linear-gradient(135deg, #f58529 0%, #dd2a7b 50%, #8134af 100%)',
-    url: 'https://instagram.com/chhotabusiness_official',
+    url: 'https://instagram.com/vyaparadnet_official',
     buttonText: 'Follow on Instagram',
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
@@ -36,11 +36,11 @@ const DEFAULT_PLATFORMS = [
   {
     id: 'whatsapp',
     name: 'WhatsApp Channel',
-    handle: 'Chhota Business Official Alerts',
+    handle: 'Vyapar Adnet Official Alerts',
     followers: '60K+ Members',
     color: '#25d366',
     bgGradient: 'linear-gradient(135deg, #22c55e 0%, #15803d 100%)',
-    url: 'https://whatsapp.com/channel/chhotabusiness',
+    url: 'https://whatsapp.com/channel/vyaparadnet',
     buttonText: 'Join WhatsApp Channel',
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
@@ -52,11 +52,11 @@ const DEFAULT_PLATFORMS = [
   {
     id: 'telegram',
     name: 'Telegram Community',
-    handle: '@chhotabusiness_network',
+    handle: '@vyaparadnet_network',
     followers: '45K+ Subscribers',
     color: '#0088cc',
     bgGradient: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
-    url: 'https://t.me/chhotabusiness_network',
+    url: 'https://t.me/vyaparadnet_network',
     buttonText: 'Join Telegram Channel',
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
@@ -68,11 +68,11 @@ const DEFAULT_PLATFORMS = [
   {
     id: 'facebook',
     name: 'Facebook Group & Page',
-    handle: 'Chhota Business Community',
+    handle: 'Vyapar Adnet Community',
     followers: '90K+ Members',
     color: '#1877f2',
     bgGradient: 'linear-gradient(135deg, #1877f2 0%, #0d47a1 100%)',
-    url: 'https://facebook.com/chhotabusiness',
+    url: 'https://facebook.com/vyaparadnet',
     buttonText: 'Join Facebook Group',
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
@@ -84,11 +84,11 @@ const DEFAULT_PLATFORMS = [
   {
     id: 'linkedin',
     name: 'LinkedIn Company Page',
-    handle: 'Chhota Business System',
+    handle: 'Vyapar Adnet System',
     followers: '25K+ Followers',
     color: '#0a66c2',
     bgGradient: 'linear-gradient(135deg, #0a66c2 0%, #004182 100%)',
-    url: 'https://linkedin.com/company/chhotabusiness',
+    url: 'https://linkedin.com/company/vyaparadnet',
     buttonText: 'Follow on LinkedIn',
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
@@ -100,11 +100,11 @@ const DEFAULT_PLATFORMS = [
   {
     id: 'twitter',
     name: 'Twitter / X',
-    handle: '@chhotabiz',
+    handle: '@vyaparadnet',
     followers: '30K+ Followers',
     color: '#0f172a',
     bgGradient: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
-    url: 'https://twitter.com/chhotabiz',
+    url: 'https://twitter.com/vyaparadnet',
     buttonText: 'Follow on X',
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
@@ -192,7 +192,7 @@ function UserSocialPlatformsPage({ user }) {
           Join Our Official Social Media Platforms
         </h1>
         <p style={{ color: '#cbd5e1', fontSize: '0.925rem', maxWidth: '750px', margin: 0 }}>
-          Connect with Chhota Business across all official channels. Click below to subscribe, follow, and join our verified communities for real-time updates and training.
+          Connect with Vyapar Adnet across all official channels. Click below to subscribe, follow, and join our verified communities for real-time updates and training.
         </p>
       </div>
 

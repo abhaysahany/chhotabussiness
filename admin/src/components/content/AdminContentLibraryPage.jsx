@@ -35,8 +35,8 @@ function AdminContentLibraryPage() {
     title: '',
     type: 'image',
     category: 'Marketing Banners',
-    entity_type: 'chhota_business',
-    entity_name: 'Chhota Business System Entity',
+    entity_type: 'vyapar_adnet',
+    entity_name: 'Vyapar Adnet System Entity',
     file_url: '',
     tags: '',
   });
@@ -135,8 +135,8 @@ function AdminContentLibraryPage() {
         title: asset.title,
         type: asset.type,
         category: asset.category,
-        entity_type: asset.entity_type || 'chhota_business',
-        entity_name: asset.entity_name || 'Chhota Business System Entity',
+        entity_type: asset.entity_type || 'vyapar_adnet',
+        entity_name: asset.entity_name || 'Vyapar Adnet System Entity',
         file_url: asset.file_url || '',
         tags: asset.tags || '',
       });
@@ -147,8 +147,8 @@ function AdminContentLibraryPage() {
         title: '',
         type: 'image',
         category: 'Marketing Banners',
-        entity_type: 'chhota_business',
-        entity_name: 'Chhota Business System Entity',
+        entity_type: 'vyapar_adnet',
+        entity_name: 'Vyapar Adnet System Entity',
         file_url: '',
         tags: '',
       });
@@ -238,7 +238,10 @@ function AdminContentLibraryPage() {
       (a.tags && a.tags.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesType = typeFilter === 'all' || a.type.toLowerCase() === typeFilter.toLowerCase();
     const matchesStatus = statusFilter === 'all' || a.status.toLowerCase() === statusFilter.toLowerCase();
-    const matchesEntity = entityFilter === 'all' || a.entity_type === entityFilter;
+    const matchesEntity =
+      entityFilter === 'all' ||
+      a.entity_type === entityFilter ||
+      (entityFilter === 'vyapar_adnet' && a.entity_type === 'chhota_business');
     return matchesSearch && matchesType && matchesStatus && matchesEntity;
   });
 
@@ -344,7 +347,7 @@ function AdminContentLibraryPage() {
             style={{ padding: '0.55rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', background: '#fff' }}
           >
             <option value="all">All Entity Types</option>
-            <option value="chhota_business">Chhota Business Platform</option>
+            <option value="vyapar_adnet">Vyapar Adnet Platform</option>
             <option value="business">Registered Business Entity</option>
             <option value="freelance">Freelancer Entity</option>
           </select>
@@ -598,7 +601,7 @@ function AdminContentLibraryPage() {
                     value={formData.entity_type}
                     onChange={(e) => {
                       const nextType = e.target.value;
-                      let defaultName = 'Chhota Business System Entity';
+                      let defaultName = 'Vyapar Adnet System Entity';
                       if (nextType === 'business' && businesses.length > 0) defaultName = businesses[0].business_name;
                       else if (nextType === 'business') defaultName = 'Skyline Technologies Pvt Ltd';
                       if (nextType === 'freelance' && freelancers.length > 0) defaultName = freelancers[0].full_name;
@@ -607,7 +610,7 @@ function AdminContentLibraryPage() {
                     }}
                     style={{ width: '100%', padding: '0.6rem 0.8rem', fontSize: '0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none', background: '#fff' }}
                   >
-                    <option value="chhota_business">🌐 Chhota Business Platform</option>
+                    <option value="vyapar_adnet">🌐 Vyapar Adnet Platform</option>
                     <option value="business">🏢 Registered Business Entity</option>
                     <option value="freelance">💼 Freelancer Entity</option>
                   </select>

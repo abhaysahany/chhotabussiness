@@ -24,7 +24,7 @@ Route::get('/status', function () {
 
     return response()->json([
         'status' => 'success',
-        'app_name' => config('app.name', 'ChhotaBusiness'),
+        'app_name' => config('app.name', 'Vyapar Adnet'),
         'environment' => config('app.env'),
         'database_status' => $dbStatus,
         'database_connected' => $connected,
@@ -37,7 +37,7 @@ Route::get('/status', function () {
 Route::get('/admin/info', function () {
     return response()->json([
         'panel' => 'Admin Panel',
-        'message' => 'Welcome to ChhotaBusiness Admin Backend API',
+        'message' => 'Welcome to Vyapar Adnet Admin Backend API',
         'stats' => [
             'total_users' => 128,
             'active_orders' => 42,
@@ -54,14 +54,14 @@ use App\Http\Controllers\UserDashboardController;
 Route::get('/user/info', function () {
     return response()->json([
         'panel' => 'User Panel',
-        'message' => 'Welcome to ChhotaBusiness Customer Portal API',
+        'message' => 'Welcome to Vyapar Adnet Customer Portal API',
         'services' => [
             'Business Setup',
             'GST Registration',
             'Accounting & Bookkeeping',
             'Tax Filing',
         ],
-        'support_email' => 'support@chhotabusiness.com',
+        'support_email' => 'support@vyaparadnet.com',
     ]);
 });
 Route::get('/user/dashboard-stats', [UserDashboardController::class, 'getDashboardStats']);

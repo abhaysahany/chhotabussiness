@@ -14,7 +14,7 @@ class SupportTicketSeeder extends Seeder
             ['ticket_code' => 'TCK-1001'],
             [
                 'user_name' => 'Tom Phillip',
-                'user_email' => 'tom@chhotabusiness.com',
+                'user_email' => 'tom@vyaparadnet.com',
                 'subject' => 'Pending Commission Withdrawal',
                 'category' => 'Payouts',
                 'priority' => 'High',
@@ -34,7 +34,7 @@ class SupportTicketSeeder extends Seeder
             ['ticket_code' => 'TCK-1002'],
             [
                 'user_name' => 'Sara Jenkins',
-                'user_email' => 'sara@chhotabusiness.com',
+                'user_email' => 'sara@vyaparadnet.com',
                 'subject' => 'KYC Verification Status Query',
                 'category' => 'KYC & Verification',
                 'priority' => 'Medium',

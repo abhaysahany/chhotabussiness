@@ -24,7 +24,7 @@ import {
 import './auth.css';
 
 function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackToHome, onOpenLegalPage }) {
-  const [email, setEmail] = useState('user@chhotabusiness.com');
+  const [email, setEmail] = useState('user@vyaparadnet.com');
   const [password, setPassword] = useState('password123');
   const [rememberMe, setRememberMe] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
@@ -94,7 +94,7 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
       <main className="cb-auth-main">
         <div className="cb-auth-container">
           
-          {/* Left Column: ChhotaBusiness Value Showcase (Desktop) */}
+          {/* Left Column: Vyapar Adnet Value Showcase (Desktop) */}
           <div className="cb-auth-showcase">
             <div>
               {/* Pill Badge */}
@@ -154,7 +154,7 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
                 ))}
               </div>
               <p className="cb-testimonial-quote">
-                "ChhotaBusiness connected our software development agency with over 28 genuine corporate clients within the first 60 days."
+                "Vyapar Adnet connected our software development agency with over 28 genuine corporate clients within the first 60 days."
               </p>
               <div className="cb-testimonial-author">
                 <div className="cb-author-avatar">R</div>
@@ -176,7 +176,7 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
               </div>
               <div>
                 <div className="cb-auth-logo-text-title">
-                  CHHOTA<span>BUSINESS</span>
+                  VYAPAR<span>ADNET</span>
                 </div>
                 <span className="cb-auth-logo-text-sub">
                   Business Promoter Network
@@ -236,7 +236,7 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
                     className="cb-input-field"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="partner@chhotabusiness.com"
+                    placeholder="partner@vyaparadnet.com"
                     autoComplete="email"
                     required
                   />
@@ -354,7 +354,7 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
 
       {/* 3. Bottom Legal Footer */}
       <footer className="cb-auth-bottom-footer">
-        <span>© {new Date().getFullYear()} Chhota Business Pvt. Ltd. All rights reserved.</span>
+        <span>© {new Date().getFullYear()} Vyapar Adnet Pvt. Ltd. All rights reserved.</span>
         <div style={{ display: 'flex', gap: '1.25rem' }}>
           <a
             href="#terms"
@@ -501,7 +501,7 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
                       className="cb-input-field"
                       value={forgotEmail}
                       onChange={(e) => setForgotEmail(e.target.value)}
-                      placeholder="partner@chhotabusiness.com"
+                      placeholder="partner@vyaparadnet.com"
                       required
                     />
                   </div>

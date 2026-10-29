@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('invoice_number')->unique();
             $table->date('date')->nullable();
             $table->unsignedBigInteger('entity_id')->nullable();
-            $table->string('entity_name')->default('Chhota Business Entity');
+            $table->string('entity_name')->default('Vyapar Adnet Entity');
             $table->string('entity_type')->default('business'); // 'business' | 'freelance' | 'system'
             
             // Customer Details

@@ -23,7 +23,7 @@ function AdminPackagesPage() {
   const registeredBusinesses = [
     'GrowthX Media Solutions',
     'Skyline Technologies Pvt Ltd',
-    'ChhotaBusiness Tax Advisory',
+    'Vyapar Adnet Tax Advisory',
   ];
 
   const registeredFreelancers = [

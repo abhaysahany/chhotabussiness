@@ -5,13 +5,13 @@ function AdminLiveHelpdeskPage({ currentAdmin }) {
     {
       id: 'sess-101',
       userName: 'Tom Phillip',
-      userEmail: 'tom@chhotabusiness.com',
+      userEmail: 'tom@vyaparadnet.com',
       status: 'Live Agent Requested',
       lastMsg: 'I want to speak with a human support agent.',
       time: '1 min ago',
       agent: 'Unassigned',
       messages: [
-        { sender: 'bot', name: 'AI Concierge', text: 'Welcome to ChhotaBiz Live Support! How can I assist?' },
+        { sender: 'bot', name: 'AI Concierge', text: 'Welcome to Vyapar Adnet Live Support! How can I assist?' },
         { sender: 'user', name: 'Tom Phillip', text: 'I want to speak with a human support agent.' },
         { sender: 'bot', name: 'AI Concierge', text: 'Queuing your chat for senior support specialist...' },
       ],
@@ -19,7 +19,7 @@ function AdminLiveHelpdeskPage({ currentAdmin }) {
     {
       id: 'sess-102',
       userName: 'Sara Jenkins',
-      userEmail: 'sara@chhotabusiness.com',
+      userEmail: 'sara@vyaparadnet.com',
       status: 'AI Active',
       lastMsg: 'Explain how binary level matching commission is calculated.',
       time: '3 mins ago',

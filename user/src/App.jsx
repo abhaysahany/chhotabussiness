@@ -55,7 +55,7 @@ function App() {
   const [token, setToken] = useState(localStorage.getItem('user_token'));
   const [authView, setAuthView] = useState('landing'); // 'landing' | 'login' | 'register'
   const [activePage, setActivePage] = useState(() => {
-    const saved = localStorage.getItem('chhota_user_active_page');
+    const saved = localStorage.getItem('vyapar_user_active_page') || localStorage.getItem('chhota_user_active_page');
     return saved && saved !== 'empty' ? saved : 'dashboard';
   });
 
@@ -68,7 +68,7 @@ function App() {
   // Sync active page to localStorage to maintain route on refresh
   useEffect(() => {
     if (activePage && activePage !== 'empty') {
-      localStorage.setItem('chhota_user_active_page', activePage);
+      localStorage.setItem('vyapar_user_active_page', activePage);
     }
   }, [activePage]);
 
@@ -161,6 +161,7 @@ function App() {
       console.error('Logout error:', err);
     } finally {
       localStorage.removeItem('user_token');
+      localStorage.removeItem('vyapar_user_active_page');
       localStorage.removeItem('chhota_user_active_page');
       setToken(null);
       setUser(null);
@@ -176,7 +177,7 @@ function App() {
               <Building2 size={24} />
             </div>
             <div style={{ fontFamily: 'Poppins, sans-serif', fontSize: '1.25rem', fontWeight: 900, color: '#0F4C81', letterSpacing: '-0.03em' }}>
-              CHHOTA<span style={{ color: '#FF7A00' }}>BUSINESS</span>
+              VYAPAR<span style={{ color: '#FF7A00' }}>ADNET</span>
             </div>
           </div>
           <p style={{ color: '#64748B', fontSize: '0.88rem', margin: 0 }}>Connecting to partner portal...</p>

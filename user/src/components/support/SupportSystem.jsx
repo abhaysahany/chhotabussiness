@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 // Shared localStorage Key so Admin Panel & User Panel sync automatically
-const STORAGE_KEY = 'chhota_support_tickets_v1';
+const STORAGE_KEY = 'vyapar_support_tickets_v1';
 
 // Initial Seed Support Tickets for rich demonstration
 const initialTickets = [
@@ -15,7 +15,7 @@ const initialTickets = [
     updatedAt: '2026-08-16T11:45:00',
     user: {
       name: 'Tom Phillip',
-      email: 'tom.phillip@chhotabusiness.com',
+      email: 'tom.phillip@vyaparadnet.com',
       user_code: 'CB100001',
     },
     messages: [
@@ -47,7 +47,7 @@ const initialTickets = [
     updatedAt: '2026-08-15T16:10:00',
     user: {
       name: 'Tom Phillip',
-      email: 'tom.phillip@chhotabusiness.com',
+      email: 'tom.phillip@vyaparadnet.com',
       user_code: 'CB100001',
     },
     messages: [
@@ -80,7 +80,7 @@ const initialTickets = [
     updatedAt: '2026-08-16T14:00:00',
     user: {
       name: 'Tom Phillip',
-      email: 'tom.phillip@chhotabusiness.com',
+      email: 'tom.phillip@vyaparadnet.com',
       user_code: 'CB100001',
     },
     messages: [
@@ -122,7 +122,7 @@ function SupportSystem({ user, defaultView = 'tickets' }) {
 
   // Load from localStorage or set initial seed tickets
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const stored = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('chhota_support_tickets_v1');
     if (stored) {
       try {
         setTickets(JSON.parse(stored));
@@ -233,7 +233,7 @@ function SupportSystem({ user, defaultView = 'tickets' }) {
       updatedAt: new Date().toISOString(),
       user: {
         name: user?.name || 'Tom Phillip',
-        email: user?.email || 'tom.phillip@chhotabusiness.com',
+        email: user?.email || 'tom.phillip@vyaparadnet.com',
         user_code: user?.user_code || 'CB100001',
       },
       messages: [

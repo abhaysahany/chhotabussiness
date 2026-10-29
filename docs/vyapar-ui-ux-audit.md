@@ -118,7 +118,7 @@ graph TD
 - **Numeric Fields:** Auto-selects contents on tab focus, enabling instant overwriting without backspacing.
 - **Keyboard Accelerators:** Built-in cheat sheet (`Shortcuts` in top bar) for rapid POS billing.
 
-### Usability Gaps & Accessibility Findings (Areas for ChhotaBusiness Improvement)
+### Usability Gaps & Accessibility Findings (Areas for Vyapar Adnet Improvement)
 1. **Screen Reader Support:** UI Automation elements inside Chromium are not consistently exposed as native Win32 accessibility controls; standard Windows Narrator struggles with line-item grids.
 2. **Tab Trapping in Modals:** Pressing `Tab` from the last form field occasionally escapes to the background rather than cycling back to the first input.
 3. **Color Contrast:** Inactive tabs (e.g. `Credit & Balance` when unfocused) use `#999999` text against `#FFFFFF` background, which yields a 2.8:1 contrast ratio, failing WCAG AA guidelines (requires 4.5:1).

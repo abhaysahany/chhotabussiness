@@ -104,7 +104,7 @@ class ProductCatalogSeeder extends Seeder
                 'name' => 'GST Registration & Annual Tax Filing',
                 'category' => 'Legal & Compliance',
                 'owner_type' => 'business',
-                'owner_name' => 'ChhotaBusiness Tax Advisory',
+                'owner_name' => 'Vyapar Adnet Tax Advisory',
                 'price' => 2999.00,
                 'admin_commission_percent' => 20.00,
                 'duration' => '3 Business Days',

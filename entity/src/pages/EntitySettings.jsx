@@ -22,11 +22,11 @@ function EntitySettings() {
         <div className="auth-form">
           <div className="form-group">
             <label>Entity Owner / Sponsor Name</label>
-            <input className="form-input" defaultValue={user.name || 'ChhotaBusiness Admin Sponsor'} />
+            <input className="form-input" defaultValue={user.name || 'Vyapar Adnet Admin Sponsor'} />
           </div>
           <div className="form-group">
             <label>Registered Email</label>
-            <input className="form-input" defaultValue={user.email || 'user@chhotabusiness.com'} disabled style={{ background: '#f1f5f9' }} />
+            <input className="form-input" defaultValue={user.email || 'user@vyaparadnet.com'} disabled style={{ background: '#f1f5f9' }} />
           </div>
           <div className="form-group">
             <label>Member ID / Entity Code</label>

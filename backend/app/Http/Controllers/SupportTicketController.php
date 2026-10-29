@@ -101,7 +101,7 @@ class SupportTicketController extends Controller
 
         $userId = $user ? $user->id : 1;
         $userName = $user ? $user->name : ($request->input('user_name') ?: 'Registered Member');
-        $userEmail = $user ? $user->email : ($request->input('user_email') ?: 'member@chhotabusiness.com');
+        $userEmail = $user ? $user->email : ($request->input('user_email') ?: 'member@vyaparadnet.com');
 
         DB::beginTransaction();
         try {

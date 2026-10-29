@@ -32,7 +32,7 @@ function AboutUsSection() {
             <span>Our Identity & Mission</span>
           </div>
           <h2 className="cb-section-title">
-            About Chhota Business
+            About Vyapar Adnet
           </h2>
           <p className="cb-section-subtitle">
             We are a high-performance coalition of digital promoters, growth marketers, and advertisers committed to scaling India's service economy.
@@ -50,7 +50,7 @@ function AboutUsSection() {
               Who We Are
             </h3>
             <p style={{ fontSize: '0.88rem', color: 'var(--cb-text-muted)', lineHeight: 1.6, margin: 0 }}>
-              Chhota Business is <strong>NOT</strong> a service provider. We are an advertising and lead generation powerhouse that brings paying clients to IT firms, software developers, marketing agencies, and corporate consultants.
+              Vyapar Adnet is <strong>NOT</strong> a service provider. We are an advertising and lead generation powerhouse that brings paying clients to IT firms, software developers, marketing agencies, and corporate consultants.
             </p>
           </div>
 

@@ -16,9 +16,9 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $user = User::firstOrCreate(
-            ['email' => 'user@chhotabusiness.com'],
+            ['email' => 'user@vyaparadnet.com'],
             [
-                'name' => 'ChhotaBusiness Admin Sponsor',
+                'name' => 'Vyapar Adnet Admin Sponsor',
                 'user_code' => 'CB100001',
                 'password' => \Illuminate\Support\Facades\Hash::make('password123'),
             ]

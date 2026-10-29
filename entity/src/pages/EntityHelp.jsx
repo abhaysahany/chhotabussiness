@@ -76,7 +76,7 @@ function EntityHelp() {
             </svg>
           </div>
           <h3>Sales & Orders Management</h3>
-          <p>Track inquiries from customers across the ChhotaBusiness marketplace and process customer bookings.</p>
+          <p>Track inquiries from customers across the Vyapar Adnet marketplace and process customer bookings.</p>
         </div>
 
         <div className="help-topic-card">

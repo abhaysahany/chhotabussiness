@@ -17,7 +17,7 @@ class AdminSeeder extends Seeder
             ['username' => 'admin'],
             [
                 'name' => 'Super Admin',
-                'email' => 'admin@chhotabusiness.com',
+                'email' => 'admin@vyaparadnet.com',
                 'password' => Hash::make('adminpassword123'),
                 'role' => 'super_admin',
                 'status' => 'active',
