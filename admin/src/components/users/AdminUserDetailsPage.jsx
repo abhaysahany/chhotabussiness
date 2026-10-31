@@ -10,7 +10,7 @@ function AdminUserDetailsPage() {
   const [bpRate, setBpRate] = useState(10);
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('vyapar_admin_mlm_settings') || localStorage.getItem('chhota_admin_mlm_settings');
+      const stored = localStorage.getItem('chhota_admin_mlm_settings');
       if (stored) {
         const s = JSON.parse(stored);
         if (s.bpValueInRupees) setBpRate(s.bpValueInRupees);
@@ -37,12 +37,12 @@ function AdminUserDetailsPage() {
 
   // Sample User Accounts List with Dedicated Business Points (BP) Wallet
   const [users, setUsers] = useState([
-    { id: 'USR-1001', name: 'Rajesh Sharma', username: 'rajesh_sharma', email: 'rajesh@vyaparadnet.com', phone: '+91 98765 43210', role: 'Business Owner', status: 'Active', kycStatus: 'Verified', joinedDate: '2026-01-15', bpBalance: 245, commissionWallet: 18500, address: 'B-402, Skyline Towers, Mumbai, MH' },
-    { id: 'USR-1002', name: 'Priya Patel', username: 'priya_patel', email: 'priya@vyaparadnet.com', phone: '+91 98123 45678', role: 'Freelancer', status: 'Active', kycStatus: 'Verified', joinedDate: '2026-02-02', bpBalance: 180, commissionWallet: 12400, address: '12-A, Silicon Hub, Bengaluru, KA' },
-    { id: 'USR-1003', name: 'Vikram Malhotra', username: 'vikram_m', email: 'vikram@vyaparadnet.com', phone: '+91 97111 22334', role: 'Affiliate Associate', status: 'Pending', kycStatus: 'Pending', joinedDate: '2026-03-10', bpBalance: 95, commissionWallet: 4200, address: '78, Civil Lines, Jaipur, RJ' },
-    { id: 'USR-1004', name: 'Ananya Roy', username: 'ananya_design', email: 'ananya@vyaparadnet.com', phone: '+91 96543 21098', role: 'Freelancer', status: 'Active', kycStatus: 'Verified', joinedDate: '2026-04-12', bpBalance: 320, commissionWallet: 24800, address: 'Sector 62, Noida, UP' },
-    { id: 'USR-1005', name: 'Sanjay Verma', username: 'sanjay_v', email: 'sanjay@vyaparadnet.com', phone: '+91 95432 10987', role: 'Business Owner', status: 'Suspended', kycStatus: 'Rejected', joinedDate: '2026-05-18', bpBalance: 40, commissionWallet: 1500, address: '45, MG Road, Indore, MP' },
-    { id: 'USR-1006', name: 'Neha Gupta', username: 'neha_g', email: 'neha@vyaparadnet.com', phone: '+91 94321 09876', role: 'User', status: 'Active', kycStatus: 'Pending', joinedDate: '2026-06-20', bpBalance: 110, commissionWallet: 6800, address: 'Suite 301, Cyber City, Gurugram, HR' },
+    { id: 'USR-1001', name: 'Rajesh Sharma', username: 'rajesh_sharma', email: 'rajesh@addnet.com', phone: '+91 98765 43210', role: 'Business Owner', status: 'Active', kycStatus: 'Verified', joinedDate: '2026-01-15', bpBalance: 245, commissionWallet: 18500, address: 'B-402, Skyline Towers, Mumbai, MH' },
+    { id: 'USR-1002', name: 'Priya Patel', username: 'priya_patel', email: 'priya@addnet.com', phone: '+91 98123 45678', role: 'Freelancer', status: 'Active', kycStatus: 'Verified', joinedDate: '2026-02-02', bpBalance: 180, commissionWallet: 12400, address: '12-A, Silicon Hub, Bengaluru, KA' },
+    { id: 'USR-1003', name: 'Vikram Malhotra', username: 'vikram_m', email: 'vikram@addnet.com', phone: '+91 97111 22334', role: 'Affiliate Associate', status: 'Pending', kycStatus: 'Pending', joinedDate: '2026-03-10', bpBalance: 95, commissionWallet: 4200, address: '78, Civil Lines, Jaipur, RJ' },
+    { id: 'USR-1004', name: 'Ananya Roy', username: 'ananya_design', email: 'ananya@addnet.com', phone: '+91 96543 21098', role: 'Freelancer', status: 'Active', kycStatus: 'Verified', joinedDate: '2026-04-12', bpBalance: 320, commissionWallet: 24800, address: 'Sector 62, Noida, UP' },
+    { id: 'USR-1005', name: 'Sanjay Verma', username: 'sanjay_v', email: 'sanjay@addnet.com', phone: '+91 95432 10987', role: 'Business Owner', status: 'Suspended', kycStatus: 'Rejected', joinedDate: '2026-05-18', bpBalance: 40, commissionWallet: 1500, address: '45, MG Road, Indore, MP' },
+    { id: 'USR-1006', name: 'Neha Gupta', username: 'neha_g', email: 'neha@addnet.com', phone: '+91 94321 09876', role: 'User', status: 'Active', kycStatus: 'Pending', joinedDate: '2026-06-20', bpBalance: 110, commissionWallet: 6800, address: 'Suite 301, Cyber City, Gurugram, HR' },
   ]);
 
   const handleOpenEdit = (user) => {

@@ -123,7 +123,7 @@ function EntityHeader({ currentEntity, onLogout, darkMode, setDarkMode }) {
             <div className="profile-dropdown-menu custom-user-menu">
               <div className="dropdown-welcome-header">
                 <div>Signed in as</div>
-                <strong>{user?.email || 'user@vyaparadnet.com'}</strong>
+                <strong>{user?.email || 'partner@addnet.com'}</strong>
                 {user?.user_code && <small style={{ display: 'block', color: 'var(--accent-entity)', fontWeight: 600 }}>Code: {user.user_code}</small>}
               </div>
 

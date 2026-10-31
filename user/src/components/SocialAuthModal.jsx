@@ -22,7 +22,7 @@ function SocialAuthModal({ provider, initialMode = 'login', onClose, onSocialSuc
         },
         {
           name: 'Demo Portal Member',
-          email: 'user@vyaparadnet.com',
+          email: 'user@addnet.com',
           provider_id: 'google_demo_user_001',
           avatar: 'https://lh3.googleusercontent.com/a/default-user-3',
         },
@@ -48,7 +48,7 @@ function SocialAuthModal({ provider, initialMode = 'login', onClose, onSocialSuc
         },
         {
           name: 'Demo Portal Member',
-          email: 'user@vyaparadnet.com',
+          email: 'user@addnet.com',
           provider_id: 'fb_demo_user_001',
           avatar: 'https://graph.facebook.com/default-user-3',
         },

@@ -48,7 +48,7 @@ function AdminContactInquiriesPage() {
 
         <div className="card" style={{ padding: '1.25rem' }}>
           <h4 style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>✉️ OFFICIAL SUPPORT EMAIL</h4>
-          <div className="metric-value" style={{ fontSize: '1.15rem' }}>support@vyaparadnet.com</div>
+          <div className="metric-value" style={{ fontSize: '1.15rem' }}>support@addnet.com</div>
           <p className="metric-desc">Auto-ticket conversion active</p>
         </div>
 

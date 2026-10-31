@@ -5,8 +5,8 @@ function LiveHelpdesk({ user }) {
     {
       id: 1,
       sender: 'bot',
-      name: 'Vyapar Adnet AI Concierge',
-      text: `Hello ${user?.name || 'Tom'}! 👋 Welcome to Vyapar Adnet Live Helpdesk. How can I assist your business today?`,
+      name: 'AddNet AI Concierge',
+      text: `Hello ${user?.name || 'Tom'}! 👋 Welcome to AddNet Live Helpdesk. How can I assist your business today?`,
       time: 'Just now',
     },
   ]);
@@ -65,7 +65,7 @@ function LiveHelpdesk({ user }) {
         {
           id: Date.now() + 1,
           sender: 'bot',
-          name: 'Vyapar Adnet AI Concierge',
+          name: 'AddNet AI Concierge',
           text: botReplyText,
           time: 'Just now',
         },
@@ -103,7 +103,7 @@ function LiveHelpdesk({ user }) {
               <span className="status-dot-active" style={{ position: 'absolute', bottom: '0', right: '0', border: '2px solid #0f172a' }}></span>
             </div>
             <div>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#ffffff' }}>Vyapar Adnet AI Concierge</h3>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#ffffff' }}>AddNet AI Concierge</h3>
               <span style={{ fontSize: '0.75rem', color: '#34d399', fontWeight: 600 }}>● Agent Online • Average response under 1 min</span>
             </div>
           </div>

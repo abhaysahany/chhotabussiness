@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useBranding } from '../utils/branding';
 
 function EntityTermsModal({ currentEntity, onAccept, onLogout }) {
+  const { appName } = useBranding();
   const [agreed, setAgreed] = useState(false);
   const [declineWarning, setDeclineWarning] = useState(false);
   const [activeTab, setActiveTab] = useState('full'); // 'full' | 'summary'
@@ -223,7 +225,7 @@ function EntityTermsModal({ currentEntity, onAccept, onLogout }) {
                   1. Entity Onboarding & Merchant Scope
                 </h4>
                 <p style={{ margin: 0 }}>
-                  This Partner Agreement governs all Commercial Business Entities and Freelance Service Providers operating within the Vyapar Adnet ecosystem. By accessing the portal, you warrant that all business credentials, GST identification, tax registrations, and identity proof submitted are authentic and legally valid.
+                  This Partner Agreement governs all Commercial Business Entities and Freelance Service Providers operating within the {appName} ecosystem. By accessing the portal, you warrant that all business credentials, GST identification, tax registrations, and identity proof submitted are authentic and legally valid.
                 </p>
               </div>
 
@@ -250,7 +252,7 @@ function EntityTermsModal({ currentEntity, onAccept, onLogout }) {
                   4. Marketplace Commissions, Payouts & Settlement Cycles
                 </h4>
                 <p style={{ margin: 0 }}>
-                  Vyapar Adnet deducts the standardized platform facilitation commission and applicable payment gateway processing charges from settled sales. Net earnings are deposited into the entity's verified bank account following the standard clearance window.
+                  {appName} deducts the standardized platform facilitation commission and applicable payment gateway processing charges from settled sales. Net earnings are deposited into the entity's verified bank account following the standard clearance window.
                 </p>
               </div>
 
@@ -268,7 +270,7 @@ function EntityTermsModal({ currentEntity, onAccept, onLogout }) {
                   6. Confidentiality, Security & Account Termination
                 </h4>
                 <p style={{ margin: 0 }}>
-                  Customer contact information obtained through the platform must be maintained in strict confidentiality and cannot be used for off-platform solicitation. Vyapar Adnet reserves the right to suspend or terminate entity privileges for violations of these guidelines.
+                  Customer contact information obtained through the platform must be maintained in strict confidentiality and cannot be used for off-platform solicitation. {appName} reserves the right to suspend or terminate entity privileges for violations of these guidelines.
                 </p>
               </div>
             </div>
@@ -314,7 +316,7 @@ function EntityTermsModal({ currentEntity, onAccept, onLogout }) {
               }}
             />
             <span>
-              I confirm that I am authorized on behalf of <strong>{entityName}</strong> to accept the Vyapar Adnet Entity Partner Terms and Conditions, Operating Guidelines, and Privacy Policy.
+              I confirm that I am authorized on behalf of <strong>{entityName}</strong> to accept the {appName} Entity Partner Terms and Conditions, Operating Guidelines, and Privacy Policy.
             </span>
           </label>
 

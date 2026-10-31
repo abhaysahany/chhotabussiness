@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useBranding } from '../utils/branding';
 
 function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
+  const { appName } = useBranding();
   const [openMenus, setOpenMenus] = useState(() => ({
     dashboards: activePage === 'dashboard' || activePage === 'sales',
     contents: Boolean(activePage?.startsWith('content-')),
@@ -70,7 +72,7 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
               <path d="M19 6L29 19.5V6H19Z" fill="url(#nilovaGradSidebar2)" opacity="0.85" />
             </svg>
           </div>
-          {!collapsed && <span className="nilova-brand-text">Vyapar Adnet</span>}
+          {!collapsed && <span className="nilova-brand-text">{appName}</span>}
         </div>
       </div>
 
@@ -536,7 +538,7 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
         <div className="sidebar-footer-branding">
           <div className="branding-badge-icon">⚡</div>
           <div className="branding-badge-text">
-            <span className="branding-title">Vyapar Adnet Pro</span>
+            <span className="branding-title">{appName} Pro</span>
             <span className="branding-sub">Enterprise v2.4.0</span>
           </div>
           <span className="branding-verified-tag">Active ✓</span>

@@ -475,6 +475,7 @@
   gap: 0.5rem;
   margin-top: 0.4rem;
   animation: cbFadeIn 0.25s ease-out;
+  word-break: break-word;
 }
 
 .cb-sponsor-badge-error {
@@ -489,11 +490,36 @@
   gap: 0.5rem;
   margin-top: 0.4rem;
   animation: cbFadeIn 0.25s ease-out;
+  word-break: break-word;
 }
 
 @keyframes cbFadeIn {
   from { opacity: 0; transform: translateY(-3px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* Individual Form Field Error Message */
+.cb-field-error {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #DC2626;
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-top: 0.35rem;
+  line-height: 1.35;
+  word-break: break-word;
+  animation: cbFadeIn 0.2s ease-out;
+}
+
+.cb-input-field.has-error {
+  border-color: #EF4444 !important;
+  background-color: #FEF2F2 !important;
+}
+
+.cb-input-field.has-error:focus {
+  border-color: #DC2626 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
 }
 
 /* Alerts */
@@ -774,5 +800,94 @@
   .cb-auth-bottom-footer {
     gap: 1rem;
     font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .cb-auth-topbar {
+    padding: 0.75rem 0.75rem 0.25rem 0.75rem;
+  }
+
+  .cb-auth-main {
+    padding: 0.5rem 0.65rem 1.75rem 0.65rem;
+  }
+
+  .cb-auth-form-panel {
+    padding: 1.5rem 0.95rem;
+  }
+
+  .cb-auth-tabs {
+    margin-bottom: 1.25rem;
+    padding: 0.25rem;
+    gap: 0.25rem;
+  }
+
+  .cb-auth-tab {
+    font-size: 0.82rem;
+    padding: 0.55rem 0.4rem;
+    gap: 0.25rem;
+  }
+
+  .cb-form-title {
+    font-size: 1.35rem;
+  }
+
+  .cb-form-subtitle {
+    font-size: 0.82rem;
+  }
+
+  .cb-submit-btn {
+    font-size: 0.94rem;
+    padding: 0.85rem 1rem;
+    gap: 0.45rem;
+  }
+
+  .cb-google-sso-btn {
+    font-size: 0.88rem;
+    padding: 0.8rem 1rem;
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 375px) {
+  .cb-auth-topbar {
+    padding: 0.5rem 0.4rem 0.2rem 0.4rem;
+  }
+
+  .cb-auth-back-btn {
+    padding: 0.45rem 0.7rem;
+    font-size: 0.78rem;
+  }
+
+  .cb-auth-main {
+    padding: 0.25rem 0.4rem 1.25rem 0.4rem;
+  }
+
+  .cb-auth-container {
+    border-radius: 12px;
+  }
+
+  .cb-auth-form-panel {
+    padding: 1.25rem 0.75rem;
+  }
+
+  .cb-input-field {
+    padding-left: 2.35rem;
+    padding-right: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .cb-input-icon {
+    left: 0.75rem;
+  }
+
+  .cb-auth-tab {
+    font-size: 0.78rem;
+    padding: 0.5rem 0.25rem;
+  }
+
+  .cb-submit-btn {
+    font-size: 0.88rem;
+    padding: 0.8rem 0.65rem;
   }
 }

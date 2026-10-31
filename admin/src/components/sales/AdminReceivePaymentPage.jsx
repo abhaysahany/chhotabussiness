@@ -102,7 +102,7 @@ function AdminReceivePaymentPage() {
       sponsor: 'Suresh Kumar (ID: #960)',
       invoiceId: 'INV-2026-080',
       item: 'GST Registration & Annual Tax Filing',
-      businessEntity: 'Vyapar Adnet Tax Advisory',
+      businessEntity: 'AddNet Tax Advisory',
       amountReceived: 3538,
       directIncome: 353.8,
       levelIncomePool: 247.66,
@@ -129,7 +129,7 @@ function AdminReceivePaymentPage() {
   const [selectedSaleId, setSelectedSaleId] = useState(balanceSales[0]?.id || '');
   const [receivedAmount, setReceivedAmount] = useState(balanceSales[0]?.balanceDue.toString() || '7698');
   const [paymentMode, setPaymentMode] = useState('UPI / QR Code Scan');
-  const [depositAccount, setDepositAccount] = useState('Vyapar Adnet HDFC Current A/C (*9812)');
+  const [depositAccount, setDepositAccount] = useState('AddNet HDFC Current A/C (*9812)');
   const [utrReference, setUtrReference] = useState(`UTR-BAL-${Math.floor(100000 + Math.random() * 900000)}`);
 
   const activeSale = useMemo(() => {
@@ -473,7 +473,7 @@ function AdminReceivePaymentPage() {
                     <div>
                       <label className="pro-form-label">Deposit Bank Account</label>
                       <select className="pro-select-input" value={depositAccount} onChange={(e) => setDepositAccount(e.target.value)}>
-                        <option value="Vyapar Adnet HDFC Current A/C (*9812)">Vyapar Adnet HDFC Current A/C (*9812)</option>
+                        <option value="AddNet HDFC Current A/C (*9812)">AddNet HDFC Current A/C (*9812)</option>
                         <option value="ICICI Corporate A/C (*4412)">ICICI Corporate A/C (*4412)</option>
                         <option value="Razorpay Gateway Settlement">Razorpay Gateway Settlement</option>
                       </select>

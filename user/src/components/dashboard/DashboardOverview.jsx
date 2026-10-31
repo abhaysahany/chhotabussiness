@@ -73,7 +73,7 @@ function DashboardOverview({ user, onNavigate }) {
   const userRank = data?.user?.rank || user?.rank || 'Gold Executive Leader';
   const kycStatus = data?.user?.kycStatus || user?.kyc_status || 'verified';
   const refCode = userEmail.split('@')[0] || 'tomphillip';
-  const referralUrl = `https://vyaparadnet.com/ref/${refCode}`;
+  const referralUrl = `https://addnet.com/ref/${refCode}`;
 
   const copyReferralLink = () => {
     navigator.clipboard.writeText(referralUrl);
@@ -355,7 +355,7 @@ function DashboardOverview({ user, onNavigate }) {
         <div>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#eff6ff', color: '#1d4ed8', padding: '0.25rem 0.65rem', borderRadius: '6px', fontSize: '0.74rem', fontWeight: 800, border: '1px solid #bfdbfe', marginBottom: '0.35rem' }}>
             <Zap size={13} className="text-blue-600" />
-            VYAPAR ADNET SAAS PORTAL • V2.4 ENTERPRISE
+            ADDNET SAAS PORTAL • V2.4 ENTERPRISE
           </div>
           <h1 style={{ margin: 0, fontSize: '1.75rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.03em' }}>
             Executive Dashboard

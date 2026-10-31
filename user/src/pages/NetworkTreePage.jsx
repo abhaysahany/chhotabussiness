@@ -22,7 +22,7 @@ function NetworkTreePage({ user }) {
           <div className="network-tree-node root-node">
             <div className="node-card root">
               <span className="node-tag">YOU (ROOT)</span>
-              <strong>{user?.name || 'Vyapar Adnet User'}</strong>
+              <strong>{user?.name || 'AddNet User'}</strong>
               <span className="node-code">{user?.user_code || 'CB100001'}</span>
             </div>
             <div className="tree-connector"></div>

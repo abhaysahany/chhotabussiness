@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useBranding } from '../../utils/branding';
 
 function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogout, currentAdmin }) {
+  const { appName } = useBranding();
   const [entitiesOpen, setEntitiesOpen] = useState(() => Boolean(activeTab === 'entities-businesses' || activeTab === 'entities-freelancers'));
   const [productsOpen, setProductsOpen] = useState(() => Boolean(activeTab?.startsWith('products-') || activeTab?.startsWith('services-') || activeTab === 'entities-commissions'));
   const [salesOpen, setSalesOpen] = useState(() => Boolean(activeTab?.startsWith('sales-')));
@@ -57,7 +59,7 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
               </linearGradient>
             </defs>
           </svg>
-          {!collapsed && <span className="sidebar-brand-name">Vyapar Adnet</span>}
+          {!collapsed && <span className="sidebar-brand-name">{appName}</span>}
         </div>
         <button
           className="sidebar-toggle-btn"

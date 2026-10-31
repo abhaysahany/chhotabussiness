@@ -29,7 +29,7 @@ function HowItWorksSection({ onRegisterClick }) {
     },
     {
       number: '03',
-      title: 'Vyapar Adnet Promotes',
+      title: 'AddNet Promotes',
       desc: 'We launch targeted ad campaigns, SEO outreach, and social promotion.',
       icon: <Share2 size={22} color="#FF7A00" />,
       tag: 'Ad Network',
@@ -58,7 +58,7 @@ function HowItWorksSection({ onRegisterClick }) {
     {
       number: '07',
       title: 'Success Commission',
-      desc: 'Pay a small performance commission to Vyapar Adnet upon completion.',
+      desc: 'Pay a small performance commission to AddNet upon completion.',
       icon: <Percent size={22} color="#FF7A00" />,
       tag: 'Win-Win',
     },
@@ -74,7 +74,7 @@ function HowItWorksSection({ onRegisterClick }) {
             <span>Simple 7-Step Workflow</span>
           </div>
           <h2 className="cb-section-title">
-            How Vyapar Adnet Works
+            How AddNet Works
           </h2>
           <p className="cb-section-subtitle">
             From registration to direct customer payments, here is how our advertising network powers your business growth.

@@ -131,7 +131,7 @@ function AdminServicesPage() {
   const openAddModal = () => {
     setEditingService(null);
     const defaultCat = categoriesList[0] || 'Legal & Compliance';
-    const defaultBiz = businessesList.length > 0 ? businessesList[0].business_name : 'Vyapar Adnet Tax Advisory';
+    const defaultBiz = businessesList.length > 0 ? businessesList[0].business_name : 'AddNet Tax Advisory';
 
     setFormData({
       name: '',

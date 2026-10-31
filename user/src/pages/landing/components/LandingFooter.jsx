@@ -31,17 +31,17 @@ function LandingFooter({ onLoginClick, onRegisterClick, onNavigateLegal, onScrol
                 <Building2 size={20} />
               </div>
               <span style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0F4C81', letterSpacing: '-0.02em', fontFamily: 'Poppins, sans-serif' }}>
-                VYAPAR<span style={{ color: '#FF7A00' }}>ADNET</span>
+                ADD<span style={{ color: "#FF7A00" }}>NET</span>
               </span>
             </div>
 
             <p style={{ fontSize: '0.85rem', color: '#64748b', lineHeight: 1.6, marginBottom: '1.25rem' }}>
-              Vyapar Adnet is an advertising & promotional marketplace network empowering IT companies, developers, agencies, and service providers to get genuine customers.
+              AddNet is an advertising & promotional marketplace network empowering IT companies, developers, agencies, and service providers to get genuine customers.
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.82rem', color: '#475569' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Mail size={15} color="#0F4C81" /> support@vyaparadnet.com
+                <Mail size={15} color="#0F4C81" /> support@addnet.com
               </span>
               <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <Phone size={15} color="#0F4C81" /> +91 (800) 194-2026 (Mon-Sat, 9AM - 7PM)
@@ -72,7 +72,7 @@ function LandingFooter({ onLoginClick, onRegisterClick, onNavigateLegal, onScrol
               <li><a href="#how-it-works" onClick={() => onScrollToSection && onScrollToSection('how-it-works')}>How It Works (7 Steps)</a></li>
               <li><a href="#infographic" onClick={() => onScrollToSection && onScrollToSection('infographic')}>Business Flow Infographic</a></li>
               <li><a href="#benefits" onClick={() => onScrollToSection && onScrollToSection('benefits')}>Provider & Client Benefits</a></li>
-              <li><a href="#why-us" onClick={() => onScrollToSection && onScrollToSection('why-us')}>Why Choose Vyapar Adnet</a></li>
+              <li><a href="#why-us" onClick={() => onScrollToSection && onScrollToSection('why-us')}>Why Choose AddNet</a></li>
               <li><a href="#pricing" onClick={() => onScrollToSection && onScrollToSection('pricing')}>Pricing & Partner Plans</a></li>
               <li><a href="#faq" onClick={() => onScrollToSection && onScrollToSection('faq')}>Frequently Asked Questions</a></li>
             </ul>
@@ -130,7 +130,7 @@ function LandingFooter({ onLoginClick, onRegisterClick, onNavigateLegal, onScrol
         {/* Bottom Bar */}
         <div className="cb-footer-bottom">
           <div>
-            © {new Date().getFullYear()} <strong>Vyapar Adnet Promoters Network Ltd</strong>. All rights reserved.
+            © {new Date().getFullYear()} <strong>AddNet Promoters Network Ltd</strong>. All rights reserved.
           </div>
           <div style={{ display: 'flex', gap: '1.5rem', color: '#64748b' }}>
             <span>Made with precision for Indian Enterprises</span>

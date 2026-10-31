@@ -18,7 +18,7 @@ function PrivacyPolicyPage({ onNavigate }) {
     {
       id: 'usage',
       title: '2. How We Use Your Information',
-      content: `Vyapar Adnet utilizes collected information for legitimate business purposes:
+      content: `AddNet utilizes collected information for legitimate business purposes:
       
 • Account Creation & Authentication: Provisioning your unique Member Code (e.g. CB100001), managing passwords, and verifying email OTPs.
 • Genealogy & Commission Calculations: Computing affiliate rewards, direct sponsor bonuses, and team commissions.
@@ -60,7 +60,7 @@ function PrivacyPolicyPage({ onNavigate }) {
     {
       id: 'rights',
       title: '6. Your Privacy Rights & Data Control',
-      content: `As a registered user of Vyapar Adnet, you have the right to:
+      content: `As a registered user of AddNet, you have the right to:
       
 • Access & Review: Inspect your personal profile data, KYC verification status, and commission payout ledgers.
 • Rectification: Update or correct outdated contact information, bank account numbers, or address details.
@@ -77,9 +77,9 @@ function PrivacyPolicyPage({ onNavigate }) {
       title: '8. Grievance Officer & Privacy Inquiries',
       content: `In accordance with the Information Technology Act and Digital Personal Data Protection standards, for any privacy concerns, data inquiries, or grievance redressals, please reach out to our designated Data Protection & Grievance Officer:
       
-• Email: privacy@vyaparadnet.com / compliance@vyaparadnet.com
+• Email: privacy@addnet.com / compliance@addnet.com
 • Portal: Submit a Ticket via the Helpdesk & Support Center
-• Address: Vyapar Adnet Platform Compliance Unit, Tower B, Business Tech Park, Sector 62, Noida, India.`,
+• Address: AddNet Platform Compliance Unit, Tower B, Business Tech Park, Sector 62, Noida, India.`,
     },
   ];
 
@@ -104,7 +104,7 @@ function PrivacyPolicyPage({ onNavigate }) {
               Privacy Policy
             </h1>
             <p style={{ color: '#94a3b8', fontSize: '0.9rem', maxWidth: '650px', margin: 0 }}>
-              Learn how Vyapar Adnet collects, protects, processes, and respects your personal and financial information.
+              Learn how AddNet collects, protects, processes, and respects your personal and financial information.
             </p>
           </div>
 
@@ -175,7 +175,7 @@ function PrivacyPolicyPage({ onNavigate }) {
                 Also review our Operating Terms
               </h4>
               <p style={{ margin: 0, fontSize: '0.82rem', color: '#64748b' }}>
-                Check the complete Vyapar Adnet affiliate governance rules and agreements.
+                Check the complete AddNet affiliate governance rules and agreements.
               </p>
             </div>
             {onNavigate && (

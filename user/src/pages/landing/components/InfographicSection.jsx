@@ -24,10 +24,10 @@ function InfographicSection() {
             <span>Transparent Business Architecture</span>
           </div>
           <h2 className="cb-section-title">
-            The Vyapar Adnet Promotion Model
+            The AddNet Promotion Model
           </h2>
           <p className="cb-section-subtitle">
-            Vyapar Adnet is NOT a service vendor. We are a premier advertising network connecting trusted service providers with end clients.
+            AddNet is NOT a service vendor. We are a premier advertising network connecting trusted service providers with end clients.
           </p>
         </div>
 
@@ -59,13 +59,13 @@ function InfographicSection() {
               </div>
             </div>
 
-            {/* Pillar 2: Vyapar Adnet Core */}
-            <div className="cb-flow-node highlight-vyapar" style={{ border: '2px solid #FF7A00', boxShadow: 'var(--cb-shadow-md)' }}>
+            {/* Pillar 2: AddNet Core */}
+            <div className="cb-flow-node highlight-chhota" style={{ border: '2px solid #FF7A00', boxShadow: 'var(--cb-shadow-md)' }}>
               <div style={{ width: '50px', height: '50px', borderRadius: '12px', background: 'linear-gradient(135deg, #0F4C81 0%, #FF7A00 100%)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem auto' }}>
                 <Zap size={24} />
               </div>
               <h3 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0F4C81', margin: '0 0 0.4rem 0' }}>
-                VYAPAR ADNET
+                ADDNET
               </h3>
               <p style={{ fontSize: '0.82rem', color: '#64748b', lineHeight: 1.5, margin: 0 }}>
                 <strong>The Promotion Hub:</strong> We run multi-channel digital marketing, SEO, and social ads to drive high-intent leads.
@@ -140,7 +140,7 @@ function InfographicSection() {
                   🤝 Pay ONLY When You Get Business
                 </strong>
                 <span style={{ fontSize: '0.8rem', color: '#cbd5e1' }}>
-                  Provider pays nominal commission ONLY AFTER receiving payment from customer deals brought by Vyapar Adnet. Zero business = ₹0 fee.
+                  Provider pays nominal commission ONLY AFTER receiving payment from customer deals brought by AddNet. Zero business = ₹0 fee.
                 </span>
               </div>
             </div>

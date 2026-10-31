@@ -17,7 +17,7 @@ function PersonalProfile({ user, onNavigate }) {
   // Form State initialized with user props or realistic fallbacks
   const [formData, setFormData] = useState({
     name: user?.name || 'Tom Phillip',
-    email: user?.email || 'tom.phillip@vyaparadnet.com',
+    email: user?.email || 'tom.phillip@addnet.com',
     phone: user?.phone || '+91 98765 43210',
     user_code: user?.user_code || 'CB100001',
     sponsor_id: user?.sponsor_id || 'Root Admin',

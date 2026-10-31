@@ -1,58 +1,65 @@
 import React, { useState, useEffect } from 'react';
+import { useBranding, broadcastBrandingUpdate } from '../../utils/branding';
+import api from '../../api/axios';
 
 const DEFAULT_SOCIAL_LINKS = {
   youtube: {
     enabled: true,
-    channelUrl: 'https://youtube.com/@vyaparadnet',
-    handle: '@VyaparAdnetOfficial',
+    channelUrl: 'https://youtube.com/@addnet',
+    handle: '@AddNetOfficial',
     followers: '125K+ Subscribers',
     embedVideoUrl: 'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ',
     featuredVideoTitle: 'Platform Compensation Architecture & Scaling Guide',
   },
   instagram: {
     enabled: true,
-    profileUrl: 'https://instagram.com/vyaparadnet_official',
-    handle: '@vyaparadnet_official',
+    profileUrl: 'https://instagram.com/addnet_official',
+    handle: '@addnet_official',
     followers: '85K+ Followers',
   },
   whatsapp: {
     enabled: true,
-    channelUrl: 'https://whatsapp.com/channel/vyaparadnet',
-    handle: 'Vyapar Adnet Official Alerts',
+    channelUrl: 'https://whatsapp.com/channel/addnet',
+    handle: 'AddNet Official Alerts',
     followers: '60K+ Members',
   },
   telegram: {
     enabled: true,
-    channelUrl: 'https://t.me/vyaparadnet_network',
-    handle: '@vyaparadnet_network',
+    channelUrl: 'https://t.me/addnet_network',
+    handle: '@addnet_network',
     followers: '45K+ Subscribers',
   },
   linkedin: {
     enabled: true,
-    companyUrl: 'https://linkedin.com/company/vyaparadnet',
-    handle: 'Vyapar Adnet System',
+    companyUrl: 'https://linkedin.com/company/addnet',
+    handle: 'AddNet System',
     followers: '25K+ Followers',
   },
   facebook: {
     enabled: true,
-    pageUrl: 'https://facebook.com/vyaparadnet',
-    handle: 'Vyapar Adnet Community',
+    pageUrl: 'https://facebook.com/addnet',
+    handle: 'AddNet Community',
     followers: '90K+ Members',
   },
   twitter: {
     enabled: true,
-    profileUrl: 'https://twitter.com/vyaparadnet',
-    handle: '@vyaparadnet',
+    profileUrl: 'https://twitter.com/addnet',
+    handle: '@addnet',
     followers: '30K+ Followers',
   },
 };
 
-import api from '../../api/axios';
-
 function AdminSettingsPage() {
-  const [activeTab, setActiveTab] = useState('social'); // 'social' | 'compensation'
+  const { appName: globalAppName } = useBranding();
+  const [activeTab, setActiveTab] = useState('branding'); // 'branding' | 'social' | 'compensation'
   const [toastMessage, setToastMessage] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // 0. Application Branding Settings State
+  const [appNameInput, setAppNameInput] = useState(globalAppName || 'AddNet');
+  const [brandingSaving, setBrandingSaving] = useState(false);
+  const [brandingError, setBrandingError] = useState('');
+  const [brandingSuccess, setBrandingSuccess] = useState('');
 
   // 1. Social Media Links State
   const [socialLinks, setSocialLinks] = useState(DEFAULT_SOCIAL_LINKS);
@@ -65,7 +72,7 @@ function AdminSettingsPage() {
     teamLevelsCount: 10, // 10 Levels
     defaultBpPercent: 20, // 20% Business Points value of Admin Platform Fee
     bpLevelsCount: 20, // 20 Levels
-    platformName: 'Vyapar Adnet System',
+    platformName: 'AddNet System',
     minWithdrawalAmount: 500,
   });
 
@@ -73,11 +80,15 @@ function AdminSettingsPage() {
   useEffect(() => {
     const loadSettings = async () => {
       try {
-        const [socialRes, settingsRes] = await Promise.allSettled([
+        const [brandingRes, socialRes, settingsRes] = await Promise.allSettled([
+          api.get('/branding'),
           api.get('/settings/social-links'),
           api.get('/settings?group=mlm'),
         ]);
 
+        if (brandingRes.status === 'fulfilled' && brandingRes.value.data?.app_name) {
+          setAppNameInput(brandingRes.value.data.app_name);
+        }
         if (socialRes.status === 'fulfilled' && socialRes.value.data?.socialLinks) {
           setSocialLinks(socialRes.value.data.socialLinks);
         }
@@ -97,6 +108,38 @@ function AdminSettingsPage() {
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(''), 3500);
+  };
+
+  const handleSaveBranding = async (e) => {
+    e.preventDefault();
+    setBrandingError('');
+    setBrandingSuccess('');
+
+    const trimmed = appNameInput.trim();
+    if (!trimmed || trimmed.length < 2 || trimmed.length > 50) {
+      const err = 'Application name must be between 2 and 50 characters.';
+      setBrandingError(err);
+      showToast(err);
+      return;
+    }
+
+    setBrandingSaving(true);
+    try {
+      const res = await api.post('/admin/settings/branding', { app_name: trimmed });
+      const updated = res.data?.app_name || trimmed;
+      setAppNameInput(updated);
+      broadcastBrandingUpdate(updated);
+      const successMsg = `✓ Application branding updated to "${updated}" and synchronized across all panels!`;
+      setBrandingSuccess(successMsg);
+      showToast(successMsg);
+    } catch (err) {
+      console.error('Error saving branding:', err);
+      const msg = err.response?.data?.message || 'Failed to update application branding.';
+      setBrandingError(msg);
+      showToast(msg);
+    } finally {
+      setBrandingSaving(false);
+    }
   };
 
   const handleSaveSocialLinks = async (e) => {
@@ -174,7 +217,26 @@ function AdminSettingsPage() {
       </div>
 
       {/* Tab Navigation */}
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.75rem', background: '#ffffff', padding: '0.4rem', borderRadius: '12px', border: '1px solid #e2e8f0', width: 'fit-content' }}>
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.75rem', background: '#ffffff', padding: '0.4rem', borderRadius: '12px', border: '1px solid #e2e8f0', width: 'fit-content', flexWrap: 'wrap' }}>
+        <button
+          type="button"
+          onClick={() => setActiveTab('branding')}
+          style={{
+            padding: '0.6rem 1.25rem',
+            borderRadius: '8px',
+            border: 'none',
+            background: activeTab === 'branding' ? '#2563eb' : 'transparent',
+            color: activeTab === 'branding' ? '#ffffff' : '#64748b',
+            fontWeight: 700,
+            fontSize: '0.85rem',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+          }}
+        >
+          <span>🎨</span> Application Branding & Name
+        </button>
         <button
           type="button"
           onClick={() => setActiveTab('social')}
@@ -214,6 +276,141 @@ function AdminSettingsPage() {
           <span>📊</span> Network Commission & Points (40/20/20)
         </button>
       </div>
+
+      {/* TAB 0: APPLICATION BRANDING / APP NAME */}
+      {activeTab === 'branding' && (
+        <form onSubmit={handleSaveBranding}>
+          <div style={{ maxWidth: '780px', background: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', padding: '2rem', boxShadow: '0 4px 16px rgba(0,0,0,0.03)', marginBottom: '2rem' }}>
+            
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.5rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '1.25rem' }}>
+              <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#eff6ff', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem' }}>
+                🎨
+              </div>
+              <div>
+                <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>Application Branding & Brand Name</h2>
+                <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.82rem', color: '#64748b' }}>
+                  Centrally control the public brand name displayed across the User/Member Panel, Admin Panel, and Entity Panel.
+                </p>
+              </div>
+            </div>
+
+            {/* Success Alert */}
+            {brandingSuccess && (
+              <div style={{ backgroundColor: '#ecfdf5', color: '#065f46', border: '1px solid #a7f3d0', padding: '0.9rem 1.15rem', borderRadius: '10px', marginBottom: '1.5rem', fontSize: '0.875rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span>✓</span>
+                <span>{brandingSuccess}</span>
+              </div>
+            )}
+
+            {/* Error Alert */}
+            {brandingError && (
+              <div style={{ backgroundColor: '#fef2f2', color: '#991b1b', border: '1px solid #fecaca', padding: '0.9rem 1.15rem', borderRadius: '10px', marginBottom: '1.5rem', fontSize: '0.875rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span>⚠️</span>
+                <span>{brandingError}</span>
+              </div>
+            )}
+
+            {/* App Name Input Group */}
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#1e293b', marginBottom: '0.5rem' }}>
+                Application Brand Name <span style={{ color: '#ef4444' }}>*</span>
+              </label>
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                <input
+                  type="text"
+                  value={appNameInput}
+                  onChange={(e) => {
+                    setAppNameInput(e.target.value);
+                    setBrandingError('');
+                    setBrandingSuccess('');
+                  }}
+                  placeholder="e.g. AddNet"
+                  minLength={2}
+                  maxLength={50}
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem 1rem',
+                    fontSize: '1rem',
+                    fontWeight: 600,
+                    borderRadius: '10px',
+                    border: '1.5px solid #cbd5e1',
+                    color: '#0f172a',
+                    outline: 'none',
+                    transition: 'all 0.2s',
+                  }}
+                />
+              </div>
+              <p style={{ margin: '0.4rem 0 0 0', fontSize: '0.78rem', color: '#64748b' }}>
+                Must be between 2 and 50 characters. Default initial configuration is <strong>AddNet</strong>.
+              </p>
+            </div>
+
+            {/* Live Visual Preview Box */}
+            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem', marginBottom: '1.75rem' }}>
+              <div style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.5px', marginBottom: '0.75rem' }}>
+                Live Portal Header Preview
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '0.75rem 1.25rem' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'linear-gradient(135deg, #0F4C81 0%, #1e3a5f 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontWeight: 800 }}>
+                  A
+                </div>
+                <div>
+                  <div style={{ fontFamily: 'Poppins, sans-serif', fontSize: '1.15rem', fontWeight: 900, color: '#0F4C81' }}>
+                    {appNameInput.trim() || 'AddNet'}
+                  </div>
+                  <span style={{ fontSize: '0.68rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>
+                    Business Promoter Network
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Save Button */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <button
+                type="submit"
+                disabled={brandingSaving}
+                style={{
+                  background: '#2563eb',
+                  color: '#ffffff',
+                  border: 'none',
+                  padding: '0.8rem 1.75rem',
+                  borderRadius: '10px',
+                  fontWeight: 700,
+                  fontSize: '0.92rem',
+                  cursor: brandingSaving ? 'not-allowed' : 'pointer',
+                  opacity: brandingSaving ? 0.7 : 1,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  boxShadow: '0 4px 12px rgba(37, 99, 235, 0.25)',
+                  transition: 'all 0.2s',
+                }}
+              >
+                {brandingSaving ? 'Saving...' : '💾 Save Application Branding'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setAppNameInput('AddNet')}
+                style={{
+                  background: '#f1f5f9',
+                  color: '#475569',
+                  border: '1px solid #cbd5e1',
+                  padding: '0.8rem 1.25rem',
+                  borderRadius: '10px',
+                  fontWeight: 600,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                }}
+              >
+                Reset to "AddNet"
+              </button>
+            </div>
+          </div>
+        </form>
+      )}
 
       {/* TAB 1: SOCIAL MEDIA PLATFORMS & LINKS */}
       {activeTab === 'social' && (

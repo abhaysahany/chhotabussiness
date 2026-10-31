@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Building2 } from 'lucide-react';
+import { useBranding } from './utils/branding';
 import LoginForm from './components/LoginForm';
 import RegisterForm from './components/RegisterForm';
 import Layout from './layout/Layout';
@@ -51,11 +52,12 @@ import {
 import { redirectToSocialProvider, handleSocialOAuthCallback } from './utils/socialOAuth';
 
 function App() {
+  const { appName } = useBranding();
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('user_token'));
   const [authView, setAuthView] = useState('landing'); // 'landing' | 'login' | 'register'
   const [activePage, setActivePage] = useState(() => {
-    const saved = localStorage.getItem('vyapar_user_active_page') || localStorage.getItem('chhota_user_active_page');
+    const saved = localStorage.getItem('addnet_user_active_page') || localStorage.getItem('chhota_user_active_page');
     return saved && saved !== 'empty' ? saved : 'dashboard';
   });
 
@@ -68,7 +70,7 @@ function App() {
   // Sync active page to localStorage to maintain route on refresh
   useEffect(() => {
     if (activePage && activePage !== 'empty') {
-      localStorage.setItem('vyapar_user_active_page', activePage);
+      localStorage.setItem('chhota_user_active_page', activePage);
     }
   }, [activePage]);
 
@@ -152,6 +154,14 @@ function App() {
     }
   };
 
+  const handleGoogleAuthSuccess = (res) => {
+    if (res?.token) {
+      localStorage.setItem('user_token', res.token);
+      setToken(res.token);
+      setUser(res.user);
+    }
+  };
+
   const handleLogout = async () => {
     try {
       if (token) {
@@ -161,7 +171,6 @@ function App() {
       console.error('Logout error:', err);
     } finally {
       localStorage.removeItem('user_token');
-      localStorage.removeItem('vyapar_user_active_page');
       localStorage.removeItem('chhota_user_active_page');
       setToken(null);
       setUser(null);
@@ -177,7 +186,7 @@ function App() {
               <Building2 size={24} />
             </div>
             <div style={{ fontFamily: 'Poppins, sans-serif', fontSize: '1.25rem', fontWeight: 900, color: '#0F4C81', letterSpacing: '-0.03em' }}>
-              VYAPAR<span style={{ color: '#FF7A00' }}>ADNET</span>
+              {appName}
             </div>
           </div>
           <p style={{ color: '#64748B', fontSize: '0.88rem', margin: 0 }}>Connecting to partner portal...</p>
@@ -268,6 +277,7 @@ function App() {
       return (
         <LoginForm
           onLoginSuccess={handleLogin}
+          onGoogleSuccess={handleGoogleAuthSuccess}
           onSwitchToRegister={() => setAuthView('register')}
           onBackToHome={() => setAuthView('landing')}
           onSocialClick={(provider) => redirectToSocialProvider(provider, 'login')}
@@ -279,6 +289,7 @@ function App() {
     return (
       <RegisterForm
         onRegisterSuccess={handleRegister}
+        onGoogleSuccess={handleGoogleAuthSuccess}
         onSwitchToLogin={() => setAuthView('login')}
         onBackToHome={() => setAuthView('landing')}
         onSocialClick={(provider) => redirectToSocialProvider(provider, 'register')}

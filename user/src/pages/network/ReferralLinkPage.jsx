@@ -5,7 +5,7 @@ import './network.css';
 
 function ReferralLinkPage({ user }) {
   const userCode = user?.user_code || user?.sponsor_id || 'CB100001';
-  const baseUrl = window.location.origin || 'https://vyaparadnet.com';
+  const baseUrl = window.location.origin || 'https://addnet.com';
 
   const defaultLink = `${baseUrl}/register?ref=${userCode}`;
 
@@ -176,7 +176,7 @@ function ReferralLinkPage({ user }) {
 
         <div className="share-buttons-row">
           <a
-            href={`https://api.whatsapp.com/send?text=Join%20my%20business%20network%20on%20Vyapar%20Adnet:%20${encodeURIComponent(defaultLink)}`}
+            href={`https://api.whatsapp.com/send?text=Join%20my%20business%20network%20on%20AddNet:%20${encodeURIComponent(defaultLink)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="share-btn btn-whatsapp"
@@ -184,7 +184,7 @@ function ReferralLinkPage({ user }) {
             Share on WhatsApp
           </a>
           <a
-            href={`https://t.me/share/url?url=${encodeURIComponent(defaultLink)}&text=Join%20my%20Vyapar%20Adnet%20network`}
+            href={`https://t.me/share/url?url=${encodeURIComponent(defaultLink)}&text=Join%20my%20AddNet%20network`}
             target="_blank"
             rel="noopener noreferrer"
             className="share-btn btn-telegram"
@@ -192,7 +192,7 @@ function ReferralLinkPage({ user }) {
             Telegram
           </a>
           <a
-            href={`mailto:?subject=Join%20Vyapar%20Adnet&body=Register%20using%20my%20link:%20${encodeURIComponent(defaultLink)}`}
+            href={`mailto:?subject=Join%20AddNet&body=Register%20using%20my%20link:%20${encodeURIComponent(defaultLink)}`}
             className="share-btn btn-email"
           >
             Email Invite
@@ -267,7 +267,7 @@ function ReferralLinkPage({ user }) {
             <div className="qr-actions">
               <a
                 href={`https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=${encodeURIComponent(defaultLink)}`}
-                download="vyaparadnet-referral-qr.png"
+                download="addnet-referral-qr.png"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="net-btn btn-secondary"

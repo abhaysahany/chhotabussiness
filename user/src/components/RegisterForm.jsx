@@ -24,10 +24,13 @@ import {
   X,
   Info,
 } from 'lucide-react';
-import { verifySponsor, sendOtp, verifyOtp } from '../api/userService';
+import { verifySponsor, sendOtp, verifyOtp, authenticateWithGoogle } from '../api/userService';
+import { initiateGoogleCodePopup } from '../utils/googleOAuth';
+import { useBranding } from '../utils/branding';
 import './auth.css';
 
-function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpenLegalPage, onBackToHome }) {
+function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpenLegalPage, onBackToHome, onGoogleSuccess }) {
+  const { appName } = useBranding();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -44,6 +47,9 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
   const [showLegalModal, setShowLegalModal] = useState(false);
   const [legalModalTab, setLegalModalTab] = useState('terms'); // 'terms' | 'privacy'
 
+  // Form Field Validation Errors (Backend HTTP 422 & Frontend Pre-validation)
+  const [fieldErrors, setFieldErrors] = useState({});
+
   // OTP State
   const [otpStep, setOtpStep] = useState(false);
   const [otpCode, setOtpCode] = useState('');
@@ -51,6 +57,18 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
   const [sendingOtp, setSendingOtp] = useState(false);
   const [verifyingOtp, setVerifyingOtp] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+
+  // Helper to clear a field's validation error on user input
+  const clearFieldError = (field) => {
+    setFieldErrors((prev) => {
+      if (!prev[field]) return prev;
+      const updated = { ...prev };
+      delete updated[field];
+      return updated;
+    });
+  };
 
   // Auto-verify Sponsor ID in real-time as user types (Debounced 400ms)
   useEffect(() => {
@@ -70,6 +88,7 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
         if (res.verified) {
           setSponsorStatus(res.sponsor);
           setSponsorError('');
+          clearFieldError('sponsor_id');
         }
       } catch (err) {
         console.error('Real-time sponsor verify error:', err);
@@ -91,34 +110,74 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
     setShowLegalModal(true);
   };
 
-  // Step 1: Send OTP to Email
+  // Step 1: Send OTP to Email (Submits all registration fields for backend validation)
   const handleSendOtp = async (e) => {
     e.preventDefault();
     setErrorMessage('');
+    setFieldErrors({});
+    setShowLoginPrompt(false);
     setSponsorError('');
 
-    if (!termsAccepted) {
-      setErrorMessage('You must read and agree to the Terms and Conditions and Privacy Policy to proceed.');
-      return;
+    const currentSponsorId = (sponsorStatus?.user_code || sponsorId || '').trim();
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim();
+
+    const localErrors = {};
+    if (!currentSponsorId) {
+      localErrors.sponsor_id = ['Sponsor ID is required.'];
+    } else if (!sponsorStatus) {
+      localErrors.sponsor_id = ['Please enter a valid, database-verified Sponsor ID.'];
     }
 
-    if (!sponsorStatus) {
-      setSponsorError('Please enter a valid, database-verified Sponsor ID to continue.');
+    if (!trimmedName) {
+      localErrors.name = ['Full Name / Business Name is required.'];
+    }
+
+    if (!trimmedEmail) {
+      localErrors.email = ['Email address is required.'];
+    }
+
+    if (!password || password.length < 6) {
+      localErrors.password = ['Password must be at least 6 characters.'];
+    }
+
+    if (!termsAccepted) {
+      localErrors.terms_accepted = ['You must agree to the Terms and Conditions and Privacy Policy.'];
+    }
+
+    if (Object.keys(localErrors).length > 0) {
+      setFieldErrors(localErrors);
+      setErrorMessage('Please fix the highlighted errors before continuing.');
       return;
     }
 
     setSendingOtp(true);
     try {
-      const res = await sendOtp(email);
+      const res = await sendOtp({
+        name: trimmedName,
+        email: trimmedEmail,
+        password,
+        sponsor_id: currentSponsorId,
+        terms_accepted: termsAccepted,
+      });
+
       if (res.status === 'success') {
         setSentOtpDemo(res.otp || '');
         setOtpStep(true);
+        setFieldErrors({});
+        setErrorMessage('');
       }
     } catch (err) {
       console.error('Send OTP error:', err);
-      setErrorMessage(
-        err.response?.data?.message || err.message || 'Failed to send verification OTP to email.'
-      );
+      const data = err.response?.data;
+      if (data?.errors) {
+        setFieldErrors(data.errors);
+      }
+      const msg = data?.message || err.message || 'Failed to send verification OTP to email.';
+      setErrorMessage(msg);
+      if (data?.requires_login || msg.toLowerCase().includes('already registered') || msg.toLowerCase().includes('login')) {
+        setShowLoginPrompt(true);
+      }
     } finally {
       setSendingOtp(false);
     }
@@ -128,35 +187,102 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
   const handleCompleteRegistration = async (e) => {
     e.preventDefault();
     setErrorMessage('');
+    setFieldErrors({});
+    setShowLoginPrompt(false);
 
     if (!termsAccepted) {
       setErrorMessage('You must accept the Terms and Conditions and Privacy Policy to complete registration.');
       return;
     }
 
-    if (!otpCode || otpCode.length !== 6) {
-      setErrorMessage('Please enter the full 6-digit OTP code.');
+    const cleanOtp = (otpCode || '').trim();
+    if (!cleanOtp || cleanOtp.length !== 6 || !/^\d{6}$/.test(cleanOtp)) {
+      setFieldErrors({ otp: ['Please enter the full 6-digit numeric OTP code.'] });
+      setErrorMessage('Please enter the full 6-digit numeric OTP code.');
       return;
     }
 
     setVerifyingOtp(true);
     try {
       await onRegisterSuccess({
-        name,
-        email,
+        name: name.trim(),
+        email: email.trim(),
         password,
-        sponsor_id: sponsorStatus.user_code || sponsorId,
-        otp: otpCode,
+        sponsor_id: sponsorStatus?.user_code || sponsorId.trim(),
+        otp: cleanOtp,
         terms_accepted: true,
       });
     } catch (err) {
       console.error('Registration error:', err);
-      setErrorMessage(
-        err.response?.data?.message || err.message || 'Registration failed. Please verify the OTP and try again.'
-      );
+      const data = err.response?.data;
+      if (data?.errors) {
+        setFieldErrors(data.errors);
+      }
+      const msg = data?.message || err.message || 'Registration failed. Please verify the OTP and try again.';
+      setErrorMessage(msg);
+      if (data?.requires_login || msg.toLowerCase().includes('already registered')) {
+        setShowLoginPrompt(true);
+      }
     } finally {
       setVerifyingOtp(false);
     }
+  };
+
+  // Google SSO Sign-up Flow
+  const handleGoogleSignUp = () => {
+    setErrorMessage('');
+    setShowLoginPrompt(false);
+    setSponsorError('');
+
+    // 1. Validate Terms & Conditions acceptance
+    if (!termsAccepted) {
+      setErrorMessage('You must read and agree to the Terms and Conditions and Privacy Policy to proceed.');
+      return;
+    }
+
+    // 2. Validate Database-verified Sponsor ID
+    if (!sponsorStatus) {
+      setSponsorError('Please enter a valid, database-verified Sponsor ID to continue.');
+      return;
+    }
+
+    setGoogleLoading(true);
+
+    initiateGoogleCodePopup({
+      onCodeSuccess: async (code) => {
+        try {
+          const res = await authenticateWithGoogle({
+            code,
+            mode: 'register',
+            sponsor_id: sponsorStatus.user_code || sponsorId,
+            terms_accepted: true,
+          });
+
+          if (onGoogleSuccess) {
+            onGoogleSuccess(res);
+          } else if (onRegisterSuccess) {
+            onRegisterSuccess(res);
+          }
+        } catch (err) {
+          console.error('Google registration error:', err);
+          const data = err.response?.data;
+          if (data?.requires_login || err.response?.status === 409) {
+            setErrorMessage(data?.message || 'This email is already registered. Please log in instead.');
+            setShowLoginPrompt(true);
+          } else {
+            setErrorMessage(data?.message || err.message || 'Google registration failed. Please try again.');
+          }
+        } finally {
+          setGoogleLoading(false);
+        }
+      },
+      onError: (errMsg) => {
+        setGoogleLoading(false);
+        if (errMsg && !errMsg.toLowerCase().includes('closed')) {
+          setErrorMessage(errMsg);
+        }
+      },
+    });
   };
 
   return (
@@ -193,7 +319,7 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
       <main className="cb-auth-main">
         <div className="cb-auth-container">
           
-          {/* Left Column: Vyapar Adnet Value Showcase (Desktop) */}
+          {/* Left Column: AddNet Value Showcase (Desktop) */}
           <div className="cb-auth-showcase">
             <div>
               {/* Top Pill Badge */}
@@ -275,7 +401,7 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
               </div>
               <div>
                 <div className="cb-auth-logo-text-title">
-                  VYAPAR<span>ADNET</span>
+                  {appName}
                 </div>
                 <span className="cb-auth-logo-text-sub">
                   Business Promoter Network
@@ -318,13 +444,25 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
             {errorMessage && (
               <div className="cb-alert-error">
                 <AlertCircle size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
-                <span>{errorMessage}</span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', width: '100%' }}>
+                  <span>{errorMessage}</span>
+                  {showLoginPrompt && (
+                    <button
+                      type="button"
+                      className="highlight-link"
+                      style={{ textAlign: 'left', fontWeight: '700', padding: 0, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--cb-primary, #0F4C81)' }}
+                      onClick={onSwitchToLogin}
+                    >
+                      Go to Login →
+                    </button>
+                  )}
+                </div>
               </div>
             )}
 
             {!otpStep ? (
               /* STEP 1: REGISTRATION DETAILS & SPONSOR VERIFICATION */
-              <form onSubmit={handleSendOtp}>
+              <form onSubmit={handleSendOtp} noValidate>
                 
                 {/* SPONSOR ID FIELD WITH LIVE REAL-TIME VERIFICATION */}
                 <div className="cb-form-group">
@@ -347,9 +485,12 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
                     </span>
                     <input
                       type="text"
-                      className="cb-input-field"
+                      className={`cb-input-field ${fieldErrors.sponsor_id ? 'has-error' : ''}`}
                       value={sponsorId}
-                      onChange={(e) => setSponsorId(e.target.value)}
+                      onChange={(e) => {
+                        setSponsorId(e.target.value);
+                        clearFieldError('sponsor_id');
+                      }}
                       placeholder="e.g. CB100201 (Mandatory)"
                       required
                     />
@@ -359,7 +500,7 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
                   {sponsorStatus && (
                     <div className="cb-sponsor-badge-success">
                       <CheckCircle2 size={16} style={{ flexShrink: 0 }} />
-                      <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <div style={{ wordBreak: 'break-word', lineHeight: 1.35 }}>
                         <span>Verified Sponsor: </span>
                         <strong>{sponsorStatus.name}</strong>
                         <span style={{ opacity: 0.85, marginLeft: '0.25rem' }}>({sponsorStatus.user_code})</span>
@@ -371,7 +512,15 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
                   {sponsorError && !verifyingSponsor && (
                     <div className="cb-sponsor-badge-error">
                       <AlertCircle size={15} style={{ flexShrink: 0 }} />
-                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{sponsorError}</span>
+                      <span style={{ wordBreak: 'break-word', lineHeight: 1.35 }}>{sponsorError}</span>
+                    </div>
+                  )}
+
+                  {/* Field Error */}
+                  {fieldErrors.sponsor_id && (
+                    <div className="cb-field-error">
+                      <AlertCircle size={14} style={{ flexShrink: 0 }} />
+                      <span>{Array.isArray(fieldErrors.sponsor_id) ? fieldErrors.sponsor_id[0] : fieldErrors.sponsor_id}</span>
                     </div>
                   )}
                 </div>
@@ -388,14 +537,23 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
                     </span>
                     <input
                       type="text"
-                      className="cb-input-field"
+                      className={`cb-input-field ${fieldErrors.name ? 'has-error' : ''}`}
                       value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      onChange={(e) => {
+                        setName(e.target.value);
+                        clearFieldError('name');
+                      }}
                       placeholder="e.g. Rajesh Sharma / WebTech Agency"
                       autoComplete="name"
                       required
                     />
                   </div>
+                  {fieldErrors.name && (
+                    <div className="cb-field-error">
+                      <AlertCircle size={14} style={{ flexShrink: 0 }} />
+                      <span>{Array.isArray(fieldErrors.name) ? fieldErrors.name[0] : fieldErrors.name}</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* EMAIL ADDRESS FIELD */}
@@ -410,14 +568,24 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
                     </span>
                     <input
                       type="email"
-                      className="cb-input-field"
+                      className={`cb-input-field ${fieldErrors.email ? 'has-error' : ''}`}
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        clearFieldError('email');
+                        setShowLoginPrompt(false);
+                      }}
                       placeholder="partner@yourcompany.com"
                       autoComplete="email"
                       required
                     />
                   </div>
+                  {fieldErrors.email && (
+                    <div className="cb-field-error">
+                      <AlertCircle size={14} style={{ flexShrink: 0 }} />
+                      <span>{Array.isArray(fieldErrors.email) ? fieldErrors.email[0] : fieldErrors.email}</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* PASSWORD FIELD */}
@@ -432,9 +600,12 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
                     </span>
                     <input
                       type={showPassword ? 'text' : 'password'}
-                      className="cb-input-field"
+                      className={`cb-input-field ${fieldErrors.password ? 'has-error' : ''}`}
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                        clearFieldError('password');
+                      }}
                       placeholder="Create secure password (min 6 chars)"
                       minLength={6}
                       autoComplete="new-password"
@@ -449,6 +620,12 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
+                  {fieldErrors.password && (
+                    <div className="cb-field-error">
+                      <AlertCircle size={14} style={{ flexShrink: 0 }} />
+                      <span>{Array.isArray(fieldErrors.password) ? fieldErrors.password[0] : fieldErrors.password}</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* MANDATORY TERMS & PRIVACY CHECKBOX */}
@@ -457,8 +634,11 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
                     <input
                       type="checkbox"
                       checked={termsAccepted}
-                      onChange={(e) => setTermsAccepted(e.target.checked)}
-                      style={{ marginTop: '0.15rem' }}
+                      onChange={(e) => {
+                        setTermsAccepted(e.target.checked);
+                        clearFieldError('terms_accepted');
+                      }}
+                      style={{ marginTop: '0.15rem', flexShrink: 0 }}
                       required
                     />
                     <span>
@@ -489,13 +669,19 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
                       . <span className="required-dot">*</span>
                     </span>
                   </label>
+                  {fieldErrors.terms_accepted && (
+                    <div className="cb-field-error" style={{ marginTop: '0.4rem' }}>
+                      <AlertCircle size={14} style={{ flexShrink: 0 }} />
+                      <span>{Array.isArray(fieldErrors.terms_accepted) ? fieldErrors.terms_accepted[0] : fieldErrors.terms_accepted}</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* SUBMIT BUTTON */}
                 <button
                   type="submit"
                   className="cb-submit-btn"
-                  disabled={sendingOtp || !sponsorStatus || verifyingSponsor || !termsAccepted}
+                  disabled={sendingOtp || verifyingSponsor}
                 >
                   {sendingOtp ? (
                     <>
@@ -512,7 +698,7 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
               </form>
             ) : (
               /* STEP 2: EMAIL OTP VERIFICATION & REGISTRATION */
-              <form onSubmit={handleCompleteRegistration}>
+              <form onSubmit={handleCompleteRegistration} noValidate>
                 {sentOtpDemo && (
                   <div className="cb-alert-info">
                     <Info size={18} style={{ flexShrink: 0 }} />
@@ -533,16 +719,25 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
                     </span>
                     <input
                       type="text"
-                      className="cb-input-field"
+                      className={`cb-input-field ${fieldErrors.otp ? 'has-error' : ''}`}
                       style={{ textAlign: 'center', letterSpacing: '0.4em', fontSize: '1.25rem', fontWeight: 800 }}
                       value={otpCode}
-                      onChange={(e) => setOtpCode(e.target.value.trim())}
+                      onChange={(e) => {
+                        setOtpCode(e.target.value.trim());
+                        clearFieldError('otp');
+                      }}
                       placeholder="••••••"
                       maxLength={6}
                       autoFocus
                       required
                     />
                   </div>
+                  {fieldErrors.otp && (
+                    <div className="cb-field-error" style={{ justifyContent: 'center' }}>
+                      <AlertCircle size={14} style={{ flexShrink: 0 }} />
+                      <span>{Array.isArray(fieldErrors.otp) ? fieldErrors.otp[0] : fieldErrors.otp}</span>
+                    </div>
+                  )}
                 </div>
 
                 <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.25rem' }}>
@@ -550,7 +745,11 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
                     type="button"
                     className="cb-btn-ghost"
                     style={{ flex: 1 }}
-                    onClick={() => setOtpStep(false)}
+                    onClick={() => {
+                      setOtpStep(false);
+                      setFieldErrors({});
+                      setErrorMessage('');
+                    }}
                     disabled={verifyingOtp}
                   >
                     ← Back
@@ -559,7 +758,7 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
                     type="submit"
                     className="cb-submit-btn"
                     style={{ flex: 2 }}
-                    disabled={verifyingOtp || !termsAccepted}
+                    disabled={verifyingOtp}
                   >
                     {verifyingOtp ? (
                       <>
@@ -586,15 +785,25 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
             <button
               type="button"
               className="cb-google-sso-btn"
-              onClick={() => onSocialClick && onSocialClick('google')}
+              onClick={handleGoogleSignUp}
+              disabled={sendingOtp || verifyingOtp || googleLoading}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24">
-                <path fill="#ea4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.9C6.2 7.2 8.9 5 12 5z"/>
-                <path fill="#4285f4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/>
-                <path fill="#fbbc05" d="M5.3 14.7c-.2-.7-.4-1.4-.4-2.2s.2-1.5.4-2.2L1.6 7.4C.6 9.4 0 11.6 0 14s.6 4.6 1.6 6.6l3.7-2.9c0-.6.1-1.3.1-2.4z"/>
-                <path fill="#34a853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.1 0-5.8-2.2-6.7-5.3L1.6 16c1.9 3.8 5.8 7 10.4 7z"/>
-              </svg>
-              <span>Sign up with Google</span>
+              {googleLoading ? (
+                <>
+                  <Loader2 size={18} className="spin" style={{ animation: 'spin 1s linear infinite' }} />
+                  <span>Connecting to Google...</span>
+                </>
+              ) : (
+                <>
+                  <svg width="18" height="18" viewBox="0 0 24 24">
+                    <path fill="#ea4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.9C6.2 7.2 8.9 5 12 5z"/>
+                    <path fill="#4285f4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/>
+                    <path fill="#fbbc05" d="M5.3 14.7c-.2-.7-.4-1.4-.4-2.2s.2-1.5.4-2.2L1.6 7.4C.6 9.4 0 11.6 0 14s.6 4.6 1.6 6.6l3.7-2.9c0-.6.1-1.3.1-2.4z"/>
+                    <path fill="#34a853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.1 0-5.8-2.2-6.7-5.3L1.6 16c1.9 3.8 5.8 7 10.4 7z"/>
+                  </svg>
+                  <span>Sign up with Google</span>
+                </>
+              )}
             </button>
 
             {/* Footer Prompt */}
@@ -614,7 +823,7 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
 
       {/* 3. Bottom Legal Footer */}
       <footer className="cb-auth-bottom-footer">
-        <span>© {new Date().getFullYear()} Vyapar Adnet Pvt. Ltd. All rights reserved.</span>
+        <span>© {new Date().getFullYear()} {appName} Pvt. Ltd. All rights reserved.</span>
         <div style={{ display: 'flex', gap: '1.25rem' }}>
           <a
             href="#terms"
@@ -701,7 +910,7 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
                     {legalModalTab === 'terms' ? 'Terms and Conditions' : 'Privacy Policy'}
                   </h3>
                   <p style={{ margin: 0, fontSize: '0.75rem', color: '#cbd5e1' }}>
-                    Vyapar Adnet Legal & Affiliate Operating Standards
+                    {appName} Legal & Affiliate Operating Standards
                   </p>
                 </div>
               </div>
@@ -888,7 +1097,7 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
                     4. User Rights & Data Protection
                   </h4>
                   <p style={{ margin: '0' }}>
-                    You have the right to review, update, or request deletion of your account data. Inquiries can be directed to our compliance team at <strong>privacy@vyaparadnet.com</strong>.
+                    You have the right to review, update, or request deletion of your account data. Inquiries can be directed to our compliance team at <strong>privacy@addnet.com</strong>.
                   </p>
                 </>
               )}

@@ -58,7 +58,7 @@ function LandingNavbar({ onLoginClick, onRegisterClick, onNavigateSection }) {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
               <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0F4C81', letterSpacing: '-0.03em', fontFamily: 'Poppins, sans-serif' }}>
-                VYAPAR<span style={{ color: '#FF7A00' }}>ADNET</span>
+                ADD<span style={{ color: "#FF7A00" }}>NET</span>
               </span>
             </div>
             <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#64748B', letterSpacing: '0.5px', textTransform: 'uppercase', display: 'block', marginTop: '-2px' }}>

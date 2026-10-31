@@ -25,8 +25,9 @@ export const verifySponsor = async (sponsor_id) => {
   return response.data;
 };
 
-export const sendOtp = async (email) => {
-  const response = await api.post('/send-otp', { email });
+export const sendOtp = async (data) => {
+  const payload = typeof data === 'string' ? { email: data } : data;
+  const response = await api.post('/send-otp', payload);
   return response.data;
 };
 
@@ -42,6 +43,18 @@ export const getCurrentUser = async () => {
 
 export const logoutUser = async () => {
   const response = await api.post('/logout');
+  return response.data;
+};
+
+/**
+ * Secure Google Authentication (Login & Register via authorization code)
+ */
+export const authenticateWithGoogle = async (payload) => {
+  const response = await api.post('/auth/google', payload, {
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+    },
+  });
   return response.data;
 };
 
@@ -64,5 +77,3 @@ export const getDashboardStats = async () => {
     return null;
   }
 };
-
-
