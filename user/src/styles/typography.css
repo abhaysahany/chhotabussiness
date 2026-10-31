@@ -1,0 +1,117 @@
+/**
+ * Vyapar AdNET Design System — Typography
+ */
+
+h1, .van-h1 {
+  font-size: 1.625rem; /* 26px */
+  font-weight: 800;
+  color: var(--van-text-primary);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+h2, .van-h2 {
+  font-size: 1.375rem; /* 22px */
+  font-weight: 700;
+  color: var(--van-text-primary);
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+}
+
+h3, .van-h3 {
+  font-size: 1.125rem; /* 18px */
+  font-weight: 700;
+  color: var(--van-text-primary);
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+h4, .van-h4 {
+  font-size: 0.95rem; /* ~15px */
+  font-weight: 600;
+  color: var(--van-text-primary);
+  line-height: 1.4;
+}
+
+p, .van-body {
+  font-size: 0.875rem; /* 14px */
+  color: var(--van-text-secondary);
+  line-height: 1.5;
+}
+
+.van-text-sm {
+  font-size: 0.8125rem; /* 13px */
+  line-height: 1.45;
+}
+
+.van-text-xs {
+  font-size: 0.75rem; /* 12px */
+  line-height: 1.4;
+}
+
+.van-text-muted {
+  color: var(--van-text-muted);
+}
+
+.van-text-primary {
+  color: var(--van-text-primary);
+}
+
+.van-text-bold {
+  font-weight: 700;
+}
+
+.van-text-semibold {
+  font-weight: 600;
+}
+
+.van-text-medium {
+  font-weight: 500;
+}
+
+.van-num-mono {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.van-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: var(--van-radius-badge);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.van-badge-success {
+  background-color: var(--van-status-success-bg);
+  color: var(--van-status-success-text);
+  border: 1px solid var(--van-status-success-border);
+}
+
+.van-badge-warning {
+  background-color: var(--van-status-warning-bg);
+  color: var(--van-status-warning-text);
+  border: 1px solid var(--van-status-warning-border);
+}
+
+.van-badge-error {
+  background-color: var(--van-status-error-bg);
+  color: var(--van-status-error-border);
+  border: 1px solid var(--van-status-error-border);
+}
+
+.van-badge-info {
+  background-color: var(--van-status-info-bg);
+  color: var(--van-status-info-text);
+  border: 1px solid var(--van-status-info-border);
+}
+
+.van-badge-neutral {
+  background-color: var(--van-bg-surface);
+  color: var(--van-text-secondary);
+  border: 1px solid var(--van-border-subtle);
+}

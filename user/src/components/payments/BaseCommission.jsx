@@ -138,7 +138,7 @@ function BaseCommission({ user }) {
   ];
 
   return (
-    <div className="page-container" style={{ padding: '1.5rem 2rem', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <div className="page-container">
       {/* Page Header */}
       <div style={{ marginBottom: '1.5rem' }}>
         <h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', margin: '0 0 0.3rem 0' }}>

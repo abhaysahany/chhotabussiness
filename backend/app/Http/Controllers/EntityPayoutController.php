@@ -57,11 +57,7 @@ class EntityPayoutController extends Controller
 
         $dbPayouts = $payoutsQuery->orderBy('request_date', 'desc')->orderBy('id', 'desc')->get();
 
-        // Seeded realistic payout dataset for entity partner if DB has few
-        $defaultEntityPayouts = $this->getDefaultEntityPayouts($entityName);
-
-        // Combine or use records
-        $allPayouts = $dbPayouts->isNotEmpty() ? $dbPayouts->map(function ($p, $idx) use ($entityName) {
+        $allPayouts = $dbPayouts->map(function ($p, $idx) use ($entityName) {
             $dumpAmount = ($p->status === 'pending' || $p->status === 'dumped') ? (float)$p->requested_amount * 0.15 : 0;
             return [
                 'id' => $p->id,
@@ -89,60 +85,33 @@ class EntityPayoutController extends Controller
                 'balance_after' => (float)($p->wallet_balance_before - $p->requested_amount),
                 'paymentMethod' => $p->payment_method ?: 'Bank Transfer (NEFT)',
                 'payment_method' => $p->payment_method ?: 'Bank Transfer (NEFT)',
-                'bankName' => $p->bank_name ?: 'HDFC Bank Ltd',
-                'bank_name' => $p->bank_name ?: 'HDFC Bank Ltd',
-                'accountNumber' => $p->account_number ?: '•••• •••• 9821',
-                'account_number' => $p->account_number ?: '•••• •••• 9821',
-                'ifscCode' => $p->ifsc_code ?: 'HDFC0001234',
-                'ifsc_code' => $p->ifsc_code ?: 'HDFC0001234',
-                'upiId' => $p->upi_id ?: 'skyline.tech@okhdfcbank',
-                'upi_id' => $p->upi_id ?: 'skyline.tech@okhdfcbank',
+                'bankName' => $p->bank_name ?: '',
+                'bank_name' => $p->bank_name ?: '',
+                'accountNumber' => $p->account_number ?: '',
+                'account_number' => $p->account_number ?: '',
+                'ifscCode' => $p->ifsc_code ?: '',
+                'ifsc_code' => $p->ifsc_code ?: '',
+                'upiId' => $p->upi_id ?: '',
+                'upi_id' => $p->upi_id ?: '',
                 'status' => $p->status === 'completed' ? 'paid' : $p->status,
-                'requestDate' => $p->request_date ? Carbon::parse($p->request_date)->format('Y-m-d H:i:s') : Carbon::now()->subDays($idx * 3)->format('Y-m-d H:i:s'),
-                'request_date' => $p->request_date ? Carbon::parse($p->request_date)->format('Y-m-d H:i:s') : Carbon::now()->subDays($idx * 3)->format('Y-m-d H:i:s'),
+                'requestDate' => $p->request_date ? Carbon::parse($p->request_date)->format('Y-m-d H:i:s') : ($p->created_at ? $p->created_at->format('Y-m-d H:i:s') : Carbon::now()->format('Y-m-d H:i:s')),
+                'request_date' => $p->request_date ? Carbon::parse($p->request_date)->format('Y-m-d H:i:s') : ($p->created_at ? $p->created_at->format('Y-m-d H:i:s') : Carbon::now()->format('Y-m-d H:i:s')),
                 'processedDate' => $p->processed_date ? Carbon::parse($p->processed_date)->format('Y-m-d H:i:s') : null,
                 'processed_date' => $p->processed_date ? Carbon::parse($p->processed_date)->format('Y-m-d H:i:s') : null,
-                'utrNumber' => $p->utr_number ?: ($p->status === 'completed' || $p->status === 'paid' ? 'UTR-'.rand(100000000, 999999999) : null),
-                'utr_number' => $p->utr_number ?: ($p->status === 'completed' || $p->status === 'paid' ? 'UTR-'.rand(100000000, 999999999) : null),
+                'utrNumber' => $p->utr_number,
+                'utr_number' => $p->utr_number,
                 'notes' => $p->admin_notes ?: 'Entity Settlement Cycle Disbursal',
             ];
-        }) : collect($defaultEntityPayouts);
-
-        // Filter defaults if requested
-        if ($dbPayouts->isEmpty()) {
-            if ($status !== 'all' && !empty($status)) {
-                $allPayouts = $allPayouts->filter(fn($p) => strtolower($p['status']) === strtolower($status));
-            }
-            if ($method !== 'all' && !empty($method)) {
-                $allPayouts = $allPayouts->filter(fn($p) => stripos($p['payment_method'], $method) !== false);
-            }
-            if (!empty($startDate)) {
-                $allPayouts = $allPayouts->filter(fn($p) => Carbon::parse($p['request_date'])->gte(Carbon::parse($startDate)));
-            }
-            if (!empty($endDate)) {
-                $allPayouts = $allPayouts->filter(fn($p) => Carbon::parse($p['request_date'])->lte(Carbon::parse($endDate)->endOfDay()));
-            }
-            if (!empty($search)) {
-                $s = strtolower(trim($search));
-                $allPayouts = $allPayouts->filter(function ($p) use ($s) {
-                    return str_contains(strtolower($p['payout_code']), $s)
-                        || str_contains(strtolower($p['utr_number'] ?? ''), $s)
-                        || str_contains(strtolower($p['bank_name'] ?? ''), $s)
-                        || str_contains(strtolower($p['account_number'] ?? ''), $s)
-                        || str_contains(strtolower($p['upi_id'] ?? ''), $s);
-                });
-            }
-        }
+        });
 
         $allPayoutsList = $allPayouts->values();
 
-        // Calculate Totals:
-        // Total Paid: Sum of net_payable_amount for 'paid' / 'completed'
+        // Calculate Totals strictly from real records
         $totalPaid = $allPayoutsList->whereIn('status', ['paid', 'completed'])->sum(fn($i) => (float)$i['net_payable_amount']);
-        // Available Balance: Live pending balance ready for next payout
-        $totalBalance = 48500.00; // Calculated available balance for entity
-        // Dump Amount: Sum of dump amounts or in-escrow transactions
-        $totalDump = $allPayoutsList->sum(fn($i) => (float)$i['dump_amount']) ?: 12450.00;
+        $totalBalance = (float) SalesRecord::where(function ($q) use ($entityName) {
+            $q->where('entity_name', $entityName)->orWhere('entity_type', 'business');
+        })->sum('balance_due');
+        $totalDump = $allPayoutsList->sum(fn($i) => (float)$i['dump_amount']);
         $totalTds = $allPayoutsList->whereIn('status', ['paid', 'completed'])->sum(fn($i) => (float)$i['tds_deduction']);
         $totalGross = $allPayoutsList->sum(fn($i) => (float)$i['gross_amount']);
 
@@ -174,361 +143,78 @@ class EntityPayoutController extends Controller
         $summary = $data['summary'] ?? [];
         $payouts = collect($data['payouts'] ?? []);
 
-        // Monthly Breakdown Chart Data
-        $monthlyTrend = [
-            ['month' => 'Mar 2026', 'paid' => 45000, 'dump' => 3200, 'balance' => 8500, 'count' => 4],
-            ['month' => 'Apr 2026', 'paid' => 58200, 'dump' => 4100, 'balance' => 12400, 'count' => 6],
-            ['month' => 'May 2026', 'paid' => 74500, 'dump' => 2800, 'balance' => 15600, 'count' => 7],
-            ['month' => 'Jun 2026', 'paid' => 69000, 'dump' => 5000, 'balance' => 19800, 'count' => 5],
-            ['month' => 'Jul 2026', 'paid' => 88400, 'dump' => 3600, 'balance' => 24500, 'count' => 8],
-            ['month' => 'Aug 2026', 'paid' => 96350, 'dump' => 6200, 'balance' => 48500, 'count' => 9],
-        ];
+        if ($payouts->isEmpty()) {
+            return response()->json([
+                'status' => 'success',
+                'summary' => array_merge($summary, [
+                    'settlement_success_rate' => 100.0,
+                    'active_settlement_accounts' => 0,
+                ]),
+                'monthly_trend' => [],
+                'method_distribution' => [],
+                'status_distribution' => [],
+                'statement_rows' => [],
+            ]);
+        }
 
-        // Payment Method Distribution
-        $methodDistribution = [
-            ['method' => 'Bank Transfer (NEFT/RTGS)', 'amount' => 245000, 'percentage' => 56.8, 'count' => 18, 'color' => '#10b981'],
-            ['method' => 'IMPS Instant Settlement', 'amount' => 128500, 'percentage' => 29.8, 'count' => 12, 'color' => '#3b82f6'],
-            ['method' => 'UPI Direct Transfer', 'amount' => 57950, 'percentage' => 13.4, 'count' => 9, 'color' => '#8b5cf6'],
-        ];
+        // Real Monthly Breakdown Chart Data
+        $monthlyGroups = $payouts->groupBy(function ($p) {
+            return Carbon::parse($p['request_date'])->format('M Y');
+        });
 
-        // Status Distribution
-        $statusDistribution = [
-            ['status' => 'Paid / Settled', 'amount' => $summary['total_paid'] ?? 385450, 'percentage' => 88.5, 'color' => '#10b981'],
-            ['status' => 'Pending / Processing', 'amount' => 28500, 'percentage' => 6.5, 'color' => '#f59e0b'],
-            ['status' => 'Dump / In Escrow', 'amount' => $summary['dump_amount'] ?? 12450, 'percentage' => 5.0, 'color' => '#6366f1'],
-        ];
+        $monthlyTrend = [];
+        foreach ($monthlyGroups as $month => $items) {
+            $monthlyTrend[] = [
+                'month' => $month,
+                'paid' => (float)$items->whereIn('status', ['paid', 'completed'])->sum('net_payable_amount'),
+                'dump' => (float)$items->sum('dump_amount'),
+                'balance' => (float)$items->sum('balance_after'),
+                'count' => $items->count(),
+            ];
+        }
 
-        // Statement Period Rows
-        $statementRows = [
-            [
-                'period' => '01 Aug 2026 - 21 Aug 2026',
-                'grossVolume' => 104200.00,
-                'totalPaid' => 96350.00,
-                'balance' => 48500.00,
-                'dumpAmount' => 6200.00,
-                'tdsDeducted' => 5210.00,
-                'payoutCount' => 9,
-                'status' => 'Active Cycle',
-            ],
-            [
-                'period' => '01 Jul 2026 - 31 Jul 2026',
-                'grossVolume' => 95800.00,
-                'totalPaid' => 88400.00,
-                'balance' => 0.00,
-                'dumpAmount' => 3600.00,
-                'tdsDeducted' => 4790.00,
-                'payoutCount' => 8,
-                'status' => 'Fully Reconciled',
-            ],
-            [
-                'period' => '01 Jun 2026 - 30 Jun 2026',
-                'grossVolume' => 75200.00,
-                'totalPaid' => 69000.00,
-                'balance' => 0.00,
-                'dumpAmount' => 5000.00,
-                'tdsDeducted' => 3760.00,
-                'payoutCount' => 5,
-                'status' => 'Fully Reconciled',
-            ],
-            [
-                'period' => '01 May 2026 - 31 May 2026',
-                'grossVolume' => 81000.00,
-                'totalPaid' => 74500.00,
-                'balance' => 0.00,
-                'dumpAmount' => 2800.00,
-                'tdsDeducted' => 4050.00,
-                'payoutCount' => 7,
-                'status' => 'Fully Reconciled',
-            ],
-            [
-                'period' => '01 Apr 2026 - 30 Apr 2026',
-                'grossVolume' => 63500.00,
-                'totalPaid' => 58200.00,
-                'balance' => 0.00,
-                'dumpAmount' => 4100.00,
-                'tdsDeducted' => 3175.00,
-                'payoutCount' => 6,
-                'status' => 'Fully Reconciled',
-            ],
-        ];
+        // Real Payment Method Distribution
+        $methodGroups = $payouts->groupBy('payment_method');
+        $palette = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b'];
+        $mIdx = 0;
+        $totalAmt = (float)$payouts->sum('gross_amount');
+        $methodDistribution = [];
+        foreach ($methodGroups as $method => $items) {
+            $mAmt = (float)$items->sum('gross_amount');
+            $methodDistribution[] = [
+                'method' => $method,
+                'amount' => $mAmt,
+                'percentage' => $totalAmt > 0 ? round(($mAmt / $totalAmt) * 100, 1) : 0,
+                'count' => $items->count(),
+                'color' => $palette[$mIdx++ % count($palette)],
+            ];
+        }
+
+        // Real Status Distribution
+        $statusGroups = $payouts->groupBy('status');
+        $statusColors = ['paid' => '#10b981', 'completed' => '#10b981', 'pending' => '#f59e0b', 'dumped' => '#6366f1'];
+        $statusDistribution = [];
+        foreach ($statusGroups as $status => $items) {
+            $sAmt = (float)$items->sum('gross_amount');
+            $statusDistribution[] = [
+                'status' => ucfirst($status),
+                'amount' => $sAmt,
+                'percentage' => $totalAmt > 0 ? round(($sAmt / $totalAmt) * 100, 1) : 0,
+                'color' => $statusColors[strtolower($status)] ?? '#64748b',
+            ];
+        }
 
         return response()->json([
             'status' => 'success',
             'summary' => array_merge($summary, [
-                'settlement_success_rate' => 98.6,
-                'active_settlement_accounts' => 2,
+                'settlement_success_rate' => 100.0,
+                'active_settlement_accounts' => $methodGroups->count(),
             ]),
             'monthly_trend' => $monthlyTrend,
             'method_distribution' => $methodDistribution,
             'status_distribution' => $statusDistribution,
-            'statement_rows' => $statementRows,
+            'statement_rows' => [],
         ]);
     }
 
-    /**
-     * Default realistic fallback payout transaction records for Entity Desk.
-     */
-    private function getDefaultEntityPayouts($entityName)
-    {
-        return [
-            [
-                'id' => 101,
-                'payoutCode' => 'PO-ENT-8801',
-                'payout_code' => 'PO-ENT-8801',
-                'entityName' => $entityName,
-                'entity_name' => $entityName,
-                'beneficiaryName' => $entityName,
-                'beneficiary_name' => $entityName,
-                'requestedAmount' => 45000.00,
-                'requested_amount' => 45000.00,
-                'grossAmount' => 45000.00,
-                'gross_amount' => 45000.00,
-                'tdsRate' => 5.0,
-                'tds_rate' => 5.0,
-                'tdsDeduction' => 2250.00,
-                'tds_deduction' => 2250.00,
-                'adminProcessingFee' => 0.00,
-                'admin_processing_fee' => 0.00,
-                'netPayableAmount' => 42750.00,
-                'net_payable_amount' => 42750.00,
-                'dumpAmount' => 0.00,
-                'dump_amount' => 0.00,
-                'balanceAfter' => 48500.00,
-                'balance_after' => 48500.00,
-                'paymentMethod' => 'Bank Transfer (NEFT)',
-                'payment_method' => 'Bank Transfer (NEFT)',
-                'bankName' => 'HDFC Bank Ltd',
-                'bank_name' => 'HDFC Bank Ltd',
-                'accountNumber' => '•••• •••• 9821',
-                'account_number' => '•••• •••• 9821',
-                'ifscCode' => 'HDFC0001234',
-                'ifsc_code' => 'HDFC0001234',
-                'upiId' => 'skyline.tech@okhdfcbank',
-                'upi_id' => 'skyline.tech@okhdfcbank',
-                'status' => 'paid',
-                'requestDate' => '2026-08-18 14:30:00',
-                'request_date' => '2026-08-18 14:30:00',
-                'processedDate' => '2026-08-18 16:45:00',
-                'processed_date' => '2026-08-18 16:45:00',
-                'utrNumber' => 'UTR-9834210984',
-                'utr_number' => 'UTR-9834210984',
-                'notes' => 'Entity Bi-weekly Sales Settlement Credited',
-            ],
-            [
-                'id' => 102,
-                'payoutCode' => 'PO-ENT-8802',
-                'payout_code' => 'PO-ENT-8802',
-                'entityName' => $entityName,
-                'entity_name' => $entityName,
-                'beneficiaryName' => $entityName,
-                'beneficiary_name' => $entityName,
-                'requestedAmount' => 28000.00,
-                'requested_amount' => 28000.00,
-                'grossAmount' => 28000.00,
-                'gross_amount' => 28000.00,
-                'tdsRate' => 5.0,
-                'tds_rate' => 5.0,
-                'tdsDeduction' => 1400.00,
-                'tds_deduction' => 1400.00,
-                'adminProcessingFee' => 0.00,
-                'admin_processing_fee' => 0.00,
-                'netPayableAmount' => 26600.00,
-                'net_payable_amount' => 26600.00,
-                'dumpAmount' => 2500.00,
-                'dump_amount' => 2500.00,
-                'balanceAfter' => 48500.00,
-                'balance_after' => 48500.00,
-                'paymentMethod' => 'IMPS Instant Settlement',
-                'payment_method' => 'IMPS Instant Settlement',
-                'bankName' => 'State Bank of India',
-                'bank_name' => 'State Bank of India',
-                'accountNumber' => '•••• •••• 4412',
-                'account_number' => '•••• •••• 4412',
-                'ifscCode' => 'SBIN0004567',
-                'ifsc_code' => 'SBIN0004567',
-                'upiId' => 'skyline.ent@oksbi',
-                'upi_id' => 'skyline.ent@oksbi',
-                'status' => 'paid',
-                'requestDate' => '2026-08-12 10:15:00',
-                'request_date' => '2026-08-12 10:15:00',
-                'processedDate' => '2026-08-12 11:20:00',
-                'processed_date' => '2026-08-12 11:20:00',
-                'utrNumber' => 'UTR-8712390812',
-                'utr_number' => 'UTR-8712390812',
-                'notes' => 'Direct Merchant IMPS Clearance',
-            ],
-            [
-                'id' => 103,
-                'payoutCode' => 'PO-ENT-8803',
-                'payout_code' => 'PO-ENT-8803',
-                'entityName' => $entityName,
-                'entity_name' => $entityName,
-                'beneficiaryName' => $entityName,
-                'beneficiary_name' => $entityName,
-                'requestedAmount' => 35000.00,
-                'requested_amount' => 35000.00,
-                'grossAmount' => 35000.00,
-                'gross_amount' => 35000.00,
-                'tdsRate' => 5.0,
-                'tds_rate' => 5.0,
-                'tdsDeduction' => 1750.00,
-                'tds_deduction' => 1750.00,
-                'adminProcessingFee' => 0.00,
-                'admin_processing_fee' => 0.00,
-                'netPayableAmount' => 33250.00,
-                'net_payable_amount' => 33250.00,
-                'dumpAmount' => 4200.00,
-                'dump_amount' => 4200.00,
-                'balanceAfter' => 48500.00,
-                'balance_after' => 48500.00,
-                'paymentMethod' => 'UPI Direct Transfer',
-                'payment_method' => 'UPI Direct Transfer',
-                'bankName' => 'HDFC Bank Ltd',
-                'bank_name' => 'HDFC Bank Ltd',
-                'accountNumber' => '•••• •••• 9821',
-                'account_number' => '•••• •••• 9821',
-                'ifscCode' => 'HDFC0001234',
-                'ifsc_code' => 'HDFC0001234',
-                'upiId' => 'skyline.tech@okhdfcbank',
-                'upi_id' => 'skyline.tech@okhdfcbank',
-                'status' => 'pending',
-                'requestDate' => '2026-08-20 09:30:00',
-                'request_date' => '2026-08-20 09:30:00',
-                'processedDate' => null,
-                'processed_date' => null,
-                'utrNumber' => null,
-                'utr_number' => null,
-                'notes' => 'Queued in weekly Tuesday banking batch',
-            ],
-            [
-                'id' => 104,
-                'payoutCode' => 'PO-ENT-8804',
-                'payout_code' => 'PO-ENT-8804',
-                'entityName' => $entityName,
-                'entity_name' => $entityName,
-                'beneficiaryName' => $entityName,
-                'beneficiary_name' => $entityName,
-                'requestedAmount' => 52000.00,
-                'requested_amount' => 52000.00,
-                'grossAmount' => 52000.00,
-                'gross_amount' => 52000.00,
-                'tdsRate' => 5.0,
-                'tds_rate' => 5.0,
-                'tdsDeduction' => 2600.00,
-                'tds_deduction' => 2600.00,
-                'adminProcessingFee' => 0.00,
-                'admin_processing_fee' => 0.00,
-                'netPayableAmount' => 49400.00,
-                'net_payable_amount' => 49400.00,
-                'dumpAmount' => 3100.00,
-                'dump_amount' => 3100.00,
-                'balanceAfter' => 48500.00,
-                'balance_after' => 48500.00,
-                'paymentMethod' => 'Bank Transfer (NEFT)',
-                'payment_method' => 'Bank Transfer (NEFT)',
-                'bankName' => 'HDFC Bank Ltd',
-                'bank_name' => 'HDFC Bank Ltd',
-                'accountNumber' => '•••• •••• 9821',
-                'account_number' => '•••• •••• 9821',
-                'ifscCode' => 'HDFC0001234',
-                'ifsc_code' => 'HDFC0001234',
-                'upiId' => 'skyline.tech@okhdfcbank',
-                'upi_id' => 'skyline.tech@okhdfcbank',
-                'status' => 'paid',
-                'requestDate' => '2026-07-28 11:00:00',
-                'request_date' => '2026-07-28 11:00:00',
-                'processedDate' => '2026-07-28 15:30:00',
-                'processed_date' => '2026-07-28 15:30:00',
-                'utrNumber' => 'UTR-7643091823',
-                'utr_number' => 'UTR-7643091823',
-                'notes' => 'Monthly Commission Settlement Complete',
-            ],
-            [
-                'id' => 105,
-                'payoutCode' => 'PO-ENT-8805',
-                'payout_code' => 'PO-ENT-8805',
-                'entityName' => $entityName,
-                'entity_name' => $entityName,
-                'beneficiaryName' => $entityName,
-                'beneficiary_name' => $entityName,
-                'requestedAmount' => 18500.00,
-                'requested_amount' => 18500.00,
-                'grossAmount' => 18500.00,
-                'gross_amount' => 18500.00,
-                'tdsRate' => 5.0,
-                'tds_rate' => 5.0,
-                'tdsDeduction' => 925.00,
-                'tds_deduction' => 925.00,
-                'adminProcessingFee' => 0.00,
-                'admin_processing_fee' => 0.00,
-                'netPayableAmount' => 17575.00,
-                'net_payable_amount' => 17575.00,
-                'dumpAmount' => 2650.00,
-                'dump_amount' => 2650.00,
-                'balanceAfter' => 48500.00,
-                'balance_after' => 48500.00,
-                'paymentMethod' => 'IMPS Instant Settlement',
-                'payment_method' => 'IMPS Instant Settlement',
-                'bankName' => 'State Bank of India',
-                'bank_name' => 'State Bank of India',
-                'accountNumber' => '•••• •••• 4412',
-                'account_number' => '•••• •••• 4412',
-                'ifscCode' => 'SBIN0004567',
-                'ifsc_code' => 'SBIN0004567',
-                'upiId' => 'skyline.ent@oksbi',
-                'upi_id' => 'skyline.ent@oksbi',
-                'status' => 'dumped',
-                'requestDate' => '2026-07-15 16:45:00',
-                'request_date' => '2026-07-15 16:45:00',
-                'processedDate' => null,
-                'processed_date' => null,
-                'utrNumber' => null,
-                'utr_number' => null,
-                'notes' => 'Escrow buffer hold pending invoice verification',
-            ],
-            [
-                'id' => 106,
-                'payoutCode' => 'PO-ENT-8806',
-                'payout_code' => 'PO-ENT-8806',
-                'entityName' => $entityName,
-                'entity_name' => $entityName,
-                'beneficiaryName' => $entityName,
-                'beneficiary_name' => $entityName,
-                'requestedAmount' => 64000.00,
-                'requested_amount' => 64000.00,
-                'grossAmount' => 64000.00,
-                'gross_amount' => 64000.00,
-                'tdsRate' => 5.0,
-                'tds_rate' => 5.0,
-                'tdsDeduction' => 3200.00,
-                'tds_deduction' => 3200.00,
-                'adminProcessingFee' => 0.00,
-                'admin_processing_fee' => 0.00,
-                'netPayableAmount' => 60800.00,
-                'net_payable_amount' => 60800.00,
-                'dumpAmount' => 0.00,
-                'dump_amount' => 0.00,
-                'balanceAfter' => 48500.00,
-                'balance_after' => 48500.00,
-                'paymentMethod' => 'Bank Transfer (NEFT)',
-                'payment_method' => 'Bank Transfer (NEFT)',
-                'bankName' => 'HDFC Bank Ltd',
-                'bank_name' => 'HDFC Bank Ltd',
-                'accountNumber' => '•••• •••• 9821',
-                'account_number' => '•••• •••• 9821',
-                'ifscCode' => 'HDFC0001234',
-                'ifsc_code' => 'HDFC0001234',
-                'upiId' => 'skyline.tech@okhdfcbank',
-                'upi_id' => 'skyline.tech@okhdfcbank',
-                'status' => 'paid',
-                'requestDate' => '2026-06-25 10:30:00',
-                'request_date' => '2026-06-25 10:30:00',
-                'processedDate' => '2026-06-25 14:15:00',
-                'processed_date' => '2026-06-25 14:15:00',
-                'utrNumber' => 'UTR-6512894012',
-                'utr_number' => 'UTR-6512894012',
-                'notes' => 'Q1 Settlement Batch Clearance Complete',
-            ],
-        ];
-    }
 }

@@ -184,7 +184,7 @@ function SalesReportPage({ user }) {
   ];
 
   return (
-    <div style={{ padding: '1.5rem 2rem', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <div className="page-container">
       {/* Top Banner */}
       <div
         style={{

@@ -67,82 +67,10 @@ class NetworkController extends Controller
     }
 
     /**
-     * Ensure database has records populated down to 10 levels
-     */
-    private function ensure10LevelsSeeded()
-    {
-        $hasL10 = User::where('user_code', 'CB101101')->exists();
-        if (!$hasL10) {
-            $defaultPassword = Hash::make('password123');
-            $additionalSeeds = [
-                [
-                    'user_code' => 'CB100901',
-                    'name' => 'Pooja Hegde',
-                    'email' => 'pooja.h@gmail.com',
-                    'phone' => '+91 99111 22233',
-                    'password' => $defaultPassword,
-                    'sponsor_id' => 'CB100801',
-                    'rank' => 'Bronze Starter',
-                    'status' => 'active',
-                    'kyc_status' => 'verified',
-                    'location' => 'Hyderabad, Telangana',
-                    'personal_pv' => 600,
-                    'group_pv' => 32000,
-                    'commission_balance' => 3200.00,
-                    'avatar' => 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150',
-                    'created_at' => now()->subDays(4),
-                    'updated_at' => now()->subDays(4),
-                ],
-                [
-                    'user_code' => 'CB101001',
-                    'name' => 'Naveen Reddy',
-                    'email' => 'naveen.r@gmail.com',
-                    'phone' => '+91 99222 33344',
-                    'password' => $defaultPassword,
-                    'sponsor_id' => 'CB100901',
-                    'rank' => 'Silver Leader',
-                    'status' => 'active',
-                    'kyc_status' => 'verified',
-                    'location' => 'Visakhapatnam, AP',
-                    'personal_pv' => 800,
-                    'group_pv' => 22000,
-                    'commission_balance' => 2200.00,
-                    'avatar' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
-                    'created_at' => now()->subDays(3),
-                    'updated_at' => now()->subDays(3),
-                ],
-                [
-                    'user_code' => 'CB101101',
-                    'name' => 'Divya Bansal',
-                    'email' => 'divya.b@gmail.com',
-                    'phone' => '+91 99333 44455',
-                    'password' => $defaultPassword,
-                    'sponsor_id' => 'CB101001',
-                    'rank' => 'Bronze Starter',
-                    'status' => 'active',
-                    'kyc_status' => 'verified',
-                    'location' => 'Chandigarh',
-                    'personal_pv' => 450,
-                    'group_pv' => 15000,
-                    'commission_balance' => 1500.00,
-                    'avatar' => 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
-                    'created_at' => now()->subDays(2),
-                    'updated_at' => now()->subDays(2),
-                ],
-            ];
-            foreach ($additionalSeeds as $seed) {
-                User::updateOrCreate(['user_code' => $seed['user_code']], $seed);
-            }
-        }
-    }
-
-    /**
      * Resolve target user from request or authentication
      */
     private function resolveUser(Request $request)
     {
-        $this->ensure10LevelsSeeded();
-
         if ($request->user()) {
             return $request->user();
         }

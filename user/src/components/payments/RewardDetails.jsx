@@ -114,7 +114,7 @@ function RewardDetails({ user }) {
   };
 
   return (
-    <div className="page-content-wrapper" style={{ padding: '1.5rem 2rem', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <div className="page-container">
       {/* Toast Alert */}
       {toastMessage && (
         <div
@@ -230,7 +230,7 @@ function RewardDetails({ user }) {
                 {/* Reward Image Container */}
                 <div style={{ position: 'relative', height: '180px', overflow: 'hidden' }}>
                   <img
-                    src={reward.image || 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600'}
+                    src={reward.image || '/logo.png'}
                     alt={reward.title}
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />

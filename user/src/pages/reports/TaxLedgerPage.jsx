@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getUserPayouts } from '../../api/userPayoutService';
 
 function TaxLedgerPage({ user }) {
   const [taxQuarter, setTaxQuarter] = useState('all');
@@ -22,7 +23,7 @@ function TaxLedgerPage({ user }) {
   const totalNetSum = taxLedger.reduce((sum, item) => sum + item.net, 0);
 
   return (
-    <div style={{ padding: '1.5rem 2rem', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <div className="page-container">
       {/* Hero Banner */}
       <div style={{ background: 'linear-gradient(135deg, #059669 0%, #064e3b 50%, #0f172a 100%)', borderRadius: '16px', padding: '2rem 2.25rem', color: '#fff', marginBottom: '2rem', boxShadow: '0 10px 30px -5px rgba(5, 150, 105, 0.3)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem' }}>

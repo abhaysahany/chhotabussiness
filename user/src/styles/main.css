@@ -1,0 +1,16 @@
+/**
+ * Vyapar AdNET Design System — Main Bundle
+ * Aggregates all modular style sheets in correct cascade order.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+@import './tokens.css';
+@import './base.css';
+@import './typography.css';
+@import './layout.css';
+@import './components.css';
+@import './buttons.css';
+@import './forms.css';
+@import './tables.css';
+@import './responsive.css';

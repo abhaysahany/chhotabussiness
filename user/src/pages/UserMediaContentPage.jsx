@@ -208,7 +208,7 @@ function UserMediaContentPage({ user }) {
   });
 
   return (
-    <div className="page-content-wrapper" style={{ padding: '1.5rem 2rem', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <div className="page-container">
       {/* Floating Toast Notification */}
       {toastMsg && (
         <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', backgroundColor: '#0284c7', color: '#fff', padding: '0.85rem 1.35rem', borderRadius: '10px', fontWeight: '700', boxShadow: '0 10px 25px -5px rgba(2,132,199,0.4)', zIndex: 3000, fontSize: '0.875rem' }}>
@@ -327,7 +327,7 @@ function UserMediaContentPage({ user }) {
                 onClick={() => setPreviewingAsset(asset)}
               >
                 {asset.type === 'image' ? (
-                  <img src={asset.file_url} alt={asset.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=400'; }} />
+                  <img src={asset.file_url} alt={asset.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.src = '/logo.png'; }} />
                 ) : asset.type === 'video' ? (
                   <div style={{ color: '#38bdf8', fontSize: '3rem', textAlign: 'center' }}>
                     🎥

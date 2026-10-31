@@ -15,60 +15,119 @@ use Carbon\Carbon;
 class EntityDashboardController extends Controller
 {
     /**
-     * Get real-time enterprise aggregated SaaS metrics and analytics for Entity Panel from MySQL Database.
+     * Get real-time enterprise aggregated SaaS metrics and analytics for Entity Panel strictly from MySQL Database.
      */
     public function getDashboardStats(Request $request)
     {
-        // 1. Financial & Volume Aggregations
-        $totalGrossSales = (float) SalesRecord::sum('gross_amount') ?: 1845000.00;
-        $totalNetEarnings = (float) SalesRecord::sum('net_entity_payout') ?: 1512900.00;
-        $totalBalanceDue = (float) SalesRecord::sum('balance_due') ?: 124500.00;
-        $totalPlatformFeePaid = (float) SalesRecord::sum('admin_commission_cut') ?: 332100.00;
-        $totalInvoicesCount = SalesRecord::count() ?: 128;
+        // Filter by entity if provided
+        $entityCode = $request->input('entity_code') ?? $request->query('entity_code');
+        $salesQuery = SalesRecord::query();
+        if ($entityCode && $entityCode !== 'all' && $entityCode !== 'undefined') {
+            $salesQuery->where(function ($q) use ($entityCode) {
+                if (is_numeric($entityCode)) {
+                    $q->where('entity_id', $entityCode);
+                }
+                $q->orWhere('entity_name', $entityCode);
+            });
+        }
 
-        $totalProducts = Product::count() ?: 24;
-        $totalServices = Service::count() ?: 18;
-        $totalPackages = ProductPackage::count() ?: 6;
+        // 1. Financial & Volume Aggregations strictly from database
+        $totalGrossSales = (float) (clone $salesQuery)->sum('gross_amount');
+        $totalNetEarnings = (float) (clone $salesQuery)->sum('net_entity_payout');
+        $totalBalanceDue = (float) (clone $salesQuery)->sum('balance_due');
+        $totalPlatformFeePaid = (float) (clone $salesQuery)->sum('admin_commission_cut');
+        $totalInvoicesCount = (clone $salesQuery)->count();
+
+        $totalProducts = Product::count();
+        $totalServices = Service::count();
+        $totalPackages = ProductPackage::count();
         $totalCatalogOfferings = $totalProducts + $totalServices + $totalPackages;
 
-        // 2. Timeline period filter (7d | 30d | 6m)
+        // 2. Timeline period filter (7d | 30d | 6m) strictly aggregated from database
         $period = $request->query('period', '7d');
 
         if ($period === '6m') {
-            $categories = ['Mar 2026', 'Apr 2026', 'May 2026', 'Jun 2026', 'Jul 2026', 'Aug 2026'];
-            $grossSeries = [240000, 310000, 385000, 460000, 520000, 610000];
-            $netSeries = [196800, 254200, 315700, 377200, 426400, 500200];
-            $balanceSeries = [18000, 22000, 28000, 34000, 38000, 42000];
+            $categories = [];
+            $grossSeries = [];
+            $netSeries = [];
+            $balanceSeries = [];
+            for ($i = 5; $i >= 0; $i--) {
+                $m = Carbon::now()->subMonths($i);
+                $categories[] = $m->format('M Y');
+                $mStart = $m->copy()->startOfMonth();
+                $mEnd = $m->copy()->endOfMonth();
+                $grossSeries[] = (float) (clone $salesQuery)->whereBetween('created_at', [$mStart, $mEnd])->sum('gross_amount');
+                $netSeries[] = (float) (clone $salesQuery)->whereBetween('created_at', [$mStart, $mEnd])->sum('net_entity_payout');
+                $balanceSeries[] = (float) (clone $salesQuery)->whereBetween('created_at', [$mStart, $mEnd])->sum('balance_due');
+            }
         } elseif ($period === '30d') {
-            $categories = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'];
-            $grossSeries = [115000, 142000, 168000, 195000, 230000];
-            $netSeries = [94300, 116440, 137760, 159900, 188600];
-            $balanceSeries = [9000, 11000, 14000, 16000, 21000];
+            $categories = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+            $grossSeries = [];
+            $netSeries = [];
+            $balanceSeries = [];
+            for ($w = 3; $w >= 0; $w--) {
+                $wStart = Carbon::now()->subWeeks($w)->startOfWeek();
+                $wEnd = Carbon::now()->subWeeks($w)->endOfWeek();
+                $grossSeries[] = (float) (clone $salesQuery)->whereBetween('created_at', [$wStart, $wEnd])->sum('gross_amount');
+                $netSeries[] = (float) (clone $salesQuery)->whereBetween('created_at', [$wStart, $wEnd])->sum('net_entity_payout');
+                $balanceSeries[] = (float) (clone $salesQuery)->whereBetween('created_at', [$wStart, $wEnd])->sum('balance_due');
+            }
         } else {
-            $categories = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-            $grossSeries = [28000, 35000, 42000, 58000, 51000, 74000, 89000];
-            $netSeries = [22960, 28700, 34440, 47560, 41820, 60680, 72980];
-            $balanceSeries = [2500, 3200, 4100, 5800, 4600, 6800, 8400];
+            $categories = [];
+            $grossSeries = [];
+            $netSeries = [];
+            $balanceSeries = [];
+            for ($d = 6; $d >= 0; $d--) {
+                $day = Carbon::now()->subDays($d);
+                $categories[] = $day->format('D');
+                $dStart = $day->copy()->startOfDay();
+                $dEnd = $day->copy()->endOfDay();
+                $grossSeries[] = (float) (clone $salesQuery)->whereBetween('created_at', [$dStart, $dEnd])->sum('gross_amount');
+                $netSeries[] = (float) (clone $salesQuery)->whereBetween('created_at', [$dStart, $dEnd])->sum('net_entity_payout');
+                $balanceSeries[] = (float) (clone $salesQuery)->whereBetween('created_at', [$dStart, $dEnd])->sum('balance_due');
+            }
         }
 
-        // 3. Offering Revenue Mix Donut Chart
+        // 3. Offering Revenue Mix Donut Chart strictly from database
+        $prodSales = (float) (clone $salesQuery)->where('item_type', 'product')->sum('gross_amount');
+        $srvSales = (float) (clone $salesQuery)->where('item_type', 'service')->sum('gross_amount');
+        $pkgSales = (float) (clone $salesQuery)->where('item_type', 'package')->sum('gross_amount');
+        $othSales = (float) (clone $salesQuery)->whereNotIn('item_type', ['product', 'service', 'package'])->sum('gross_amount');
+
         $revenueMix = [
-            'labels' => ['Cloud & IT Retainers', 'Web & App Development', 'Hardware POS Deployments', 'Annual Maintenance AMC'],
-            'series' => [48.2, 24.5, 16.3, 11.0],
-            'amounts' => [889290, 452025, 300735, 202950],
+            'labels' => ['Products', 'Services', 'Packages', 'General'],
+            'series' => [
+                $totalGrossSales > 0 ? round(($prodSales / $totalGrossSales) * 100, 1) : 0,
+                $totalGrossSales > 0 ? round(($srvSales / $totalGrossSales) * 100, 1) : 0,
+                $totalGrossSales > 0 ? round(($pkgSales / $totalGrossSales) * 100, 1) : 0,
+                $totalGrossSales > 0 ? round(($othSales / $totalGrossSales) * 100, 1) : 0,
+            ],
+            'amounts' => [$prodSales, $srvSales, $pkgSales, $othSales],
         ];
 
-        // 4. Sales Conversion Velocity Bar Chart
+        // 4. Sales Conversion Velocity Bar Chart strictly from database
+        $velocityDays = [];
+        $paidInvoicesSeries = [];
+        $partialInvoicesSeries = [];
+        for ($d = 6; $d >= 0; $d--) {
+            $day = Carbon::now()->subDays($d);
+            $velocityDays[] = $day->format('D');
+            $dStart = $day->copy()->startOfDay();
+            $dEnd = $day->copy()->endOfDay();
+            $paidInvoicesSeries[] = (clone $salesQuery)->whereBetween('created_at', [$dStart, $dEnd])->where('balance_due', '<=', 0)->count();
+            $partialInvoicesSeries[] = (clone $salesQuery)->whereBetween('created_at', [$dStart, $dEnd])->where('balance_due', '>', 0)->count();
+        }
+
         $velocityBar = [
-            'categories' => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            'categories' => $velocityDays,
             'series' => [
-                ['name' => 'Paid Invoices', 'data' => [12, 16, 19, 24, 21, 32, 38]],
-                ['name' => 'Partial / Advance', 'data' => [4, 6, 5, 8, 7, 11, 14]],
+                ['name' => 'Paid Invoices', 'data' => $paidInvoicesSeries],
+                ['name' => 'Partial / Advance', 'data' => $partialInvoicesSeries],
             ],
         ];
 
         // 5. Recent Merchant Invoices from Database
-        $dbSales = SalesRecord::orderBy('id', 'desc')->take(6)->get();
+        $dbSales = (clone $salesQuery)->orderBy('id', 'desc')->take(6)->get();
         if ($dbSales->isNotEmpty()) {
             $recentInvoices = $dbSales->map(function ($s) {
                 return [
@@ -82,97 +141,28 @@ class EntityDashboardController extends Controller
                     'balanceDue' => (float) ($s->balance_due ?: 0),
                     'date' => $s->created_at ? Carbon::parse($s->created_at)->format('d M Y, h:i A') : Carbon::now()->format('d M Y, h:i A'),
                     'status' => $s->status ?: 'completed',
-                    'paymentMethod' => $s->payment_method ?: 'Razorpay Instant',
+                    'paymentMethod' => $s->payment_method ?: 'Direct Settlement',
                 ];
             })->values()->all();
         } else {
-            $recentInvoices = [
-                [
-                    'id' => 'INV-2026-881',
-                    'customer' => 'Apex Global Logistics Ltd',
-                    'item' => 'Fleet Tracking Software Suite',
-                    'gross' => 85000.00,
-                    'adminCut' => 15300.00,
-                    'netPayout' => 69700.00,
-                    'advance' => 60000.00,
-                    'balanceDue' => 25000.00,
-                    'date' => Carbon::now()->subMinutes(35)->format('d M Y, h:i A'),
-                    'status' => 'completed',
-                    'paymentMethod' => 'Bank Transfer / IMPS',
-                ],
-                [
-                    'id' => 'INV-2026-882',
-                    'customer' => 'Dr. Meera Nambiar (MedTech)',
-                    'item' => 'Clinic Management Portal & App',
-                    'gross' => 24500.00,
-                    'adminCut' => 4410.00,
-                    'netPayout' => 20090.00,
-                    'advance' => 24500.00,
-                    'balanceDue' => 0.00,
-                    'date' => Carbon::now()->subHours(3)->format('d M Y, h:i A'),
-                    'status' => 'completed',
-                    'paymentMethod' => 'UPI Gateway',
-                ],
-                [
-                    'id' => 'INV-2026-883',
-                    'customer' => 'Zenith Hospitality Hub',
-                    'item' => 'Hotel POS Billing Integration',
-                    'gross' => 45000.00,
-                    'adminCut' => 9000.00,
-                    'netPayout' => 36000.00,
-                    'advance' => 25000.00,
-                    'balanceDue' => 20000.00,
-                    'date' => Carbon::now()->subHours(6)->format('d M Y, h:i A'),
-                    'status' => 'partial',
-                    'paymentMethod' => 'Razorpay NetBanking',
-                ],
-                [
-                    'id' => 'INV-2026-884',
-                    'customer' => 'Kaveri Organic Foods',
-                    'item' => 'E-Commerce Marketplace Web App',
-                    'gross' => 18500.00,
-                    'adminCut' => 2775.00,
-                    'netPayout' => 15725.00,
-                    'advance' => 18500.00,
-                    'balanceDue' => 0.00,
-                    'date' => Carbon::now()->subHours(10)->format('d M Y, h:i A'),
-                    'status' => 'completed',
-                    'paymentMethod' => 'UPI Instant',
-                ],
-            ];
+            $recentInvoices = [];
         }
 
-        // 6. Real-time Live Merchant Activity Feed
-        $activityFeed = [
-            [
-                'id' => 1,
-                'title' => 'Invoice Payment Settled',
-                'desc' => '₹69,700 net proceeds deposited to Primary Bank Account (HDFC Bank ending in 4109).',
-                'time' => '15 mins ago',
-                'type' => 'settlement',
-            ],
-            [
-                'id' => 2,
-                'title' => 'New Customer Invoice Created',
-                'desc' => 'INV-2026-881 generated for Apex Global Logistics Ltd (₹85,000 GMV).',
-                'time' => '35 mins ago',
-                'type' => 'invoice',
-            ],
-            [
-                'id' => 3,
-                'title' => 'Balance Due Reminder Dispatched',
-                'desc' => 'Automated SMS/Email notification sent to Zenith Hospitality for ₹20,000 balance.',
-                'time' => '2 hours ago',
-                'type' => 'reminder',
-            ],
-            [
-                'id' => 4,
-                'title' => 'GST & TDS Invoice Compliance Cleared',
-                'desc' => 'Tax invoice signed and dispatched with verified E-Way QR code.',
-                'time' => '5 hours ago',
-                'type' => 'tax',
-            ],
-        ];
+        // 6. Real-time Live Merchant Activity Feed strictly from Database
+        if ($dbSales->isNotEmpty()) {
+            $activityFeed = $dbSales->map(function ($s) {
+                $statusText = $s->balance_due > 0 ? 'Partial Payment Recorded' : 'Invoice Payment Settled';
+                return [
+                    'id' => $s->id,
+                    'title' => $statusText,
+                    'desc' => ($s->invoice_number ?: 'Invoice #' . $s->id) . ' for ' . ($s->customer_name ?: 'Client') . ' (₹' . number_format($s->gross_amount, 2) . ' GMV).',
+                    'time' => $s->created_at ? Carbon::parse($s->created_at)->diffForHumans() : 'Recently',
+                    'type' => $s->balance_due > 0 ? 'reminder' : 'settlement',
+                ];
+            })->values()->all();
+        } else {
+            $activityFeed = [];
+        }
 
         return response()->json([
             'status' => 'success',

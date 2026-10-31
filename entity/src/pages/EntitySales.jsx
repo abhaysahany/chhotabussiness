@@ -9,6 +9,10 @@ function EntitySales() {
     currentEntity?.entity_details?.business_name ||
     currentEntity?.name ||
     'Skyline Technologies Pvt Ltd';
+  const entityId =
+    currentEntity?.entity_details?.entity_id ||
+    currentEntity?.id ||
+    null;
 
   const [salesList, setSalesList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,7 +24,10 @@ function EntitySales() {
   const loadSales = async () => {
     setLoading(true);
     try {
-      const records = await getEntitySales(entityName);
+      const records = await getEntitySales({
+        entity: entityName,
+        entity_id: entityId,
+      });
       setSalesList(records || []);
     } catch (err) {
       console.error('Error fetching sales:', err);
@@ -31,7 +38,7 @@ function EntitySales() {
 
   useEffect(() => {
     loadSales();
-  }, [entityName]);
+  }, [entityName, entityId]);
 
   // Filter Sales
   const filteredSales = useMemo(() => {

@@ -5,8 +5,8 @@ function LiveHelpdesk({ user }) {
     {
       id: 1,
       sender: 'bot',
-      name: 'AddNet AI Concierge',
-      text: `Hello ${user?.name || 'Tom'}! 👋 Welcome to AddNet Live Helpdesk. How can I assist your business today?`,
+      name: 'Vyapar AdNET Help Assistant',
+      text: `Hello ${user?.name || user?.name || 'Partner'}! 👋 Welcome to Vyapar AdNET Helpdesk. How can I assist your business today?`,
       time: 'Just now',
     },
   ]);
@@ -18,7 +18,7 @@ function LiveHelpdesk({ user }) {
     { title: '💰 Payout Status', text: 'Where is my pending commission withdrawal?' },
     { title: '🪪 KYC Verification', text: 'How long does KYC approval take?' },
     { title: '📊 Binary Matching', text: 'Explain how binary level matching commission is calculated.' },
-    { title: '👨‍💼 Human Support', text: 'I want to speak with a human support agent.' },
+    { title: '🎫 Support Ticket', text: 'How do I raise an official support ticket?' },
   ];
 
   const scrollToBottom = () => {
@@ -36,7 +36,7 @@ function LiveHelpdesk({ user }) {
     const userMsg = {
       id: Date.now(),
       sender: 'user',
-      name: user?.name || 'Tom Phillip',
+      name: user?.name || user?.name || 'Partner Account',
       text: text,
       time: 'Just now',
     };
@@ -55,7 +55,7 @@ function LiveHelpdesk({ user }) {
       } else if (lower.includes('kyc') || lower.includes('approval') || lower.includes('document')) {
         botReplyText = "Your KYC documents (Aadhaar & PAN) are 100% Approved and Verified in our compliance ledger.";
       } else if (lower.includes('human') || lower.includes('agent') || lower.includes('speak')) {
-        botReplyText = "I have queued your live chat session for our Senior Support Specialist (Rajesh Kumar). An agent will join this chat in less than 2 minutes.";
+        botReplyText = "To speak with a support specialist or track an issue, please submit an official Support Ticket via the Support Tickets menu. Our team responds during active business hours.";
       } else if (lower.includes('binary') || lower.includes('matching') || lower.includes('commission')) {
         botReplyText = "Binary level matching bonus is calculated at 10% on the balanced business volume (BV) between your left and right leg team structure.";
       }
@@ -65,7 +65,7 @@ function LiveHelpdesk({ user }) {
         {
           id: Date.now() + 1,
           sender: 'bot',
-          name: 'AddNet AI Concierge',
+          name: 'Vyapar AdNET Help Assistant',
           text: botReplyText,
           time: 'Just now',
         },
@@ -81,7 +81,7 @@ function LiveHelpdesk({ user }) {
         <div>
           <h1 className="page-title">Live Helpdesk</h1>
           <p className="page-subtitle" style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '0.2rem' }}>
-            Instant 24/7 AI concierge and live human support agent assistance.
+            Automated FAQ assistant. For account issues or escalation, please submit an official Support Ticket.
           </p>
         </div>
         <div className="page-breadcrumb">
@@ -103,8 +103,8 @@ function LiveHelpdesk({ user }) {
               <span className="status-dot-active" style={{ position: 'absolute', bottom: '0', right: '0', border: '2px solid #0f172a' }}></span>
             </div>
             <div>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#ffffff' }}>AddNet AI Concierge</h3>
-              <span style={{ fontSize: '0.75rem', color: '#34d399', fontWeight: 600 }}>● Agent Online • Average response under 1 min</span>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#ffffff' }}>Vyapar AdNET Help Assistant</h3>
+              <span style={{ fontSize: '0.75rem', color: '#34d399', fontWeight: 600 }}>● Automated Help Assistant Active</span>
             </div>
           </div>
           <span className="status-badge-success">Live Session Active</span>

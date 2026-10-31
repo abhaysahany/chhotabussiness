@@ -36,11 +36,6 @@ class SupportTicketController extends Controller
             });
         }
 
-        // Seed initial tickets if database has none for this user
-        if ($user && $query->count() === 0) {
-            $this->seedInitialUserTickets($user);
-        }
-
         if ($request->filled('status') && $request->input('status') !== 'All') {
             $query->where('status', $request->input('status'));
         }
@@ -250,62 +245,6 @@ class SupportTicketController extends Controller
         return response()->json([
             'status' => 'success',
             'tickets' => $tickets,
-        ]);
-    }
-
-    /**
-     * Seed initial tickets for a user if empty
-     */
-    private function seedInitialUserTickets($user)
-    {
-        $t1 = SupportTicket::create([
-            'ticket_code' => 'TK-2026-1001',
-            'user_id' => $user->id,
-            'user_name' => $user->name,
-            'user_email' => $user->email,
-            'subject' => 'Commission Wallet Settlement & Bank Transfer Inquiry',
-            'category' => 'Commission, Wallet & Withdrawals',
-            'priority' => 'High',
-            'status' => 'In Progress',
-        ]);
-
-        SupportMessage::create([
-            'ticket_id' => $t1->id,
-            'sender_type' => 'user',
-            'sender_name' => $user->name,
-            'message' => 'Hello Support Team, I submitted a payout withdrawal request to my primary bank account. Could you please confirm the processing status and UTR number?',
-        ]);
-
-        SupportMessage::create([
-            'ticket_id' => $t1->id,
-            'sender_type' => 'admin',
-            'sender_name' => 'Support Desk Lead',
-            'message' => "Hello {$user->name}, your payout request has been received and verified. The banking batch is queued for settlement and funds will reflect in your account within 2 hours.",
-        ]);
-
-        $t2 = SupportTicket::create([
-            'ticket_code' => 'TK-2026-1002',
-            'user_id' => $user->id,
-            'user_name' => $user->name,
-            'user_email' => $user->email,
-            'subject' => 'KYC Identification Verification Confirmation',
-            'category' => 'KYC Verification (PAN / Aadhaar)',
-            'priority' => 'Medium',
-            'status' => 'Resolved',
-        ]);
-
-        SupportMessage::create([
-            'ticket_id' => $t2->id,
-            'sender_type' => 'user',
-            'sender_name' => $user->name,
-            'message' => 'I have uploaded my PAN Card and 12-digit Aadhaar UID front and back photos. Please verify my KYC.',
-        ]);
-
-        SupportMessage::create([
-            'ticket_id' => $t2->id,
-            'sender_type' => 'admin',
-            'sender_name' => 'KYC Compliance Admin',
-            'message' => "Your PAN & Aadhaar documents have been audited and verified. Your KYC status is active and Payout Accounts are unlocked.",
         ]);
     }
 }

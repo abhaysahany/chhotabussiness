@@ -11,6 +11,10 @@ function EntityCreateSale() {
     'Skyline Technologies Pvt Ltd';
   const entityType =
     currentEntity?.entity_details?.entity_type === 'freelancer' ? 'freelance' : 'business';
+  const entityId =
+    currentEntity?.entity_details?.entity_id ||
+    currentEntity?.id ||
+    null;
 
   const [toastMessage, setToastMessage] = useState('');
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -32,19 +36,7 @@ function EntityCreateSale() {
   }, []);
 
   const catalogOfferings = useMemo(() => {
-    if (dbOfferings.length > 0) {
-      return dbOfferings;
-    }
-    // Database Seed Fallback
-    return [
-      { id: 101, type: 'service', name: 'Custom Mobile App Architecture', basePrice: 20000, adminCommissionPercent: 15 },
-      { id: 102, type: 'service', name: 'Cloud Infrastructure & DevOps Setup', basePrice: 15000, adminCommissionPercent: 20 },
-      { id: 103, type: 'service', name: 'Full-Stack Web App Development', basePrice: 25000, adminCommissionPercent: 18 },
-      { id: 104, type: 'product', name: 'Smart IoT Home Automation Hub', basePrice: 7999, adminCommissionPercent: 15 },
-      { id: 105, type: 'product', name: 'Enterprise POS Hardware Terminal', basePrice: 18500, adminCommissionPercent: 12 },
-      { id: 106, type: 'package', name: 'Startup Launchpad Bundle (Web + App + Cloud)', basePrice: 45000, adminCommissionPercent: 22 },
-      { id: 107, type: 'package', name: 'Digital Growth & Social Commerce Kit', basePrice: 12000, adminCommissionPercent: 15 },
-    ];
+    return dbOfferings || [];
   }, [dbOfferings]);
 
 
@@ -53,9 +45,9 @@ function EntityCreateSale() {
   }, [catalogOfferings, offeringType]);
 
   // Form Fields
-  const [selectedItemId, setSelectedItemId] = useState(availableOfferings[0]?.id || 201);
+  const [selectedItemId, setSelectedItemId] = useState(availableOfferings[0]?.id || '');
   const [customItemName, setCustomItemName] = useState(availableOfferings[0]?.name || '');
-  const [customPrice, setCustomPrice] = useState(availableOfferings[0]?.basePrice || 2999);
+  const [customPrice, setCustomPrice] = useState(availableOfferings[0]?.basePrice || 0);
   const [adminCommissionPercent, setAdminCommissionPercent] = useState(availableOfferings[0]?.adminCommissionPercent || 20);
   const [quantity, setQuantity] = useState(1);
   const [discountPercent, setDiscountPercent] = useState(0);
@@ -155,6 +147,12 @@ function EntityCreateSale() {
       setCustomPrice(items[0].basePrice);
       setAdminCommissionPercent(items[0].adminCommissionPercent || (type === 'service' ? 20 : type === 'product' ? 15 : 18));
       setAdvancePayment(items[0].basePrice);
+    } else {
+      setSelectedItemId('');
+      setCustomItemName('');
+      setCustomPrice(0);
+      setAdminCommissionPercent(type === 'service' ? 20 : type === 'product' ? 15 : 18);
+      setAdvancePayment(0);
     }
   };
 
@@ -171,6 +169,7 @@ function EntityCreateSale() {
 
   const handleSubmitSale = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
 
     if (!customerUserCode.trim()) {
       setToastMessage('Please enter a Member ID (e.g. CB100001).');
@@ -195,6 +194,8 @@ function EntityCreateSale() {
     const cleanUserCode = customerUserCode.trim().toUpperCase();
 
     const saleRecord = {
+      entity_id: entityId,
+      entityId,
       entity_name: entityName,
       entityName,
       entity_type: entityType,
@@ -363,11 +364,15 @@ function EntityCreateSale() {
                     onChange={(e) => handleItemSelect(e.target.value)}
                     style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', color: '#0f172a', background: '#ffffff' }}
                   >
-                    {availableOfferings.map((item) => (
-                      <option key={item.id} value={item.id}>
-                        {item.name} — ₹{item.basePrice.toLocaleString()} (🏛️ {item.adminCommissionPercent}% Admin Cut)
-                      </option>
-                    ))}
+                    {availableOfferings.length === 0 ? (
+                      <option value="">(No catalog presets in DB - enter custom item below)</option>
+                    ) : (
+                      availableOfferings.map((item) => (
+                        <option key={item.id} value={item.id}>
+                          {item.name} — ₹{item.basePrice.toLocaleString()} (🏛️ {item.adminCommissionPercent}% Admin Cut)
+                        </option>
+                      ))
+                    )}
                   </select>
                 </div>
 

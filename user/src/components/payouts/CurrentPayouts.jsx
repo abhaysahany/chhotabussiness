@@ -20,20 +20,7 @@ function CurrentPayouts({ user, onNavigate }) {
   const [endDate, setEndDate] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
-  // Countdown timer to weekly Tuesday settlement cycle
-  const [countdown, setCountdown] = useState({ hours: 11, minutes: 42, seconds: 18 });
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev.seconds > 0) return { ...prev, seconds: prev.seconds - 1 };
-        if (prev.minutes > 0) return { ...prev, minutes: 59, seconds: 59 };
-        if (prev.hours > 0) return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
-        return prev;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
+  
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -254,7 +241,7 @@ function CurrentPayouts({ user, onNavigate }) {
   ];
 
   return (
-    <div className="page-content-wrapper" style={{ padding: '1.5rem 2rem', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <div className="page-container">
       {/* Toast Alert */}
       {toastMessage && (
         <div
@@ -278,7 +265,7 @@ function CurrentPayouts({ user, onNavigate }) {
       )}
 
       {/* Header Banner */}
-      <div style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)', borderRadius: '16px', padding: '2rem 2.25rem', color: '#ffffff', marginBottom: '1.75rem', boxShadow: '0 10px 25px -5px rgba(15, 23, 42, 0.25)' }}>
+      <div style={{ background: 'var(--van-btn-gradient-primary)', borderRadius: '16px', padding: '2rem 2.25rem', color: '#ffffff', marginBottom: '1.75rem', boxShadow: '0 10px 25px -5px rgba(15, 23, 42, 0.25)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
           <div>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.12)', padding: '0.25rem 0.85rem', borderRadius: '20px', fontSize: '0.78rem', fontWeight: '700', color: '#c7d2fe', marginBottom: '0.75rem' }}>
@@ -341,7 +328,7 @@ function CurrentPayouts({ user, onNavigate }) {
             </div>
 
             <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
-              Weekly Cutoff: <strong style={{ color: '#38bdf8', fontFamily: 'monospace' }}>{String(countdown.hours).padStart(2, '0')}h : {String(countdown.minutes).padStart(2, '0')}m : {String(countdown.seconds).padStart(2, '0')}s</strong>
+              Settlement Cycle: <strong style={{ color: "var(--van-brand-cyan)" }}>Weekly Tuesday Clearance</strong>
             </div>
           </div>
         </div>

@@ -36,10 +36,10 @@ function UserProductsServicesPage({ user, onNavigate }) {
         type: 'product',
         category: p.category || 'General',
         price: Number(p.price),
-        rating: 4.9,
-        reviewsCount: 120 + p.id * 7,
+        status: 'Verified',
+        verified: true,
         badge: p.stock < 10 ? 'Limited Stock' : 'Verified Product',
-        image: p.image || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=600&q=80',
+        image: p.image || '/logo.png',
         description: p.description || 'Quality verified commercial product with direct distributor warranty.',
         vendor: p.owner_name || 'Skyline Technologies Pvt Ltd',
         referralCommissionPercent: 40,
@@ -55,10 +55,10 @@ function UserProductsServicesPage({ user, onNavigate }) {
         type: 'service',
         category: s.category || 'Services',
         price: Number(s.price),
-        rating: 4.8,
-        reviewsCount: 95 + s.id * 5,
+        status: 'Verified',
+        verified: true,
         badge: s.duration || 'Certified Service',
-        image: s.image || 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=600&q=80',
+        image: s.image || '/logo.png',
         description: s.description || 'Professional end-to-end execution by verified industry experts.',
         vendor: s.owner_name || 'AddNet Tax Advisory',
         referralCommissionPercent: 40,
@@ -104,7 +104,7 @@ function UserProductsServicesPage({ user, onNavigate }) {
   };
 
   return (
-    <div className="page-content-wrapper" style={{ padding: '1.5rem 2rem', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <div className="page-container">
       {/* Toast */}
       {toastMessage && (
         <div
@@ -273,9 +273,7 @@ function UserProductsServicesPage({ user, onNavigate }) {
                     </span>
                   )}
                 </div>
-                <div style={{ position: 'absolute', bottom: '10px', right: '12px', background: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(4px)', color: '#ffffff', padding: '0.2rem 0.5rem', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 600 }}>
-                  ⭐ {item.rating} ({item.reviewsCount})
-                </div>
+                <div style={{ position: "absolute", bottom: "10px", right: "12px", background: "rgba(11, 25, 44, 0.85)", backdropFilter: "blur(4px)", color: "#ffffff", padding: "0.2rem 0.5rem", borderRadius: "6px", fontSize: "0.72rem", fontWeight: 600 }}>● Verified Listing</div>
               </div>
 
               {/* Content Body */}
