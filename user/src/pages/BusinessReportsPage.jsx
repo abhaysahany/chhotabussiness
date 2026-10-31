@@ -61,18 +61,18 @@ function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
       entity_type: 'business',
       display_title: b.name,
       display_subtitle: `Owner: ${b.owner_name}`,
-      display_image: b.logo_url || 'https://via.placeholder.com/80?text=Business',
+      display_image: b.logo_url || '/logo.png',
       reg_identifier: b.registration_no || 'N/A',
-      rating: 4.9,
+      verified_status: 'Active',
     })),
     ...freelancers.map((f) => ({
       ...f,
       entity_type: 'freelancer',
       display_title: f.name,
       display_subtitle: f.title || 'Freelance Professional',
-      display_image: f.avatar_url || 'https://via.placeholder.com/80?text=Freelancer',
+      display_image: f.avatar_url || '/logo.png',
       reg_identifier: f.hourly_rate || '₹850/hr',
-      rating: 4.8,
+      verified_status: 'Active',
     })),
   ];
 
@@ -119,11 +119,11 @@ function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
   const totalVerifiedCount = combinedEntities.filter((e) => e.verification_status === 'verified').length;
 
   return (
-    <div className="page-wrapper" style={{ padding: '1.5rem 2rem', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <div className="page-container">
       {/* Hero Banner Header */}
       <div
         style={{
-          background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)',
+          background: 'linear-gradient(135deg, var(--brand-primary-dark) 0%, var(--brand-primary) 100%)',
           borderRadius: '16px',
           padding: '2.25rem 2.5rem',
           color: '#ffffff',
@@ -134,7 +134,7 @@ function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
         }}
       >
         <div style={{ position: 'relative', zIndex: 2 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.12)', padding: '0.25rem 0.85rem', borderRadius: '20px', fontSize: '0.78rem', fontWeight: '700', color: '#c7d2fe', marginBottom: '0.85rem', backdropFilter: 'blur(4px)' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.12)', padding: '0.25rem 0.85rem', borderRadius: '20px', fontSize: '0.78rem', fontWeight: '700', color: 'var(--brand-secondary-subtle)', marginBottom: '0.85rem', backdropFilter: 'blur(4px)' }}>
             <span>🏢 Verified Business Directory & Compliance Reports</span>
           </div>
           <h1 style={{ fontSize: '1.85rem', fontWeight: '800', margin: '0 0 0.5rem 0', letterSpacing: '-0.02em', background: 'linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
@@ -294,7 +294,7 @@ function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
             >
               <option value="newest">Sort: Newest First</option>
               <option value="name_asc">Sort: Name (A-Z)</option>
-              <option value="rating">Sort: Highest Rated</option>
+              <option value="name_asc">Sort: Name (A-Z)</option>
             </select>
           </div>
 
@@ -464,7 +464,7 @@ function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
                   onClick={() => setSelectedReportEntity(item)}
                   style={{
                     width: '100%',
-                    background: 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)',
+                    background: 'var(--van-btn-gradient-primary)',
                     color: '#fff',
                     border: 'none',
                     padding: '0.55rem',
@@ -587,7 +587,7 @@ function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
             }}
           >
             {/* Modal Header */}
-            <div style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)', padding: '1.5rem 2rem', color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div style={{ background: 'linear-gradient(135deg, var(--brand-primary-dark) 0%, var(--brand-primary) 100%)', padding: '1.5rem 2rem', color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                 <img
                   src={selectedReportEntity.display_image}

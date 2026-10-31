@@ -88,7 +88,7 @@ function UserContentSupportPage({ user, onNavigate }) {
   };
 
   return (
-    <div style={{ padding: '1.5rem 2rem', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <div className="page-container">
       {/* Toast Alert */}
       {toastMsg && (
         <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', backgroundColor: '#059669', color: '#fff', padding: '0.85rem 1.35rem', borderRadius: '10px', fontWeight: '700', boxShadow: '0 10px 25px -5px rgba(5,150,105,0.4)', zIndex: 2000, fontSize: '0.875rem' }}>
@@ -174,7 +174,7 @@ function UserContentSupportPage({ user, onNavigate }) {
             <div key={topic.id} style={{ background: '#fff', borderRadius: '14px', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 2px 10px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column' }}>
               {/* Video Thumbnail Header */}
               <div style={{ height: '175px', backgroundColor: '#0f172a', position: 'relative', overflow: 'hidden', cursor: 'pointer' }} onClick={() => handleOpenTopic(topic)}>
-                <img src={topic.thumbnail || 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500'} alt={topic.title} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85 }} />
+                <img src={topic.thumbnail || '/logo.png'} alt={topic.title} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85 }} />
                 <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: 'rgba(239, 68, 68, 0.95)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.5rem', boxShadow: '0 4px 14px rgba(0,0,0,0.4)' }}>
                     ▶

@@ -56,7 +56,7 @@ function RewardsClaimed({ user }) {
       render: (val, row) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <img
-            src={row.reward_image || 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600'}
+            src={row.reward_image || '/logo.png'}
             alt={val}
             style={{ width: '44px', height: '44px', borderRadius: '8px', objectFit: 'cover' }}
           />
@@ -131,7 +131,7 @@ function RewardsClaimed({ user }) {
   ];
 
   return (
-    <div className="page-content-wrapper" style={{ padding: '1.5rem 2rem', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <div className="page-container">
       {/* Toast Alert */}
       {toastMessage && (
         <div

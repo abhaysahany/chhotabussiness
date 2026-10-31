@@ -1,0 +1,96 @@
+/**
+ * Vyapar AdNET Design System — Tables & Grids
+ * Provides clean, dense, high-information-density table formatting.
+ */
+
+.van-table-container {
+  background-color: var(--van-bg-card);
+  border: 1px solid var(--van-border-subtle);
+  border-radius: var(--van-radius-table);
+  box-shadow: var(--van-shadow-card);
+  overflow-x: auto;
+  width: 100%;
+}
+
+.van-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.825rem;
+}
+
+.van-table thead th {
+  background-color: var(--van-bg-surface);
+  color: var(--van-text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid var(--van-border-subtle);
+  white-space: nowrap;
+}
+
+.van-table tbody tr {
+  border-bottom: 1px solid var(--van-border-subtle);
+  transition: background-color 0.12s ease;
+}
+
+.van-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.van-table tbody tr:hover {
+  background-color: var(--van-bg-hover);
+}
+
+.van-table td {
+  padding: 0.65rem 0.85rem;
+  color: var(--van-text-secondary);
+  vertical-align: middle;
+}
+
+.van-table td.van-table-cell-bold {
+  font-weight: 600;
+  color: var(--van-text-primary);
+}
+
+/* Numeric / Currency Alignment */
+.van-table-num,
+.van-table th.van-table-num,
+.van-table td.van-table-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.van-table-center,
+.van-table th.van-table-center,
+.van-table td.van-table-center {
+  text-align: center;
+}
+
+/* Table Empty State */
+.van-table-empty {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: var(--van-text-muted);
+}
+
+.van-table-empty-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Table Pagination Toolbar */
+.van-table-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background-color: var(--van-bg-surface);
+  border-top: 1px solid var(--van-border-subtle);
+  font-size: 0.78rem;
+  color: var(--van-text-muted);
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}

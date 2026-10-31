@@ -248,7 +248,7 @@ function PayoutHistory({ user }) {
   ];
 
   return (
-    <div className="page-content-wrapper" style={{ padding: '1.5rem 2rem', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <div className="page-container">
       {/* Toast Alert */}
       {toastMessage && (
         <div

@@ -1,27 +1,15 @@
 import React, { useState } from 'react';
-import { useBranding } from '../utils/branding';
 
 function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
-  const { appName } = useBranding();
   const [openMenus, setOpenMenus] = useState(() => ({
-    dashboards: activePage === 'dashboard' || activePage === 'sales',
     contents: Boolean(activePage?.startsWith('content-')),
     connections: Boolean(activePage?.startsWith('connections-') || activePage?.startsWith('network-') || activePage === 'network'),
     businessEntities: Boolean(activePage?.startsWith('business-entities') || activePage === 'business-reports' || activePage?.startsWith('business-reports-')),
     businessReports: Boolean(activePage?.startsWith('reports-')),
     payments: Boolean(activePage?.startsWith('payment') || activePage?.startsWith('reward') || activePage?.startsWith('commission')),
-    reward: Boolean(activePage?.startsWith('reward')),
-    commissions: Boolean(activePage?.startsWith('commission')),
-    payouts: Boolean(activePage?.startsWith('payout')),
+    payouts: Boolean(activePage?.startsWith('payout') || activePage === 'current-payouts'),
     settings: Boolean(activePage?.startsWith('profile')),
     support: Boolean(activePage?.startsWith('support')),
-    genAi: false,
-    ecommerce: false,
-    crypto: false,
-    crm: false,
-    projects: false,
-    helpdesk: false,
-    hrManagement: false,
   }));
 
   React.useEffect(() => {
@@ -34,6 +22,15 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
     if (activePage?.startsWith('reports-')) {
       setOpenMenus((prev) => ({ ...prev, businessReports: true }));
     }
+    if (activePage?.startsWith('payment') || activePage?.startsWith('reward') || activePage?.startsWith('commission')) {
+      setOpenMenus((prev) => ({ ...prev, payments: true }));
+    }
+    if (activePage?.startsWith('payout') || activePage === 'current-payouts') {
+      setOpenMenus((prev) => ({ ...prev, payouts: true }));
+    }
+    if (activePage?.startsWith('profile')) {
+      setOpenMenus((prev) => ({ ...prev, settings: true }));
+    }
   }, [activePage]);
 
   const toggleMenu = (menuKey) => {
@@ -43,49 +40,45 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
     }));
   };
 
-  // Helper Double Chevron SVG Icon
-  const ChevronDouble = () => (
+  // Modern Chevron SVG Icons
+  const ChevronDown = () => (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M13 17l5-5-5-5M6 17l5-5-5-5" />
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+  );
+
+  const ChevronRight = () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  );
+
+  const SubDot = () => (
+    <svg width="6" height="6" viewBox="0 0 6 6" fill="currentColor">
+      <circle cx="3" cy="3" r="3" />
     </svg>
   );
 
   return (
     <aside className={`pro-sidebar ${collapsed ? 'collapsed' : ''}`}>
-      {/* Sidebar Brand Header */}
+      {/* Sidebar Brand Header: Approved Circular Logo Only */}
       <div className="sidebar-brand-header">
-        <div className="nilova-brand-container">
-          <div className="nilova-logo-icon">
-            <svg width="26" height="26" viewBox="0 0 36 36" fill="none">
-              <defs>
-                <linearGradient id="nilovaGradSidebar1" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#2563eb" />
-                  <stop offset="50%" stopColor="#3b82f6" />
-                  <stop offset="100%" stopColor="#06b6d4" />
-                </linearGradient>
-                <linearGradient id="nilovaGradSidebar2" x1="0%" y1="100%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#0284c7" />
-                  <stop offset="100%" stopColor="#38bdf8" />
-                </linearGradient>
-              </defs>
-              <path d="M6 30V6L19 23.5V6H29V30L16 12.5V30H6Z" fill="url(#nilovaGradSidebar1)" />
-              <path d="M19 6L29 19.5V6H19Z" fill="url(#nilovaGradSidebar2)" opacity="0.85" />
-            </svg>
-          </div>
-          {!collapsed && <span className="nilova-brand-text">{appName}</span>}
+        <div className="van-sidebar-brand" onClick={() => onNavigate('sales')} title="Vyapar AdNET Dashboard">
+          <img src="/logo.png" alt="Vyapar AdNET Logo" className="van-sidebar-logo-img" />
         </div>
       </div>
 
-      {/* Sidebar Navigation Items List */}
+      {/* Navigation Links */}
       <div className="sidebar-nav-container">
         {/* MAIN GROUP */}
         <div className="nav-group-title">{!collapsed && 'MAIN'}</div>
 
-        {/* 1. Dashboards Section (Kept as requested) */}
+        {/* 1. Dashboard — Single Direct Destination */}
         <div className="nav-item">
           <button
-            className={`nav-link main-dashboard-link ${openMenus.dashboards ? 'active-parent-pill' : ''}`}
-            onClick={() => toggleMenu('dashboards')}
+            className={`nav-link ${activePage === 'dashboard' || activePage === 'sales' ? 'active' : ''}`}
+            onClick={() => onNavigate('sales')}
+            title="Dashboard Overview"
           >
             <span className="nav-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -94,29 +87,14 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
                 <line x1="12" y1="17" x2="12" y2="21"></line>
               </svg>
             </span>
-            {!collapsed && <span className="nav-text">Dashboards</span>}
-            {!collapsed && <span className="nav-arrow">{openMenus.dashboards ? '—' : '+'}</span>}
+            {!collapsed && <span className="nav-text">Dashboard</span>}
           </button>
-
-          {/* Expanded Sub-items under Dashboards */}
-          {!collapsed && openMenus.dashboards && (
-            <div className="sub-nav-list">
-              {/* Sales */}
-              <button
-                className={`sub-nav-link ${activePage === 'sales' ? 'active' : ''}`}
-                onClick={() => onNavigate('sales')}
-              >
-                <span className="sub-icon"><ChevronDouble /></span>
-                <span className="sub-text">Dashboard</span>
-              </button>
-            </div>
-          )}
         </div>
 
         {/* MEDIA & CONTENT GROUP */}
         <div className="nav-group-title">{!collapsed && 'CONTENT MANAGEMENT'}</div>
 
-        {/* 2. Contents Tab (Collapsible) */}
+        {/* 2. Contents Tab */}
         <div className="nav-item">
           <button
             className={`nav-link ${openMenus.contents ? 'active-parent-pill' : ''}`}
@@ -129,7 +107,7 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
               </svg>
             </span>
             {!collapsed && <span className="nav-text">Content Management</span>}
-            {!collapsed && <span className="nav-arrow">{openMenus.contents ? '—' : '+'}</span>}
+            {!collapsed && <span className="nav-arrow">{openMenus.contents ? <ChevronDown /> : <ChevronRight />}</span>}
           </button>
 
           {!collapsed && openMenus.contents && (
@@ -138,39 +116,38 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
                 className={`sub-nav-link ${activePage === 'content-products-services' ? 'active' : ''}`}
                 onClick={() => onNavigate('content-products-services')}
               >
-                <span className="sub-icon"><ChevronDouble /></span>
+                <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Products & Services</span>
               </button>
               <button
                 className={`sub-nav-link ${activePage === 'content-library' || activePage === 'content-media' ? 'active' : ''}`}
                 onClick={() => onNavigate('content-library')}
               >
-                <span className="sub-icon"><ChevronDouble /></span>
+                <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Content Library</span>
               </button>
               <button
                 className={`sub-nav-link ${activePage === 'content-support' ? 'active' : ''}`}
                 onClick={() => onNavigate('content-support')}
               >
-                <span className="sub-icon"><ChevronDouble /></span>
+                <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Content Support</span>
               </button>
               <button
                 className={`sub-nav-link ${activePage === 'content-social-platforms' || activePage === 'social-platforms' ? 'active' : ''}`}
                 onClick={() => onNavigate('content-social-platforms')}
               >
-                <span className="sub-icon"><ChevronDouble /></span>
+                <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Social Platforms</span>
               </button>
-
             </div>
           )}
         </div>
 
-        {/* NETWORK & COMMUNITY GROUP */}
+        {/* NETWORK GROUP */}
         <div className="nav-group-title">{!collapsed && 'NETWORK'}</div>
 
-        {/* 3. Connections Tab (Collapsible) */}
+        {/* 3. Connections Tab */}
         <div className="nav-item">
           <button
             className={`nav-link ${openMenus.connections ? 'active-parent-pill' : ''}`}
@@ -185,7 +162,7 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
               </svg>
             </span>
             {!collapsed && <span className="nav-text">Network & Connections</span>}
-            {!collapsed && <span className="nav-arrow">{openMenus.connections ? '—' : '+'}</span>}
+            {!collapsed && <span className="nav-arrow">{openMenus.connections ? <ChevronDown /> : <ChevronRight />}</span>}
           </button>
 
           {!collapsed && openMenus.connections && (
@@ -194,38 +171,38 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
                 className={`sub-nav-link ${activePage === 'network-direct' || activePage === 'connections-downlines' ? 'active' : ''}`}
                 onClick={() => onNavigate('network-direct')}
               >
-                <span className="sub-icon"><ChevronDouble /></span>
+                <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Direct Connections</span>
               </button>
               <button
                 className={`sub-nav-link ${activePage === 'network-team' || activePage === 'connections-team' ? 'active' : ''}`}
                 onClick={() => onNavigate('network-team')}
               >
-                <span className="sub-icon"><ChevronDouble /></span>
+                <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Team Connections</span>
               </button>
               <button
                 className={`sub-nav-link ${activePage === 'network-genealogy' || activePage === 'network' || activePage === 'connections-sponsor' ? 'active' : ''}`}
                 onClick={() => onNavigate('network-genealogy')}
               >
-                <span className="sub-icon"><ChevronDouble /></span>
+                <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Genealogy Tree</span>
               </button>
               <button
                 className={`sub-nav-link ${activePage === 'network-referral' || activePage === 'connections-referral' ? 'active' : ''}`}
                 onClick={() => onNavigate('network-referral')}
               >
-                <span className="sub-icon"><ChevronDouble /></span>
+                <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Referral Link</span>
               </button>
             </div>
           )}
         </div>
 
-        {/* BUSINESS & REPORTS GROUP */}
+        {/* BUSINESS GROUP */}
         <div className="nav-group-title">{!collapsed && 'BUSINESS'}</div>
 
-        {/* 1. Business Entities Tab (Collapsible) */}
+        {/* 4. Business Entities Tab */}
         <div className="nav-item">
           <button
             className={`nav-link ${openMenus.businessEntities || activePage.startsWith('business-entities') || activePage.startsWith('business-reports-') ? 'active-parent-pill' : ''}`}
@@ -238,7 +215,7 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
               </svg>
             </span>
             {!collapsed && <span className="nav-text">Business</span>}
-            {!collapsed && <span className="nav-arrow">{openMenus.businessEntities ? '—' : '+'}</span>}
+            {!collapsed && <span className="nav-arrow">{openMenus.businessEntities ? <ChevronDown /> : <ChevronRight />}</span>}
           </button>
 
           {!collapsed && openMenus.businessEntities && (
@@ -247,28 +224,28 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
                 className={`sub-nav-link ${activePage === 'business-entities' || activePage === 'business-reports' ? 'active' : ''}`}
                 onClick={() => onNavigate('business-entities')}
               >
-                <span className="sub-icon"><ChevronDouble /></span>
+                <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Directory & All Entities</span>
               </button>
               <button
                 className={`sub-nav-link ${activePage === 'business-entities-biz' || activePage === 'business-reports-biz' ? 'active' : ''}`}
                 onClick={() => onNavigate('business-entities-biz')}
               >
-                <span className="sub-icon"><ChevronDouble /></span>
+                <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Registered Businesses</span>
               </button>
               <button
                 className={`sub-nav-link ${activePage === 'business-entities-free' || activePage === 'business-reports-free' ? 'active' : ''}`}
                 onClick={() => onNavigate('business-entities-free')}
               >
-                <span className="sub-icon"><ChevronDouble /></span>
+                <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Registered Freelancers</span>
               </button>
             </div>
           )}
         </div>
 
-        {/* 2. Business Reports Tab (Collapsible) */}
+        {/* 5. Business Reports Tab */}
         <div className="nav-item">
           <button
             className={`nav-link ${openMenus.businessReports ? 'active-parent-pill' : ''}`}
@@ -284,35 +261,31 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
               </svg>
             </span>
             {!collapsed && <span className="nav-text">Business Reports</span>}
-            {!collapsed && <span className="nav-arrow">{openMenus.businessReports ? '—' : '+'}</span>}
+            {!collapsed && <span className="nav-arrow">{openMenus.businessReports ? <ChevronDown /> : <ChevronRight />}</span>}
           </button>
 
           {!collapsed && openMenus.businessReports && (
             <div className="sub-nav-list">
               <button className={`sub-nav-link ${activePage === 'reports-sales' ? 'active' : ''}`} onClick={() => onNavigate('reports-sales')}>
-                <span className="sub-icon"><ChevronDouble /></span>
+                <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Sales Performance</span>
               </button>
               <button className={`sub-nav-link ${activePage === 'reports-revenue' ? 'active' : ''}`} onClick={() => onNavigate('reports-revenue')}>
-                <span className="sub-icon"><ChevronDouble /></span>
+                <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Revenue Analytics</span>
               </button>
               <button className={`sub-nav-link ${activePage === 'reports-mlm' ? 'active' : ''}`} onClick={() => onNavigate('reports-mlm')}>
-                <span className="sub-bullet"><ChevronDouble /></span>
+                <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Network Commissions</span>
               </button>
-              {/* <button className={`sub-nav-link ${activePage === 'reports-tax' ? 'active' : ''}`} onClick={() => onNavigate('reports-tax')}>
-                <span className="sub-icon"><ChevronDouble /></span>
-                <span className="sub-text">Tax & Audit Ledger</span>
-              </button> */}
             </div>
           )}
         </div>
 
-        {/* FINANCE & PAYMENTS GROUP */}
+        {/* FINANCE GROUP */}
         <div className="nav-group-title">{!collapsed && 'FINANCE'}</div>
 
-        {/* 5. Payments Tab (Collapsible) */}
+        {/* 6. Payments Tab — Flattened 2-Level Clean Menu */}
         <div className="nav-item">
           <button
             className={`nav-link ${openMenus.payments ? 'active-parent-pill' : ''}`}
@@ -324,87 +297,52 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
                 <line x1="1" y1="10" x2="23" y2="10"></line>
               </svg>
             </span>
-            {!collapsed && <span className="nav-text">Payments</span>}
-            {!collapsed && <span className="nav-arrow">{openMenus.payments ? '—' : '+'}</span>}
+            {!collapsed && <span className="nav-text">Payments & Rewards</span>}
+            {!collapsed && <span className="nav-arrow">{openMenus.payments ? <ChevronDown /> : <ChevronRight />}</span>}
           </button>
 
           {!collapsed && openMenus.payments && (
             <div className="sub-nav-list">
-              {/* Reward Multi-Dropdown */}
-              <div className="nested-group">
-                <button
-                  className={`sub-nav-link ${openMenus.reward ? 'active-nested-parent' : ''}`}
-                  onClick={() => toggleMenu('reward')}
-                >
-                  <span className="sub-icon"><ChevronDouble /></span>
-                  <span className="sub-text">Reward</span>
-                  <span className="sub-arrow">{openMenus.reward ? '—' : '+'}</span>
-                </button>
-
-                {openMenus.reward && (
-                  <div className="nested-sub-list">
-                    <button
-                      className={`nested-nav-link ${activePage === 'reward-details' ? 'active' : ''}`}
-                      onClick={() => onNavigate('reward-details')}
-                    >
-                      <span className="nested-icon"><ChevronDouble /></span>
-                      <span>Reward Details</span>
-                    </button>
-                    <button
-                      className={`nested-nav-link ${activePage === 'rewards-claimed' ? 'active' : ''}`}
-                      onClick={() => onNavigate('rewards-claimed')}
-                    >
-                      <span className="nested-icon"><ChevronDouble /></span>
-                      <span>Rewards Claimed</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* Commissions Multi-Dropdown */}
-              <div className="nested-group">
-                <button
-                  className={`sub-nav-link ${openMenus.commissions ? 'active-nested-parent' : ''}`}
-                  onClick={() => toggleMenu('commissions')}
-                >
-                  <span className="sub-icon"><ChevronDouble /></span>
-                  <span className="sub-text">Commissions</span>
-                  <span className="sub-arrow">{openMenus.commissions ? '—' : '+'}</span>
-                </button>
-
-                {openMenus.commissions && (
-                  <div className="nested-sub-list">
-                    <button
-                      className={`nested-nav-link ${activePage === 'base-commission' ? 'active' : ''}`}
-                      onClick={() => onNavigate('base-commission')}
-                    >
-                      <span className="nested-icon"><ChevronDouble /></span>
-                      <span>Base Commission</span>
-                    </button>
-                    <button
-                      className={`nested-nav-link ${activePage === 'team-commission' ? 'active' : ''}`}
-                      onClick={() => onNavigate('team-commission')}
-                    >
-                      <span className="nested-icon"><ChevronDouble /></span>
-                      <span>Team Commission</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* Payment Transactions */}
               <button
-                className={`sub-nav-link ${activePage === 'payment-transactions' ? 'active-parent-pill' : ''}`}
+                className={`sub-nav-link ${activePage === 'reward-details' ? 'active' : ''}`}
+                onClick={() => onNavigate('reward-details')}
+              >
+                <span className="sub-icon"><SubDot /></span>
+                <span className="sub-text">Reward Details</span>
+              </button>
+              <button
+                className={`sub-nav-link ${activePage === 'rewards-claimed' ? 'active' : ''}`}
+                onClick={() => onNavigate('rewards-claimed')}
+              >
+                <span className="sub-icon"><SubDot /></span>
+                <span className="sub-text">Rewards Claimed</span>
+              </button>
+              <button
+                className={`sub-nav-link ${activePage === 'base-commission' ? 'active' : ''}`}
+                onClick={() => onNavigate('base-commission')}
+              >
+                <span className="sub-icon"><SubDot /></span>
+                <span className="sub-text">Base Commission</span>
+              </button>
+              <button
+                className={`sub-nav-link ${activePage === 'team-commission' ? 'active' : ''}`}
+                onClick={() => onNavigate('team-commission')}
+              >
+                <span className="sub-icon"><SubDot /></span>
+                <span className="sub-text">Team Commission</span>
+              </button>
+              <button
+                className={`sub-nav-link ${activePage === 'payment-transactions' ? 'active' : ''}`}
                 onClick={() => onNavigate('payment-transactions')}
               >
-                <span className="sub-icon"><ChevronDouble /></span>
+                <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Payment Transactions</span>
               </button>
             </div>
           )}
         </div>
 
-        {/* 5b. Payouts Tab (Collapsible) */}
+        {/* 7. Payouts Tab */}
         <div className="nav-item">
           <button
             className={`nav-link ${openMenus.payouts ? 'active-parent-pill' : ''}`}
@@ -417,25 +355,25 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
               </svg>
             </span>
             {!collapsed && <span className="nav-text">Payouts</span>}
-            {!collapsed && <span className="nav-arrow">{openMenus.payouts ? '—' : '+'}</span>}
+            {!collapsed && <span className="nav-arrow">{openMenus.payouts ? <ChevronDown /> : <ChevronRight />}</span>}
           </button>
 
           {!collapsed && openMenus.payouts && (
             <div className="sub-nav-list">
-              <button className="sub-nav-link" onClick={() => onNavigate('current-payouts')}>
-                <span className="sub-icon"><ChevronDouble /></span>
+              <button className={`sub-nav-link ${activePage === 'current-payouts' ? 'active' : ''}`} onClick={() => onNavigate('current-payouts')}>
+                <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Current Payouts</span>
               </button>
-              <button className="sub-nav-link" onClick={() => onNavigate('payout-history')}>
-                <span className="sub-icon"><ChevronDouble /></span>
+              <button className={`sub-nav-link ${activePage === 'payout-history' ? 'active' : ''}`} onClick={() => onNavigate('payout-history')}>
+                <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Payout History</span>
               </button>
-              <button className="sub-nav-link" onClick={() => onNavigate('payout-withdraw')}>
-                <span className="sub-icon"><ChevronDouble /></span>
+              <button className={`sub-nav-link ${activePage === 'payout-withdraw' ? 'active' : ''}`} onClick={() => onNavigate('payout-withdraw')}>
+                <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Request Withdrawal</span>
               </button>
-              <button className="sub-nav-link" onClick={() => onNavigate('payout-tds')}>
-                <span className="sub-icon"><ChevronDouble /></span>
+              <button className={`sub-nav-link ${activePage === 'payout-tds' ? 'active' : ''}`} onClick={() => onNavigate('payout-tds')}>
+                <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">TDS & Tax Summary</span>
               </button>
             </div>
@@ -445,10 +383,10 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
         {/* SYSTEM & SETTINGS GROUP */}
         <div className="nav-group-title">{!collapsed && 'SYSTEM & SUPPORT'}</div>
 
-        {/* 6. Settings Tab (Collapsible) */}
+        {/* 8. Settings Tab */}
         <div className="nav-item">
           <button
-            className={`nav-link ${activePage === 'profile' || openMenus.settings ? 'active-parent-pill' : ''}`}
+            className={`nav-link ${activePage?.startsWith('profile') || openMenus.settings ? 'active-parent-pill' : ''}`}
             onClick={() => toggleMenu('settings')}
           >
             <span className="nav-icon">
@@ -458,32 +396,32 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
               </svg>
             </span>
             {!collapsed && <span className="nav-text">Settings</span>}
-            {!collapsed && <span className="nav-arrow">{openMenus.settings ? '—' : '+'}</span>}
+            {!collapsed && <span className="nav-arrow">{openMenus.settings ? <ChevronDown /> : <ChevronRight />}</span>}
           </button>
 
           {!collapsed && openMenus.settings && (
             <div className="sub-nav-list">
-              <button className="sub-nav-link" onClick={() => onNavigate('profile')}>
-                <span className="sub-icon"><ChevronDouble /></span>
+              <button className={`sub-nav-link ${activePage === 'profile' ? 'active' : ''}`} onClick={() => onNavigate('profile')}>
+                <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Personal Profile</span>
               </button>
-              <button className="sub-nav-link" onClick={() => onNavigate('profile-security')}>
-                <span className="sub-icon"><ChevronDouble /></span>
+              <button className={`sub-nav-link ${activePage === 'profile-security' ? 'active' : ''}`} onClick={() => onNavigate('profile-security')}>
+                <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Security & Password</span>
               </button>
-              <button className="sub-nav-link" onClick={() => onNavigate('profile-kyc')}>
-                <span className="sub-icon"><ChevronDouble /></span>
+              <button className={`sub-nav-link ${activePage === 'profile-kyc' ? 'active' : ''}`} onClick={() => onNavigate('profile-kyc')}>
+                <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">KYC Verification</span>
               </button>
-              <button className="sub-nav-link" onClick={() => onNavigate('profile-bank')}>
-                <span className="sub-icon"><ChevronDouble /></span>
+              <button className={`sub-nav-link ${activePage === 'profile-bank' ? 'active' : ''}`} onClick={() => onNavigate('profile-bank')}>
+                <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Bank & Payout Accounts</span>
               </button>
             </div>
           )}
         </div>
 
-        {/* 7. Support Tab (Collapsible) */}
+        {/* 9. Support Tab */}
         <div className="nav-item">
           <button
             className={`nav-link ${openMenus.support ? 'active-parent-pill' : ''}`}
@@ -497,21 +435,21 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
               </svg>
             </span>
             {!collapsed && <span className="nav-text">Support</span>}
-            {!collapsed && <span className="nav-arrow">{openMenus.support ? '—' : '+'}</span>}
+            {!collapsed && <span className="nav-arrow">{openMenus.support ? <ChevronDown /> : <ChevronRight />}</span>}
           </button>
 
           {!collapsed && openMenus.support && (
             <div className="sub-nav-list">
-              <button className="sub-nav-link" onClick={() => onNavigate('support-notifications')}>
-                <span className="sub-icon"><ChevronDouble /></span>
+              <button className={`sub-nav-link ${activePage === 'support-notifications' ? 'active' : ''}`} onClick={() => onNavigate('support-notifications')}>
+                <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Notifications</span>
               </button>
-              <button className="sub-nav-link" onClick={() => onNavigate('support-tickets')}>
-                <span className="sub-icon"><ChevronDouble /></span>
+              <button className={`sub-nav-link ${activePage === 'support-tickets' ? 'active' : ''}`} onClick={() => onNavigate('support-tickets')}>
+                <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Support Tickets</span>
               </button>
-              <button className="sub-nav-link" onClick={() => onNavigate('support-kb')}>
-                <span className="sub-icon"><ChevronDouble /></span>
+              <button className={`sub-nav-link ${activePage === 'support-kb' ? 'active' : ''}`} onClick={() => onNavigate('support-kb')}>
+                <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Knowledge Base & FAQs</span>
               </button>
             </div>
@@ -519,11 +457,9 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
         </div>
       </div>
 
-      {/* Fixed Bottom Options (Theme Settings & Logout) */}
+      {/* Fixed Bottom Options */}
       <div className="sidebar-bottom-actions">
-
-
-        <button className="sidebar-bottom-btn logout-btn" onClick={onLogout}>
+        <button className="sidebar-bottom-btn logout-btn" onClick={onLogout} title="Log out of session">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
             <polyline points="16 17 21 12 16 7"></polyline>
@@ -532,23 +468,8 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
           {!collapsed && <span>Logout</span>}
         </button>
       </div>
-
-      {/* Bottom Branding Badge */}
-      {!collapsed && (
-        <div className="sidebar-footer-branding">
-          <div className="branding-badge-icon">⚡</div>
-          <div className="branding-badge-text">
-            <span className="branding-title">{appName} Pro</span>
-            <span className="branding-sub">Enterprise v2.4.0</span>
-          </div>
-          <span className="branding-verified-tag">Active ✓</span>
-        </div>
-      )}
     </aside>
   );
 }
 
 export default Sidebar;
-
-
-

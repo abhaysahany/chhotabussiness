@@ -1,0 +1,89 @@
+/**
+ * Vyapar AdNET Design System — Responsive Adjustments
+ * Breakpoint coverage: 320px, 360px, 375px, 390px, 414px, 430px, 768px, 1024px, 1280px
+ */
+
+/* Mobile Breakpoint (<768px) */
+@media (max-width: 767.98px) {
+  .pro-app-wrapper .pro-main-wrapper {
+    margin-left: 0 !important;
+  }
+
+  .pro-sidebar {
+    transform: translateX(-100%);
+    box-shadow: 0 0 24px rgba(15, 23, 42, 0.2);
+    z-index: 1000;
+  }
+
+  /* When sidebar is explicitly opened on mobile */
+  .pro-app-wrapper:not(.sidebar-is-collapsed) .pro-sidebar {
+    transform: translateX(0);
+  }
+
+  /* Mobile Sidebar Backdrop (Active only when drawer is open on mobile) */
+  .sidebar-mobile-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    z-index: 999;
+    cursor: pointer;
+  }
+
+  .pro-page-content,
+  .pro-page-content.pro-curved-canvas {
+    padding: 0.85rem !important;
+  }
+
+  .header-search-wrapper {
+    width: 180px;
+  }
+
+  .van-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .van-card-body {
+    padding: 1rem;
+  }
+
+  .van-modal-card {
+    max-width: 95vw;
+    margin: 0.5rem;
+  }
+}
+
+/* Very Small Mobile (<390px) */
+@media (max-width: 389.98px) {
+  .header-search-wrapper {
+    display: none;
+  }
+
+  .van-btn-sm {
+    padding: 0 0.5rem;
+  }
+
+  .pro-page-content {
+    padding: 0.65rem !important;
+  }
+}
+
+/* Tablet / Medium Screens (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .header-search-wrapper {
+    width: 220px;
+  }
+}
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -108,11 +108,11 @@ function TeamConnectionsPage({ user, onNavigate }) {
       render: (val, row) => (
         <div className="user-profile-cell">
           <img
-            src={row.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}
+            src={row.avatar || '/logo.png'}
             alt={val}
             className="cell-avatar"
             onError={(e) => {
-              e.target.src = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150';
+              e.target.src = '/logo.png';
             }}
           />
           <div className="cell-user-meta">
@@ -356,7 +356,7 @@ function TeamConnectionsPage({ user, onNavigate }) {
             <div className="modal-body">
               <div className="modal-profile-header">
                 <img
-                  src={selectedMember.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}
+                  src={selectedMember.avatar || '/logo.png'}
                   alt={selectedMember.name}
                   className="modal-avatar-lg"
                 />

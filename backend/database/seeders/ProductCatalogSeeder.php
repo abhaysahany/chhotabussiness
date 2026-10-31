@@ -12,12 +12,6 @@ class ProductCatalogSeeder extends Seeder
 {
     public function run(): void
     {
-        \Illuminate\Support\Facades\Schema::disableForeignKeyConstraints();
-        Product::truncate();
-        Service::truncate();
-        Category::truncate();
-        \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
-
         // 1. Seed Categories
         $categories = [
             ['name' => 'Software & IT', 'type' => 'both', 'icon' => '💻'],
@@ -29,13 +23,15 @@ class ProductCatalogSeeder extends Seeder
         ];
 
         foreach ($categories as $cat) {
-            Category::create([
-                'name' => $cat['name'],
-                'slug' => Str::slug($cat['name']),
-                'type' => $cat['type'],
-                'icon' => $cat['icon'],
-                'status' => 'active',
-            ]);
+            Category::firstOrCreate(
+                ['slug' => Str::slug($cat['name'])],
+                [
+                    'name' => $cat['name'],
+                    'type' => $cat['type'],
+                    'icon' => $cat['icon'],
+                    'status' => 'active',
+                ]
+            );
         }
 
         // 2. Seed Products
@@ -95,7 +91,7 @@ class ProductCatalogSeeder extends Seeder
         ];
 
         foreach ($products as $p) {
-            Product::create($p);
+            Product::updateOrCreate(['name' => $p['name']], $p);
         }
 
         // 3. Seed Services
@@ -151,7 +147,7 @@ class ProductCatalogSeeder extends Seeder
         ];
 
         foreach ($services as $s) {
-            Service::create($s);
+            Service::updateOrCreate(['name' => $s['name']], $s);
         }
     }
 }

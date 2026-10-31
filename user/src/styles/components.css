@@ -1,0 +1,213 @@
+/**
+ * Vyapar AdNET Design System — Components (Cards, Modals, Stats, Badges)
+ */
+
+/* Standard Card Container */
+.van-card {
+  background-color: var(--van-bg-card);
+  border: 1px solid var(--van-border-subtle);
+  border-radius: var(--van-radius-card);
+  box-shadow: var(--van-shadow-card);
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.van-card-hover:hover {
+  border-color: var(--van-border-default);
+  box-shadow: var(--van-shadow-hover);
+}
+
+.van-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--van-border-subtle);
+  background-color: var(--van-bg-card);
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.van-card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--van-text-primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.van-card-subtitle {
+  font-size: 0.8rem;
+  color: var(--van-text-muted);
+  margin-top: 0.15rem;
+}
+
+.van-card-body {
+  padding: 1.25rem;
+}
+
+.van-card-footer {
+  padding: 0.75rem 1.25rem;
+  background-color: var(--van-bg-surface);
+  border-top: 1px solid var(--van-border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Metric / KPI Stat Card */
+.van-stat-card {
+  background-color: var(--van-bg-card);
+  border: 1px solid var(--van-border-subtle);
+  border-radius: var(--van-radius-card);
+  padding: 1.15rem 1.25rem;
+  box-shadow: var(--van-shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.van-stat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.van-stat-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--van-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.van-stat-icon-wrapper {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--van-radius-button);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--van-bg-surface);
+  color: var(--van-brand-blue);
+  border: 1px solid var(--van-border-subtle);
+}
+
+.van-stat-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--van-text-primary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+
+.van-stat-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--van-text-muted);
+}
+
+/* Tabs */
+.van-tabs-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-bottom: 1px solid var(--van-border-subtle);
+  padding: 0 0.5rem;
+  overflow-x: auto;
+}
+
+.van-tab-btn {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: var(--van-text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.van-tab-btn:hover {
+  color: var(--van-text-primary);
+}
+
+.van-tab-btn.active {
+  color: var(--van-brand-blue);
+  border-bottom-color: var(--van-brand-blue);
+  font-weight: 700;
+}
+
+/* Modal Components */
+.van-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.van-modal-card {
+  background-color: var(--van-bg-card);
+  border-radius: var(--van-radius-modal);
+  box-shadow: var(--van-shadow-modal);
+  border: 1px solid var(--van-border-subtle);
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: vanModalSlideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes vanModalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.van-modal-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--van-border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--van-bg-card);
+}
+
+.van-modal-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--van-text-primary);
+}
+
+.van-modal-body {
+  padding: 1.25rem;
+  overflow-y: auto;
+}
+
+.van-modal-footer {
+  padding: 0.85rem 1.25rem;
+  background-color: var(--van-bg-surface);
+  border-top: 1px solid var(--van-border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.65rem;
+}

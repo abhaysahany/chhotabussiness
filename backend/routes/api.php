@@ -230,8 +230,12 @@ Route::post('/user/notifications/read-all', [NotificationController::class, 'mar
 
 // Dedicated Admin & Entity Route Aliases
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminUserController;
 
 Route::get('/admin/dashboard-stats', [AdminDashboardController::class, 'getDashboardStats']);
+Route::get('/admin/users', [AdminUserController::class, 'index']);
+Route::put('/admin/users/{id}', [AdminUserController::class, 'update']);
+Route::post('/admin/users/{id}/toggle-status', [AdminUserController::class, 'toggleStatus']);
 Route::get('/admin/sales', [SalesRecordController::class, 'index']);
 Route::post('/admin/sales', [SalesRecordController::class, 'store']);
 

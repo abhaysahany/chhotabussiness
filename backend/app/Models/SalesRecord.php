@@ -67,6 +67,7 @@ class SalesRecord extends Model
         'customerPhone',
         'customerUserCode',
         'itemType',
+        'entityId',
         'entityName',
         'entityType',
         'unitPrice',
@@ -94,6 +95,11 @@ class SalesRecord extends Model
     }
 
     // Accessors for React camelCase compatibility
+    public function getEntityIdAttribute()
+    {
+        return $this->attributes['entity_id'] ?? null;
+    }
+
     public function getInvoiceNumberAttribute()
     {
         return $this->attributes['invoice_number'] ?? null;

@@ -40,21 +40,7 @@ function LandingNavbar({ onLoginClick, onRegisterClick, onNavigateSection }) {
       <div className="cb-container cb-nav-inner">
         {/* Brand Logo */}
         <div className="cb-nav-logo" onClick={() => handleScrollTo('hero')}>
-          <div
-            style={{
-              width: '44px',
-              height: '44px',
-              borderRadius: '12px',
-              background: 'linear-gradient(135deg, #0F4C81 0%, #1e3a5f 100%)',
-              color: '#ffffff',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 4px 12px rgba(15, 76, 129, 0.25)',
-            }}
-          >
-            <Building2 size={24} />
-          </div>
+          <img src="/logo.png" alt="Vyapar AdNET" style={{ width: "40px", height: "40px", borderRadius: "50%" }} />
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
               <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0F4C81', letterSpacing: '-0.03em', fontFamily: 'Poppins, sans-serif' }}>

@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { getAdminUsers, updateAdminUser, toggleAdminUserStatus } from '../../api/adminService';
 
 function AdminUserDetailsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedUserBpWallet, setSelectedUserBpWallet] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Dynamic 1 BP Value from Admin Settings
   const [bpRate, setBpRate] = useState(10);
@@ -16,6 +19,25 @@ function AdminUserDetailsPage() {
         if (s.bpValueInRupees) setBpRate(s.bpValueInRupees);
       }
     } catch (e) {}
+  }, []);
+
+  // Fetch real users from MySQL database API
+  const loadUsers = async () => {
+    setLoading(true);
+    try {
+      const res = await getAdminUsers();
+      if (res?.status === 'success') {
+        setUsers(res.users || []);
+      }
+    } catch (err) {
+      console.error('Failed to load admin users from MySQL:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadUsers();
   }, []);
 
   // Edit User Modal State
@@ -35,16 +57,6 @@ function AdminUserDetailsPage() {
   // Success Notification State
   const [toastMsg, setToastMsg] = useState('');
 
-  // Sample User Accounts List with Dedicated Business Points (BP) Wallet
-  const [users, setUsers] = useState([
-    { id: 'USR-1001', name: 'Rajesh Sharma', username: 'rajesh_sharma', email: 'rajesh@addnet.com', phone: '+91 98765 43210', role: 'Business Owner', status: 'Active', kycStatus: 'Verified', joinedDate: '2026-01-15', bpBalance: 245, commissionWallet: 18500, address: 'B-402, Skyline Towers, Mumbai, MH' },
-    { id: 'USR-1002', name: 'Priya Patel', username: 'priya_patel', email: 'priya@addnet.com', phone: '+91 98123 45678', role: 'Freelancer', status: 'Active', kycStatus: 'Verified', joinedDate: '2026-02-02', bpBalance: 180, commissionWallet: 12400, address: '12-A, Silicon Hub, Bengaluru, KA' },
-    { id: 'USR-1003', name: 'Vikram Malhotra', username: 'vikram_m', email: 'vikram@addnet.com', phone: '+91 97111 22334', role: 'Affiliate Associate', status: 'Pending', kycStatus: 'Pending', joinedDate: '2026-03-10', bpBalance: 95, commissionWallet: 4200, address: '78, Civil Lines, Jaipur, RJ' },
-    { id: 'USR-1004', name: 'Ananya Roy', username: 'ananya_design', email: 'ananya@addnet.com', phone: '+91 96543 21098', role: 'Freelancer', status: 'Active', kycStatus: 'Verified', joinedDate: '2026-04-12', bpBalance: 320, commissionWallet: 24800, address: 'Sector 62, Noida, UP' },
-    { id: 'USR-1005', name: 'Sanjay Verma', username: 'sanjay_v', email: 'sanjay@addnet.com', phone: '+91 95432 10987', role: 'Business Owner', status: 'Suspended', kycStatus: 'Rejected', joinedDate: '2026-05-18', bpBalance: 40, commissionWallet: 1500, address: '45, MG Road, Indore, MP' },
-    { id: 'USR-1006', name: 'Neha Gupta', username: 'neha_g', email: 'neha@addnet.com', phone: '+91 94321 09876', role: 'User', status: 'Active', kycStatus: 'Pending', joinedDate: '2026-06-20', bpBalance: 110, commissionWallet: 6800, address: 'Suite 301, Cyber City, Gurugram, HR' },
-  ]);
-
   const handleOpenEdit = (user) => {
     setEditingUser(user);
     setFormData({
@@ -60,28 +72,33 @@ function AdminUserDetailsPage() {
     });
   };
 
-  const handleSaveUser = (e) => {
+  const handleSaveUser = async (e) => {
     e.preventDefault();
-    setUsers((prev) =>
-      prev.map((u) => (u.id === editingUser.id ? { ...u, ...formData } : u))
-    );
-    setToastMsg(`User profile & wallets for [${editingUser.name}] updated!`);
-    setEditingUser(null);
+    try {
+      const targetId = editingUser.dbId || editingUser.id;
+      await updateAdminUser(targetId, formData);
+      setToastMsg(`User profile & wallets for [${editingUser.name}] updated in database!`);
+      await loadUsers();
+      setEditingUser(null);
+    } catch (err) {
+      console.error('Error saving user to database:', err);
+      setToastMsg('Failed to update user in database.');
+    }
     setTimeout(() => setToastMsg(''), 3500);
   };
 
-  const handleToggleStatus = (userId) => {
-    setUsers((prev) =>
-      prev.map((u) => {
-        if (u.id === userId) {
-          const nextStatus = u.status === 'Active' ? 'Suspended' : 'Active';
-          setToastMsg(`User ${u.name} status changed to ${nextStatus}!`);
-          setTimeout(() => setToastMsg(''), 3500);
-          return { ...u, status: nextStatus };
-        }
-        return u;
-      })
-    );
+  const handleToggleStatus = async (userId) => {
+    try {
+      const userObj = users.find((u) => u.id === userId);
+      const targetId = userObj?.dbId || userId;
+      const res = await toggleAdminUserStatus(targetId);
+      setToastMsg(`User ${userObj?.name || userId} status changed to ${res?.current_status || 'updated'}!`);
+      await loadUsers();
+    } catch (err) {
+      console.error('Error toggling user status in database:', err);
+      setToastMsg('Failed to toggle status.');
+    }
+    setTimeout(() => setToastMsg(''), 3500);
   };
 
   const filteredUsers = users.filter((u) => {
@@ -108,155 +125,158 @@ function AdminUserDetailsPage() {
       )}
 
       {/* Hero Banner Header */}
-      <div className="pro-entity-hero" style={{ background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)', borderRadius: '16px', padding: '2rem 2.25rem', color: '#ffffff', marginBottom: '2rem', boxShadow: '0 10px 30px -5px rgba(49, 46, 129, 0.3)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem' }}>
+      <div style={{ background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)', borderRadius: '16px', padding: '2rem 2.5rem', color: '#ffffff', marginBottom: '2rem', boxShadow: '0 10px 25px -5px rgba(67, 56, 202, 0.3)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
           <div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.12)', padding: '0.25rem 0.85rem', borderRadius: '20px', fontSize: '0.78rem', fontWeight: '700', color: '#c7d2fe', marginBottom: '0.75rem' }}>
-              <span>👤 User Profiles & Business Points (BP) Wallets</span>
-            </div>
-            <h1 style={{ fontSize: '1.85rem', fontWeight: '800', margin: '0 0 0.4rem 0', color: '#ffffff' }}>User Details & Accounts Administration</h1>
-            <p style={{ color: '#94a3b8', fontSize: '0.925rem', maxWidth: '650px', margin: '0 0 0.75rem 0' }}>
-              Inspect user profiles, manage accounts, audit Commission Wallets and track 20-level collected Business Points (BP) balances.
+            <span style={{ background: 'rgba(255,255,255,0.15)', padding: '0.25rem 0.75rem', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#c7d2fe', display: 'inline-block', marginBottom: '0.75rem' }}>
+              👥 User Management & BP Ledger
+            </span>
+            <h1 style={{ fontSize: '2rem', fontWeight: '800', margin: '0 0 0.5rem 0', color: '#fff' }}>User Accounts & Wallets</h1>
+            <p style={{ color: '#e0e7ff', fontSize: '0.95rem', margin: 0, maxWidth: '650px' }}>
+              Full database directory of all platform members, active Business Points (BP) balances, commission wallets, and account controls.
             </p>
           </div>
-          <div style={{ background: 'rgba(255, 255, 255, 0.1)', padding: '0.75rem 1.25rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.2)', textAlign: 'center' }}>
-            <div style={{ fontSize: '0.75rem', color: '#c7d2fe', fontWeight: 600 }}>1 BP VALUATION RATE</div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#ffffff' }}>₹{bpRate.toFixed(2)}</div>
-            <span style={{ fontSize: '0.7rem', color: '#a5f3fc' }}>Dynamic Admin Setting</span>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            <div style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', padding: '0.75rem 1.25rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.15)', textAlign: 'right' }}>
+              <div style={{ fontSize: '0.75rem', color: '#c7d2fe', fontWeight: '600' }}>Platform Total BP In Circulation</div>
+              <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#ffffff' }}>💎 {totalBpCollected.toLocaleString()} BP</div>
+              <div style={{ fontSize: '0.7rem', color: '#a5b4fc' }}>≈ ₹{(totalBpCollected * bpRate).toLocaleString()} (@ ₹{bpRate}/BP)</div>
+            </div>
           </div>
-        </div>
-      </div>
-
-      {/* KPI Counters Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
-        <div style={{ background: '#fff', borderRadius: '14px', padding: '1.25rem 1.5rem', border: '1px solid #e2e8f0', borderTop: '4px solid #6366f1' }}>
-          <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>Total Users</div>
-          <div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', margin: '0.3rem 0' }}>{users.length} Registered</div>
-          <div style={{ fontSize: '0.78rem', color: '#059669', fontWeight: '700' }}>Active in System</div>
-        </div>
-        <div style={{ background: '#fff', borderRadius: '14px', padding: '1.25rem 1.5rem', border: '1px solid #e2e8f0', borderTop: '4px solid #a855f7' }}>
-          <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>Total BP Collected in Wallets</div>
-          <div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#7e22ce', margin: '0.3rem 0' }}>{totalBpCollected} BP</div>
-          <div style={{ fontSize: '0.78rem', color: '#7e22ce', fontWeight: '700' }}>≈ ₹{(totalBpCollected * bpRate).toLocaleString()} Total Value</div>
-        </div>
-        <div style={{ background: '#fff', borderRadius: '14px', padding: '1.25rem 1.5rem', border: '1px solid #e2e8f0', borderTop: '4px solid #10b981' }}>
-          <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>Commission Wallets Total</div>
-          <div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#15803d', margin: '0.3rem 0' }}>
-            ₹{users.reduce((acc, curr) => acc + (curr.commissionWallet || 0), 0).toLocaleString()}
-          </div>
-          <div style={{ fontSize: '0.78rem', color: '#15803d', fontWeight: '700' }}>Referral & Team Incomes</div>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div style={{ background: '#fff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '1.25rem 1.5rem', marginBottom: '1.5rem', display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ flex: 1, minWidth: '240px' }}>
+      <div style={{ background: '#ffffff', padding: '1.25rem 1.5rem', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '1.5rem', display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', flex: 1, minWidth: '300px' }}>
           <input
             type="text"
-            placeholder="Search users by name, username, email, phone, ID..."
+            placeholder="Search by name, email, phone, or User ID..."
             value={searchTerm}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ width: '100%', padding: '0.65rem 1rem', fontSize: '0.875rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ padding: '0.6rem 1rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.875rem', flex: 1, minWidth: '220px', outline: 'none' }}
           />
+          <select
+            value={roleFilter}
+            onChange={(e) => setRoleFilter(e.target.value)}
+            style={{ padding: '0.6rem 1rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.875rem', outline: 'none', background: '#fff' }}
+          >
+            <option value="all">All Roles & Ranks</option>
+            <option value="user">User</option>
+            <option value="business">Business Owner</option>
+            <option value="freelancer">Freelancer</option>
+            <option value="affiliate">Affiliate Associate</option>
+          </select>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            style={{ padding: '0.6rem 1rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.875rem', outline: 'none', background: '#fff' }}
+          >
+            <option value="all">All Statuses</option>
+            <option value="active">Active</option>
+            <option value="suspended">Suspended</option>
+            <option value="pending">Pending</option>
+          </select>
         </div>
-        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-          <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)} style={{ padding: '0.55rem 0.85rem', fontSize: '0.835rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontWeight: '600', color: '#334155' }}>
-            <option value="all">All Roles</option>
-            <option value="Business Owner">Business Owner</option>
-            <option value="Freelancer">Freelancer</option>
-            <option value="Affiliate Associate">Affiliate Associate</option>
-            <option value="User">Standard User</option>
-          </select>
-
-          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} style={{ padding: '0.55rem 0.85rem', fontSize: '0.835rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontWeight: '600', color: '#334155' }}>
-            <option value="all">All Account Statuses</option>
-            <option value="active">Active Only</option>
-            <option value="pending">Pending Only</option>
-            <option value="suspended">Suspended Only</option>
-          </select>
+        <div style={{ fontSize: '0.875rem', fontWeight: '700', color: '#64748b' }}>
+          Showing {filteredUsers.length} of {users.length} accounts
         </div>
       </div>
 
-      {/* User Details Table with Business Points (BP) Wallet */}
-      <div style={{ background: '#fff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '1.25rem', overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, fontSize: '0.835rem' }}>
+      {/* Users Table */}
+      <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
           <thead>
-            <tr style={{ background: '#f8fafc', textTransform: 'uppercase', fontSize: '0.75rem', fontWeight: '800', color: '#475569', letterSpacing: '0.05em' }}>
-              <th style={{ padding: '0.75rem 1rem', borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>User ID</th>
-              <th style={{ padding: '0.75rem 1rem', borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>User Profile</th>
-              <th style={{ padding: '0.75rem 1rem', borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>Email & Phone</th>
-              <th style={{ padding: '0.75rem 1rem', borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>💎 BP Wallet (20 Levels)</th>
-              <th style={{ padding: '0.75rem 1rem', borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>💰 Cash Wallet</th>
-              <th style={{ padding: '0.75rem 1rem', borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>Status</th>
-              <th style={{ padding: '0.75rem 1rem', borderBottom: '2px solid #e2e8f0', textAlign: 'right' }}>Actions</th>
+            <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <th style={{ padding: '0.85rem 1rem' }}>User ID</th>
+              <th style={{ padding: '0.85rem 1rem' }}>User Profile</th>
+              <th style={{ padding: '0.85rem 1rem' }}>Contact Details</th>
+              <th style={{ padding: '0.85rem 1rem' }}>💎 BP Balance</th>
+              <th style={{ padding: '0.85rem 1rem' }}>💰 Commission Wallet</th>
+              <th style={{ padding: '0.85rem 1rem' }}>Status</th>
+              <th style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {filteredUsers.map((u) => (
-              <tr key={u.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                <td style={{ padding: '0.85rem 1rem' }}>
-                  <code style={{ background: '#f8fafc', padding: '0.2rem 0.5rem', borderRadius: '4px', border: '1px solid #cbd5e1', fontWeight: '700', color: '#6366f1' }}>
-                    {u.id}
-                  </code>
-                </td>
-                <td style={{ padding: '0.85rem 1rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#e0e7ff', color: '#4338ca', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.9rem' }}>
-                      {u.name.charAt(0)}
-                    </div>
-                    <div>
-                      <div style={{ fontWeight: '800', color: '#0f172a' }}>{u.name}</div>
-                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>@{u.username} • <span style={{ color: '#475569', fontWeight: 600 }}>{u.role}</span></div>
-                    </div>
+            {filteredUsers.length === 0 ? (
+              <tr>
+                <td colSpan="7" style={{ padding: '3.5rem 1rem', textAlign: 'center', color: '#64748b' }}>
+                  <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>👥</div>
+                  <div style={{ fontWeight: 800, fontSize: '1.1rem', color: '#0f172a', marginBottom: '0.35rem' }}>
+                    {loading ? 'Loading Users...' : 'No User Accounts Found'}
                   </div>
-                </td>
-                <td style={{ padding: '0.85rem 1rem' }}>
-                  <div style={{ fontWeight: '600', color: '#334155' }}>{u.email}</div>
-                  <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{u.phone}</div>
-                </td>
-                <td style={{ padding: '0.85rem 1rem' }}>
-                  <div style={{ fontWeight: '800', color: '#7e22ce', fontSize: '0.95rem' }}>
-                    💎 {u.bpBalance || 0} BP
-                  </div>
-                  <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
-                    ≈ ₹{((u.bpBalance || 0) * bpRate).toLocaleString()} (@ ₹{bpRate}/BP)
-                  </div>
-                </td>
-                <td style={{ padding: '0.85rem 1rem' }}>
-                  <div style={{ fontWeight: '800', color: '#15803d', fontSize: '0.95rem' }}>
-                    ₹{(u.commissionWallet || 0).toLocaleString()}
-                  </div>
-                  <div style={{ fontSize: '0.72rem', color: '#64748b' }}>Commission Balance</div>
-                </td>
-                <td style={{ padding: '0.85rem 1rem' }}>
-                  <span style={{ background: u.status === 'Active' ? '#dcfce7' : u.status === 'Pending' ? '#fef3c7' : '#fee2e2', color: u.status === 'Active' ? '#15803d' : u.status === 'Pending' ? '#b45309' : '#dc2626', padding: '0.2rem 0.6rem', borderRadius: '12px', fontWeight: '700', fontSize: '0.75rem' }}>
-                    {u.status === 'Active' ? '✓ Active' : u.status === 'Pending' ? '⌛ Pending' : '🚫 Suspended'}
-                  </span>
-                </td>
-                <td style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>
-                  <div style={{ display: 'inline-flex', gap: '0.4rem' }}>
-                    <button
-                      onClick={() => setSelectedUserBpWallet(u)}
-                      style={{ background: '#f3e8ff', color: '#7e22ce', border: '1px solid #e9d5ff', padding: '0.35rem 0.65rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer' }}
-                    >
-                      💎 BP Ledger
-                    </button>
-                    <button
-                      onClick={() => handleOpenEdit(u)}
-                      style={{ background: '#e0e7ff', color: '#4338ca', border: 'none', padding: '0.35rem 0.65rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer' }}
-                    >
-                      ✏️ Edit
-                    </button>
-                    <button
-                      onClick={() => handleToggleStatus(u.id)}
-                      style={{ background: u.status === 'Active' ? '#fef3c7' : '#dcfce7', color: u.status === 'Active' ? '#b45309' : '#15803d', border: 'none', padding: '0.35rem 0.65rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer' }}
-                    >
-                      {u.status === 'Active' ? '🔒 Suspend' : '🔓 Activate'}
-                    </button>
+                  <div style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                    {loading ? 'Fetching active member records directly from MySQL database...' : 'No users match your active search and filter criteria.'}
                   </div>
                 </td>
               </tr>
-            ))}
+            ) : (
+              filteredUsers.map((u) => (
+                <tr key={u.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                  <td style={{ padding: '0.85rem 1rem' }}>
+                    <code style={{ background: '#f8fafc', padding: '0.2rem 0.5rem', borderRadius: '4px', border: '1px solid #cbd5e1', fontWeight: '700', color: '#6366f1' }}>
+                      {u.id}
+                    </code>
+                  </td>
+                  <td style={{ padding: '0.85rem 1rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#e0e7ff', color: '#4338ca', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.9rem' }}>
+                        {u.name.charAt(0)}
+                      </div>
+                      <div>
+                        <div style={{ fontWeight: '800', color: '#0f172a' }}>{u.name}</div>
+                        <div style={{ fontSize: '0.75rem', color: '#64748b' }}>@{u.username} • <span style={{ color: '#475569', fontWeight: 600 }}>{u.role}</span></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style={{ padding: '0.85rem 1rem' }}>
+                    <div style={{ fontWeight: '600', color: '#334155' }}>{u.email}</div>
+                    <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{u.phone}</div>
+                  </td>
+                  <td style={{ padding: '0.85rem 1rem' }}>
+                    <div style={{ fontWeight: '800', color: '#7e22ce', fontSize: '0.95rem' }}>
+                      💎 {u.bpBalance || 0} BP
+                    </div>
+                    <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                      ≈ ₹{((u.bpBalance || 0) * bpRate).toLocaleString()} (@ ₹{bpRate}/BP)
+                    </div>
+                  </td>
+                  <td style={{ padding: '0.85rem 1rem' }}>
+                    <div style={{ fontWeight: '800', color: '#15803d', fontSize: '0.95rem' }}>
+                      ₹{(u.commissionWallet || 0).toLocaleString()}
+                    </div>
+                    <div style={{ fontSize: '0.72rem', color: '#64748b' }}>Commission Balance</div>
+                  </td>
+                  <td style={{ padding: '0.85rem 1rem' }}>
+                    <span style={{ background: u.status === 'Active' ? '#dcfce7' : u.status === 'Pending' ? '#fef3c7' : '#fee2e2', color: u.status === 'Active' ? '#15803d' : u.status === 'Pending' ? '#b45309' : '#dc2626', padding: '0.2rem 0.6rem', borderRadius: '12px', fontWeight: '700', fontSize: '0.75rem' }}>
+                      {u.status === 'Active' ? '✓ Active' : u.status === 'Pending' ? '⌛ Pending' : '🚫 Suspended'}
+                    </span>
+                  </td>
+                  <td style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>
+                    <div style={{ display: 'inline-flex', gap: '0.4rem' }}>
+                      <button
+                        onClick={() => setSelectedUserBpWallet(u)}
+                        style={{ background: '#f3e8ff', color: '#7e22ce', border: '1px solid #e9d5ff', padding: '0.35rem 0.65rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer' }}
+                      >
+                        💎 BP Ledger
+                      </button>
+                      <button
+                        onClick={() => handleOpenEdit(u)}
+                        style={{ background: '#e0e7ff', color: '#4338ca', border: 'none', padding: '0.35rem 0.65rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer' }}
+                      >
+                        ✏️ Edit
+                      </button>
+                      <button
+                        onClick={() => handleToggleStatus(u.id)}
+                        style={{ background: u.status === 'Active' ? '#fef3c7' : '#dcfce7', color: u.status === 'Active' ? '#b45309' : '#15803d', border: 'none', padding: '0.35rem 0.65rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer' }}
+                      >
+                        {u.status === 'Active' ? '🔒 Suspend' : '🔓 Activate'}
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
@@ -294,7 +314,7 @@ function AdminUserDetailsPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.8rem', maxHeight: '220px', overflowY: 'auto' }}>
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].slice(0, 6).map((lvl) => (
                 <div key={lvl} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0.75rem', background: '#f8fafc', borderRadius: '6px', border: '1px solid #f1f5f9' }}>
-                  <span>↳ Level {lvl} Downline Order Transaction (ORD-90{lvl}2)</span>
+                  <span>↳ Level {lvl} Downline Order Transaction</span>
                   <strong style={{ color: '#7e22ce' }}>+5.00 BP</strong>
                 </div>
               ))}

@@ -11,10 +11,12 @@ class DatabaseSeeder extends Seeder
     use WithoutModelEvents;
 
     /**
-     * Seed the application's database.
+     * Seed the application's essential database tables for normal and production setup.
+     * Fake business records and demo seeders are isolated in DemoDataSeeder.
      */
     public function run(): void
     {
+        // 1. Root sponsor / default platform user account
         $user = User::firstOrCreate(
             ['email' => 'user@vyaparadnet.com'],
             [
@@ -28,10 +30,11 @@ class DatabaseSeeder extends Seeder
             $user->update(['user_code' => 'CB100001']);
         }
 
+        // 2. Essential system initialization seeders only
         $this->call([
             AdminSeeder::class,
-            EntitySeeder::class,
-            SupportTicketSeeder::class,
+            EntityCategorySeeder::class,
+            CategorySeeder::class,
         ]);
     }
 }
