@@ -71,3 +71,19 @@ export const getAdminDashboardStats = async (period = '7d') => {
   });
   return response.data;
 };
+
+// Admin User Accounts Management
+export const getAdminUsers = async (params = {}) => {
+  const response = await api.get('/admin/users', { params });
+  return response.data;
+};
+
+export const updateAdminUser = async (id, data) => {
+  const response = await api.put(`/admin/users/${id}`, data);
+  return response.data;
+};
+
+export const toggleAdminUserStatus = async (id) => {
+  const response = await api.post(`/admin/users/${id}/toggle-status`);
+  return response.data;
+};

@@ -6,18 +6,12 @@ function PersonalProfile({ user, onNavigate }) {
   const fileInputRef = useRef(null);
 
   // Curated Preset Avatars
-  const presetAvatars = [
-    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop&q=80',
-    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&auto=format&fit=crop&q=80',
-    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
-    'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&auto=format&fit=crop&q=80',
-    'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&auto=format&fit=crop&q=80',
-  ];
+  const presetAvatars = ['/logo.png'];
 
   // Form State initialized with user props or realistic fallbacks
   const [formData, setFormData] = useState({
-    name: user?.name || 'Tom Phillip',
-    email: user?.email || 'tom.phillip@addnet.com',
+    name: user?.name || 'Partner Account',
+    email: user?.email || 'partner@addnet.com',
     phone: user?.phone || '+91 98765 43210',
     user_code: user?.user_code || 'CB100001',
     sponsor_id: user?.sponsor_id || 'Root Admin',
@@ -561,7 +555,7 @@ function PersonalProfile({ user, onNavigate }) {
                           className="form-input"
                           value={formData.avatarUrl}
                           onChange={handleInputChange}
-                          placeholder="https://images.unsplash.com/your-image.jpg"
+                          placeholder="https://example.com/avatar.jpg"
                         />
                         <span className="form-help">Supported formats: JPG, PNG, WEBP (Max 5MB).</span>
                       </div>

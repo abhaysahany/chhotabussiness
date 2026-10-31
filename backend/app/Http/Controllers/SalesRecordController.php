@@ -7,7 +7,10 @@ use App\Models\SalePayment;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\Service;
+use App\Models\BusinessEntity;
+use App\Models\FreelancerEntity;
 use App\Models\EntityCommissionSetting;
+use Laravel\Sanctum\PersonalAccessToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -16,141 +19,98 @@ use Illuminate\Support\Facades\DB;
 class SalesRecordController extends Controller
 {
     /**
-     * Auto-seed default sales records if database table is empty.
+     * Resolve the active Entity context from Bearer token, authenticated user, or request parameters.
      */
-    private function ensureDefaultSeed()
+    protected function resolveEntityContext(Request $request)
     {
-        if (SalesRecord::count() === 0) {
-            $defaultRecords = [
-                [
-                    'invoice_number' => 'INV-2026-9011',
-                    'date' => '2026-08-17',
-                    'customer' => 'Rahul Verma (CB100001)',
-                    'customer_name' => 'Rahul Verma',
-                    'customer_email' => 'rahul.verma@example.com',
-                    'customer_phone' => '+91 98765 43210',
-                    'customer_user_code' => 'CB100001',
-                    'sponsor' => 'Vikram Singh (#1001)',
-                    'item' => 'Enterprise Cloud ERP Suite',
-                    'category' => 'Software & IT',
-                    'item_type' => 'product',
-                    'entity_name' => 'Skyline Technologies Pvt Ltd',
-                    'entity_type' => 'business',
-                    'unit_price' => 14999,
-                    'quantity' => 1,
-                    'gross_amount' => 14999,
-                    'advance_payment' => 10000,
-                    'balance_due' => 4999,
-                    'admin_commission_percent' => 15,
-                    'admin_commission_cut' => 1500, // 15% of 10000
-                    'net_entity_payout' => 8500, // 10000 - 1500
-                    'payment_method' => 'UPI / PhonePe',
-                    'reference_no' => 'UTR-982341',
-                    'status' => 'partial',
-                    'network_distribution_status' => 'pending_admin_distribution',
-                    'direct_commission' => 1000,
-                    'level_commissions_total' => 700,
-                    'team_volume_bv' => 10000,
-                    'commission_distributed' => false,
-                ],
-                [
-                    'invoice_number' => 'INV-2026-9012',
-                    'date' => '2026-08-16',
-                    'customer' => 'Anita Sharma (CB100002)',
-                    'customer_name' => 'Anita Sharma',
-                    'customer_email' => 'anita.s@example.com',
-                    'customer_phone' => '+91 98111 22334',
-                    'customer_user_code' => 'CB100002',
-                    'sponsor' => 'Suresh Kumar (#960)',
-                    'item' => 'GST Registration & Tax Filing',
-                    'category' => 'Legal & Compliance',
-                    'item_type' => 'service',
-                    'entity_name' => 'Vyapar Adnet Tax Advisory',
-                    'entity_type' => 'business',
-                    'unit_price' => 2999,
-                    'quantity' => 1,
-                    'gross_amount' => 2999,
-                    'advance_payment' => 2999,
-                    'balance_due' => 0,
-                    'admin_commission_percent' => 20,
-                    'admin_commission_cut' => 599.8,
-                    'net_entity_payout' => 2399.2,
-                    'payment_method' => 'Razorpay / Cards',
-                    'reference_no' => 'UTR-542198',
-                    'status' => 'completed',
-                    'network_distribution_status' => 'distributed',
-                    'distribution_details' => [
-                        'referralPercent' => 10,
-                        'referralAmount' => 299.9,
-                        'teamPercent' => 10,
-                        'teamTotalAmount' => 299.9,
-                        'teamAmountPerLevel' => 29.99,
-                        'teamLevels' => 10,
-                        'totalBp' => 100,
-                        'bpPerLevel' => 5,
-                        'bpLevels' => 20,
-                        'bpValueRate' => 10,
-                        'distributedAt' => '2026-08-16 14:30',
-                    ],
-                    'direct_commission' => 299.9,
-                    'level_commissions_total' => 209.93,
-                    'team_volume_bv' => 2999,
-                    'commission_distributed' => true,
-                ],
-                [
-                    'invoice_number' => 'INV-2026-9013',
-                    'date' => '2026-08-15',
-                    'customer' => 'Pooja Mehta (CB100004)',
-                    'customer_name' => 'Pooja Mehta',
-                    'customer_email' => 'pooja.m@example.com',
-                    'customer_phone' => '+91 97766 55443',
-                    'customer_user_code' => 'CB100004',
-                    'sponsor' => 'Rohan Gupta (#975)',
-                    'item' => 'UI/UX Mobile App Design Audit',
-                    'category' => 'Design & Creative',
-                    'item_type' => 'service',
-                    'entity_name' => 'Priya Patel (UI/UX Designer)',
-                    'entity_type' => 'freelance',
-                    'unit_price' => 4999,
-                    'quantity' => 1,
-                    'gross_amount' => 4999,
-                    'advance_payment' => 4999,
-                    'balance_due' => 0,
-                    'admin_commission_percent' => 15,
-                    'admin_commission_cut' => 749.85,
-                    'net_entity_payout' => 4249.15,
-                    'payment_method' => 'Net Banking / HDFC',
-                    'reference_no' => 'UTR-653210',
-                    'status' => 'completed',
-                    'network_distribution_status' => 'pending_admin_distribution',
-                    'direct_commission' => 499.9,
-                    'level_commissions_total' => 349.93,
-                    'team_volume_bv' => 4999,
-                    'commission_distributed' => false,
-                ],
-            ];
-
-            foreach ($defaultRecords as $rec) {
-                $sale = SalesRecord::create($rec);
-                if ($sale->advance_payment > 0) {
-                    SalePayment::create([
-                        'sales_record_id' => $sale->id,
-                        'invoice_number' => $sale->invoice_number,
-                        'entity_name' => $sale->entity_name,
-                        'customer_name' => $sale->customer_name,
-                        'amount' => $sale->advance_payment,
-                        'admin_commission_percent' => $sale->admin_commission_percent,
-                        'admin_commission_cut' => $sale->admin_commission_cut,
-                        'net_entity_amount' => $sale->net_entity_payout,
-                        'payment_method' => $sale->payment_method,
-                        'reference_no' => $sale->reference_no,
-                        'payment_type' => ($sale->balance_due == 0) ? 'full' : 'advance',
-                        'notes' => 'Initial payment at invoice creation',
-                        'payment_date' => $sale->date,
-                    ]);
+        // 1. Check authenticated user via Sanctum or Token
+        $user = $request->user();
+        if (!$user && $request->bearerToken()) {
+            if (class_exists(PersonalAccessToken::class)) {
+                $token = PersonalAccessToken::findToken($request->bearerToken());
+                if ($token && $token->tokenable) {
+                    $user = $token->tokenable;
                 }
             }
         }
+
+        if ($user) {
+            $business = BusinessEntity::where('email', $user->email)->first();
+            if ($business) {
+                return [
+                    'id' => (int) $business->id,
+                    'name' => $business->name,
+                    'type' => 'business',
+                    'user' => $user,
+                ];
+            }
+
+            $freelancer = FreelancerEntity::where('email', $user->email)->first();
+            if ($freelancer) {
+                return [
+                    'id' => (int) $freelancer->id,
+                    'name' => $freelancer->name,
+                    'type' => 'freelance',
+                    'user' => $user,
+                ];
+            }
+        }
+
+        // 2. Check explicit request parameters (e.g. from frontend or API filters)
+        $entityId = $request->input('entity_id') ?? $request->input('entityId');
+        $entityName = $request->input('entity_name') ?? $request->input('entityName') ?? $request->input('entity');
+        $entityType = $request->input('entity_type') ?? $request->input('entityType');
+
+        if ($entityId) {
+            $business = BusinessEntity::find($entityId);
+            if ($business) {
+                return [
+                    'id' => (int) $business->id,
+                    'name' => $business->name,
+                    'type' => 'business',
+                    'user' => null,
+                ];
+            }
+            $freelancer = FreelancerEntity::find($entityId);
+            if ($freelancer) {
+                return [
+                    'id' => (int) $freelancer->id,
+                    'name' => $freelancer->name,
+                    'type' => 'freelance',
+                    'user' => null,
+                ];
+            }
+        }
+
+        if ($entityName) {
+            $business = BusinessEntity::where('name', $entityName)->first();
+            if ($business) {
+                return [
+                    'id' => (int) $business->id,
+                    'name' => $business->name,
+                    'type' => 'business',
+                    'user' => null,
+                ];
+            }
+            $freelancer = FreelancerEntity::where('name', $entityName)->first();
+            if ($freelancer) {
+                return [
+                    'id' => (int) $freelancer->id,
+                    'name' => $freelancer->name,
+                    'type' => 'freelance',
+                    'user' => null,
+                ];
+            }
+
+            return [
+                'id' => $entityId ? (int) $entityId : null,
+                'name' => $entityName,
+                'type' => $entityType ?: 'business',
+                'user' => null,
+            ];
+        }
+
+        return null;
     }
 
     /**
@@ -158,16 +118,34 @@ class SalesRecordController extends Controller
      */
     public function index(Request $request)
     {
-        $this->ensureDefaultSeed();
-
         $query = SalesRecord::with('payments')->orderBy('id', 'desc');
 
-        if ($request->filled('entity')) {
-            $entity = trim($request->input('entity'));
-            $query->where(function ($q) use ($entity) {
-                $q->where('entity_name', 'like', "%{$entity}%")
-                  ->orWhere('entity_type', 'like', "%{$entity}%");
+        // Resolve authenticated entity if present
+        $authEntity = $this->resolveEntityContext($request);
+
+        if ($authEntity && $authEntity['user']) {
+            // Strict authorization scoping: authenticated entity user can ONLY access its own sales records
+            $query->where(function ($q) use ($authEntity) {
+                if (!empty($authEntity['id'])) {
+                    $q->where('entity_id', $authEntity['id']);
+                }
+                if (!empty($authEntity['name'])) {
+                    $q->orWhere('entity_name', $authEntity['name']);
+                }
             });
+        } else {
+            // Unauthenticated or general/admin query: filter by entity_id and/or entity name
+            if ($request->filled('entity_id')) {
+                $query->where('entity_id', $request->input('entity_id'));
+            }
+
+            if ($request->filled('entity')) {
+                $entity = trim($request->input('entity'));
+                $query->where(function ($q) use ($entity) {
+                    $q->where('entity_name', 'like', "%{$entity}%")
+                      ->orWhere('entity_id', $entity);
+                });
+            }
         }
 
         if ($request->filled('entity_type') && $request->input('entity_type') !== 'all') {
@@ -298,9 +276,12 @@ class SalesRecordController extends Controller
 
         $itemName = $request->input('item');
         $itemType = $request->input('item_type') ?? $request->input('itemType') ?? 'service';
-        $entityType = $request->input('entity_type') ?? $request->input('entityType') ?? 'business';
-        $entityName = $request->input('entity_name') ?? $request->input('entityName');
-        $entityId = $request->input('entity_id') ?? $request->input('entityId');
+
+        // Resolve Entity context: Authenticated entity takes top precedence
+        $entityContext = $this->resolveEntityContext($request);
+        $entityId = $entityContext['id'] ?? $request->input('entity_id') ?? $request->input('entityId') ?? null;
+        $entityName = $entityContext['name'] ?? $request->input('entity_name') ?? $request->input('entityName') ?? null;
+        $entityType = $entityContext['type'] ?? $request->input('entity_type') ?? $request->input('entityType') ?? 'business';
 
         $catalogItem = null;
         if ($itemType === 'product') {
@@ -309,13 +290,42 @@ class SalesRecordController extends Controller
             $catalogItem = Service::where('name', $itemName)->first();
         }
 
-        $resolvedOwnerType = $catalogItem?->owner_type ?: $entityType;
-        $resolvedOwnerName = $catalogItem?->owner_name ?: $entityName;
+        // IMPORTANT FIX: The selling entity takes precedence over catalog owner!
+        // Catalog owner is only a fallback if the seller was not specified.
+        $finalEntityName = $entityName ?: ($catalogItem?->owner_name ?: 'Skyline Technologies Pvt Ltd');
+        $finalEntityType = $entityType ?: ($catalogItem?->owner_type ?: 'business');
+        $finalEntityId = $entityId ? (int) $entityId : ($catalogItem?->owner_id ?: null);
+
+        // Prevent accidental duplicate sales from rapid clicks (within 30 seconds)
+        $recentDuplicate = SalesRecord::where('customer_user_code', $customerUserCode)
+            ->where(function ($q) use ($finalEntityId, $finalEntityName) {
+                if ($finalEntityId) {
+                    $q->where('entity_id', $finalEntityId)
+                      ->orWhere('entity_name', $finalEntityName);
+                } else {
+                    $q->where('entity_name', $finalEntityName);
+                }
+            })
+            ->where('item', $itemName)
+            ->where('gross_amount', $grossAmount)
+            ->where('advance_payment', $advancePayment)
+            ->where('created_at', '>=', now()->subSeconds(30))
+            ->first();
+
+        if ($recentDuplicate) {
+            $recentDuplicate->load('payments');
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Sale record already recorded (duplicate submission prevented).',
+                'sale' => $recentDuplicate,
+                'duplicate_prevented' => true,
+            ], 200);
+        }
 
         $commissionConfig = EntityCommissionSetting::resolveForEntity(
-            $resolvedOwnerType,
-            $resolvedOwnerName,
-            $entityId ? (int) $entityId : null
+            $finalEntityType,
+            $finalEntityName,
+            $finalEntityId ? (int) $finalEntityId : null
         );
 
         $directPercent = (float) $commissionConfig['direct_percent'];
@@ -333,7 +343,16 @@ class SalesRecordController extends Controller
 
         $status = ($balanceDue <= 0 && $advancePayment > 0) ? 'completed' : (($advancePayment > 0) ? 'partial' : 'pending');
 
-        $invoiceNumber = $request->input('invoice_number') ?? $request->input('invoiceNumber') ?? ('INV-2026-' . rand(1000, 9999));
+        // Invoice Number Generation: ensure uniqueness in MySQL table
+        $requestedInvoice = trim((string) ($request->input('invoice_number') ?? $request->input('invoiceNumber') ?? ''));
+        if (!empty($requestedInvoice) && !SalesRecord::where('invoice_number', $requestedInvoice)->exists()) {
+            $invoiceNumber = $requestedInvoice;
+        } else {
+            do {
+                $invoiceNumber = 'INV-' . date('Y') . '-' . mt_rand(10000, 99999);
+            } while (SalesRecord::where('invoice_number', $invoiceNumber)->exists());
+        }
+
         $date = $request->input('date') ?? now()->toDateString();
         $customerFormatted = $request->input('customer') ?? ($customerUserCode ? "{$customerName} ({$customerUserCode})" : $customerName);
         $finalSponsor = !empty($sponsor) ? $sponsor : 'CB100001';
@@ -341,16 +360,16 @@ class SalesRecordController extends Controller
         $saleData = [
             'invoice_number' => $invoiceNumber,
             'date' => $date,
-            'entity_id' => $request->input('entity_id') ?? $request->input('entityId') ?? null,
-            'entity_name' => $resolvedOwnerName ?: ($request->input('entity_name') ?? $request->input('entityName') ?? 'Skyline Technologies Pvt Ltd'),
-            'entity_type' => $resolvedOwnerType ?: 'business',
+            'entity_id' => $finalEntityId,
+            'entity_name' => $finalEntityName,
+            'entity_type' => $finalEntityType,
             'customer_name' => $customerName,
-            'customer_email' => $request->input('customer_email') ?? $request->input('customerEmail') ?? null,
-            'customer_phone' => $request->input('customer_phone') ?? $request->input('customerPhone') ?? null,
+            'customer_email' => $request->input('customer_email') ?? $request->input('customerEmail') ?? $customerEmail,
+            'customer_phone' => $request->input('customer_phone') ?? $request->input('customerPhone') ?? $customerPhone,
             'customer_user_code' => $customerUserCode,
             'customer' => $customerFormatted,
             'sponsor' => $finalSponsor,
-            'item' => $request->input('item'),
+            'item' => $itemName,
             'item_type' => $itemType,
             'category' => $request->input('category') ?? 'Services & Consulting',
             'unit_price' => $unitPrice,
@@ -427,14 +446,30 @@ class SalesRecordController extends Controller
     /**
      * Get details of a single sale and its payment installments.
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $sale = SalesRecord::with('payments')->where('id', $id)
-            ->orWhere('invoice_number', $id)
-            ->first();
+        $query = SalesRecord::with('payments')->where(function ($q) use ($id) {
+            $q->where('id', $id)
+              ->orWhere('invoice_number', $id);
+        });
+
+        // Enforce entity authorization if authenticated as entity user
+        $authEntity = $this->resolveEntityContext($request);
+        if ($authEntity && $authEntity['user']) {
+            $query->where(function ($q) use ($authEntity) {
+                if (!empty($authEntity['id'])) {
+                    $q->where('entity_id', $authEntity['id']);
+                }
+                if (!empty($authEntity['name'])) {
+                    $q->orWhere('entity_name', $authEntity['name']);
+                }
+            });
+        }
+
+        $sale = $query->first();
 
         if (!$sale) {
-            return response()->json(['status' => 'error', 'message' => 'Sale not found'], 404);
+            return response()->json(['status' => 'error', 'message' => 'Sale not found or unauthorized'], 404);
         }
 
         return response()->json([
@@ -778,9 +813,30 @@ class SalesRecordController extends Controller
     {
         $query = SalePayment::with('salesRecord')->orderBy('id', 'desc');
 
-        if ($request->filled('entity')) {
-            $entity = trim($request->input('entity'));
-            $query->where('entity_name', 'like', "%{$entity}%");
+        $authEntity = $this->resolveEntityContext($request);
+        if ($authEntity && $authEntity['user']) {
+            $query->where(function ($q) use ($authEntity) {
+                if (!empty($authEntity['name'])) {
+                    $q->where('entity_name', $authEntity['name']);
+                }
+                if (!empty($authEntity['id'])) {
+                    $q->orWhereHas('salesRecord', function ($sq) use ($authEntity) {
+                        $sq->where('entity_id', $authEntity['id']);
+                    });
+                }
+            });
+        } else {
+            if ($request->filled('entity_id')) {
+                $entityId = $request->input('entity_id');
+                $query->whereHas('salesRecord', function ($sq) use ($entityId) {
+                    $sq->where('entity_id', $entityId);
+                });
+            }
+
+            if ($request->filled('entity')) {
+                $entity = trim($request->input('entity'));
+                $query->where('entity_name', 'like', "%{$entity}%");
+            }
         }
 
         if ($request->filled('invoice')) {
@@ -848,8 +904,6 @@ class SalesRecordController extends Controller
      */
     public function userBusinessReports(Request $request)
     {
-        $this->ensureDefaultSeed();
-
         $query = SalesRecord::with('payments')->orderBy('date', 'desc')->orderBy('id', 'desc');
 
         if ($request->filled('user_code')) {
@@ -924,8 +978,8 @@ class SalesRecordController extends Controller
                 'grossRevenue' => $catGross,
                 'receivedPayment' => $catReceived,
                 'balancePayment' => $catBalance,
-                'margin' => '65%',
-                'growth' => '+' . rand(10, 30) . '.' . rand(1, 9) . '%',
+                'margin' => $catGross > 0 ? round(($catReceived / $catGross) * 100) . '%' : '0%',
+                'growth' => $catShare > 0 ? "+{$catShare}%" : '0%',
                 'status' => $catShare >= 25 ? 'Top Performer' : ($catShare >= 15 ? 'High Growth' : 'Steady'),
                 'share' => $catShare,
                 'color' => $color,
@@ -937,7 +991,7 @@ class SalesRecordController extends Controller
             return [
                 'id' => $s->invoice_number ?: ('INV-' . $s->id),
                 'dbId' => $s->id,
-                'date' => $s->date ? (is_string($s->date) ? $s->date : $s->date->format('Y-m-d')) : '2026-08-16',
+                'date' => $s->date ? (is_string($s->date) ? $s->date : $s->date->format('Y-m-d')) : ($s->created_at ? $s->created_at->format('Y-m-d') : date('Y-m-d')),
                 'customer' => $s->customer_name ?: ($s->customer ?: 'Customer'),
                 'customerUserCode' => $s->customer_user_code,
                 'entityName' => $s->entity_name ?: 'Platform Entity',

@@ -120,7 +120,7 @@ function TdsTaxSummary({ user }) {
   ];
 
   return (
-    <div className="page-container" style={{ padding: '1.5rem 2rem', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <div className="page-container">
       {/* Toast Notification */}
       {toastMessage && (
         <div style={{ position: 'fixed', top: '20px', right: '20px', background: '#0f172a', color: '#fff', padding: '0.85rem 1.25rem', borderRadius: '8px', zIndex: 99999 }}>

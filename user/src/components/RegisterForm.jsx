@@ -396,9 +396,7 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
             
             {/* Brand Logo Header */}
             <div className="cb-auth-brand-header">
-              <div className="cb-auth-logo-badge">
-                <Building2 size={24} />
-              </div>
+              <div className="cb-auth-logo-badge" style={{ background: "transparent", padding: 0 }}><img src="/logo.png" alt="Vyapar AdNET" style={{ width: "36px", height: "36px", borderRadius: "50%" }} /></div>
               <div>
                 <div className="cb-auth-logo-text-title">
                   {appName}

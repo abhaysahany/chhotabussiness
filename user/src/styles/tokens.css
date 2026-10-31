@@ -1,0 +1,85 @@
+/**
+ * Vyapar AdNET Design System — Design Tokens
+ * Master source of truth for colors, typography, spacing, shadows, and radii.
+ */
+
+:root {
+  /* Brand Palette (Derived from official circular logo) */
+  --van-brand-navy: #0B192C;
+  --van-brand-blue: #1E40AF;
+  --van-brand-cyan: #0284C7;
+  --van-accent-amber: #D97706;
+  --van-accent-amber-light: #F59E0B;
+
+  /* Surfaces & Backgrounds */
+  --van-bg-app: #EDF2F7;
+  --van-bg-surface: #F8FAFC;
+  --van-bg-card: #FFFFFF;
+  --van-bg-hover: #F1F5F9;
+  --van-bg-active: #E2E8F0;
+
+  /* Borders */
+  --van-border-subtle: #E2E8F0;
+  --van-border-default: #CBD5E1;
+  --van-border-strong: #94A3B8;
+
+  /* Text & Typography Colors */
+  --van-text-primary: #0F172A;
+  --van-text-secondary: #334155;
+  --van-text-muted: #64748B;
+  --van-text-inverse: #FFFFFF;
+
+  /* Semantic Status Colors */
+  --van-status-success-text: #065F46;
+  --van-status-success-bg: #ECFDF5;
+  --van-status-success-border: #A7F3D0;
+
+  --van-status-warning-text: #92400E;
+  --van-status-warning-bg: #FFFBEB;
+  --van-status-warning-border: #FDE68A;
+
+  --van-status-error-text: #991B1B;
+  --van-status-error-bg: #FEF2F2;
+  --van-status-error-border: #FECACA;
+
+  --van-status-info-text: #075985;
+  --van-status-info-bg: #F0F9FF;
+  --van-status-info-border: #BAE6FD;
+
+  /* Button Gradients */
+  --van-btn-gradient-primary: linear-gradient(105deg, #0B192C 0%, #1E40AF 100%);
+  --van-btn-gradient-cta: linear-gradient(105deg, #D97706 0%, #F59E0B 100%);
+  --van-btn-gradient-secondary: linear-gradient(105deg, #1E40AF 0%, #0284C7 100%);
+  
+  --van-btn-hover-primary: linear-gradient(105deg, #071220 0%, #17358F 100%);
+  --van-btn-hover-cta: linear-gradient(105deg, #B45309 0%, #D97706 100%);
+  --van-btn-hover-secondary: linear-gradient(105deg, #17358F 0%, #0369A1 100%);
+
+  /* Radii */
+  --van-radius-badge: 4px;
+  --van-radius-input: 6px;
+  --van-radius-button: 6px;
+  --van-radius-card: 10px;
+  --van-radius-table: 10px;
+  --van-radius-modal: 12px;
+  --van-radius-canvas: 0px;
+
+  /* Shadows */
+  --van-shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --van-shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
+  --van-shadow-card: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
+  --van-shadow-hover: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --van-shadow-modal: 0 20px 40px -8px rgba(15, 23, 42, 0.16);
+
+  /* Dimensions */
+  --van-sidebar-width: 250px;
+  --van-sidebar-collapsed-width: 70px;
+  --van-header-height: 64px;
+
+  /* Backward Compatibility Aliases */
+  --brand-primary-dark: var(--van-brand-navy);
+  --brand-primary: var(--van-brand-blue);
+  --brand-secondary: var(--van-brand-cyan);
+  --brand-accent: var(--van-accent-amber);
+  --bg-app: var(--van-bg-app);
+}

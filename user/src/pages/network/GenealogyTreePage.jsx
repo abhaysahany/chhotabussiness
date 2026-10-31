@@ -73,7 +73,7 @@ function GenealogyTreePage({ user, onNavigate }) {
               alt={node.name}
               className="node-avatar-img"
               onError={(e) => {
-                e.target.src = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150';
+                e.target.src = '/logo.png';
               }}
             />
             <span className={`status-dot ${node.status}`} title={`Status: ${node.status}`}></span>

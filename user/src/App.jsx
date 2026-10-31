@@ -179,7 +179,7 @@ function App() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F8FAFC', padding: '1rem' }}>
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--van-bg-app)", padding: "1rem" }}>
         <div style={{ background: '#ffffff', borderRadius: '20px', padding: '2.5rem 2rem', textAlign: 'center', boxShadow: '0 20px 45px -10px rgba(15, 76, 129, 0.08)', border: '1px solid #E2E8F0', maxWidth: '380px', width: '100%' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.65rem', marginBottom: '1rem' }}>
             <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'linear-gradient(135deg, #0F4C81 0%, #1e3a5f 100%)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(15, 76, 129, 0.2)' }}>
@@ -397,7 +397,7 @@ function App() {
         return <UserMediaContentPage user={user} />;
       case 'content-social-platforms':
       case 'social-platforms':
-        return <UserSocialPlatformsPage user={user} />;
+        return <UserSocialPlatformsPage user={user} onNavigate={(page) => setActivePage(page)} />;
       case 'content-support':
       case 'content-faq':
         return <UserContentSupportPage user={user} onNavigate={(page) => setActivePage(page)} />;
@@ -416,6 +416,7 @@ function App() {
             onNavigateLegal={(page) => setActivePage(page)}
           />
         );
+      case 'sales':
       case 'dashboard':
       default:
         return <DashboardOverview user={user} onNavigate={(page) => setActivePage(page)} />;

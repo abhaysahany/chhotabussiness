@@ -11,20 +11,7 @@ class RewardSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Give users some Business Points (BP) for testing
-        $users = User::all();
-        foreach ($users as $idx => $user) {
-            $user->bp_balance = 350 + ($idx * 150); // e.g. 350, 500, 650, 800 BP
-            $user->save();
-        }
-
-        // 2. Clear old demo records with foreign key check disabled
-        \Illuminate\Support\Facades\Schema::disableForeignKeyConstraints();
-        RewardClaim::truncate();
-        Reward::truncate();
-        \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
-
-        // 3. Seed Rewards Master Catalog
+        // 1. Seed Rewards Master Catalog
         $rewards = [
             [
                 'title' => 'Smart Fitness Band & Pulse Tracker',
@@ -101,7 +88,7 @@ class RewardSeeder extends Seeder
         ];
 
         foreach ($rewards as $r) {
-            Reward::create($r);
+            Reward::updateOrCreate(['title' => $r['title']], $r);
         }
 
         // 4. Seed initial claims for testing
@@ -158,7 +145,7 @@ class RewardSeeder extends Seeder
         ];
 
         foreach ($sampleClaims as $claim) {
-            RewardClaim::create($claim);
+            RewardClaim::firstOrCreate(['user_id' => $claim['user_id'], 'reward_id' => $claim['reward_id']], $claim);
         }
     }
 }

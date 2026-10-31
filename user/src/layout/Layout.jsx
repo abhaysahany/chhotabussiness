@@ -1,22 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import Footer from './Footer';
 
 function Layout({ children, activePage, onNavigate, user, onLogout }) {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 768 : false));
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 768 : false));
+
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (mobile) {
+        setSidebarCollapsed(true);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // When active page changes on mobile, auto-close the mobile drawer
+  useEffect(() => {
+    if (isMobile) {
+      setSidebarCollapsed(true);
+    }
+  }, [activePage, isMobile]);
 
   const toggleSidebar = () => {
-    setSidebarCollapsed(!sidebarCollapsed);
+    setSidebarCollapsed((prev) => !prev);
   };
 
   return (
     <div className={`pro-app-wrapper ${sidebarCollapsed ? 'sidebar-is-collapsed' : ''}`}>
-      {/* Mobile Backdrop Overlay when Sidebar is open on mobile */}
-      {!sidebarCollapsed && (
+      {/* Mobile Backdrop Overlay: Only rendered on mobile viewport when sidebar is opened */}
+      {isMobile && !sidebarCollapsed && (
         <div
           className="sidebar-mobile-backdrop"
           onClick={() => setSidebarCollapsed(true)}
+          aria-hidden="true"
         ></div>
       )}
 
@@ -39,8 +60,8 @@ function Layout({ children, activePage, onNavigate, user, onLogout }) {
           onNavigate={onNavigate}
         />
 
-        {/* Dynamic Page Content View with Curved Canvas */}
-        <main className="pro-page-content pro-curved-canvas">
+        {/* Dynamic Page Content View */}
+        <main className="pro-page-content">
           {children}
         </main>
 

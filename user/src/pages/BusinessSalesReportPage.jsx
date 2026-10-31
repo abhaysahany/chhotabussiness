@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getUserBusinessReports } from '../api/userBusinessReportsService';
 
 function BusinessSalesReportPage({ user, initialTab = 'reports-sales' }) {
   const [activeTab, setActiveTab] = useState(initialTab);
@@ -64,11 +65,11 @@ function BusinessSalesReportPage({ user, initialTab = 'reports-sales' }) {
   const totalCommissionSum = salesTransactions.reduce((acc, curr) => acc + curr.commission, 0);
 
   return (
-    <div style={{ padding: '1.5rem 2rem', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <div className="page-container">
       {/* Hero Banner Header */}
       <div
         style={{
-          background: 'linear-gradient(135deg, #0284c7 0%, #0f172a 50%, #1e1b4b 100%)',
+          background: 'linear-gradient(135deg, var(--brand-primary-dark) 0%, var(--brand-primary) 100%)',
           borderRadius: '16px',
           padding: '2rem 2.25rem',
           color: '#ffffff',

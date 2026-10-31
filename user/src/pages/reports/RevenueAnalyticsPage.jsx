@@ -54,7 +54,7 @@ function RevenueAnalyticsPage({ user }) {
   }, [categoryBreakdown, selectedDomain]);
 
   return (
-    <div style={{ padding: '1.5rem 2rem', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <div className="page-container">
       {/* Hero Banner Header */}
       <div
         style={{

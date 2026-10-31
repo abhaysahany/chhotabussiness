@@ -1,0 +1,155 @@
+/**
+ * Vyapar AdNET Design System — Buttons
+ * Implements the approved gradient buttons from the Vyapar AdNET logo palette.
+ */
+
+.van-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  font-family: inherit;
+  font-weight: 600;
+  border-radius: var(--van-radius-button);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease-in-out;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.van-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.2);
+}
+
+.van-btn:disabled,
+.van-btn[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Button Sizes */
+.van-btn-sm {
+  height: 32px;
+  padding: 0 0.65rem;
+  font-size: 0.775rem;
+}
+
+.van-btn-md {
+  height: 38px;
+  padding: 0 0.95rem;
+  font-size: 0.835rem;
+}
+
+.van-btn-lg {
+  height: 44px;
+  padding: 0 1.25rem;
+  font-size: 0.9rem;
+}
+
+.van-btn-block {
+  width: 100%;
+}
+
+/* Button Variants */
+
+/* Primary: Navy to Blue Gradient */
+.van-btn-primary {
+  background: var(--van-btn-gradient-primary);
+  color: #FFFFFF;
+  border: 1px solid rgba(11, 25, 44, 0.4);
+  box-shadow: 0 1px 3px rgba(11, 25, 44, 0.15);
+}
+
+.van-btn-primary:hover {
+  background: var(--van-btn-hover-primary);
+  box-shadow: 0 2px 6px rgba(11, 25, 44, 0.22);
+}
+
+.van-btn-primary:active {
+  transform: translateY(1px);
+}
+
+/* Highlighted CTA: Amber to Gold Gradient */
+.van-btn-cta {
+  background: var(--van-btn-gradient-cta);
+  color: #FFFFFF;
+  border: 1px solid rgba(217, 119, 6, 0.4);
+  box-shadow: 0 1px 3px rgba(217, 119, 6, 0.2);
+}
+
+.van-btn-cta:hover {
+  background: var(--van-btn-hover-cta);
+  box-shadow: 0 2px 6px rgba(217, 119, 6, 0.3);
+}
+
+.van-btn-cta:active {
+  transform: translateY(1px);
+}
+
+/* Secondary Action: Blue to Cyan Gradient */
+.van-btn-secondary {
+  background: var(--van-btn-gradient-secondary);
+  color: #FFFFFF;
+  border: 1px solid rgba(30, 64, 175, 0.4);
+  box-shadow: 0 1px 3px rgba(2, 132, 199, 0.15);
+}
+
+.van-btn-secondary:hover {
+  background: var(--van-btn-hover-secondary);
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+}
+
+.van-btn-secondary:active {
+  transform: translateY(1px);
+}
+
+/* Outline Button */
+.van-btn-outline {
+  background-color: #FFFFFF;
+  color: var(--van-text-secondary);
+  border: 1px solid var(--van-border-default);
+}
+
+.van-btn-outline:hover {
+  background-color: var(--van-bg-surface);
+  border-color: var(--van-border-strong);
+  color: var(--van-text-primary);
+}
+
+/* Ghost Button */
+.van-btn-ghost {
+  background-color: transparent;
+  color: var(--van-text-secondary);
+  border-color: transparent;
+}
+
+.van-btn-ghost:hover {
+  background-color: var(--van-bg-hover);
+  color: var(--van-brand-blue);
+}
+
+/* Danger Button */
+.van-btn-danger {
+  background-color: #DC2626;
+  color: #FFFFFF;
+  border: 1px solid #B91C1C;
+}
+
+.van-btn-danger:hover {
+  background-color: #B91C1C;
+}
+
+/* WhatsApp Brand Button */
+.van-btn-whatsapp {
+  background: linear-gradient(105deg, #128C7E 0%, #25D366 100%);
+  color: #FFFFFF;
+  border: 1px solid rgba(18, 140, 126, 0.3);
+}
+
+.van-btn-whatsapp:hover {
+  background: linear-gradient(105deg, #075E54 0%, #128C7E 100%);
+}

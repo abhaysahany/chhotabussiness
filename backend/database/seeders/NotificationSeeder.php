@@ -10,10 +10,6 @@ class NotificationSeeder extends Seeder
 {
     public function run(): void
     {
-        \Illuminate\Support\Facades\Schema::disableForeignKeyConstraints();
-        Notification::truncate();
-        \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
-
         $userCount = User::count();
         $firstUser = User::first();
 
@@ -73,7 +69,7 @@ class NotificationSeeder extends Seeder
         ];
 
         foreach ($notifications as $n) {
-            Notification::create($n);
+            Notification::updateOrCreate(['title' => $n['title']], $n);
         }
     }
 }

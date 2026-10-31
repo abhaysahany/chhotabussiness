@@ -389,7 +389,7 @@ function MlmEarningsPage({ user }) {
   ];
 
   return (
-    <div style={{ padding: '1.5rem 2rem', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <div className="page-container">
       {/* Hero Banner */}
       <div
         style={{
@@ -815,7 +815,7 @@ function MlmEarningsPage({ user }) {
                   }}
                 >
                   <img
-                    src={reward.image || 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=500'}
+                    src={reward.image || '/logo.png'}
                     alt={reward.title}
                     style={{ width: '100%', height: '160px', objectFit: 'cover' }}
                   />

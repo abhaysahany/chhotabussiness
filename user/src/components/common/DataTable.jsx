@@ -1,27 +1,8 @@
 import React, { useState, useMemo } from 'react';
 
 /**
- * Enterprise Reusable DataTable Component with Live Search, Multi-Column Sorting,
- * Pagination Controls, Page Size Selection, and Responsive Container.
- *
- * @param {Array} columns - Array of column definition objects:
- *   {
- *     header: string | ReactNode,
- *     accessor: string | Function,
- *     sortable?: boolean,
- *     align?: 'left' | 'center' | 'right',
- *     render?: (value, row, index) => ReactNode,
- *     width?: string,
- *   }
- * @param {Array} data - Array of row objects.
- * @param {number} defaultPageSize - Initial rows per page (default: 10).
- * @param {Array} pageSizeOptions - Available rows per page options (default: [5, 10, 25, 50, 100]).
- * @param {string} searchPlaceholder - Placeholder for the search input.
- * @param {boolean} searchable - Show search input (default: true).
- * @param {boolean} showPageSize - Show page size dropdown (default: true).
- * @param {ReactNode} actions - Optional action buttons on the right of search bar.
- * @param {string} emptyMessage - Message when no data matches.
- * @param {boolean} loading - Loading indicator state.
+ * Vyapar AdNET Reusable DataTable Component with Live Search, Multi-Column Sorting,
+ * Pagination Controls, Page Size Selection, and High-Information-Density Responsive Styling.
  */
 function DataTable({
   columns = [],
@@ -95,7 +76,6 @@ function DataTable({
   // Reset to page 1 on search or page size change
   const totalEntries = sortedData.length;
   const totalPages = Math.max(1, Math.ceil(totalEntries / pageSize));
-
   const safeCurrentPage = Math.min(currentPage, totalPages);
 
   const paginatedData = useMemo(() => {
@@ -147,32 +127,24 @@ function DataTable({
   const endEntry = Math.min(safeCurrentPage * pageSize, totalEntries);
 
   return (
-    <div
-      style={{
-        background: '#ffffff',
-        borderRadius: '14px',
-        border: '1px solid #e2e8f0',
-        overflow: 'hidden',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
-      }}
-    >
+    <div className="van-table-container">
       {/* Header Toolbar (Search + PageSize + Custom Actions) */}
       {(searchable || showPageSize || actions) && (
         <div
           style={{
-            padding: '1rem 1.25rem',
-            borderBottom: '1px solid #e2e8f0',
+            padding: '0.75rem 1rem',
+            borderBottom: '1px solid var(--van-border-subtle)',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
             flexWrap: 'wrap',
-            gap: '0.85rem',
-            background: '#fafbfc',
+            gap: '0.75rem',
+            background: 'var(--van-bg-surface)',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
             {showPageSize && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.84rem', color: '#475569' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', color: 'var(--van-text-secondary)' }}>
                 <span>Show</span>
                 <select
                   value={pageSize}
@@ -180,16 +152,8 @@ function DataTable({
                     setPageSize(Number(e.target.value));
                     setCurrentPage(1);
                   }}
-                  style={{
-                    padding: '0.35rem 0.65rem',
-                    borderRadius: '6px',
-                    border: '1px solid #cbd5e1',
-                    fontSize: '0.84rem',
-                    background: '#fff',
-                    fontWeight: '600',
-                    color: '#334155',
-                    cursor: 'pointer',
-                  }}
+                  className="van-select"
+                  style={{ height: '30px', padding: '0 0.5rem', width: 'auto', fontSize: '0.78rem' }}
                 >
                   {pageSizeOptions.map((opt) => (
                     <option key={opt} value={opt}>
@@ -197,12 +161,12 @@ function DataTable({
                     </option>
                   ))}
                 </select>
-                <span>entries</span>
+                <span>rows</span>
               </div>
             )}
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
             {actions}
             {searchable && (
               <div style={{ position: 'relative', minWidth: '220px' }}>
@@ -214,24 +178,18 @@ function DataTable({
                     setSearchTerm(e.target.value);
                     setCurrentPage(1);
                   }}
-                  style={{
-                    padding: '0.45rem 0.85rem 0.45rem 2.1rem',
-                    borderRadius: '8px',
-                    border: '1px solid #cbd5e1',
-                    fontSize: '0.85rem',
-                    width: '100%',
-                    background: '#ffffff',
-                    outline: 'none',
-                  }}
+                  className="van-input"
+                  style={{ height: '32px', paddingLeft: '1.85rem', fontSize: '0.8rem' }}
                 />
                 <span
                   style={{
                     position: 'absolute',
-                    left: '0.65rem',
+                    left: '0.6rem',
                     top: '50%',
                     transform: 'translateY(-50%)',
-                    color: '#94a3b8',
-                    fontSize: '0.85rem',
+                    color: 'var(--van-text-muted)',
+                    fontSize: '0.8rem',
+                    pointerEvents: 'none',
                   }}
                 >
                   🔍
@@ -244,12 +202,12 @@ function DataTable({
                     }}
                     style={{
                       position: 'absolute',
-                      right: '0.6rem',
+                      right: '0.5rem',
                       top: '50%',
                       transform: 'translateY(-50%)',
                       background: 'none',
                       border: 'none',
-                      color: '#94a3b8',
+                      color: 'var(--van-text-muted)',
                       cursor: 'pointer',
                       fontSize: '0.85rem',
                     }}
@@ -265,9 +223,9 @@ function DataTable({
 
       {/* Table Section */}
       <div style={{ overflowX: 'auto', width: '100%' }}>
-        <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, fontSize: '0.86rem' }}>
+        <table className="van-table">
           <thead>
-            <tr style={{ background: '#f8fafc', textTransform: 'uppercase', fontSize: '0.74rem', fontWeight: '800', color: '#475569', letterSpacing: '0.3px' }}>
+            <tr>
               {columns.map((col, idx) => {
                 const isSortable = col.sortable !== false;
                 const colKey = typeof col.accessor === 'string' ? col.accessor : col.header;
@@ -277,15 +235,11 @@ function DataTable({
                   <th
                     key={idx}
                     onClick={() => handleSort(col)}
+                    className={col.align === 'right' ? 'van-table-num' : col.align === 'center' ? 'van-table-center' : ''}
                     style={{
-                      padding: '0.85rem 1rem',
-                      borderBottom: '2px solid #e2e8f0',
-                      textAlign: col.align || 'left',
                       cursor: isSortable ? 'pointer' : 'default',
                       userSelect: 'none',
                       width: col.width || 'auto',
-                      whiteSpace: 'nowrap',
-                      transition: 'background-color 0.15s',
                     }}
                   >
                     <div
@@ -299,7 +253,7 @@ function DataTable({
                     >
                       <span>{col.header}</span>
                       {isSortable && (
-                        <span style={{ fontSize: '0.72rem', color: isSorted ? '#2563eb' : '#94a3b8' }}>
+                        <span style={{ fontSize: '0.7rem', color: isSorted ? 'var(--van-brand-blue)' : 'var(--van-text-muted)' }}>
                           {isSorted ? (sortConfig.direction === 'asc' ? '▲' : '▼') : '⇅'}
                         </span>
                       )}
@@ -312,25 +266,19 @@ function DataTable({
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={columns.length} style={{ textAlign: 'center', padding: '3rem', color: '#2563eb', fontWeight: '700' }}>
-                  ⏳ Loading database records...
+                <td colSpan={columns.length} style={{ textAlign: 'center', padding: '2.5rem', color: 'var(--van-brand-blue)', fontWeight: '600' }}>
+                  Loading records...
                 </td>
               </tr>
             ) : paginatedData.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} style={{ textAlign: 'center', padding: '3rem', color: '#64748b' }}>
+                <td colSpan={columns.length} style={{ textAlign: 'center', padding: '2.5rem', color: 'var(--van-text-muted)' }}>
                   {emptyMessage}
                 </td>
               </tr>
             ) : (
               paginatedData.map((row, rowIdx) => (
-                <tr
-                  key={row.id || rowIdx}
-                  style={{
-                    borderBottom: '1px solid #f1f5f9',
-                    backgroundColor: rowIdx % 2 === 0 ? '#ffffff' : '#fafafa',
-                  }}
-                >
+                <tr key={row.id || rowIdx}>
                   {columns.map((col, colIdx) => {
                     const rawVal = getCellValue(row, col);
                     const renderedVal = col.render ? col.render(rawVal, row, (safeCurrentPage - 1) * pageSize + rowIdx) : rawVal;
@@ -338,12 +286,7 @@ function DataTable({
                     return (
                       <td
                         key={colIdx}
-                        style={{
-                          padding: '0.85rem 1rem',
-                          textAlign: col.align || 'left',
-                          color: '#334155',
-                          borderBottom: '1px solid #f1f5f9',
-                        }}
+                        className={col.align === 'right' ? 'van-table-num' : col.align === 'center' ? 'van-table-center' : ''}
                       >
                         {renderedVal}
                       </td>
@@ -358,20 +301,7 @@ function DataTable({
 
       {/* Pagination Footer */}
       {!loading && totalEntries > 0 && (
-        <div
-          style={{
-            padding: '0.85rem 1.25rem',
-            borderTop: '1px solid #e2e8f0',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '0.75rem',
-            background: '#fafbfc',
-            fontSize: '0.82rem',
-            color: '#64748b',
-          }}
-        >
+        <div className="van-table-pagination">
           <div>
             Showing <strong>{startEntry}</strong> to <strong>{endEntry}</strong> of <strong>{totalEntries}</strong> entries
           </div>
@@ -380,15 +310,8 @@ function DataTable({
             <button
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={safeCurrentPage === 1}
-              style={{
-                padding: '0.4rem 0.75rem',
-                borderRadius: '6px',
-                border: '1px solid #cbd5e1',
-                background: safeCurrentPage === 1 ? '#f8fafc' : '#ffffff',
-                color: safeCurrentPage === 1 ? '#cbd5e1' : '#334155',
-                cursor: safeCurrentPage === 1 ? 'not-allowed' : 'pointer',
-                fontWeight: '600',
-              }}
+              className="van-btn van-btn-sm van-btn-outline"
+              style={{ height: '28px', padding: '0 0.5rem' }}
             >
               Previous
             </button>
@@ -396,7 +319,7 @@ function DataTable({
             {paginationRange.map((pg, idx) => {
               if (pg === '...') {
                 return (
-                  <span key={idx} style={{ padding: '0.35rem 0.5rem', color: '#94a3b8' }}>
+                  <span key={idx} style={{ padding: '0 0.4rem', color: 'var(--van-text-muted)' }}>
                     ...
                   </span>
                 );
@@ -406,17 +329,8 @@ function DataTable({
                 <button
                   key={idx}
                   onClick={() => setCurrentPage(pg)}
-                  style={{
-                    padding: '0.4rem 0.75rem',
-                    borderRadius: '6px',
-                    border: '1px solid',
-                    borderColor: isActive ? '#2563eb' : '#cbd5e1',
-                    background: isActive ? '#2563eb' : '#ffffff',
-                    color: isActive ? '#ffffff' : '#334155',
-                    cursor: 'pointer',
-                    fontWeight: '700',
-                    minWidth: '32px',
-                  }}
+                  className={`van-btn van-btn-sm ${isActive ? 'van-btn-primary' : 'van-btn-outline'}`}
+                  style={{ height: '28px', minWidth: '28px', padding: '0 0.45rem' }}
                 >
                   {pg}
                 </button>
@@ -426,15 +340,8 @@ function DataTable({
             <button
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={safeCurrentPage === totalPages}
-              style={{
-                padding: '0.4rem 0.75rem',
-                borderRadius: '6px',
-                border: '1px solid #cbd5e1',
-                background: safeCurrentPage === totalPages ? '#f8fafc' : '#ffffff',
-                color: safeCurrentPage === totalPages ? '#cbd5e1' : '#334155',
-                cursor: safeCurrentPage === totalPages ? 'not-allowed' : 'pointer',
-                fontWeight: '600',
-              }}
+              className="van-btn van-btn-sm van-btn-outline"
+              style={{ height: '28px', padding: '0 0.5rem' }}
             >
               Next
             </button>

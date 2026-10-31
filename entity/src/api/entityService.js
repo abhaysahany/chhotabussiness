@@ -92,7 +92,11 @@ export const getEntitySales = async (entityIdentifier, params = {}) => {
   try {
     const queryParams = { ...params };
     if (entityIdentifier) {
-      queryParams.entity = entityIdentifier;
+      if (typeof entityIdentifier === 'object') {
+        Object.assign(queryParams, entityIdentifier);
+      } else {
+        queryParams.entity = entityIdentifier;
+      }
     }
     const response = await api.get('/sales', { params: queryParams });
     return response.data?.sales || [];
@@ -105,7 +109,7 @@ export const getEntitySales = async (entityIdentifier, params = {}) => {
 // Create a New Sale Recorded by an Entity
 export const createEntitySale = async (saleData) => {
   const response = await api.post('/sales', saleData);
-  return response.data?.sale;
+  return response.data?.sale || response.data;
 };
 
 // Receive Balance Payment on a Sale (Releases Admin Commission)

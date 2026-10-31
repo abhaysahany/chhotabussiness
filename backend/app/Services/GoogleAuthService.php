@@ -2,12 +2,22 @@
 
 namespace App\Services;
 
+use Firebase\JWT\BeforeValidException;
+use Firebase\JWT\ExpiredException;
+use Firebase\JWT\JWT;
+use Firebase\JWT\SignatureInvalidException;
 use Google\Client as GoogleClient;
 use InvalidArgumentException;
 use RuntimeException;
+use Throwable;
 
 class GoogleAuthService
 {
+    /**
+     * Bounded tolerance (in seconds) for system clock skew between identity provider (Google) and host
+     */
+    public const JWT_CLOCK_SKEW_LEEWAY_SECONDS = 60;
+
     protected ?GoogleClient $client = null;
 
     public function __construct(?GoogleClient $client = null)
@@ -22,6 +32,11 @@ class GoogleAuthService
     {
         if ($this->client !== null) {
             return $this->client;
+        }
+
+        // Configure bounded leeway on JWT service before client initialization
+        if (class_exists(JWT::class)) {
+            JWT::$leeway = max(self::JWT_CLOCK_SKEW_LEEWAY_SECONDS, JWT::$leeway);
         }
 
         $clientId = config('services.google.client_id');
@@ -90,10 +105,25 @@ class GoogleAuthService
      */
     public function verifyIdToken(string $idToken): array
     {
+        // Enforce 60s bounded leeway for JWT clock skew tolerance between Google servers and host
+        if (class_exists(JWT::class)) {
+            JWT::$leeway = max(self::JWT_CLOCK_SKEW_LEEWAY_SECONDS, JWT::$leeway);
+        }
+
         $client = $this->getClient();
         $clientId = config('services.google.client_id');
 
-        $payload = $client->verifyIdToken($idToken);
+        try {
+            $payload = $client->verifyIdToken($idToken);
+        } catch (BeforeValidException $e) {
+            throw new InvalidArgumentException('Google ID token timestamp is invalid or in the future: ' . $e->getMessage());
+        } catch (ExpiredException $e) {
+            throw new InvalidArgumentException('Google ID token has expired.');
+        } catch (SignatureInvalidException $e) {
+            throw new InvalidArgumentException('Invalid Google ID token signature.');
+        } catch (Throwable $e) {
+            throw new InvalidArgumentException('Google ID token verification failed: ' . $e->getMessage());
+        }
 
         if (!$payload || !is_array($payload)) {
             throw new InvalidArgumentException('Invalid Google ID token signature or payload.');
@@ -110,8 +140,8 @@ class GoogleAuthService
             throw new InvalidArgumentException('Google ID token issuer is invalid.');
         }
 
-        // Validate Expiry
-        if (isset($payload['exp']) && (int) $payload['exp'] < time()) {
+        // Validate Expiry (with bounded 60-second leeway)
+        if (isset($payload['exp']) && ((int) $payload['exp'] + self::JWT_CLOCK_SKEW_LEEWAY_SECONDS) < time()) {
             throw new InvalidArgumentException('Google ID token has expired.');
         }
 
