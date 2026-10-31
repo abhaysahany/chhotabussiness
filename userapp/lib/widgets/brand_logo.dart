@@ -61,7 +61,7 @@ class BrandLogo extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'CHHOTA',
+                  'VYAPAR',
                   style: GoogleFonts.poppins(
                     fontSize: fontSize,
                     fontWeight: FontWeight.w900,
@@ -71,7 +71,7 @@ class BrandLogo extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'BUSINESS',
+                  ' ADNET',
                   style: GoogleFonts.poppins(
                     fontSize: fontSize,
                     fontWeight: FontWeight.w900,

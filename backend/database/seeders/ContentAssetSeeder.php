@@ -14,11 +14,11 @@ class ContentAssetSeeder extends Seeder
     {
         $assets = [
             [
-                'title' => 'ChhotaBusiness Official Launch Banner',
+                'title' => 'Vyapar Adnet Official Launch Banner',
                 'type' => 'image',
                 'category' => 'Marketing Banners',
-                'entity_type' => 'chhota_business',
-                'entity_name' => 'Chhota Business System Entity',
+                'entity_type' => 'vyapar_adnet',
+                'entity_name' => 'Vyapar Adnet System Entity',
                 'file_url' => 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800',
                 'thumbnail' => 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=300',
                 'tags' => 'Launch, Banner, Social, Brand',
@@ -56,8 +56,8 @@ class ContentAssetSeeder extends Seeder
                 'title' => 'GST Registration & Tax Guide Flyer PDF',
                 'type' => 'pdf',
                 'category' => 'Marketing Materials',
-                'entity_type' => 'chhota_business',
-                'entity_name' => 'Chhota Business System Entity',
+                'entity_type' => 'vyapar_adnet',
+                'entity_name' => 'Vyapar Adnet System Entity',
                 'file_url' => 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
                 'thumbnail' => 'https://images.unsplash.com/photo-1568667256549-094345857637?w=300',
                 'tags' => 'PDF, Tax, GST, Flyer, Guide',

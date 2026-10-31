@@ -92,7 +92,7 @@ class ContentAssetController extends Controller
             'title' => 'required|string|max:255',
             'type' => 'required|in:image,video,audio,pdf',
             'category' => 'required|string|max:255',
-            'entity_type' => 'required|in:chhota_business,business,freelance',
+            'entity_type' => 'required|in:vyapar_adnet,chhota_business,business,freelance',
             'entity_name' => 'required|string|max:255',
             'tags' => 'required|string|max:255',
             'file' => 'nullable|file|max:51200', // max 50MB
@@ -180,7 +180,7 @@ class ContentAssetController extends Controller
             'title' => 'required|string|max:255',
             'type' => 'required|in:image,video,audio,pdf',
             'category' => 'required|string|max:255',
-            'entity_type' => 'required|in:chhota_business,business,freelance',
+            'entity_type' => 'required|in:vyapar_adnet,chhota_business,business,freelance',
             'entity_name' => 'required|string|max:255',
             'tags' => 'required|string|max:255',
             'file' => 'nullable|file|max:51200',

@@ -1,7 +1,7 @@
 # Vyapar Desktop Application — Conceptual Data Relationship Model
 
 **Document Version:** 1.0.0  
-**Context:** Architectural blueprint for the development of the original `ChhotaBusiness` business management application.  
+**Context:** Architectural blueprint for the development of the original `Vyapar Adnet` business management application.  
 **Evidence Standard:** Every entity, attribute, and relationship is explicitly labeled with its evidence tier:
 - `[Directly Evidenced]`: Visible on application forms, table columns, or modals.
 - `[Inferred]`: Required to support observed calculations and workflows.

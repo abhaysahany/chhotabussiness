@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Brand Palette matching Chhota Business Web Portal
+  // Brand Palette matching Vyapar Adnet Web Portal
   static const Color primary = Color(0xFF0F4C81); // Deep Corporate Navy
   static const Color primaryHover = Color(0xFF0A355C);
   static const Color primaryLight = Color(0xFFE8F1F8);

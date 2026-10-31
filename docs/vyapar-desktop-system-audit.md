@@ -3,7 +3,7 @@
 **Document Title:** Comprehensive System Audit, UI/UX Analysis, and Functional Documentation  
 **Target Software:** Vyapar Desktop Business Accounting & Billing (Installed v36.0.2 / Electron v42.8.1)  
 **Report Version:** 1.0.0 (Master Release)  
-**Audit Standard:** Non-invasive, read-only system inspection, real-time UI probe, and architectural reverse-specification for original development (`ChhotaBusiness`).  
+**Audit Standard:** Non-invasive, read-only system inspection, real-time UI probe, and architectural reverse-specification for original development (`Vyapar Adnet`).  
 **Audit Directory Path:** `C:\xampp\htdocs\chhotabussiness\docs`  
 **Screenshot Archive:** `C:\xampp\htdocs\chhotabussiness\docs\vyapar-audit-screenshots/` (30 high-resolution evidence captures)
 
@@ -34,7 +34,7 @@
 9. [UI/UX & Design System Findings](#9-uiux--design-system-findings)
 10. [Subscription, Trial & Feature Restrictions](#10-subscription-trial--feature-restrictions)
 11. [Conceptual Entity-Relationship Data Model](#11-conceptual-entity-relationship-data-model)
-12. [Observed Usability Gaps & Opportunities for ChhotaBusiness](#12-observed-usability-gaps--opportunities-for-chhotabusiness)
+12. [Observed Usability Gaps & Opportunities for Vyapar Adnet](#12-observed-usability-gaps--opportunities-for-vyapar-adnet)
 13. [Unverified Features & Follow-up Verification Matrix](#13-unverified-features--follow-up-verification-matrix)
 14. [Final Audit Coverage & Verification Summary](#14-final-audit-coverage--verification-summary)
 
@@ -44,7 +44,7 @@
 
 This system audit report delivers an exhaustive, read-only functional analysis of the **Vyapar Desktop Business Accounting & Billing Application**. The audit was executed on a live, authenticated Windows installation to dissect its information architecture, navigation hierarchy, interactive forms, calculation engine, tax structures, report generators, and visual design patterns.
 
-The objective of this audit is to provide complete, unambiguous functional specifications to empower the architecture and development of the **`ChhotaBusiness`** software ecosystem—an original, clean-room business management suite tailored for micro, small, and medium enterprises (MSMEs).
+The objective of this audit is to provide complete, unambiguous functional specifications to empower the architecture and development of the **`Vyapar Adnet`** software ecosystem—an original, clean-room business management suite tailored for micro, small, and medium enterprises (MSMEs).
 
 ### Key Architectural Findings
 1. **Core Platform:** Packaged as an Electron application (Chromium 42.8.1 engine, Node runtime) with a local embedded SQLite engine (`@vyapar/better-sqlite3`), enabling offline-first operational speed with zero network latency.
@@ -257,7 +257,7 @@ Comprehensive design tokens, typography scales, layout dimensions, and usability
 
 ## 11. Conceptual Entity-Relationship Data Model
 
-The complete data model for the `ChhotaBusiness` implementation is documented in [`docs/vyapar-data-relationship-model.md`](file:///C:/xampp/htdocs/chhotabussiness/docs/vyapar-data-relationship-model.md).
+The complete data model for the `Vyapar Adnet` implementation is documented in [`docs/vyapar-data-relationship-model.md`](file:///C:/xampp/htdocs/chhotabussiness/docs/vyapar-data-relationship-model.md).
 
 ### Key Entity Clusters
 1. **Tenant Core:** `COMPANY`, `USER`, `ROLE`, `SUBSCRIPTION`.
@@ -268,22 +268,22 @@ The complete data model for the `ChhotaBusiness` implementation is documented in
 
 ---
 
-## 12. Observed Usability Gaps & Opportunities for ChhotaBusiness
+## 12. Observed Usability Gaps & Opportunities for Vyapar Adnet
 
-From our live system audit, the following friction points were observed in Vyapar Desktop, representing major strategic differentiators for **`ChhotaBusiness`**:
+From our live system audit, the following friction points were observed in Vyapar Desktop, representing major strategic differentiators for **`Vyapar Adnet`**:
 
 1. **Backdrop Click Handling:**
    - *Vyapar Issue:* Clicking outside a modal does not dismiss it or provide visual feedback; operators unfamiliar with desktop web modals get trapped.
-   - *ChhotaBusiness Improvement:* Provide clear, clickable backdrop dismissals with gentle shake animations if form is dirty.
+   - *Vyapar Adnet Improvement:* Provide clear, clickable backdrop dismissals with gentle shake animations if form is dirty.
 2. **Keyboard Tab Order in Modals:**
    - *Vyapar Issue:* Tabbing through compound inputs (e.g. Price + Tax toggle) occasionally skips the toggle dropdown.
-   - *ChhotaBusiness Improvement:* Implement strict, predictable POS-style tab loops where `Enter` advances through fields and `F2`/`F10` saves.
+   - *Vyapar Adnet Improvement:* Implement strict, predictable POS-style tab loops where `Enter` advances through fields and `F2`/`F10` saves.
 3. **Dual Address Complexity:**
    - *Vyapar Issue:* Billing and Shipping address configuration is nested and requires multiple clicks to expand.
-   - *ChhotaBusiness Improvement:* Provide a clean "Same as Billing Address" checkbox that auto-mirrors address fields instantly.
+   - *Vyapar Adnet Improvement:* Provide a clean "Same as Billing Address" checkbox that auto-mirrors address fields instantly.
 4. **Offline-Online Hybrid Sync:**
    - *Vyapar Issue:* Relies on desktop file backups (`.vbb`) which non-technical shop owners frequently forget to run.
-   - *ChhotaBusiness Improvement:* Implement transparent, zero-configuration local SQLite to cloud synchronization in background workers.
+   - *Vyapar Adnet Improvement:* Implement transparent, zero-configuration local SQLite to cloud synchronization in background workers.
 
 ---
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackToHome }) {
-  const [email, setEmail] = useState('user@chhotabusiness.com');
+  const [email, setEmail] = useState('user@vyaparadnet.com');
   const [password, setPassword] = useState('123456');
   const [rememberMe, setRememberMe] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
@@ -60,7 +60,7 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
             <path d="M2 12L12 17L22 12" stroke="#a855f7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </div>
-        <span className="brand-name">CHHOTABUSINESS</span>
+        <span className="brand-name">VYAPAR ADNET</span>
       </div>
 
       <div className="login-header">
@@ -90,7 +90,7 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
               className="form-input"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="user@chhotabusiness.com"
+              placeholder="user@vyaparadnet.com"
               required
             />
           </div>

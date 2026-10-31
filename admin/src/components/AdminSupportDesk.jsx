@@ -5,7 +5,7 @@ import {
   updateTicketStatus,
 } from '../api/adminService';
 
-const LOCAL_STORAGE_KEY = 'chhota_support_tickets_v1';
+const LOCAL_STORAGE_KEY = 'vyapar_support_tickets_v1';
 
 function AdminSupportDesk({ currentAdmin }) {
   const [tickets, setTickets] = useState([]);
@@ -30,8 +30,8 @@ function AdminSupportDesk({ currentAdmin }) {
       const apiRes = await getSupportTickets(filterStatus, searchQuery);
       let loadedTickets = apiRes.tickets || [];
 
-      // 2. Check localStorage for any tickets generated in userchhotabiz
-      const localData = localStorage.getItem(LOCAL_STORAGE_KEY);
+      // 2. Check localStorage for any tickets generated in user portal
+      const localData = localStorage.getItem(LOCAL_STORAGE_KEY) || localStorage.getItem('chhota_support_tickets_v1');
       if (localData) {
         try {
           const parsedLocal = JSON.parse(localData);

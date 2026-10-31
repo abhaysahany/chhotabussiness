@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CHHOTA BUSINESS — WORLD-CLASS SAAS LANDING PAGE STYLES
+   VYAPAR ADNET — WORLD-CLASS SAAS LANDING PAGE STYLES
    Light Theme Only • Corporate Modern • Mobile First Responsive
    ========================================================================== */
 
@@ -431,6 +431,7 @@
   background: #f0f9ff;
 }
 
+.cb-flow-node.highlight-vyapar,
 .cb-flow-node.highlight-chhota {
   border-color: #fed7aa;
   background: #fff7ed;

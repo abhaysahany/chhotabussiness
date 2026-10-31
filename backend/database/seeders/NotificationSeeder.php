@@ -58,7 +58,7 @@ class NotificationSeeder extends Seeder
                 'created_at' => now()->subDays(2),
             ],
             [
-                'title' => 'Welcome to Chhota Business Affiliate Network',
+                'title' => 'Welcome to Vyapar Adnet Affiliate Network',
                 'message' => 'Your affiliate account has been activated with direct Level 1 referral commissions and 7-level override bonuses. Start by sharing your custom tracking link.',
                 'type' => 'info',
                 'target_audience' => 'single_user',

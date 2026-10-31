@@ -915,7 +915,7 @@ class _LegalViewerModalState extends State<_LegalViewerModal> {
                           ),
                         ),
                         Text(
-                          'Chhota Business Legal Standards',
+                          'Vyapar Adnet Legal Standards',
                           style: GoogleFonts.inter(
                             fontSize: 11,
                             color: const Color(0xFFCBD5E1),
@@ -1071,7 +1071,7 @@ class _LegalViewerModalState extends State<_LegalViewerModal> {
                         ),
                         _sectionTitle('4. User Rights & Compliance'),
                         _sectionBody(
-                          'You have the right to review, update, or request deletion of your account data. Inquiries can be directed to our compliance team at privacy@chhotabusiness.com.',
+                          'You have the right to review, update, or request deletion of your account data. Inquiries can be directed to our compliance team at privacy@vyaparadnet.com.',
                         ),
                       ],
                     ),

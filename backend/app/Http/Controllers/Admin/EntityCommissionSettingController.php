@@ -41,7 +41,7 @@ class EntityCommissionSettingController extends Controller
 
     /**
      * Unified list of all Business Entities and Freelancers with their commission settings.
-     * Unconfigured entities automatically return default 0.00% across all 6 rates.
+     * Business entities default to Direct: 10%, Level 2: 4%, Level 3: 3%, Level 4: 2%, Level 5: 1%, Reward: 5%.
      */
     public function index(Request $request): JsonResponse
     {
@@ -69,9 +69,11 @@ class EntityCommissionSettingController extends Controller
                 });
             }
 
-            $businesses = $businessQuery->orderBy('name', 'asc')->get()->map(function ($biz) {
+            $defaultBizSettings = EntityCommissionSetting::defaultBusinessSettings();
+
+            $businesses = $businessQuery->orderBy('name', 'asc')->get()->map(function ($biz) use ($defaultBizSettings) {
                 $setting = $biz->commissionSetting;
-                $isConfigured = $setting !== null;
+                $isConfigured = $setting !== null && (bool)$setting->is_custom;
 
                 return [
                     'entity_type' => 'business',
@@ -83,12 +85,12 @@ class EntityCommissionSettingController extends Controller
                     'phone' => $biz->phone,
                     'category_name' => $biz->category?->name ?? 'General Business',
                     'verification_status' => $biz->verification_status,
-                    'direct_percent' => (float)($setting?->direct_percent ?? 0.0),
-                    'level_1_percent' => (float)($setting?->level_1_percent ?? 0.0),
-                    'level_2_percent' => (float)($setting?->level_2_percent ?? 0.0),
-                    'level_3_percent' => (float)($setting?->level_3_percent ?? 0.0),
-                    'level_4_percent' => (float)($setting?->level_4_percent ?? 0.0),
-                    'reward_percent' => (float)($setting?->reward_percent ?? 0.0),
+                    'direct_percent' => (float)($setting?->direct_percent ?? $defaultBizSettings['direct_percent']),
+                    'level_2_percent' => (float)($setting?->level_2_percent ?? $defaultBizSettings['level_2_percent']),
+                    'level_3_percent' => (float)($setting?->level_3_percent ?? $defaultBizSettings['level_3_percent']),
+                    'level_4_percent' => (float)($setting?->level_4_percent ?? $defaultBizSettings['level_4_percent']),
+                    'level_5_percent' => (float)($setting?->level_5_percent ?? $defaultBizSettings['level_5_percent']),
+                    'reward_percent' => (float)($setting?->reward_percent ?? $defaultBizSettings['reward_percent']),
                     'is_configured' => $isConfigured,
                     'setting_id' => $setting?->id,
                     'updated_at' => $setting?->updated_at?->toIso8601String(),
@@ -109,9 +111,11 @@ class EntityCommissionSettingController extends Controller
                 });
             }
 
-            $freelancers = $freelancerQuery->orderBy('name', 'asc')->get()->map(function ($freelancer) {
+            $defaultFreelancerSettings = EntityCommissionSetting::defaultSettings('freelancer');
+
+            $freelancers = $freelancerQuery->orderBy('name', 'asc')->get()->map(function ($freelancer) use ($defaultFreelancerSettings) {
                 $setting = $freelancer->commissionSetting;
-                $isConfigured = $setting !== null;
+                $isConfigured = $setting !== null && (bool)$setting->is_custom;
 
                 return [
                     'entity_type' => 'freelancer',
@@ -123,12 +127,12 @@ class EntityCommissionSettingController extends Controller
                     'phone' => $freelancer->phone,
                     'category_name' => $freelancer->category?->name ?? 'Professional Freelance',
                     'verification_status' => $freelancer->verification_status,
-                    'direct_percent' => (float)($setting?->direct_percent ?? 0.0),
-                    'level_1_percent' => (float)($setting?->level_1_percent ?? 0.0),
-                    'level_2_percent' => (float)($setting?->level_2_percent ?? 0.0),
-                    'level_3_percent' => (float)($setting?->level_3_percent ?? 0.0),
-                    'level_4_percent' => (float)($setting?->level_4_percent ?? 0.0),
-                    'reward_percent' => (float)($setting?->reward_percent ?? 0.0),
+                    'direct_percent' => (float)($setting?->direct_percent ?? $defaultFreelancerSettings['direct_percent']),
+                    'level_2_percent' => (float)($setting?->level_2_percent ?? $defaultFreelancerSettings['level_2_percent']),
+                    'level_3_percent' => (float)($setting?->level_3_percent ?? $defaultFreelancerSettings['level_3_percent']),
+                    'level_4_percent' => (float)($setting?->level_4_percent ?? $defaultFreelancerSettings['level_4_percent']),
+                    'level_5_percent' => (float)($setting?->level_5_percent ?? $defaultFreelancerSettings['level_5_percent']),
+                    'reward_percent' => (float)($setting?->reward_percent ?? $defaultFreelancerSettings['reward_percent']),
                     'is_configured' => $isConfigured,
                     'setting_id' => $setting?->id,
                     'updated_at' => $setting?->updated_at?->toIso8601String(),
@@ -203,6 +207,10 @@ class EntityCommissionSettingController extends Controller
 
         $setting = $entity->commissionSetting;
 
+        $defaults = EntityCommissionSetting::defaultSettings($normalizedType);
+
+        $isConfigured = $setting !== null && (bool)$setting->is_custom;
+
         return response()->json([
             'status' => 'success',
             'data' => [
@@ -210,13 +218,13 @@ class EntityCommissionSettingController extends Controller
                 'entity_id' => $entity->id,
                 'entity_name' => $entity->name,
                 'email' => $entity->email,
-                'direct_percent' => (float)($setting?->direct_percent ?? 0.0),
-                'level_1_percent' => (float)($setting?->level_1_percent ?? 0.0),
-                'level_2_percent' => (float)($setting?->level_2_percent ?? 0.0),
-                'level_3_percent' => (float)($setting?->level_3_percent ?? 0.0),
-                'level_4_percent' => (float)($setting?->level_4_percent ?? 0.0),
-                'reward_percent' => (float)($setting?->reward_percent ?? 0.0),
-                'is_configured' => $setting !== null,
+                'direct_percent' => (float)($setting?->direct_percent ?? $defaults['direct_percent']),
+                'level_2_percent' => (float)($setting?->level_2_percent ?? $defaults['level_2_percent']),
+                'level_3_percent' => (float)($setting?->level_3_percent ?? $defaults['level_3_percent']),
+                'level_4_percent' => (float)($setting?->level_4_percent ?? $defaults['level_4_percent']),
+                'level_5_percent' => (float)($setting?->level_5_percent ?? $defaults['level_5_percent']),
+                'reward_percent' => (float)($setting?->reward_percent ?? $defaults['reward_percent']),
+                'is_configured' => $isConfigured,
                 'updated_at' => $setting?->updated_at?->toIso8601String(),
             ],
         ]);
@@ -242,23 +250,24 @@ class EntityCommissionSettingController extends Controller
             'entity_type' => ['required', 'string', Rule::in(['business', 'freelancer'])],
             'entity_id' => ['required', 'integer', 'min:1'],
             'direct_percent' => ['required', 'numeric', 'min:0', 'max:100'],
-            'level_1_percent' => ['required', 'numeric', 'min:0', 'max:100'],
+            'level_1_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'level_2_percent' => ['required', 'numeric', 'min:0', 'max:100'],
             'level_3_percent' => ['required', 'numeric', 'min:0', 'max:100'],
             'level_4_percent' => ['required', 'numeric', 'min:0', 'max:100'],
+            'level_5_percent' => ['required', 'numeric', 'min:0', 'max:100'],
             'reward_percent' => ['required', 'numeric', 'min:0', 'max:100'],
         ], [
             'entity_type.in' => 'Entity type must be either "business" or "freelancer".',
             'direct_percent.min' => 'Direct Commission (%) cannot be negative.',
             'direct_percent.max' => 'Direct Commission (%) cannot exceed 100%.',
-            'level_1_percent.min' => 'Level 1 Commission (%) cannot be negative.',
-            'level_1_percent.max' => 'Level 1 Commission (%) cannot exceed 100%.',
             'level_2_percent.min' => 'Level 2 Commission (%) cannot be negative.',
             'level_2_percent.max' => 'Level 2 Commission (%) cannot exceed 100%.',
             'level_3_percent.min' => 'Level 3 Commission (%) cannot be negative.',
             'level_3_percent.max' => 'Level 3 Commission (%) cannot exceed 100%.',
             'level_4_percent.min' => 'Level 4 Commission (%) cannot be negative.',
             'level_4_percent.max' => 'Level 4 Commission (%) cannot exceed 100%.',
+            'level_5_percent.min' => 'Level 5 Commission (%) cannot be negative.',
+            'level_5_percent.max' => 'Level 5 Commission (%) cannot exceed 100%.',
             'reward_percent.min' => 'Reward (%) cannot be negative.',
             'reward_percent.max' => 'Reward (%) cannot exceed 100%.',
         ]);
@@ -291,19 +300,26 @@ class EntityCommissionSettingController extends Controller
 
         DB::beginTransaction();
         try {
+            $saveData = [
+                'direct_percent' => round((float)$input['direct_percent'], 2),
+                'level_2_percent' => round((float)$input['level_2_percent'], 2),
+                'level_3_percent' => round((float)$input['level_3_percent'], 2),
+                'level_4_percent' => round((float)$input['level_4_percent'], 2),
+                'level_5_percent' => round((float)$input['level_5_percent'], 2),
+                'reward_percent' => round((float)$input['reward_percent'], 2),
+                'is_custom' => true,
+            ];
+
+            if (isset($input['level_1_percent'])) {
+                $saveData['level_1_percent'] = round((float)$input['level_1_percent'], 2);
+            }
+
             $setting = EntityCommissionSetting::updateOrCreate(
                 [
                     'entity_type' => $entityType,
                     'entity_id' => $entityId,
                 ],
-                [
-                    'direct_percent' => round((float)$input['direct_percent'], 2),
-                    'level_1_percent' => round((float)$input['level_1_percent'], 2),
-                    'level_2_percent' => round((float)$input['level_2_percent'], 2),
-                    'level_3_percent' => round((float)$input['level_3_percent'], 2),
-                    'level_4_percent' => round((float)$input['level_4_percent'], 2),
-                    'reward_percent' => round((float)$input['reward_percent'], 2),
-                ]
+                $saveData
             );
 
             DB::commit();
@@ -318,10 +334,10 @@ class EntityCommissionSettingController extends Controller
                     'entity_name' => $entity->name,
                     'email' => $entity->email,
                     'direct_percent' => (float)$setting->direct_percent,
-                    'level_1_percent' => (float)$setting->level_1_percent,
                     'level_2_percent' => (float)$setting->level_2_percent,
                     'level_3_percent' => (float)$setting->level_3_percent,
                     'level_4_percent' => (float)$setting->level_4_percent,
+                    'level_5_percent' => (float)$setting->level_5_percent,
                     'reward_percent' => (float)$setting->reward_percent,
                     'is_configured' => true,
                     'setting_id' => $setting->id,

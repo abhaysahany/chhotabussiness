@@ -11,7 +11,7 @@ function AdminPaymentReportsPage() {
   // Distribution Settings
   const [mlmSettings, setMlmSettings] = useState(() => {
     try {
-      const stored = localStorage.getItem('chhota_admin_mlm_settings');
+      const stored = localStorage.getItem('vyapar_admin_mlm_settings') || localStorage.getItem('chhota_admin_mlm_settings');
       if (stored) return JSON.parse(stored);
     } catch (e) {}
     return { bpValueInRupees: 10, defaultReferralPercent: 40, defaultTeamPercent: 20, defaultBpPercent: 20 };
@@ -44,7 +44,7 @@ function AdminPaymentReportsPage() {
   useEffect(() => {
     loadPayments();
     try {
-      const stored = localStorage.getItem('chhota_admin_mlm_settings');
+      const stored = localStorage.getItem('vyapar_admin_mlm_settings') || localStorage.getItem('chhota_admin_mlm_settings');
       if (stored) {
         const s = JSON.parse(stored);
         setMlmSettings(s);

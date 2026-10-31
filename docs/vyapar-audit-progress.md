@@ -107,4 +107,4 @@
 
 1. Generate all required comprehensive audit reports based on directly observed screens, form inventories, business rules, and UI/UX patterns.
 2. Structure navigation, forms, workflows, reports, and data models with explicit evidence tags (`[Observed]`, `[Inferred]`, `[Unverified]`).
-3. Prepare conceptual relational architecture ready for the `ChhotaBusiness` application development.
+3. Prepare conceptual relational architecture ready for the `Vyapar Adnet` application development.

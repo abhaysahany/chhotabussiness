@@ -375,7 +375,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       icon: Icons.share_rounded,
                       label: 'Referral Link',
                       onTap: () {
-                        Clipboard.setData(ClipboardData(text: 'https://chhotabusiness.com/ref/$userCode'));
+                        Clipboard.setData(ClipboardData(text: 'https://vyaparadnet.com/ref/$userCode'));
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
@@ -415,7 +415,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
-                              'Direct support line: support@chhotabusiness.com',
+                              'Direct support line: support@vyaparadnet.com',
                               style: GoogleFonts.inter(),
                             ),
                             backgroundColor: AppColors.primary,

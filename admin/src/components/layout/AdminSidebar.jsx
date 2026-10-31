@@ -3,8 +3,8 @@ import { useBranding } from '../../utils/branding';
 
 function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogout, currentAdmin }) {
   const { appName } = useBranding();
-  const [entitiesOpen, setEntitiesOpen] = useState(() => Boolean(activeTab === 'entities-businesses' || activeTab === 'entities-freelancers' || activeTab === 'entities-commissions'));
-  const [productsOpen, setProductsOpen] = useState(() => Boolean(activeTab?.startsWith('products-') || activeTab?.startsWith('services-')));
+  const [entitiesOpen, setEntitiesOpen] = useState(() => Boolean(activeTab === 'entities-businesses' || activeTab === 'entities-freelancers'));
+  const [productsOpen, setProductsOpen] = useState(() => Boolean(activeTab?.startsWith('products-') || activeTab?.startsWith('services-') || activeTab === 'entities-commissions'));
   const [salesOpen, setSalesOpen] = useState(() => Boolean(activeTab?.startsWith('sales-')));
   const [paymentsOpen, setPaymentsOpen] = useState(() => Boolean(activeTab?.startsWith('payments-')));
   const [supportOpen, setSupportOpen] = useState(() => Boolean(activeTab?.startsWith('support-') && activeTab !== 'support-notifications' && activeTab !== 'notifications'));
@@ -14,10 +14,10 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
   const [contentOpen, setContentOpen] = useState(() => Boolean(activeTab?.startsWith('content-')));
 
   React.useEffect(() => {
-    if (activeTab === 'entities-businesses' || activeTab === 'entities-freelancers' || activeTab === 'entities-commissions') {
+    if (activeTab === 'entities-businesses' || activeTab === 'entities-freelancers') {
       setEntitiesOpen(true);
     }
-    if (activeTab?.startsWith('products-') || activeTab?.startsWith('services-')) {
+    if (activeTab?.startsWith('products-') || activeTab?.startsWith('services-') || activeTab === 'entities-commissions') {
       setProductsOpen(true);
     }
     if (activeTab?.startsWith('sales-')) {
@@ -111,8 +111,12 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
             {!collapsed && <span className="menu-item-label">Categories</span>}
           </button>
           <button
-            className={`menu-item ${activeTab === 'entities-businesses' || activeTab === 'entities-freelancers' || activeTab === 'entities-commissions' ? 'active' : ''}`}
-            onClick={() => setEntitiesOpen(!entitiesOpen)}
+            type="button"
+            className={`menu-item ${activeTab === 'entities-businesses' || activeTab === 'entities-freelancers' ? 'active' : ''}`}
+            onClick={(e) => {
+              e.preventDefault();
+              setEntitiesOpen((prev) => !prev);
+            }}
           >
             <span className="menu-item-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -131,32 +135,31 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
           {/* Collapsible Submenu */}
           {!collapsed && entitiesOpen && (
             <div className="submenu-list">
-
               <button
+                type="button"
                 className={`submenu-item ${activeTab === 'entities-businesses' ? 'active' : ''}`}
                 onClick={() => setActiveTab('entities-businesses')}
               >
                 Register Business
               </button>
               <button
+                type="button"
                 className={`submenu-item ${activeTab === 'entities-freelancers' ? 'active' : ''}`}
                 onClick={() => setActiveTab('entities-freelancers')}
               >
                 Register Freelance
-              </button>
-              <button
-                className={`submenu-item ${activeTab === 'entities-commissions' ? 'active' : ''}`}
-                onClick={() => setActiveTab('entities-commissions')}
-              >
-                Commission & Rewards
               </button>
             </div>
           )}
 
           {/* Products & Services Collapsible Item */}
           <button
-            className={`menu-item ${activeTab.startsWith('products') || activeTab.startsWith('services') ? 'active' : ''}`}
-            onClick={() => setProductsOpen(!productsOpen)}
+            type="button"
+            className={`menu-item ${activeTab?.startsWith('products') || activeTab?.startsWith('services') || activeTab === 'entities-commissions' ? 'active' : ''}`}
+            onClick={(e) => {
+              e.preventDefault();
+              setProductsOpen((prev) => !prev);
+            }}
           >
             <span className="menu-item-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -177,22 +180,32 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
           {!collapsed && productsOpen && (
             <div className="submenu-list">
               <button
+                type="button"
                 className={`submenu-item ${activeTab === 'products-catalog' ? 'active' : ''}`}
                 onClick={() => setActiveTab('products-catalog')}
               >
                 Products Catalog
               </button>
               <button
+                type="button"
                 className={`submenu-item ${activeTab === 'services-listings' ? 'active' : ''}`}
                 onClick={() => setActiveTab('services-listings')}
               >
                 Services Listings
               </button>
               <button
+                type="button"
                 className={`submenu-item ${activeTab === 'products-packages' ? 'active' : ''}`}
                 onClick={() => setActiveTab('products-packages')}
               >
                 Pricing Packages
+              </button>
+              <button
+                type="button"
+                className={`submenu-item ${activeTab === 'products-commissions' || activeTab === 'entities-commissions' ? 'active' : ''}`}
+                onClick={() => setActiveTab('products-commissions')}
+              >
+                Set Commission
               </button>
             </div>
           )}
@@ -203,7 +216,8 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
           {!collapsed && <div className="menu-group-title">SALES & PAYMENTS</div>}
 
           <button
-            className={`menu-item ${activeTab.startsWith('sales-') ? 'active' : ''}`}
+            type="button"
+            className={`menu-item ${activeTab?.startsWith('sales-') ? 'active' : ''}`}
             onClick={() => setSalesOpen(!salesOpen)}
           >
             <span className="menu-item-icon">
@@ -235,7 +249,8 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
 
           {/* Payments Collapsible Item */}
           <button
-            className={`menu-item ${activeTab.startsWith('payments-') ? 'active' : ''}`}
+            type="button"
+            className={`menu-item ${activeTab?.startsWith('payments-') ? 'active' : ''}`}
             onClick={() => setPaymentsOpen(!paymentsOpen)}
           >
             <span className="menu-item-icon">

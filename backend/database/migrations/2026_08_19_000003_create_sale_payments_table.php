@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('sales_record_id');
             $table->string('invoice_number');
-            $table->string('entity_name')->default('Chhota Business Entity');
+            $table->string('entity_name')->default('Vyapar Adnet Entity');
             $table->string('customer_name');
             $table->decimal('amount', 12, 2)->default(0); // Installment amount received
             $table->decimal('admin_commission_percent', 6, 2)->default(15);

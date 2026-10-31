@@ -5,16 +5,16 @@ import 'screens/splash_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const ChhotaBusinessApp());
+  runApp(const VyaparAdnetApp());
 }
 
-class ChhotaBusinessApp extends StatelessWidget {
-  const ChhotaBusinessApp({super.key});
+class VyaparAdnetApp extends StatelessWidget {
+  const VyaparAdnetApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Chhota Business Partner App',
+      title: 'Vyapar Adnet Partner App',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
