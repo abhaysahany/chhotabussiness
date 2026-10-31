@@ -279,13 +279,8 @@ class ProductCatalogController extends Controller
         $service = Service::create([
             'name' => $request->input('name'),
             'category' => $request->input('category') ?: 'Legal & Compliance',
-<<<<<<< HEAD
-            'owner_type' => $request->input('owner_type') ?: 'business',
-            'owner_name' => $request->input('owner_name') ?: 'Vyapar Adnet Tax Advisory',
-=======
             'owner_type' => $ownerType,
             'owner_name' => $ownerName,
->>>>>>> fb58c420080770de6eee6f2a63280e24ca568f13
             'price' => $request->input('price'),
             'admin_commission_percent' => $adminCommissionPercent,
             'duration' => $request->input('duration') ?: '3 Business Days',
