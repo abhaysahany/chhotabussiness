@@ -9,8 +9,8 @@ import {
 } from '../../api/adminEntityService';
 
 function AdminFreelancerPage({ onNavigate }) {
-  // View mode: 'form' by default as required in Task 3
-  const [viewMode, setViewMode] = useState('form');
+  // View mode: 'history' by default (Freelancer History/Table first)
+  const [viewMode, setViewMode] = useState('history');
 
   const [freelancers, setFreelancers] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -156,6 +156,7 @@ function AdminFreelancerPage({ onNavigate }) {
       }
       resetForm(categories);
       fetchData();
+      setViewMode('history');
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to save freelancer');
     }
@@ -247,7 +248,7 @@ function AdminFreelancerPage({ onNavigate }) {
                 </p>
               </div>
 
-              {/* View History Button (Clearly Visible) */}
+              {/* Back to History Button */}
               <button
                 type="button"
                 className="pro-btn-secondary"
@@ -270,7 +271,7 @@ function AdminFreelancerPage({ onNavigate }) {
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                   <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span>View History</span>
+                <span>Back to History</span>
               </button>
             </div>
           </div>
@@ -581,7 +582,7 @@ function AdminFreelancerPage({ onNavigate }) {
                   className="pro-btn-secondary"
                   onClick={() => setViewMode('history')}
                 >
-                  View History
+                  Back to History
                 </button>
                 <button
                   type="submit"
@@ -614,7 +615,7 @@ function AdminFreelancerPage({ onNavigate }) {
                 </p>
               </div>
 
-              {/* Back to Form Button */}
+              {/* Register New Freelancer Button */}
               <button
                 type="button"
                 className="pro-btn-primary"
@@ -624,13 +625,17 @@ function AdminFreelancerPage({ onNavigate }) {
                   boxShadow: '0 4px 14px rgba(124, 58, 237, 0.4)',
                   padding: '0.75rem 1.5rem',
                   fontSize: '0.95rem',
+                  fontWeight: '700',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '0.5rem',
                   cursor: 'pointer',
                 }}
               >
-                <span>&larr; Back to Registration Form</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
+                <span>Register New Freelancer</span>
               </button>
             </div>
           </div>

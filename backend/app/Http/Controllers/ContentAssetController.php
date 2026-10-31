@@ -108,6 +108,18 @@ class ContentAssetController extends Controller
             ], 422);
         }
 
+        // Validate content file type matches declared content type
+        $typeError = $this->validateFileType($request);
+        if ($typeError) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $typeError,
+                'errors' => [
+                    'file' => [$typeError],
+                ],
+            ], 422);
+        }
+
         // Must provide either uploaded file or external file_url
         if (!$request->hasFile('file') && empty($request->file_url)) {
             return response()->json([
@@ -193,6 +205,18 @@ class ContentAssetController extends Controller
                 'status' => 'error',
                 'message' => 'Validation failed',
                 'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        // Validate content file type matches declared content type
+        $typeError = $this->validateFileType($request);
+        if ($typeError) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $typeError,
+                'errors' => [
+                    'file' => [$typeError],
+                ],
             ], 422);
         }
 
@@ -330,5 +354,62 @@ class ContentAssetController extends Controller
         }
 
         return redirect($asset->file_url);
+    }
+
+    /**
+     * Validate content file against the declared content type.
+     */
+    private function validateFileType(Request $request): ?string
+    {
+        if ($request->hasFile('file')) {
+            $uploadedFile = $request->file('file');
+            $mime = strtolower($uploadedFile->getMimeType() ?? '');
+            $ext = strtolower($uploadedFile->getClientOriginalExtension() ?? '');
+
+            $isImage = str_starts_with($mime, 'image/') || in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg', 'bmp']);
+            $isVideo = str_starts_with($mime, 'video/') || in_array($ext, ['mp4', 'mov', 'avi', 'mkv', 'webm', 'm4v', '3gp', 'flv']);
+            $isAudio = str_starts_with($mime, 'audio/') || in_array($ext, ['mp3', 'wav', 'ogg', 'aac', 'm4a', 'flac']);
+            $isPdf = $mime === 'application/pdf' || $ext === 'pdf';
+
+            if ($request->type === 'video' && !$isVideo) {
+                return 'Please, your selection is video. Please change this content.';
+            }
+
+            if ($request->type === 'image' && !$isImage) {
+                return 'Please, your selection is image. Please change this content.';
+            }
+
+            if ($request->type === 'audio' && !$isAudio) {
+                return 'Please, your selection is audio. Please change this content.';
+            }
+
+            if ($request->type === 'pdf' && !$isPdf) {
+                return 'Please, your selection is pdf. Please change this content.';
+            }
+        } elseif (!empty($request->file_url)) {
+            $path = parse_url($request->file_url, PHP_URL_PATH);
+            $urlExt = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+            if ($urlExt) {
+                $isUrlImage = in_array($urlExt, ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg', 'bmp']);
+                $isUrlVideo = in_array($urlExt, ['mp4', 'mov', 'avi', 'mkv', 'webm', 'm4v', '3gp', 'flv']);
+                $isUrlAudio = in_array($urlExt, ['mp3', 'wav', 'ogg', 'aac', 'm4a', 'flac']);
+                $isUrlPdf = $urlExt === 'pdf';
+
+                if ($request->type === 'video' && $isUrlImage) {
+                    return 'Please, your selection is video. Please change this content.';
+                }
+                if ($request->type === 'image' && $isUrlVideo) {
+                    return 'Please, your selection is image. Please change this content.';
+                }
+                if ($request->type === 'audio' && ($isUrlImage || $isUrlVideo || $isUrlPdf)) {
+                    return 'Please, your selection is audio. Please change this content.';
+                }
+                if ($request->type === 'pdf' && ($isUrlImage || $isUrlVideo || $isUrlAudio)) {
+                    return 'Please, your selection is pdf. Please change this content.';
+                }
+            }
+        }
+
+        return null;
     }
 }

@@ -827,3 +827,74 @@
   font-size: 0.88rem;
   margin-bottom: 1.25rem;
 }
+
+/* ==========================================================================
+   Toast Notification (Modal & Page Floating Alert)
+   ========================================================================== */
+.pro-toast-notification {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 100010;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.35rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #ffffff;
+  pointer-events: auto;
+  max-width: calc(100vw - 3rem);
+  box-shadow: 0 14px 34px -5px rgba(0, 0, 0, 0.35);
+  animation: slideDownToast 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pro-toast-notification.success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: 1px solid #34d399;
+  box-shadow: 0 12px 28px -5px rgba(5, 150, 105, 0.45);
+}
+
+.pro-toast-notification.error {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  border: 1px solid #f87171;
+  box-shadow: 0 12px 28px -5px rgba(220, 38, 38, 0.45);
+}
+
+.pro-toast-notification .toast-close-btn {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 1.25rem;
+  line-height: 1;
+  padding: 0 0 0 0.5rem;
+  opacity: 0.85;
+  transition: opacity 0.15s ease;
+}
+
+.pro-toast-notification .toast-close-btn:hover {
+  opacity: 1;
+}
+
+@keyframes slideDownToast {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .pro-toast-notification {
+    top: 1rem;
+    right: 1rem;
+    left: 1rem;
+    max-width: calc(100vw - 2rem);
+    justify-content: space-between;
+  }
+}

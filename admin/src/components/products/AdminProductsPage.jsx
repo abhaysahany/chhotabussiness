@@ -20,7 +20,7 @@ function AdminProductsPage() {
   const [ownerFilter, setOwnerFilter] = useState('all');
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
-  const [toastMessage, setToastMessage] = useState('');
+  const [toast, setToast] = useState(null); // { message: string, type: 'success' | 'error' }
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -45,9 +45,9 @@ function AdminProductsPage() {
   });
   const [imagePreview, setImagePreview] = useState('');
 
-  const showToast = (msg) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(''), 3500);
+  const showToast = (msg, type = 'success') => {
+    setToast({ message: msg, type });
+    setTimeout(() => setToast(null), 4500);
   };
 
   const loadData = async () => {
@@ -95,7 +95,7 @@ function AdminProductsPage() {
       }
     } catch (err) {
       console.error('Error loading product catalog data:', err);
-      showToast('Error loading products from database.');
+      showToast('Error loading products from database.', 'error');
     } finally {
       setLoading(false);
     }
@@ -108,9 +108,9 @@ function AdminProductsPage() {
   const handleOwnerTypeChange = (type) => {
     let defaultOwner = '';
     if (type === 'business') {
-      defaultOwner = businessesList.length > 0 ? businessesList[0].business_name : 'Skyline Technologies Pvt Ltd';
+      defaultOwner = businessesList.length > 0 ? (businessesList[0].name || businessesList[0].business_name || 'Skyline Technologies Pvt Ltd') : 'Skyline Technologies Pvt Ltd';
     } else {
-      defaultOwner = freelancersList.length > 0 ? freelancersList[0].full_name : 'Priya Patel (UI/UX Designer)';
+      defaultOwner = freelancersList.length > 0 ? (freelancersList[0].name || freelancersList[0].full_name || 'Priya Patel (UI/UX Designer)') : 'Priya Patel (UI/UX Designer)';
     }
 
     setFormData((prev) => ({
@@ -135,7 +135,7 @@ function AdminProductsPage() {
   const openAddModal = () => {
     setEditingProduct(null);
     const defaultCat = categoriesList[0] || 'Software & IT';
-    const defaultBiz = businessesList.length > 0 ? businessesList[0].business_name : 'Skyline Technologies Pvt Ltd';
+    const defaultBiz = businessesList.length > 0 ? (businessesList[0].name || businessesList[0].business_name || 'Skyline Technologies Pvt Ltd') : 'Skyline Technologies Pvt Ltd';
 
     setFormData({
       name: '',
@@ -160,7 +160,7 @@ function AdminProductsPage() {
       name: p.name,
       category: p.category,
       owner_type: p.owner_type || p.ownerType || 'business',
-      owner_name: p.owner_name || p.ownerName || (businessesList[0]?.business_name || ''),
+      owner_name: p.owner_name || p.ownerName || (businessesList[0]?.name || businessesList[0]?.business_name || ''),
       price: p.price,
       admin_commission_percent: p.admin_commission_percent || p.adminCommissionPercent || 15,
       stock: p.stock,
@@ -191,9 +191,9 @@ function AdminProductsPage() {
       setProducts((prev) =>
         prev.map((item) => (item.id === p.id ? { ...item, status: newStatus } : item))
       );
-      showToast(`Product status set to ${newStatus}!`);
+      showToast(`Product status set to ${newStatus}!`, 'success');
     } catch (err) {
-      showToast('Failed to update product status.');
+      showToast('Failed to update product status.', 'error');
     }
   };
 
@@ -202,9 +202,9 @@ function AdminProductsPage() {
       try {
         await deleteAdminProduct(id);
         setProducts((prev) => prev.filter((item) => item.id !== id));
-        showToast('Product successfully deleted from database!');
+        showToast('Product successfully deleted from database!', 'success');
       } catch (err) {
-        showToast('Failed to delete product.');
+        showToast('Failed to delete product.', 'error');
       }
     }
   };
@@ -212,7 +212,7 @@ function AdminProductsPage() {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.price) {
-      alert('Please fill in product name and base price');
+      showToast('Please fill in product name and base price', 'error');
       return;
     }
 
@@ -236,17 +236,22 @@ function AdminProductsPage() {
 
       if (editingProduct) {
         const res = await updateAdminProduct(editingProduct.id, payload);
-        showToast(res.message || 'Product updated successfully!');
+        showToast(res.message || 'Product updated successfully!', 'success');
       } else {
         const res = await createAdminProduct(payload);
-        showToast(res.message || 'New product saved to database!');
+        showToast(res.message || 'New product saved to database!', 'success');
       }
 
       setShowAddModal(false);
       await loadData();
     } catch (err) {
-      const msg = err.response?.data?.message || 'Failed to save product in database.';
-      showToast(`❌ ${msg}`);
+      const msg =
+        (err.response?.data?.errors
+          ? Object.values(err.response.data.errors).flat().join(' ')
+          : err.response?.data?.message) ||
+        err.message ||
+        'Failed to save product in database.';
+      showToast(msg, 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -290,13 +295,6 @@ function AdminProductsPage() {
 
   return (
     <div className="pro-products-container">
-      {/* Toast Alert */}
-      {toastMessage && (
-        <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', background: '#059669', color: '#ffffff', padding: '0.85rem 1.35rem', borderRadius: '10px', fontWeight: '700', boxShadow: '0 10px 25px -5px rgba(5,150,105,0.4)', zIndex: 99999, fontSize: '0.875rem' }}>
-          <span>✓ {toastMessage}</span>
-        </div>
-      )}
-
       {/* Header Banner */}
       <div className="pro-header-banner">
         <div className="pro-header-title-group">
@@ -610,7 +608,7 @@ function AdminProductsPage() {
                           </option>
                         ))
                       ) : (
-                        <option value="Lifeleads Technologies Pvt Ltd">Lifeleads Technologies Pvt Ltd</option>
+                        <option value="Skyline Technologies Pvt Ltd">Skyline Technologies Pvt Ltd</option>
                       )
                     ) : (
                       freelancersList.length > 0 ? (
@@ -738,6 +736,24 @@ function AdminProductsPage() {
               </div>
             </form>
           </div>
+        </div>
+      )}
+
+      {/* Toast Alert Notification (Positioned Visibly Above Modal Backdrop & Dialog) */}
+      {toast && (
+        <div className={`pro-toast-notification ${toast.type}`}>
+          <span style={{ fontSize: '1.05rem', lineHeight: 1 }}>
+            {toast.type === 'error' ? '❌' : '✓'}
+          </span>
+          <span style={{ flex: 1 }}>{toast.message}</span>
+          <button
+            type="button"
+            className="toast-close-btn"
+            onClick={() => setToast(null)}
+            title="Dismiss notification"
+          >
+            ×
+          </button>
         </div>
       )}
     </div>
