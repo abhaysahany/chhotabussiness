@@ -170,7 +170,7 @@ function EntityReceiveBalancePage() {
             <span>💳</span> Payment Section • Direct Client Collections
           </div>
           <h1 className="page-title" style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800, color: '#0f172a' }}>
-            Receive Balance Payments
+            Order Balance Receipts
           </h1>
           <p className="page-description" style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>
             Collect outstanding client installments. Every balance collection automatically releases the corresponding Admin platform commission and updates the project status.
@@ -180,10 +180,10 @@ function EntityReceiveBalancePage() {
           <button
             type="button"
             className="btn-primary"
-            onClick={() => navigate('/entity/sales/create')}
+            onClick={() => navigate('/entity/orders/create')}
             style={{ padding: '0.5rem 1rem', fontSize: '0.82rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
           >
-            <span>+</span> Record New Sale
+            <span>+</span> Create New Order
           </button>
           <button
             type="button"

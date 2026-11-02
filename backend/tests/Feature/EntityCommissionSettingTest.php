@@ -23,7 +23,7 @@ class EntityCommissionSettingTest extends TestCase
     {
         parent::setUp();
 
-        config(['database.connections.mysql.database' => 'ad_net']);
+        config(['database.connections.mysql.database' => env('DB_DATABASE', 'chhotabiz_test')]);
         config(['database.default' => 'mysql']);
         \Illuminate\Support\Facades\DB::purge('mysql');
 
@@ -355,8 +355,6 @@ class EntityCommissionSettingTest extends TestCase
             'admin_commission_cut' => 200,
             'net_entity_amount' => 800,
             'payment_date' => now(),
-            'network_distribution_status' => 'distributed',
-            'commission_distributed' => true,
         ]);
 
         $response = $this->actingAs($this->admin)

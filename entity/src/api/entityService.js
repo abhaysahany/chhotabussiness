@@ -73,22 +73,27 @@ export const resetPasswordEntity = async (data) => {
 };
 
 // ----------------------------------------------------
-// Database-Backed Sales & Payments Management APIs
+// Database-Backed Orders & Payments Management APIs (Canonical)
 // ----------------------------------------------------
 
-// Get All Centralized Sales Records
-export const getAllSalesRecords = async (params = {}) => {
+// Get All Centralized Orders (with legacy fallback)
+export const getAllOrders = async (params = {}) => {
   try {
-    const response = await api.get('/sales', { params });
-    return response.data?.sales || [];
+    const response = await api.get('/orders', { params });
+    return response.data?.orders || response.data?.sales || [];
   } catch (e) {
-    console.error('Error fetching sales records from API:', e);
-    return [];
+    try {
+      const fallback = await api.get('/sales', { params });
+      return fallback.data?.orders || fallback.data?.sales || [];
+    } catch (err) {
+      console.error('Error fetching orders from API:', err);
+      return [];
+    }
   }
 };
 
-// Get Sales Records For a Specific Entity
-export const getEntitySales = async (entityIdentifier, params = {}) => {
+// Get Orders For a Specific Entity
+export const getEntityOrders = async (entityIdentifier, params = {}) => {
   try {
     const queryParams = { ...params };
     if (entityIdentifier) {
@@ -98,28 +103,51 @@ export const getEntitySales = async (entityIdentifier, params = {}) => {
         queryParams.entity = entityIdentifier;
       }
     }
-    const response = await api.get('/sales', { params: queryParams });
-    return response.data?.sales || [];
+    const response = await api.get('/orders', { params: queryParams });
+    return response.data?.orders || response.data?.sales || [];
   } catch (e) {
-    console.error('Error fetching entity sales from API:', e);
-    return [];
+    try {
+      const queryParams = { ...params };
+      if (entityIdentifier) {
+        if (typeof entityIdentifier === 'object') {
+          Object.assign(queryParams, entityIdentifier);
+        } else {
+          queryParams.entity = entityIdentifier;
+        }
+      }
+      const fallback = await api.get('/sales', { params: queryParams });
+      return fallback.data?.orders || fallback.data?.sales || [];
+    } catch (err) {
+      console.error('Error fetching entity orders from API:', err);
+      return [];
+    }
   }
 };
 
-// Create a New Sale Recorded by an Entity
-export const createEntitySale = async (saleData) => {
-  const response = await api.post('/sales', saleData);
-  return response.data?.sale || response.data;
+// Create a New Order Recorded by an Entity
+export const createEntityOrder = async (orderData) => {
+  try {
+    const response = await api.post('/orders', orderData);
+    return response.data?.order || response.data?.sale || response.data;
+  } catch (e) {
+    const fallback = await api.post('/sales', orderData);
+    return fallback.data?.order || fallback.data?.sale || fallback.data;
+  }
 };
 
-// Receive Balance Payment on a Sale (Releases Admin Commission)
-export const receiveBalancePayment = async (saleId, paymentData) => {
-  const response = await api.post(`/sales/${saleId}/receive-balance`, paymentData);
-  return response.data;
+// Receive Balance Payment on an Order (Releases Admin Commission)
+export const receiveOrderBalancePayment = async (orderId, paymentData) => {
+  try {
+    const response = await api.post(`/orders/${orderId}/receive-balance`, paymentData);
+    return response.data;
+  } catch (e) {
+    const fallback = await api.post(`/sales/${orderId}/receive-balance`, paymentData);
+    return fallback.data;
+  }
 };
 
 // Get Payment Installment History
-export const getSalePaymentHistory = async (params = {}) => {
+export const getOrderPaymentHistory = async (params = {}) => {
   try {
     const response = await api.get('/payments/history', { params });
     return response.data;
@@ -128,6 +156,15 @@ export const getSalePaymentHistory = async (params = {}) => {
     return { payments: [], total_collected: 0, total_admin_commission: 0, total_net_entity: 0 };
   }
 };
+
+// ----------------------------------------------------
+// Legacy Sales API Aliases (100% Backward Compatibility)
+// ----------------------------------------------------
+export const getAllSalesRecords = getAllOrders;
+export const getEntitySales = getEntityOrders;
+export const createEntitySale = createEntityOrder;
+export const receiveBalancePayment = receiveOrderBalancePayment;
+export const getSalePaymentHistory = getOrderPaymentHistory;
 
 // Verify and Look up Member Details by Member ID
 export const verifyMemberId = async (memberId) => {

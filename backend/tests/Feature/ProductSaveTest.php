@@ -19,7 +19,7 @@ class ProductSaveTest extends TestCase
     {
         parent::setUp();
 
-        config(['database.connections.mysql.database' => 'ad_net']);
+        config(['database.connections.mysql.database' => env('DB_DATABASE', 'chhotabiz_test')]);
         config(['database.default' => 'mysql']);
         \Illuminate\Support\Facades\DB::purge('mysql');
 

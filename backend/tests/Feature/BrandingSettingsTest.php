@@ -20,7 +20,7 @@ class BrandingSettingsTest extends TestCase
         parent::setUp();
         config([
             'database.default' => 'mysql',
-            'database.connections.mysql.database' => 'chhotabiz',
+            'database.connections.mysql.database' => env('DB_DATABASE', 'chhotabiz_test'),
         ]);
 
         // Clean up test admin, users and settings

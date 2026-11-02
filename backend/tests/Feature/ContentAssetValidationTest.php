@@ -2,13 +2,14 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class ContentAssetValidationTest extends TestCase
 {
+    use DatabaseTransactions;
     public function test_rejects_image_file_when_content_type_is_video()
     {
         Storage::fake('public');

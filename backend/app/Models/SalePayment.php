@@ -22,12 +22,13 @@ class SalePayment extends Model
         'payment_type',
         'notes',
         'payment_date',
-        'network_distribution_status',
-        'direct_commission',
-        'level_commissions_total',
-        'team_volume_bv',
-        'commission_distributed',
-        'distribution_details',
+        'direct_income_amount',
+        'level_income_amount',
+        'reward_income_amount',
+        'distributed_admin_cut_amount',
+        'income_distribution_status',
+        'income_distributed_at',
+        'income_distributed_by',
     ];
 
     protected $casts = [
@@ -35,12 +36,13 @@ class SalePayment extends Model
         'admin_commission_percent' => 'float',
         'admin_commission_cut' => 'float',
         'net_entity_amount' => 'float',
-        'direct_commission' => 'float',
-        'level_commissions_total' => 'float',
-        'team_volume_bv' => 'float',
-        'commission_distributed' => 'boolean',
-        'distribution_details' => 'array',
         'payment_date' => 'datetime',
+        'direct_income_amount' => 'float',
+        'level_income_amount' => 'float',
+        'reward_income_amount' => 'float',
+        'distributed_admin_cut_amount' => 'float',
+        'income_distributed_at' => 'datetime',
+        'income_distributed_by' => 'integer',
     ];
 
     protected $appends = [
@@ -55,17 +57,36 @@ class SalePayment extends Model
         'referenceNo',
         'paymentType',
         'paymentDate',
-        'networkDistributionStatus',
-        'directCommission',
-        'levelCommissionsTotal',
-        'teamVolumeBv',
-        'commissionDistributed',
-        'distributionDetails',
+        'directIncomeAmount',
+        'levelIncomeAmount',
+        'rewardIncomeAmount',
+        'distributedAdminCutAmount',
+        'incomeDistributionStatus',
+        'incomeDistributedAt',
+        'incomeDistributedBy',
+        'total_project_cost',
+        'totalProjectCost',
+        'total_admin_amount',
+        'totalAdminAmount',
+        'remaining_admin_amount',
+        'remainingAdminAmount',
     ];
 
+    /**
+     * Relationship to parent Order.
+     * Links to orders(id) via sales_record_id foreign key.
+     */
+    public function order()
+    {
+        return $this->belongsTo(Order::class, 'sales_record_id');
+    }
+
+    /**
+     * Legacy alias for order().
+     */
     public function salesRecord()
     {
-        return $this->belongsTo(SalesRecord::class, 'sales_record_id');
+        return $this->order();
     }
 
     public function getInvoiceNumberAttribute()
@@ -156,5 +177,64 @@ class SalePayment extends Model
                 : $this->attributes['distribution_details'];
         }
         return null;
+    }
+
+    public function getDirectIncomeAmountAttribute()
+    {
+        return (float) ($this->attributes['direct_income_amount'] ?? 0);
+    }
+
+    public function getLevelIncomeAmountAttribute()
+    {
+        return (float) ($this->attributes['level_income_amount'] ?? 0);
+    }
+
+    public function getRewardIncomeAmountAttribute()
+    {
+        return (float) ($this->attributes['reward_income_amount'] ?? 0);
+    }
+
+    public function getDistributedAdminCutAmountAttribute()
+    {
+        return (float) ($this->attributes['distributed_admin_cut_amount'] ?? 0);
+    }
+
+    public function getIncomeDistributionStatusAttribute()
+    {
+        return $this->attributes['income_distribution_status'] ?? 'pending';
+    }
+
+    public function getIncomeDistributedAtAttribute()
+    {
+        return $this->attributes['income_distributed_at'] ?? null;
+    }
+
+    public function getIncomeDistributedByAttribute()
+    {
+        return $this->attributes['income_distributed_by'] ?? null;
+    }
+
+    public function getTotalProjectCostAttribute(): float
+    {
+        if ($this->relationLoaded('order') && $this->order) {
+            return (float) ($this->order->gross_amount ?? 0);
+        }
+        return (float) ($this->order?->gross_amount ?? 0);
+    }
+
+    public function getTotalAdminAmountAttribute(): float
+    {
+        if ($this->relationLoaded('order') && $this->order) {
+            return (float) ($this->order->expected_admin_cut ?? 0);
+        }
+        return (float) ($this->order?->expected_admin_cut ?? 0);
+    }
+
+    public function getRemainingAdminAmountAttribute(): float
+    {
+        if ($this->relationLoaded('order') && $this->order) {
+            return (float) ($this->order->remaining_admin_commission ?? 0);
+        }
+        return (float) ($this->order?->remaining_admin_commission ?? 0);
     }
 }

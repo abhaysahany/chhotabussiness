@@ -175,6 +175,7 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 // Entity Authentication Routes
 use App\Http\Controllers\EntityAuthController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\SalesRecordController;
 
 Route::post('/entity/login', [EntityAuthController::class, 'login']);
@@ -184,15 +185,30 @@ Route::post('/entity/forgot-password', [EntityAuthController::class, 'forgotPass
 Route::post('/entity/verify-otp', [EntityAuthController::class, 'verifyOtp']);
 Route::post('/entity/reset-password', [EntityAuthController::class, 'resetPassword']);
 
-// Central Sales & Payments Management Endpoints (MySQL Database Backed)
-Route::get('/sales', [SalesRecordController::class, 'index']);
-Route::post('/sales', [SalesRecordController::class, 'store']);
-Route::get('/sales/{id}', [SalesRecordController::class, 'show']);
-Route::post('/sales/{id}/receive-balance', [SalesRecordController::class, 'receiveBalance']);
-Route::post('/sales/{id}/distribute', [SalesRecordController::class, 'distribute']);
-Route::get('/payments/history', [SalesRecordController::class, 'paymentsHistory']);
-Route::post('/payments/{id}/distribute', [SalesRecordController::class, 'distributePaymentCommission']);
-Route::get('/user/business-reports', [SalesRecordController::class, 'userBusinessReports']);
+// Central Canonical Orders & Payments Management Endpoints (MySQL Database Backed)
+Route::get('/orders', [OrderController::class, 'index']);
+Route::post('/orders', [OrderController::class, 'store']);
+Route::get('/orders/{id}', [OrderController::class, 'show']);
+Route::post('/orders/{id}/receive-balance', [OrderController::class, 'receiveBalance']);
+Route::post('/orders/{id}/distribute', [OrderController::class, 'distribute']);
+
+// Legacy Sales Route Aliases (Retained for 100% Backward Compatibility)
+Route::get('/sales', [OrderController::class, 'index']);
+Route::post('/sales', [OrderController::class, 'store']);
+Route::get('/sales/{id}', [OrderController::class, 'show']);
+Route::post('/sales/{id}/receive-balance', [OrderController::class, 'receiveBalance']);
+Route::post('/sales/{id}/distribute', [OrderController::class, 'distribute']);
+
+// Payment Receipts Ledger & Commission Distribution Endpoints
+Route::get('/payments/history', [OrderController::class, 'paymentsHistory']);
+Route::post('/payments/{id}/distribute', [OrderController::class, 'distributePaymentCommission']);
+Route::get('/user/business-reports', [OrderController::class, 'userBusinessReports']);
+
+// User Income Summary Endpoints (Direct Income & Level Income)
+use App\Http\Controllers\UserIncomeController;
+
+Route::get('/user/income/direct', [UserIncomeController::class, 'getDirectIncome']);
+Route::get('/user/income/levels', [UserIncomeController::class, 'getLevelIncome']);
 
 // User Payouts Management Endpoints (MySQL Database Backed)
 use App\Http\Controllers\UserPayoutController;
@@ -236,21 +252,45 @@ Route::get('/admin/dashboard-stats', [AdminDashboardController::class, 'getDashb
 Route::get('/admin/users', [AdminUserController::class, 'index']);
 Route::put('/admin/users/{id}', [AdminUserController::class, 'update']);
 Route::post('/admin/users/{id}/toggle-status', [AdminUserController::class, 'toggleStatus']);
-Route::get('/admin/sales', [SalesRecordController::class, 'index']);
-Route::post('/admin/sales', [SalesRecordController::class, 'store']);
+// Admin Orders Canonical Endpoints & Legacy Sales Aliases
+use App\Http\Controllers\Admin\IncomeAllocationController;
 
-Route::post('/admin/sales/{id}/distribute', [SalesRecordController::class, 'distribute']);
-Route::get('/admin/payments/history', [SalesRecordController::class, 'paymentsHistory']);
-Route::post('/admin/payments/{id}/distribute', [SalesRecordController::class, 'distributePaymentCommission']);
+Route::get('/admin/orders', [OrderController::class, 'index']);
+Route::post('/admin/orders', [OrderController::class, 'store']);
+Route::post('/admin/orders/{id}/distribute', [OrderController::class, 'distribute']);
+Route::get('/admin/orders/{orderId}/income-allocation', [IncomeAllocationController::class, 'show']);
+Route::post('/admin/orders/{orderId}/income-allocation', [IncomeAllocationController::class, 'allocate']);
+Route::put('/admin/orders/{orderId}/dump-amount', [IncomeAllocationController::class, 'updateDumpAmount']);
+Route::post('/admin/orders/{orderId}/dump-amount', [IncomeAllocationController::class, 'updateDumpAmount']);
+
+// Admin Payment-Level Income Allocation Endpoints
+Route::get('/admin/payments/{paymentId}/income-allocation', [IncomeAllocationController::class, 'showPayment']);
+Route::post('/admin/payments/{paymentId}/income-allocation', [IncomeAllocationController::class, 'allocatePayment']);
+
+Route::get('/admin/sales', [OrderController::class, 'index']);
+Route::post('/admin/sales', [OrderController::class, 'store']);
+Route::post('/admin/sales/{id}/distribute', [OrderController::class, 'distribute']);
+Route::get('/admin/sales/{orderId}/income-allocation', [IncomeAllocationController::class, 'show']);
+Route::post('/admin/sales/{orderId}/income-allocation', [IncomeAllocationController::class, 'allocate']);
+
+Route::get('/admin/payments/history', [OrderController::class, 'paymentsHistory']);
+Route::get('/admin/payments/distributed-history', [OrderController::class, 'paymentsHistory']);
+Route::post('/admin/payments/{id}/distribute', [OrderController::class, 'distributePaymentCommission']);
 
 use App\Http\Controllers\EntityPayoutController;
 use App\Http\Controllers\EntityDashboardController;
 
 Route::get('/entity/dashboard-stats', [EntityDashboardController::class, 'getDashboardStats']);
-Route::get('/entity/sales', [SalesRecordController::class, 'index']);
-Route::post('/entity/sales', [SalesRecordController::class, 'store']);
-Route::post('/entity/sales/{id}/receive-balance', [SalesRecordController::class, 'receiveBalance']);
-Route::get('/entity/payments/history', [SalesRecordController::class, 'paymentsHistory']);
+
+// Entity Orders Canonical Endpoints & Legacy Sales Aliases
+Route::get('/entity/orders', [OrderController::class, 'index']);
+Route::post('/entity/orders', [OrderController::class, 'store']);
+Route::post('/entity/orders/{id}/receive-balance', [OrderController::class, 'receiveBalance']);
+Route::get('/entity/sales', [OrderController::class, 'index']);
+Route::post('/entity/sales', [OrderController::class, 'store']);
+Route::post('/entity/sales/{id}/receive-balance', [OrderController::class, 'receiveBalance']);
+
+Route::get('/entity/payments/history', [OrderController::class, 'paymentsHistory']);
 Route::get('/entity/payouts', [EntityPayoutController::class, 'index']);
 Route::get('/entity/payouts/reports', [EntityPayoutController::class, 'reports']);
 

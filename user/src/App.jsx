@@ -40,6 +40,8 @@ import UserNotificationsPage from './pages/UserNotificationsPage';
 import TermsAndConditionsPage from './pages/TermsAndConditionsPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import LandingPage from './pages/landing/LandingPage';
+import DirectIncomePage from './pages/income/DirectIncomePage';
+import LevelIncomePage from './pages/income/LevelIncomePage';
 import {
   getSystemStatus,
   getUserInfo,
@@ -361,6 +363,17 @@ function App() {
         return <TeamCommission user={user} />;
       case 'payment-transactions':
         return <PaymentTransactions user={user} />;
+
+      // MY INCOME Suite (Direct Income & Level Income)
+      case 'income-direct':
+      case 'user-income-direct':
+      case '/user/income/direct':
+        return <DirectIncomePage user={user} onNavigate={(page) => setActivePage(page)} />;
+      case 'income-levels':
+      case 'user-income-levels':
+      case '/user/income/levels':
+        return <LevelIncomePage user={user} onNavigate={(page) => setActivePage(page)} />;
+
       // Business Entities & Directory Reports
       case 'business-entities':
       case 'business-entities-all':
