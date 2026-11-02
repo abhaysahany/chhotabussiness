@@ -6,6 +6,7 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
     connections: Boolean(activePage?.startsWith('connections-') || activePage?.startsWith('network-') || activePage === 'network'),
     businessEntities: Boolean(activePage?.startsWith('business-entities') || activePage === 'business-reports' || activePage?.startsWith('business-reports-')),
     businessReports: Boolean(activePage?.startsWith('reports-')),
+    income: Boolean(activePage?.startsWith('income-') || activePage?.startsWith('user-income-') || activePage?.includes('/income/')),
     payments: Boolean(activePage?.startsWith('payment') || activePage?.startsWith('reward') || activePage?.startsWith('commission')),
     payouts: Boolean(activePage?.startsWith('payout') || activePage === 'current-payouts'),
     settings: Boolean(activePage?.startsWith('profile')),
@@ -21,6 +22,9 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
     }
     if (activePage?.startsWith('reports-')) {
       setOpenMenus((prev) => ({ ...prev, businessReports: true }));
+    }
+    if (activePage?.startsWith('income-') || activePage?.startsWith('user-income-') || activePage?.includes('/income/')) {
+      setOpenMenus((prev) => ({ ...prev, income: true }));
     }
     if (activePage?.startsWith('payment') || activePage?.startsWith('reward') || activePage?.startsWith('commission')) {
       setOpenMenus((prev) => ({ ...prev, payments: true }));
@@ -285,7 +289,43 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
         {/* FINANCE GROUP */}
         <div className="nav-group-title">{!collapsed && 'FINANCE'}</div>
 
-        {/* 6. Payments Tab — Flattened 2-Level Clean Menu */}
+        {/* 6. My Income Tab */}
+        <div className="nav-item">
+          <button
+            className={`nav-link ${openMenus.income || activePage?.startsWith('income-') || activePage?.includes('/income/') ? 'active-parent-pill' : ''}`}
+            onClick={() => toggleMenu('income')}
+          >
+            <span className="nav-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="12" y1="1" x2="12" y2="23"></line>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+              </svg>
+            </span>
+            {!collapsed && <span className="nav-text">My Income</span>}
+            {!collapsed && <span className="nav-arrow">{openMenus.income ? <ChevronDown /> : <ChevronRight />}</span>}
+          </button>
+
+          {!collapsed && openMenus.income && (
+            <div className="sub-nav-list">
+              <button
+                className={`sub-nav-link ${activePage === 'income-direct' || activePage === '/user/income/direct' ? 'active' : ''}`}
+                onClick={() => onNavigate('income-direct')}
+              >
+                <span className="sub-icon"><SubDot /></span>
+                <span className="sub-text">Direct Income</span>
+              </button>
+              <button
+                className={`sub-nav-link ${activePage === 'income-levels' || activePage === '/user/income/levels' ? 'active' : ''}`}
+                onClick={() => onNavigate('income-levels')}
+              >
+                <span className="sub-icon"><SubDot /></span>
+                <span className="sub-text">Level Income</span>
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* 7. Payments Tab — Flattened 2-Level Clean Menu */}
         <div className="nav-item">
           <button
             className={`nav-link ${openMenus.payments ? 'active-parent-pill' : ''}`}

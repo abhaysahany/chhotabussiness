@@ -18,7 +18,7 @@ class GoogleAuthTest extends TestCase
         parent::setUp();
         config([
             'database.default' => 'mysql',
-            'database.connections.mysql.database' => 'chhotabiz',
+            'database.connections.mysql.database' => env('DB_DATABASE', 'chhotabiz_test'),
             'services.google.client_id' => 'test-google-client-id',
             'services.google.client_secret' => 'test-google-client-secret',
             'services.google.redirect_uri' => 'http://localhost:5174',

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\UserPayout;
-use App\Models\SalesRecord;
 use App\Models\SalePayment;
 use Carbon\Carbon;
 

@@ -50,6 +50,7 @@ class User extends Authenticatable
         'location',
         'personal_pv',
         'group_pv',
+        'team_biz',
     ];
 
     public function payouts()
@@ -70,6 +71,16 @@ class User extends Authenticatable
     public function upiAccounts()
     {
         return $this->hasMany(UserUpiAccount::class, 'user_id');
+    }
+
+    public function directIncomeAccount()
+    {
+        return $this->hasOne(DirectIncomeAccount::class, 'user_id');
+    }
+
+    public function levelIncomeAccounts()
+    {
+        return $this->hasMany(LevelIncomeAccount::class, 'user_id');
     }
 
     /**
@@ -108,6 +119,20 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'team_biz' => 'float',
+            'commission_balance' => 'float',
+            'bp_balance' => 'float',
+            'personal_pv' => 'float',
+            'group_pv' => 'float',
         ];
+    }
+
+    protected $appends = [
+        'teamBiz',
+    ];
+
+    public function getTeamBizAttribute(): float
+    {
+        return (float) ($this->attributes['team_biz'] ?? 0);
     }
 }

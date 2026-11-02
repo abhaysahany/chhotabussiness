@@ -480,7 +480,7 @@ function EntityDashboard() {
 
             <button
               type="button"
-              onClick={() => navigate('/entity/sales/create')}
+              onClick={() => navigate('/entity/orders/create')}
               style={{
                 background: 'linear-gradient(135deg, #636B2F 0%, #848f3e 100%)',
                 color: '#ffffff',
@@ -842,7 +842,7 @@ function EntityDashboard() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
         <button
           type="button"
-          onClick={() => navigate('/entity/sales/create')}
+          onClick={() => navigate('/entity/orders/create')}
           style={{
             background: 'linear-gradient(135deg, #f4f6ec 0%, #ffffff 100%)',
             border: '1.5px solid #d4dcbe',
@@ -965,7 +965,7 @@ function EntityDashboard() {
             </div>
             <button
               type="button"
-              onClick={() => navigate('/entity/sales')}
+              onClick={() => navigate('/entity/orders')}
               style={{
                 background: '#ffffff',
                 border: '1px solid #d4dcbe',

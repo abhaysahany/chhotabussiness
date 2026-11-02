@@ -451,7 +451,7 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
 
           <button
             type="button"
-            onClick={() => onNavigate && onNavigate('sales-create')}
+            onClick={() => onNavigate && onNavigate('orders-management')}
             style={{
               background: 'linear-gradient(135deg, #3569a7 0%, #264e7e 100%)',
               color: '#ffffff',
@@ -535,7 +535,7 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
             <span>Net Corporate Earnings</span>
             <button
               type="button"
-              onClick={() => onNavigate && onNavigate('sales-reports')}
+              onClick={() => onNavigate && onNavigate('orders-management')}
               style={{ background: 'none', border: 'none', color: '#0d9488', fontWeight: 800, cursor: 'pointer', padding: 0 }}
             >
               Ledger →
@@ -800,7 +800,7 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
             <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Top Stream: IT & Cloud Services (44.5%)</span>
             <button
               type="button"
-              onClick={() => onNavigate && onNavigate('sales-reports')}
+              onClick={() => onNavigate && onNavigate('orders-management')}
               style={{ background: 'none', border: 'none', color: '#3569a7', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}
             >
               Full Breakdown →
@@ -905,7 +905,7 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
             </div>
             <button
               type="button"
-              onClick={() => onNavigate && onNavigate('sales-reports')}
+              onClick={() => onNavigate && onNavigate('orders-management')}
               style={{
                 background: '#ffffff',
                 border: '1px solid #b3cbe6',

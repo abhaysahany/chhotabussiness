@@ -92,9 +92,9 @@ function EntitySidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLog
 
           {/* 2. Sales & Invoices Dropdown */}
           <button
-            className={`menu-item ${currentPath.startsWith('/entity/sales') || activeTab?.startsWith('sales') ? 'active-parent' : ''}`}
+            className={`menu-item ${currentPath.startsWith('/entity/orders') || currentPath.startsWith('/entity/sales') || activeTab?.startsWith('orders') || activeTab?.startsWith('sales') ? 'active-parent' : ''}`}
             onClick={() => setSalesOpen(!salesOpen)}
-            title="Sales & Invoices"
+            title="Orders & Fulfilment"
           >
             <span className="menu-item-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -103,7 +103,7 @@ function EntitySidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLog
                 <path d="M16 10a4 4 0 0 1-8 0" />
               </svg>
             </span>
-            {!collapsed && <span className="menu-item-label">Sales & Invoices</span>}
+            {!collapsed && <span className="menu-item-label">Orders & Fulfilment</span>}
             {!collapsed && (
               <svg
                 width="14"
@@ -125,18 +125,18 @@ function EntitySidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLog
           {!collapsed && salesOpen && (
             <div className="entity-submenu-tree">
               <button
-                className={`submenu-item ${currentPath === '/entity/sales/create' || activeTab === 'sales-create' ? 'active' : ''}`}
-                onClick={() => handleNav('sales-create', '/entity/sales/create')}
+                className={`submenu-item ${currentPath === '/entity/orders/create' || currentPath === '/entity/sales/create' || activeTab === 'orders-create' || activeTab === 'sales-create' ? 'active' : ''}`}
+                onClick={() => handleNav('orders-create', '/entity/orders/create')}
               >
                 <span className="submenu-bullet">+</span>
-                <span>Record New Sale</span>
+                <span>Create New Order</span>
               </button>
               <button
-                className={`submenu-item ${currentPath === '/entity/sales' || activeTab === 'sales' ? 'active' : ''}`}
-                onClick={() => handleNav('sales', '/entity/sales')}
+                className={`submenu-item ${currentPath === '/entity/orders' || currentPath === '/entity/sales' || activeTab === 'orders' || activeTab === 'sales' ? 'active' : ''}`}
+                onClick={() => handleNav('orders', '/entity/orders')}
               >
                 <span className="submenu-bullet">●</span>
-                <span>Sales Reports & Invoices</span>
+                <span>My Orders & Fulfilment</span>
               </button>
             </div>
           )}
@@ -175,11 +175,11 @@ function EntitySidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLog
           {!collapsed && paymentsOpen && (
             <div className="entity-submenu-tree">
               <button
-                className={`submenu-item ${currentPath === '/entity/payments/receive-balance' || currentPath === '/entity/payments' || activeTab === 'payments-balance' ? 'active' : ''}`}
-                onClick={() => handleNav('payments-balance', '/entity/payments/receive-balance')}
+                className={`submenu-item ${currentPath === '/entity/payments/order-balances' || currentPath === '/entity/payments/receive-balance' || currentPath === '/entity/payments' || activeTab === 'payments-order-balances' || activeTab === 'payments-balance' ? 'active' : ''}`}
+                onClick={() => handleNav('payments-order-balances', '/entity/payments/order-balances')}
               >
                 <span className="submenu-bullet">💳</span>
-                <span>Receive Balance</span>
+                <span>Order Balance Receipts</span>
               </button>
               <button
                 className={`submenu-item ${currentPath === '/entity/payments/receipts-ledger' || activeTab === 'payments-ledger' ? 'active' : ''}`}

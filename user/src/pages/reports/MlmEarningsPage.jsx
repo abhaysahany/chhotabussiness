@@ -418,7 +418,7 @@ function MlmEarningsPage({ user }) {
               🤝 10-Level Database Commission & Rewards Engine
             </span>
             <h1 style={{ fontSize: '1.85rem', fontWeight: '800', margin: '0 0 0.4rem 0', color: '#fff' }}>
-              Network Commission & Rewards Report
+              Network Income Overview
             </h1>
             <p style={{ color: '#94a3b8', fontSize: '0.925rem', margin: 0 }}>
               Live database audit with multi-column sorting, pagination DataTable, and 10-Level 2% overrides.

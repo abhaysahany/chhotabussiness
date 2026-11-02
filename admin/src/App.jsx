@@ -25,7 +25,8 @@ import AdminProductsPage from './components/products/AdminProductsPage';
 import AdminServicesPage from './components/products/AdminServicesPage';
 import AdminPackagesPage from './components/products/AdminPackagesPage';
 
-// Import Sales & Payments Suite Pages
+// Import Orders & Payments Suite Pages
+import AdminOrdersPage from './components/sales/AdminOrdersPage';
 import AdminCreateSalePage from './components/sales/AdminCreateSalePage';
 import AdminSalesReportsPage from './components/sales/AdminSalesReportsPage';
 import AdminPaymentReportsPage from './components/sales/AdminPaymentReportsPage';
@@ -164,14 +165,16 @@ function App() {
 
       // Sales Suite - Separate Pages
       case 'sales-create':
-        return <AdminCreateSalePage />;
+        return <AdminOrdersPage />;
 
+      case 'orders-management':
       case 'sales-reports':
-        return <AdminSalesReportsPage />;
+        return <AdminOrdersPage />;
 
       case 'payments-reports':
       case 'payments-distribution':
-        return <AdminPaymentReportsPage />;
+        // Legacy Payment Commission Distribution module retired; redirect to Order Management
+        return <AdminOrdersPage />;
 
       case 'payments-history':
       case 'payments-receive':

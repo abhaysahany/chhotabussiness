@@ -5,7 +5,7 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
   const { appName } = useBranding();
   const [entitiesOpen, setEntitiesOpen] = useState(() => Boolean(activeTab === 'entities-businesses' || activeTab === 'entities-freelancers'));
   const [productsOpen, setProductsOpen] = useState(() => Boolean(activeTab?.startsWith('products-') || activeTab?.startsWith('services-') || activeTab === 'entities-commissions'));
-  const [salesOpen, setSalesOpen] = useState(() => Boolean(activeTab?.startsWith('sales-')));
+  const [salesOpen, setSalesOpen] = useState(() => Boolean(activeTab?.startsWith('sales-') || activeTab?.startsWith('orders-')));
   const [paymentsOpen, setPaymentsOpen] = useState(() => Boolean(activeTab?.startsWith('payments-')));
   const [supportOpen, setSupportOpen] = useState(() => Boolean(activeTab?.startsWith('support-') && activeTab !== 'support-notifications' && activeTab !== 'notifications'));
   const [usersOpen, setUsersOpen] = useState(() => Boolean(activeTab?.startsWith('users-')));
@@ -20,7 +20,7 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
     if (activeTab?.startsWith('products-') || activeTab?.startsWith('services-') || activeTab === 'entities-commissions') {
       setProductsOpen(true);
     }
-    if (activeTab?.startsWith('sales-')) {
+    if (activeTab?.startsWith('sales-') || activeTab?.startsWith('orders-')) {
       setSalesOpen(true);
     }
     if (activeTab?.startsWith('payments-')) {
@@ -213,11 +213,11 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
 
         {/* SALES GROUP */}
         <div className="menu-group">
-          {!collapsed && <div className="menu-group-title">SALES & PAYMENTS</div>}
+          {!collapsed && <div className="menu-group-title">ORDERS & PAYMENTS</div>}
 
           <button
             type="button"
-            className={`menu-item ${activeTab?.startsWith('sales-') ? 'active' : ''}`}
+            className={`menu-item ${activeTab?.startsWith('orders-') || activeTab?.startsWith('sales-') ? 'active' : ''}`}
             onClick={() => setSalesOpen(!salesOpen)}
           >
             <span className="menu-item-icon">
@@ -227,7 +227,7 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
               </svg>
             </span>
-            {!collapsed && <span className="menu-item-label">Sales & Orders</span>}
+            {!collapsed && <span className="menu-item-label">Order Management</span>}
             {!collapsed && (
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="menu-arrow">
                 {salesOpen ? <polyline points="18 15 12 9 6 15" /> : <polyline points="6 9 12 15 18 9" />}
@@ -239,10 +239,10 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
           {!collapsed && salesOpen && (
             <div className="submenu-list">
               <button
-                className={`submenu-item ${activeTab === 'sales-reports' || activeTab === 'sales-records' ? 'active' : ''}`}
-                onClick={() => setActiveTab('sales-reports')}
+                className={`submenu-item ${activeTab === 'orders-management' || activeTab === 'sales-reports' || activeTab === 'sales-records' ? 'active' : ''}`}
+                onClick={() => setActiveTab('orders-management')}
               >
-                Sales Records
+                Order Management
               </button>
             </div>
           )}
@@ -271,16 +271,10 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
           {!collapsed && paymentsOpen && (
             <div className="submenu-list">
               <button
-                className={`submenu-item ${activeTab === 'payments-reports' || activeTab === 'payments-distribution' ? 'active' : ''}`}
-                onClick={() => setActiveTab('payments-reports')}
-              >
-                Commission Distribution
-              </button>
-              <button
                 className={`submenu-item ${activeTab === 'payments-history' || activeTab === 'payments-receive' ? 'active' : ''}`}
                 onClick={() => setActiveTab('payments-history')}
               >
-                Payment History
+                Payment Receipts & History
               </button>
             </div>
           )}

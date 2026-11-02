@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import EntityLogin from './pages/EntityLogin';
 import EntityLayout from './components/layout/EntityLayout';
 import EntityDashboard from './pages/EntityDashboard';
+import EntityOrders from './pages/EntityOrders';
+import EntityCreateOrder from './pages/EntityCreateOrder';
 import EntitySales from './pages/EntitySales';
 import EntityCreateSale from './pages/EntityCreateSale';
 import EntityPayments from './pages/EntityPayments';
@@ -42,19 +44,39 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* Canonical Orders Routes */}
+        <Route
+          path="/entity/orders"
+          element={
+            <ProtectedRoute activeTab="orders">
+              <EntityOrders />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/entity/orders/create"
+          element={
+            <ProtectedRoute activeTab="orders-create">
+              <EntityCreateOrder />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Legacy Sales Routes (Backward-Compatible Aliases) */}
         <Route
           path="/entity/sales"
           element={
-            <ProtectedRoute activeTab="sales">
-              <EntitySales />
+            <ProtectedRoute activeTab="orders">
+              <EntityOrders />
             </ProtectedRoute>
           }
         />
         <Route
           path="/entity/sales/create"
           element={
-            <ProtectedRoute activeTab="sales-create">
-              <EntityCreateSale />
+            <ProtectedRoute activeTab="orders-create">
+              <EntityCreateOrder />
             </ProtectedRoute>
           }
         />
@@ -63,7 +85,15 @@ function App() {
         <Route
           path="/entity/payments"
           element={
-            <ProtectedRoute activeTab="payments-balance">
+            <ProtectedRoute activeTab="payments-order-balances">
+              <EntityReceiveBalancePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/entity/payments/order-balances"
+          element={
+            <ProtectedRoute activeTab="payments-order-balances">
               <EntityReceiveBalancePage />
             </ProtectedRoute>
           }
@@ -71,7 +101,7 @@ function App() {
         <Route
           path="/entity/payments/receive-balance"
           element={
-            <ProtectedRoute activeTab="payments-balance">
+            <ProtectedRoute activeTab="payments-order-balances">
               <EntityReceiveBalancePage />
             </ProtectedRoute>
           }
@@ -118,7 +148,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
 
         <Route
           path="/entity/support"
