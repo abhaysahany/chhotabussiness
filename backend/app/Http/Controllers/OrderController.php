@@ -128,7 +128,7 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Order::with('payments')->orderBy('id', 'desc');
+        $query = Order::with(['payments', 'dumpRequests'])->orderBy('id', 'desc');
 
         // Resolve authenticated entity if present
         $authEntity = $this->resolveEntityContext($request);
@@ -169,6 +169,18 @@ class OrderController extends Controller
 
         if ($request->filled('status') && $request->input('status') !== 'all') {
             $query->where('status', $request->input('status'));
+        }
+
+        // Approval Status Filter:
+        // Admin Order Management defaults to 'confirmed' only, preventing pending/cancelled orders
+        // from entering Confirmed Orders until explicitly requested.
+        if ($request->filled('approval_status')) {
+            $approvalStatus = strtolower(trim($request->input('approval_status')));
+            if ($approvalStatus !== 'all') {
+                $query->where('approval_status', $approvalStatus);
+            }
+        } elseif ($isAdminRoute) {
+            $query->where('approval_status', 'confirmed');
         }
 
         if ($request->filled('distribution_status') && $request->input('distribution_status') !== 'all') {
@@ -412,6 +424,7 @@ class OrderController extends Controller
             'payment_method' => $request->input('payment_method') ?? $request->input('paymentMethod') ?? 'UPI / QR Code',
             'reference_no' => $request->input('reference_no') ?? $request->input('referenceNo') ?? ('UTR-' . rand(100000, 999990)),
             'status' => $status,
+            'approval_status' => 'pending',
             'income_distribution_status' => 'pending',
             'network_distribution_status' => 'pending_admin_distribution',
             'direct_commission' => $directCommission,
@@ -449,8 +462,7 @@ class OrderController extends Controller
                     'distributed_admin_cut_amount' => 0.0,
                 ]);
 
-                // Credit buyer's personal_pv (self biz) and accumulate group_pv across 20 upline levels
-                $this->creditSalePvToNetwork($customerUserCode, $advancePayment, $finalSponsor);
+                // PV/BV crediting is deferred to Admin Confirmation (OrderController::confirmOrder)
             }
 
             DB::commit();
@@ -478,7 +490,7 @@ class OrderController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $query = Order::with('payments')->where(function ($q) use ($id) {
+        $query = Order::with(['payments', 'dumpRequests'])->where(function ($q) use ($id) {
             $q->where('id', $id)
               ->orWhere('invoice_number', $id);
         });
@@ -522,6 +534,14 @@ class OrderController extends Controller
 
         if (!$order) {
             return response()->json(['status' => 'error', 'message' => 'Order not found'], 404);
+        }
+
+        // Only confirmed orders can collect balance installments
+        if ($order->approval_status !== 'confirmed') {
+            return response()->json([
+                'status' => 'error',
+                'message' => "Cannot collect balance payment for an unconfirmed order (Current Approval Status: '{$order->approval_status}'). Order must be confirmed by Admin before receiving payments.",
+            ], 422);
         }
 
         if ($order->balance_due <= 0) {
@@ -610,8 +630,9 @@ class OrderController extends Controller
             ]);
 
             // 2. Update Order totals atomically
+            $approvedDump = (float) ($order->approved_dump_amount ?? $order->dump_amount ?? 0);
             $newAdvance = round($order->advance_payment + $amount, 2);
-            $newBalance = max(0.0, round($order->gross_amount - $newAdvance, 2));
+            $newBalance = max(0.0, round($order->gross_amount - $newAdvance - $approvedDump, 2));
             $newNetEntityTotal = round($order->net_entity_payout + $netEntityAmount, 2);
             $newStatus = ($newBalance <= 0) ? 'completed' : 'partial';
 
@@ -681,12 +702,231 @@ class OrderController extends Controller
     }
 
     /**
+     * Authenticate and verify that caller is an Admin.
+     */
+    protected function authenticateAdmin(Request $request): ?Admin
+    {
+        $user = $request->user();
+        if (!$user && $request->bearerToken()) {
+            if (class_exists(PersonalAccessToken::class)) {
+                $token = PersonalAccessToken::findToken($request->bearerToken());
+                if ($token && $token->tokenable) {
+                    $user = $token->tokenable;
+                }
+            }
+        }
+
+        if ($user instanceof Admin || (is_object($user) && get_class($user) === 'App\Models\Admin')) {
+            return $user;
+        }
+
+        return null;
+    }
+
+    /**
+     * Confirm a pending order by Admin and set authoritative commission percentage.
+     * POST /api/admin/orders/{id}/confirm
+     */
+    public function confirmOrder(Request $request, $id)
+    {
+        $admin = $this->authenticateAdmin($request);
+        if (!$admin) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized. Admin credentials required to confirm orders.',
+            ], 401);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'admin_commission_percent' => 'required|numeric|min:0|max:100',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed: Admin Commission percentage must be a valid number between 0 and 100.',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $approvedPercent = round((float) $request->input('admin_commission_percent'), 2);
+
+        return DB::transaction(function () use ($id, $approvedPercent, $admin) {
+            $order = Order::lockForUpdate()->where('id', $id)
+                ->orWhere('invoice_number', $id)
+                ->first();
+
+            if (!$order) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => "Order #{$id} not found.",
+                ], 404);
+            }
+
+            if ($order->approval_status === 'confirmed') {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => "Order #{$order->invoice_number} is already confirmed.",
+                ], 422);
+            }
+
+            if ($order->approval_status === 'cancelled') {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => "Order #{$order->invoice_number} has been cancelled and cannot be confirmed.",
+                ], 422);
+            }
+
+            if ($order->approval_status !== 'pending') {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => "Order #{$order->invoice_number} has invalid approval status '{$order->approval_status}'. Only pending orders can be confirmed.",
+                ], 422);
+            }
+
+            // Recalculate Expected Total Admin Commission for full project
+            $expectedAdminCut = round(($order->gross_amount * $approvedPercent) / 100, 2);
+
+            // Update existing initial payment receipt(s) with the approved commission rate
+            $payments = SalePayment::lockForUpdate()->where('sales_record_id', $order->id)->get();
+            foreach ($payments as $payment) {
+                $paymentAdminCut = round(($payment->amount * $approvedPercent) / 100, 2);
+                $netEntityAmount = round($payment->amount - $paymentAdminCut, 2);
+                $payment->update([
+                    'admin_commission_percent' => $approvedPercent,
+                    'admin_commission_cut' => $paymentAdminCut,
+                    'net_entity_amount' => $netEntityAmount,
+                ]);
+            }
+
+            // Calculate net entity payout on initial advance
+            $advanceAdminCut = round(($order->advance_payment * $approvedPercent) / 100, 2);
+            $netEntityPayout = round($order->advance_payment - $advanceAdminCut, 2);
+
+            // Confirm the order
+            $order->update([
+                'admin_commission_percent' => $approvedPercent,
+                'admin_commission_cut' => $expectedAdminCut,
+                'net_entity_payout' => $netEntityPayout,
+                'approval_status' => 'confirmed',
+                'admin_confirmed_by' => $admin->id,
+                'admin_confirmed_at' => now(),
+            ]);
+
+            // Credit buyer's personal_pv and upline group_pv ONLY upon successful confirmation
+            if ($order->advance_payment > 0) {
+                $this->creditSalePvToNetwork($order->customer_user_code, $order->advance_payment, $order->sponsor);
+            }
+
+            $order->load('payments');
+
+            return response()->json([
+                'status' => 'success',
+                'message' => "Order #{$order->invoice_number} successfully confirmed with Admin Commission of {$approvedPercent}%.",
+                'order' => $order,
+                'sale' => $order,
+            ], 200);
+        });
+    }
+
+    /**
+     * Cancel a pending order by Admin with mandatory cancellation reason.
+     * POST /api/admin/orders/{id}/cancel
+     */
+    public function cancelOrder(Request $request, $id)
+    {
+        $admin = $this->authenticateAdmin($request);
+        if (!$admin) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized. Admin credentials required to cancel orders.',
+            ], 401);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'cancellation_reason' => 'required|string|min:3|max:2000',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed: A valid cancellation reason (minimum 3 characters) is mandatory.',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $reason = trim((string) $request->input('cancellation_reason'));
+
+        return DB::transaction(function () use ($id, $reason, $admin) {
+            $order = Order::lockForUpdate()->where('id', $id)
+                ->orWhere('invoice_number', $id)
+                ->first();
+
+            if (!$order) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => "Order #{$id} not found.",
+                ], 404);
+            }
+
+            if ($order->approval_status === 'cancelled') {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => "Order #{$order->invoice_number} is already cancelled.",
+                ], 422);
+            }
+
+            if ($order->approval_status === 'confirmed') {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => "Cannot cancel Order #{$order->invoice_number} because it has already been confirmed.",
+                ], 422);
+            }
+
+            if ($order->approval_status !== 'pending') {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => "Only pending orders can be cancelled (Current Status: '{$order->approval_status}').",
+                ], 422);
+            }
+
+            // Cancel the order
+            $order->update([
+                'approval_status' => 'cancelled',
+                'admin_cancelled_by' => $admin->id,
+                'admin_cancelled_at' => now(),
+                'cancellation_reason' => $reason,
+            ]);
+
+            // Payment receipts remain preserved for offline settlement audit trail.
+            // Do NOT silently delete receipts, do NOT credit PV/BV, do NOT auto-refund.
+            $hasAdvance = (float) $order->advance_payment > 0;
+            $advanceWarning = $hasAdvance
+                ? "This order has an advance payment of ₹" . number_format($order->advance_payment, 2) . ". A manual offline settlement/refund between the Entity and Customer is required."
+                : null;
+
+            $order->load('payments');
+
+            return response()->json([
+                'status' => 'success',
+                'message' => "Order #{$order->invoice_number} has been cancelled successfully.",
+                'warning' => $advanceWarning,
+                'advance_settlement_required' => $hasAdvance,
+                'order' => $order,
+                'sale' => $order,
+            ], 200);
+        });
+    }
+
+    /**
      * Get payment history receipts for all orders.
      * Admin route defaults to showing only successfully distributed receipts (income_distribution_status = 'completed').
      */
     public function paymentsHistory(Request $request)
     {
-        $query = SalePayment::whereHas('order')->with(['order.payments'])->orderBy('id', 'desc');
+        $query = SalePayment::whereHas('order', function ($q) {
+            $q->where('approval_status', 'confirmed');
+        })->with(['order.payments'])->orderBy('id', 'desc');
 
         $authEntity = $this->resolveEntityContext($request);
         $isAdminRoute = $request->is('api/admin/*') || $request->is('admin/*');
@@ -820,7 +1060,7 @@ class OrderController extends Controller
      */
     public function userBusinessReports(Request $request)
     {
-        $query = Order::with('payments')->orderBy('date', 'desc')->orderBy('id', 'desc');
+        $query = Order::with('payments')->where('approval_status', 'confirmed')->orderBy('date', 'desc')->orderBy('id', 'desc');
 
         if ($request->filled('user_code')) {
             $userCode = trim($request->input('user_code'));
@@ -849,7 +1089,13 @@ class OrderController extends Controller
         $totalGrossSales = (float) $allRecords->sum('gross_amount');
         $totalReceivedPayment = (float) $allRecords->sum('advance_payment');
         $totalBalancePayment = (float) $allRecords->sum('balance_due');
-        $totalDumpPayment = (float) $allRecords->where('balance_due', '<=', 0)->sum('gross_amount');
+        $orderIds = $allRecords->pluck('id')->toArray();
+        $totalDumpPayment = (float) \App\Models\OrderPaymentDump::whereIn('order_id', $orderIds)
+            ->where('status', 'approved')
+            ->sum('dump_amount');
+        if ($totalDumpPayment <= 0 && $allRecords->sum('dump_amount') > 0) {
+            $totalDumpPayment = (float) $allRecords->sum('dump_amount');
+        }
         $totalSalesCount = $allRecords->count();
         $completedCount = $allRecords->where('status', 'completed')->count();
         $partialCount = $allRecords->where('status', 'partial')->count();

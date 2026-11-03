@@ -40,6 +40,12 @@ class Order extends Model
         'payment_method',
         'reference_no',
         'status',
+        'approval_status',
+        'admin_confirmed_by',
+        'admin_confirmed_at',
+        'admin_cancelled_by',
+        'admin_cancelled_at',
+        'cancellation_reason',
         'network_distribution_status',
         'distribution_details',
         'direct_commission',
@@ -76,6 +82,10 @@ class Order extends Model
         'reward_income_amount' => 'float',
         'distributed_admin_cut_amount' => 'float',
         'income_distributed_at' => 'datetime',
+        'admin_confirmed_by' => 'integer',
+        'admin_confirmed_at' => 'datetime',
+        'admin_cancelled_by' => 'integer',
+        'admin_cancelled_at' => 'datetime',
     ];
 
     protected $appends = [
@@ -122,6 +132,26 @@ class Order extends Model
         'total_payment_received',
         'remainingProjectBalance',
         'remaining_project_balance',
+        'approval_status',
+        'approvalStatus',
+        'admin_confirmed_by',
+        'adminConfirmedBy',
+        'admin_confirmed_at',
+        'adminConfirmedAt',
+        'admin_cancelled_by',
+        'adminCancelledBy',
+        'admin_cancelled_at',
+        'adminCancelledAt',
+        'cancellation_reason',
+        'cancellationReason',
+        'approved_dump_amount',
+        'approvedDumpAmount',
+        'approved_dump_admin_cut',
+        'approvedDumpAdminCut',
+        'payment_settlement_status',
+        'paymentSettlementStatus',
+        'dump_requests',
+        'dumpRequests',
     ];
 
     /**
@@ -139,6 +169,22 @@ class Order extends Model
     public function salePayments()
     {
         return $this->payments();
+    }
+
+    /**
+     * Relationship to Dump Payment requests.
+     */
+    public function dumpRequests()
+    {
+        return $this->hasMany(OrderPaymentDump::class, 'order_id')->orderBy('id', 'desc');
+    }
+
+    /**
+     * Relationship to approved Dump Payments.
+     */
+    public function approvedDumps()
+    {
+        return $this->hasMany(OrderPaymentDump::class, 'order_id')->where('status', 'approved')->orderBy('id', 'desc');
     }
 
     // Accessors for React camelCase compatibility
@@ -311,6 +357,45 @@ class Order extends Model
         return (float) ($this->attributes['dump_amount'] ?? 0);
     }
 
+    public function getApprovedDumpAmountAttribute(): float
+    {
+        if ($this->relationLoaded('approvedDumps')) {
+            return (float) round($this->approvedDumps->sum('dump_amount'), 2);
+        }
+        if ($this->relationLoaded('dumpRequests')) {
+            return (float) round($this->dumpRequests->where('status', 'approved')->sum('dump_amount'), 2);
+        }
+        if ($this->exists) {
+            $sum = (float) $this->approvedDumps()->sum('dump_amount');
+            if ($sum > 0 || $this->dumpRequests()->exists()) {
+                return round($sum, 2);
+            }
+        }
+        return (float) ($this->attributes['dump_amount'] ?? 0);
+    }
+
+    public function getApprovedDumpAdminCutAttribute(): float
+    {
+        if ($this->relationLoaded('approvedDumps')) {
+            return (float) round($this->approvedDumps->sum('admin_commission_cut'), 2);
+        }
+        if ($this->relationLoaded('dumpRequests')) {
+            return (float) round($this->dumpRequests->where('status', 'approved')->sum('admin_commission_cut'), 2);
+        }
+        if ($this->exists) {
+            $sum = (float) $this->approvedDumps()->sum('admin_commission_cut');
+            if ($sum > 0 || $this->dumpRequests()->exists()) {
+                return round($sum, 2);
+            }
+        }
+        $dumpAmount = (float) ($this->attributes['dump_amount'] ?? 0);
+        if ($dumpAmount > 0) {
+            $rate = (float) ($this->attributes['admin_commission_percent'] ?? 15);
+            return round(($dumpAmount * $rate) / 100, 2);
+        }
+        return 0.0;
+    }
+
     public function getExpectedAdminCutAttribute(): float
     {
         $rate = (float) ($this->attributes['admin_commission_percent'] ?? 15);
@@ -331,7 +416,8 @@ class Order extends Model
     {
         $received = $this->total_payment_received;
         $gross = (float) ($this->attributes['gross_amount'] ?? 0);
-        return max(0.0, round($gross - $received, 2));
+        $approvedDump = $this->approved_dump_amount;
+        return max(0.0, round($gross - $received - $approvedDump, 2));
     }
 
     public function getAdminCommissionCollectedAttribute(): float
@@ -346,6 +432,74 @@ class Order extends Model
     {
         $expected = $this->expected_admin_cut;
         $collected = $this->admin_commission_collected;
-        return max(0.0, round($expected - $collected, 2));
+        $dumpCut = $this->approved_dump_admin_cut;
+        return max(0.0, round($expected - $collected - $dumpCut, 2));
+    }
+
+    public function getPaymentSettlementStatusAttribute(): string
+    {
+        $gross = (float) ($this->attributes['gross_amount'] ?? 0);
+        $received = $this->total_payment_received;
+        $balance = $this->remaining_project_balance;
+        $approvedDump = $this->approved_dump_amount;
+
+        if ($received >= $gross && $gross > 0) {
+            return 'Fully Paid (Cash)';
+        }
+
+        if ($balance <= 0 && $approvedDump > 0) {
+            return 'Closed via Dump';
+        }
+
+        if ($approvedDump > 0 && $balance > 0) {
+            return 'Partial Dump Write-Off';
+        }
+
+        if ($received > 0 && $balance > 0) {
+            return 'Partially Paid';
+        }
+
+        return 'Unpaid';
+    }
+
+    public function getDumpRequestsAttribute()
+    {
+        if ($this->relationLoaded('dumpRequests')) {
+            return $this->getRelation('dumpRequests');
+        }
+        if ($this->exists) {
+            return $this->dumpRequests()->get();
+        }
+        return collect();
+    }
+
+    public function getApprovalStatusAttribute()
+    {
+        return $this->attributes['approval_status'] ?? 'confirmed';
+    }
+
+    public function getAdminConfirmedByAttribute()
+    {
+        return $this->attributes['admin_confirmed_by'] ?? null;
+    }
+
+    public function getAdminConfirmedAtAttribute()
+    {
+        return $this->attributes['admin_confirmed_at'] ?? null;
+    }
+
+    public function getAdminCancelledByAttribute()
+    {
+        return $this->attributes['admin_cancelled_by'] ?? null;
+    }
+
+    public function getAdminCancelledAtAttribute()
+    {
+        return $this->attributes['admin_cancelled_at'] ?? null;
+    }
+
+    public function getCancellationReasonAttribute()
+    {
+        return $this->attributes['cancellation_reason'] ?? null;
     }
 }

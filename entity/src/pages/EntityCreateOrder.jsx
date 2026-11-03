@@ -818,47 +818,59 @@ function EntityCreateOrder() {
               textAlign: 'center',
             }}
           >
-            <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#f0fdf4', color: '#16a34a', fontSize: '1.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem auto' }}>
-              ✓
+            <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#fef3c7', color: '#b45309', fontSize: '1.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem auto' }}>
+              ⏳
             </div>
             <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0f172a', margin: '0 0 0.4rem 0' }}>
-              Order Successfully Saved to Database!
+              Order Submitted Successfully!
             </h3>
             <p style={{ fontSize: '0.85rem', color: '#64748b', margin: '0 0 1.25rem 0' }}>
-              Invoice <strong>{createdSaleData.invoiceNumber || createdSaleData.invoice_number}</strong> has been generated and recorded.
+              Your order has been submitted successfully and is <strong>awaiting Admin approval</strong>.
             </p>
 
-            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '1rem', textAlign: 'left', fontSize: '0.82rem', marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '1rem', textAlign: 'left', fontSize: '0.82rem', marginBottom: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#64748b' }}>Invoice Number:</span>
+                <strong>{createdSaleData.invoiceNumber || createdSaleData.invoice_number}</strong>
+              </div>
+              {createdSaleData.id && (
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: '#64748b' }}>Order ID:</span>
+                  <strong>#{createdSaleData.id}</strong>
+                </div>
+              )}
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: '#64748b' }}>Customer:</span>
                 <strong>{createdSaleData.customerName || createdSaleData.customer_name}</strong>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#64748b' }}>Item / Service:</span>
+                <span style={{ color: '#64748b' }}>Item / Offering:</span>
                 <strong>{createdSaleData.item}</strong>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: '#64748b' }}>Total Project Value:</span>
-                <strong>₹{(createdSaleData.grossAmount || createdSaleData.gross_amount || 0).toLocaleString()}</strong>
+                <strong>₹{Number(createdSaleData.grossAmount || createdSaleData.gross_amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</strong>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: '#64748b' }}>Amount Received:</span>
-                <strong style={{ color: '#2563eb' }}>₹{(createdSaleData.advancePayment || createdSaleData.advance_payment || 0).toLocaleString()}</strong>
+                <strong style={{ color: '#16a34a' }}>₹{Number(createdSaleData.advancePayment || createdSaleData.advance_payment || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</strong>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: '#64748b' }}>Remaining Balance Due:</span>
-                <strong style={{ color: (createdSaleData.balanceDue || createdSaleData.balance_due) > 0 ? '#d97706' : '#16a34a' }}>
-                  ₹{(createdSaleData.balanceDue || createdSaleData.balance_due || 0).toLocaleString()}
+                <strong style={{ color: Number(createdSaleData.balanceDue || createdSaleData.balance_due || 0) > 0 ? '#d97706' : '#16a34a' }}>
+                  ₹{Number(createdSaleData.balanceDue || createdSaleData.balance_due || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                 </strong>
               </div>
-              <div style={{ borderTop: '1px dashed #cbd5e1', marginTop: '0.25rem', paddingTop: '0.4rem', display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#64748b' }}>Admin Commission Released:</span>
-                <strong style={{ color: '#dc2626' }}>₹{(createdSaleData.adminCommissionCut || createdSaleData.admin_commission_cut || 0).toLocaleString()}</strong>
+              <div style={{ borderTop: '1px dashed #cbd5e1', marginTop: '0.25rem', paddingTop: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ color: '#64748b' }}>Approval Status:</span>
+                <span style={{ background: '#fef3c7', color: '#92400e', fontSize: '0.75rem', fontWeight: 700, padding: '0.2rem 0.6rem', borderRadius: '9999px', border: '1px solid #fde68a' }}>
+                  ⏳ Pending Approval
+                </span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#64748b' }}>Net Entity Realized:</span>
-                <strong style={{ color: '#16a34a' }}>₹{(createdSaleData.netEntityPayout || createdSaleData.net_entity_payout || 0).toLocaleString()}</strong>
-              </div>
+            </div>
+
+            <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '8px', padding: '0.75rem 1rem', fontSize: '0.78rem', color: '#166534', marginBottom: '1.25rem', textAlign: 'left', lineHeight: 1.4 }}>
+              ℹ️ <strong>Workflow Notice:</strong> Administrator will review this order and approve the final Admin Commission. Balance collection and further payment actions will become available after confirmation.
             </div>
 
             <div style={{ display: 'flex', gap: '0.75rem' }}>

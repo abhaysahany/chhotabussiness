@@ -257,6 +257,8 @@ use App\Http\Controllers\Admin\IncomeAllocationController;
 
 Route::get('/admin/orders', [OrderController::class, 'index']);
 Route::post('/admin/orders', [OrderController::class, 'store']);
+Route::post('/admin/orders/{id}/confirm', [OrderController::class, 'confirmOrder']);
+Route::post('/admin/orders/{id}/cancel', [OrderController::class, 'cancelOrder']);
 Route::post('/admin/orders/{id}/distribute', [OrderController::class, 'distribute']);
 Route::get('/admin/orders/{orderId}/income-allocation', [IncomeAllocationController::class, 'show']);
 Route::post('/admin/orders/{orderId}/income-allocation', [IncomeAllocationController::class, 'allocate']);
@@ -269,6 +271,8 @@ Route::post('/admin/payments/{paymentId}/income-allocation', [IncomeAllocationCo
 
 Route::get('/admin/sales', [OrderController::class, 'index']);
 Route::post('/admin/sales', [OrderController::class, 'store']);
+Route::post('/admin/sales/{id}/confirm', [OrderController::class, 'confirmOrder']);
+Route::post('/admin/sales/{id}/cancel', [OrderController::class, 'cancelOrder']);
 Route::post('/admin/sales/{id}/distribute', [OrderController::class, 'distribute']);
 Route::get('/admin/sales/{orderId}/income-allocation', [IncomeAllocationController::class, 'show']);
 Route::post('/admin/sales/{orderId}/income-allocation', [IncomeAllocationController::class, 'allocate']);
@@ -276,6 +280,21 @@ Route::post('/admin/sales/{orderId}/income-allocation', [IncomeAllocationControl
 Route::get('/admin/payments/history', [OrderController::class, 'paymentsHistory']);
 Route::get('/admin/payments/distributed-history', [OrderController::class, 'paymentsHistory']);
 Route::post('/admin/payments/{id}/distribute', [OrderController::class, 'distributePaymentCommission']);
+
+// Dump Payment Request & Approval APIs
+use App\Http\Controllers\DumpPaymentController;
+
+Route::get('/admin/dump-requests', [DumpPaymentController::class, 'getAdminDumpRequests']);
+Route::get('/admin/dump-requests/{id}', [DumpPaymentController::class, 'getAdminDumpRequestDetails']);
+Route::post('/admin/dump-requests/{id}/approve', [DumpPaymentController::class, 'approveDump']);
+Route::post('/admin/dump-requests/{id}/reject', [DumpPaymentController::class, 'rejectDump']);
+
+Route::post('/orders/{orderId}/report-dump', [DumpPaymentController::class, 'reportDump']);
+Route::post('/sales/{orderId}/report-dump', [DumpPaymentController::class, 'reportDump']);
+Route::post('/entity/orders/{orderId}/report-dump', [DumpPaymentController::class, 'reportDump']);
+Route::post('/entity/sales/{orderId}/report-dump', [DumpPaymentController::class, 'reportDump']);
+Route::get('/entity/dump-requests', [DumpPaymentController::class, 'getEntityDumpRequests']);
+Route::get('/entity/orders/{orderId}/dump-requests', [DumpPaymentController::class, 'getEntityDumpRequests']);
 
 use App\Http\Controllers\EntityPayoutController;
 use App\Http\Controllers\EntityDashboardController;

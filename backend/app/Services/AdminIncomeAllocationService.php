@@ -27,6 +27,13 @@ class AdminIncomeAllocationService
     {
         $order = $payment->order ?: Order::find($payment->sales_record_id);
 
+        if (!$order || $order->approval_status !== 'confirmed') {
+            $currentApproval = $order ? $order->approval_status : 'missing';
+            throw new InvalidArgumentException(
+                "Payment #{$payment->id} cannot be inspected for allocation because its parent Order " . ($order ? "#{$order->invoice_number} " : '') . "is not confirmed (Current Approval Status: '{$currentApproval}')."
+            );
+        }
+
         // 1. Authoritative Admin Cut snapshot for THIS specific payment receipt
         $paymentAdminCut = (float) ($payment->admin_commission_cut ?? 0);
 
@@ -44,11 +51,12 @@ class AdminIncomeAllocationService
 
         // 5. Order cumulative totals
         $orderGross = (float) ($order?->gross_amount ?? 0);
-        $orderDump = (float) ($order?->dump_amount ?? 0);
+        $orderDump = (float) ($order?->approved_dump_amount ?? $order?->dump_amount ?? 0);
+        $orderDumpCut = (float) ($order?->approved_dump_admin_cut ?? ($order ? round(($orderDump * ($order->admin_commission_percent ?: 15)) / 100, 2) : 0));
         $orderExpectedCut = (float) ($order?->admin_commission_cut ?? 0);
         $orderPayments = $order ? $order->payments()->get() : collect();
         $orderCollectedCut = (float) $orderPayments->sum('admin_commission_cut');
-        $orderRemainingCut = max(0.0, round($orderExpectedCut - $orderCollectedCut, 2));
+        $orderRemainingCut = max(0.0, round($orderExpectedCut - $orderCollectedCut - $orderDumpCut, 2));
         $orderDistributedCut = (float) ($order?->distributed_admin_cut_amount ?? 0);
         $orderUnallocatedCut = max(0.0, round($orderCollectedCut - $orderDistributedCut, 2));
 
@@ -92,6 +100,7 @@ class AdminIncomeAllocationService
                 'customer_user_code' => $order->customer_user_code,
                 'gross_amount' => $orderGross,
                 'dump_amount' => $orderDump,
+                'dump_admin_cut' => $orderDumpCut,
                 'total_admin_cut' => $orderExpectedCut,
                 'expected_admin_cut' => $orderExpectedCut,
                 'total_payment_received' => (float) ($order->advance_payment ?? 0),
@@ -104,6 +113,7 @@ class AdminIncomeAllocationService
                 'cumulative_level_income' => (float) ($order->level_income_amount ?? 0),
                 'cumulative_reward_income' => (float) ($order->reward_income_amount ?? 0),
                 'income_distribution_status' => $order->income_distribution_status ?? 'pending',
+                'payment_settlement_status' => $order->payment_settlement_status,
             ] : null,
         ];
     }
@@ -125,6 +135,13 @@ class AdminIncomeAllocationService
 
             // 2. Lock parent order row for update
             $order = Order::lockForUpdate()->findOrFail($payment->sales_record_id);
+
+            // Approval guard: parent order MUST be confirmed
+            if ($order->approval_status !== 'confirmed') {
+                throw new InvalidArgumentException(
+                    "Payment #{$payment->id} cannot be allocated because its parent Order #{$order->invoice_number} is not confirmed (Current Approval Status: '{$order->approval_status}')."
+                );
+            }
 
             // 3. Validation and idempotency checks
             $currentStatus = $payment->income_distribution_status ?? 'pending';
@@ -244,6 +261,12 @@ class AdminIncomeAllocationService
      */
     public function getOrderAllocationDetails(Order $order): array
     {
+        if ($order->approval_status !== 'confirmed') {
+            throw new InvalidArgumentException(
+                "Order #{$order->invoice_number} cannot be inspected for allocation because it is not confirmed (Current Approval Status: '{$order->approval_status}')."
+            );
+        }
+
         $payments = $order->payments()->get();
         $paymentsSum = (float) round($payments->sum('admin_commission_cut'), 2);
         $expectedTotalCut = (float) ($order->admin_commission_cut > 0
@@ -251,7 +274,9 @@ class AdminIncomeAllocationService
             : round(($order->gross_amount * ($order->admin_commission_percent ?: 15)) / 100, 2));
         $previouslyAllocated = (float) ($order->distributed_admin_cut_amount ?? 0);
         $eligibleAdminCut = max(0.0, round($paymentsSum - $previouslyAllocated, 2));
-        $remainingAdminCommission = max(0.0, round($expectedTotalCut - $paymentsSum, 2));
+        $orderDump = (float) ($order->approved_dump_amount ?? $order->dump_amount ?? 0);
+        $orderDumpCut = (float) ($order->approved_dump_admin_cut ?? round(($orderDump * ($order->admin_commission_percent ?: 15)) / 100, 2));
+        $remainingAdminCommission = max(0.0, round($expectedTotalCut - $paymentsSum - $orderDumpCut, 2));
 
         $allocationBreakdown = $this->calculateSplit($eligibleAdminCut);
         $status = $this->syncOrderIncomeDistributionStatus($order);
@@ -264,15 +289,17 @@ class AdminIncomeAllocationService
             'customer_name' => $order->customer_name,
             'customer_user_code' => $order->customer_user_code,
             'project_value' => (float) $order->gross_amount,
-            'dump_amount' => (float) ($order->dump_amount ?? 0),
+            'dump_amount' => $orderDump,
+            'dump_admin_cut' => $orderDumpCut,
             'advance_payment' => (float) $order->advance_payment,
             'total_payment_received' => (float) $order->advance_payment,
             'balance_due' => (float) $order->balance_due,
-            'remaining_project_balance' => (float) $order->balance_due,
+            'remaining_project_balance' => (float) $order->remaining_project_balance,
             'admin_commission_percent' => (float) $order->admin_commission_percent,
             'expected_admin_cut' => $expectedTotalCut,
             'admin_commission_collected' => $paymentsSum,
             'remaining_admin_commission' => $remainingAdminCommission,
+            'payment_settlement_status' => $order->payment_settlement_status,
             'total_admin_cut' => $paymentsSum,
             'previously_allocated' => $previouslyAllocated,
             'eligible_admin_cut' => $eligibleAdminCut,
