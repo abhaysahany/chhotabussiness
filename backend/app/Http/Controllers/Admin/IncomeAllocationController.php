@@ -71,12 +71,19 @@ class IncomeAllocationController extends Controller
             ], 404);
         }
 
-        $details = $this->allocationService->getPaymentAllocationDetails($payment);
+        try {
+            $details = $this->allocationService->getPaymentAllocationDetails($payment);
 
-        return response()->json([
-            'status' => 'success',
-            'allocation' => $details,
-        ], 200);
+            return response()->json([
+                'status' => 'success',
+                'allocation' => $details,
+            ], 200);
+        } catch (InvalidArgumentException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 422);
+        }
     }
 
     /**
@@ -206,12 +213,26 @@ class IncomeAllocationController extends Controller
             ], 404);
         }
 
-        $details = $this->allocationService->getOrderAllocationDetails($order);
+        if ($order->approval_status !== 'confirmed') {
+            return response()->json([
+                'status' => 'error',
+                'message' => "Order #{$order->invoice_number} cannot be allocated because it is not confirmed (Current Approval Status: '{$order->approval_status}').",
+            ], 422);
+        }
 
-        return response()->json([
-            'status' => 'success',
-            'allocation' => $details,
-        ], 200);
+        try {
+            $details = $this->allocationService->getOrderAllocationDetails($order);
+
+            return response()->json([
+                'status' => 'success',
+                'allocation' => $details,
+            ], 200);
+        } catch (InvalidArgumentException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 422);
+        }
     }
 
     /**
@@ -239,6 +260,13 @@ class IncomeAllocationController extends Controller
                 'status' => 'error',
                 'message' => "Order #{$orderId} not found in database.",
             ], 404);
+        }
+
+        if ($order->approval_status !== 'confirmed') {
+            return response()->json([
+                'status' => 'error',
+                'message' => "Order #{$order->invoice_number} cannot be allocated because it is not confirmed (Current Approval Status: '{$order->approval_status}').",
+            ], 422);
         }
 
         // Allocate each pending payment for this order

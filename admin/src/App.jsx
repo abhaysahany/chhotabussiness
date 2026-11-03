@@ -27,6 +27,8 @@ import AdminPackagesPage from './components/products/AdminPackagesPage';
 
 // Import Orders & Payments Suite Pages
 import AdminOrdersPage from './components/sales/AdminOrdersPage';
+import AdminPendingOrdersPage from './components/sales/AdminPendingOrdersPage';
+import AdminDumpRequestsPage from './components/sales/AdminDumpRequestsPage';
 import AdminCreateSalePage from './components/sales/AdminCreateSalePage';
 import AdminSalesReportsPage from './components/sales/AdminSalesReportsPage';
 import AdminPaymentReportsPage from './components/sales/AdminPaymentReportsPage';
@@ -163,7 +165,14 @@ function App() {
       case 'entities-commissions':
         return <AdminEntityCommissionPage onNavigate={(tab) => setActiveTab(tab)} />;
 
-      // Sales Suite - Separate Pages
+      // Orders & Payments Suite - Separate Pages
+      case 'orders-pending':
+        return <AdminPendingOrdersPage onNavigate={(tab) => setActiveTab(tab)} />;
+
+      case 'orders-dump-requests':
+      case 'dump-payment-requests':
+        return <AdminDumpRequestsPage onNavigate={(tab) => setActiveTab(tab)} />;
+
       case 'sales-create':
         return <AdminOrdersPage />;
 

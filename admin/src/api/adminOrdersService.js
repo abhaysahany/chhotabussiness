@@ -20,6 +20,22 @@ export const getAdminOrders = async (params = {}) => {
   }
 };
 
+// Fetch single order details with payments and dump requests
+export const getOrderDetails = async (orderId) => {
+  try {
+    const response = await api.get(`/admin/orders/${orderId}`);
+    return response.data?.order || response.data?.sale || response.data;
+  } catch (err) {
+    try {
+      const fallback = await api.get(`/admin/sales/${orderId}`);
+      return fallback.data?.order || fallback.data?.sale || fallback.data;
+    } catch (e) {
+      console.error(`Error fetching order #${orderId} details:`, e);
+      throw (e.response?.data || e);
+    }
+  }
+};
+
 // Create an order record
 export const createAdminOrder = async (orderData) => {
   try {
@@ -146,6 +162,99 @@ export const getAdminPaymentLedger = async (params = {}) => {
 };
 
 export const getAdminDistributedPayments = getAdminPaymentLedger;
+
+// ----------------------------------------------------
+// Order Approval Workflow APIs (Pending Orders)
+// ----------------------------------------------------
+
+// Fetch all pending orders awaiting admin review and approval
+export const getPendingOrders = async (params = {}) => {
+  try {
+    const response = await api.get('/admin/orders', {
+      params: { approval_status: 'pending', ...params },
+    });
+    return response.data;
+  } catch (err) {
+    console.error('Error fetching pending orders:', err);
+    return { orders: [], count: 0 };
+  }
+};
+
+// Confirm a pending order with admin-specified commission percentage
+export const confirmPendingOrder = async (orderId, commissionPercent) => {
+  try {
+    const response = await api.post(`/admin/orders/${orderId}/confirm`, {
+      admin_commission_percent: commissionPercent,
+    });
+    return response.data;
+  } catch (err) {
+    console.error(`Error confirming order #${orderId}:`, err);
+    throw (err.response?.data || err);
+  }
+};
+
+// Cancel a pending order with mandatory cancellation reason
+export const cancelPendingOrder = async (orderId, cancellationReason) => {
+  try {
+    const response = await api.post(`/admin/orders/${orderId}/cancel`, {
+      cancellation_reason: cancellationReason,
+    });
+    return response.data;
+  } catch (err) {
+    console.error(`Error cancelling order #${orderId}:`, err);
+    throw (err.response?.data || err);
+  }
+};
+
+// ----------------------------------------------------
+// Dump Payment Requests APIs
+// ----------------------------------------------------
+
+// Fetch all dump payment requests
+export const getAdminDumpRequests = async (params = {}) => {
+  try {
+    const response = await api.get('/admin/dump-requests', { params });
+    return response.data;
+  } catch (err) {
+    console.error('Error fetching admin dump requests:', err);
+    return { dumps: [], data: [], summary: {} };
+  }
+};
+
+// Fetch specific dump payment request details with calculation preview
+export const getAdminDumpRequestDetails = async (id) => {
+  try {
+    const response = await api.get(`/admin/dump-requests/${id}`);
+    return response.data;
+  } catch (err) {
+    console.error(`Error fetching dump request #${id} details:`, err);
+    throw (err.response?.data || err);
+  }
+};
+
+// Approve a dump payment request
+export const approveDumpRequest = async (id) => {
+  try {
+    const response = await api.post(`/admin/dump-requests/${id}/approve`);
+    return response.data;
+  } catch (err) {
+    console.error(`Error approving dump request #${id}:`, err);
+    throw (err.response?.data || err);
+  }
+};
+
+// Reject a dump payment request with mandatory rejection reason
+export const rejectDumpRequest = async (id, reason) => {
+  try {
+    const response = await api.post(`/admin/dump-requests/${id}/reject`, {
+      rejection_reason: reason,
+    });
+    return response.data;
+  } catch (err) {
+    console.error(`Error rejecting dump request #${id}:`, err);
+    throw (err.response?.data || err);
+  }
+};
 
 // ----------------------------------------------------
 // Legacy Aliases for Backward Compatibility

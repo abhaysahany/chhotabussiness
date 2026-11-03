@@ -124,6 +124,11 @@ export const getEntityOrders = async (entityIdentifier, params = {}) => {
   }
 };
 
+// Get Cancelled Orders For a Specific Entity
+export const getEntityCancelledOrders = async (entityIdentifier, params = {}) => {
+  return getEntityOrders(entityIdentifier, { approval_status: 'cancelled', ...params });
+};
+
 // Create a New Order Recorded by an Entity
 export const createEntityOrder = async (orderData) => {
   try {
@@ -262,5 +267,36 @@ export const getCatalogOfferings = async () => {
   } catch (err) {
     console.error('Error fetching catalog offerings:', err);
     return [];
+  }
+};
+
+// ----------------------------------------------------
+// Dump Payment Request APIs
+// ----------------------------------------------------
+
+// Report an uncollectible balance as Dump Payment
+export const reportOrderDump = async (orderId, dumpData) => {
+  try {
+    const response = await api.post(`/orders/${orderId}/report-dump`, dumpData);
+    return response.data;
+  } catch (err) {
+    try {
+      const fallback = await api.post(`/entity/orders/${orderId}/report-dump`, dumpData);
+      return fallback.data;
+    } catch (e) {
+      console.error('Error reporting order dump:', e);
+      throw (e.response?.data || e);
+    }
+  }
+};
+
+// Fetch dump requests for Entity
+export const getEntityDumpRequests = async (params = {}) => {
+  try {
+    const response = await api.get('/entity/dump-requests', { params });
+    return response.data;
+  } catch (err) {
+    console.error('Error fetching entity dump requests:', err);
+    throw (err.response?.data || err);
   }
 };

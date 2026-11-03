@@ -138,6 +138,13 @@ function EntitySidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLog
                 <span className="submenu-bullet">●</span>
                 <span>My Orders & Fulfilment</span>
               </button>
+              <button
+                className={`submenu-item ${currentPath === '/entity/orders/cancelled' || currentPath === '/entity/sales/cancelled' || activeTab === 'orders-cancelled' || activeTab === 'sales-cancelled' ? 'active' : ''}`}
+                onClick={() => handleNav('orders-cancelled', '/entity/orders/cancelled')}
+              >
+                <span className="submenu-bullet">✕</span>
+                <span>Cancelled Orders</span>
+              </button>
             </div>
           )}
 

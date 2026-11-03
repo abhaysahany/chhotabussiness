@@ -5,6 +5,7 @@ import EntityLayout from './components/layout/EntityLayout';
 import EntityDashboard from './pages/EntityDashboard';
 import EntityOrders from './pages/EntityOrders';
 import EntityCreateOrder from './pages/EntityCreateOrder';
+import EntityCancelledOrders from './pages/EntityCancelledOrders';
 import EntitySales from './pages/EntitySales';
 import EntityCreateSale from './pages/EntityCreateSale';
 import EntityPayments from './pages/EntityPayments';
@@ -62,6 +63,14 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/entity/orders/cancelled"
+          element={
+            <ProtectedRoute activeTab="orders-cancelled">
+              <EntityCancelledOrders />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Legacy Sales Routes (Backward-Compatible Aliases) */}
         <Route
@@ -77,6 +86,14 @@ function App() {
           element={
             <ProtectedRoute activeTab="orders-create">
               <EntityCreateOrder />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/entity/sales/cancelled"
+          element={
+            <ProtectedRoute activeTab="orders-cancelled">
+              <EntityCancelledOrders />
             </ProtectedRoute>
           }
         />

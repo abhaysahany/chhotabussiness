@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getEntitySales, receiveBalancePayment } from '../api/entityService';
+import { getEntitySales, receiveBalancePayment, reportOrderDump } from '../api/entityService';
 
 function EntityReceiveBalancePage() {
   const navigate = useNavigate();
@@ -23,6 +23,61 @@ function EntityReceiveBalancePage() {
   const [paymentNotes, setPaymentNotes] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // Dump Payment Request State
+  const [selectedSaleForDump, setSelectedSaleForDump] = useState(null);
+  const [dumpAmount, setDumpAmount] = useState('');
+  const [dumpReason, setDumpReason] = useState('');
+  const [dumpNotes, setDumpNotes] = useState('');
+  const [submittingDump, setSubmittingDump] = useState(false);
+  const [dumpError, setDumpError] = useState('');
+
+  const handleOpenDumpModal = (sale) => {
+    setSelectedSaleForDump(sale);
+    const balance = Number(sale.balanceDue ?? sale.balance_due ?? 0);
+    setDumpAmount(balance > 0 ? String(balance) : '');
+    setDumpReason('');
+    setDumpNotes('');
+    setDumpError('');
+  };
+
+  const handleReportDumpSubmit = async (e) => {
+    e.preventDefault();
+    if (!selectedSaleForDump) return;
+    const amount = Number(dumpAmount);
+    if (!amount || amount <= 0) {
+      setDumpError('Please enter a valid dump amount greater than zero.');
+      return;
+    }
+    const balance = Number(selectedSaleForDump.balanceDue ?? selectedSaleForDump.balance_due ?? 0);
+    if (amount > balance) {
+      setDumpError(`Dump amount cannot exceed remaining collectible balance of ₹${balance.toLocaleString('en-IN')}.`);
+      return;
+    }
+    if (!dumpReason.trim() || dumpReason.trim().length < 3) {
+      setDumpError('Please provide a reason (minimum 3 characters) explaining why this payment has become dump.');
+      return;
+    }
+
+    setSubmittingDump(true);
+    setDumpError('');
+    try {
+      await reportOrderDump(selectedSaleForDump.id, {
+        dump_amount: amount,
+        dump_reason: dumpReason.trim(),
+        notes: dumpNotes.trim() || undefined,
+        entity_name: entityName,
+      });
+      showToast('Dump Payment request submitted successfully. It is awaiting Admin approval.');
+      setSelectedSaleForDump(null);
+      await loadData();
+    } catch (err) {
+      console.error('Error submitting dump payment request:', err);
+      setDumpError(err?.message || 'Failed to submit dump request.');
+    } finally {
+      setSubmittingDump(false);
+    }
+  };
+
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(''), 3500);
@@ -44,11 +99,12 @@ function EntityReceiveBalancePage() {
     loadData();
   }, [entityName]);
 
-  // Sales with outstanding balance
+  // Sales with outstanding balance on confirmed orders only (Phase 4 requirement)
   const pendingBalanceSales = useMemo(() => {
     return salesList.filter((s) => {
       const balance = Number(s.balanceDue ?? s.balance_due ?? 0);
-      return balance > 0;
+      const approval = String(s.approval_status ?? s.approvalStatus ?? '').trim().toLowerCase();
+      return balance > 0 && approval === 'confirmed';
     });
   }, [salesList]);
 
@@ -407,24 +463,43 @@ function EntityReceiveBalancePage() {
                       <td style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 600 }}>
                         {rate}%
                       </td>
-                      <td style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>
-                        <button
-                          type="button"
-                          onClick={() => handleOpenReceiveModal(sale)}
-                          style={{
-                            padding: '0.45rem 0.9rem',
-                            background: '#636B2F',
-                            color: '#ffffff',
-                            border: 'none',
-                            borderRadius: '8px',
-                            fontSize: '0.78rem',
-                            fontWeight: 700,
-                            cursor: 'pointer',
-                            boxShadow: '0 2px 4px rgba(99, 107, 47, 0.25)',
-                          }}
-                        >
-                          💳 Collect Payment
-                        </button>
+                      <td style={{ padding: '0.85rem 1rem', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                        <div style={{ display: 'inline-flex', gap: '0.4rem', justifyContent: 'flex-end' }}>
+                          <button
+                            type="button"
+                            onClick={() => handleOpenReceiveModal(sale)}
+                            style={{
+                              padding: '0.45rem 0.85rem',
+                              background: '#636B2F',
+                              color: '#ffffff',
+                              border: 'none',
+                              borderRadius: '8px',
+                              fontSize: '0.78rem',
+                              fontWeight: 700,
+                              cursor: 'pointer',
+                              boxShadow: '0 2px 4px rgba(99, 107, 47, 0.25)',
+                            }}
+                          >
+                            💳 Collect Payment
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleOpenDumpModal(sale)}
+                            style={{
+                              padding: '0.45rem 0.85rem',
+                              background: '#fff1f2',
+                              color: '#e11d48',
+                              border: '1px solid #fecdd3',
+                              borderRadius: '8px',
+                              fontSize: '0.78rem',
+                              fontWeight: 700,
+                              cursor: 'pointer',
+                            }}
+                            title="Report uncollectible balance as Dump Payment"
+                          >
+                            ⚠️ Report Dump
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -612,6 +687,169 @@ function EntityReceiveBalancePage() {
                   }}
                 >
                   {isProcessing ? 'Processing Receipt...' : `Confirm & Record ₹${(Number(paymentAmount) || 0).toLocaleString()} Payment`}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Report Dump Payment Request */}
+      {selectedSaleForDump && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.75)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 99999,
+            padding: '1rem',
+          }}
+        >
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '16px',
+              width: '100%',
+              maxWidth: '560px',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              padding: '2rem',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.85rem', marginBottom: '1.25rem' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#e11d48', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <span>⚠️</span> Report Dump Payment
+                </h3>
+                <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.8rem', color: '#64748b' }}>
+                  Invoice: <strong>{selectedSaleForDump.invoiceNumber || selectedSaleForDump.invoice_number || selectedSaleForDump.id}</strong> • Client: <strong>{selectedSaleForDump.customerName || selectedSaleForDump.customer_name}</strong>
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedSaleForDump(null)}
+                style={{ background: 'none', border: 'none', fontSize: '1.25rem', color: '#64748b', cursor: 'pointer' }}
+              >
+                ×
+              </button>
+            </div>
+
+            <div style={{ background: '#fff1f2', border: '1px solid #fecdd3', borderRadius: '10px', padding: '0.85rem 1rem', fontSize: '0.8rem', color: '#9f1239', marginBottom: '1.25rem' }}>
+              <strong>Notice:</strong> Submitting a Dump Payment indicates this outstanding amount is uncollectible. It will be sent to Admin for verification and approval. No payment receipt will be generated.
+            </div>
+
+            {/* Sale Status Summary */}
+            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '1rem', fontSize: '0.82rem', marginBottom: '1.25rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.35rem' }}>
+                <span style={{ color: '#64748b' }}>Total Project Value:</span>
+                <strong>₹{Number(selectedSaleForDump.grossAmount ?? selectedSaleForDump.gross_amount ?? 0).toLocaleString()}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.35rem' }}>
+                <span style={{ color: '#64748b' }}>Collected to Date:</span>
+                <strong style={{ color: '#16a34a' }}>₹{Number(selectedSaleForDump.advancePayment ?? selectedSaleForDump.advance_payment ?? 0).toLocaleString()}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #e2e8f0', paddingTop: '0.35rem' }}>
+                <span style={{ color: '#b45309', fontWeight: 700 }}>Remaining Collectible Balance:</span>
+                <strong style={{ color: '#d97706', fontSize: '0.95rem' }}>₹{Number(selectedSaleForDump.balanceDue ?? selectedSaleForDump.balance_due ?? 0).toLocaleString()}</strong>
+              </div>
+            </div>
+
+            {dumpError && (
+              <div style={{ background: '#fee2e2', border: '1px solid #f87171', borderRadius: '8px', padding: '0.65rem 0.85rem', color: '#b91c1c', fontSize: '0.82rem', marginBottom: '1rem' }}>
+                {dumpError}
+              </div>
+            )}
+
+            {/* Dump Form */}
+            <form onSubmit={handleReportDumpSubmit}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.25rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>
+                    Dump Amount (₹) <span style={{ color: '#ef4444' }}>*</span>
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="1"
+                    max={Number(selectedSaleForDump.balanceDue ?? selectedSaleForDump.balance_due ?? 0)}
+                    value={dumpAmount}
+                    onChange={(e) => setDumpAmount(e.target.value)}
+                    required
+                    placeholder="Enter uncollectible amount"
+                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.95rem', fontWeight: 700 }}
+                  />
+                  <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.35rem' }}>
+                    <button
+                      type="button"
+                      onClick={() => setDumpAmount(String(Number(selectedSaleForDump.balanceDue ?? selectedSaleForDump.balance_due ?? 0)))}
+                      style={{ fontSize: '0.72rem', background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '0.2rem 0.5rem', borderRadius: '4px', cursor: 'pointer', fontWeight: 600 }}
+                    >
+                      Full Balance (₹{Number(selectedSaleForDump.balanceDue ?? selectedSaleForDump.balance_due ?? 0).toLocaleString()})
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>
+                    Dump Reason <span style={{ color: '#ef4444' }}>*</span>
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={dumpReason}
+                    onChange={(e) => setDumpReason(e.target.value)}
+                    required
+                    placeholder="Explain why this balance cannot be collected (e.g., customer refused payment, project canceled, customer untraceable)..."
+                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#334155', marginBottom: '0.35rem' }}>
+                    Additional Notes (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={dumpNotes}
+                    onChange={(e) => setDumpNotes(e.target.value)}
+                    placeholder="Reference numbers, communication logs, etc."
+                    style={{ width: '100%', padding: '0.6rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.75rem' }}>
+                <button
+                  type="button"
+                  onClick={() => setSelectedSaleForDump(null)}
+                  disabled={submittingDump}
+                  style={{ flex: 1, padding: '0.65rem 1rem', background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', borderRadius: '8px', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submittingDump}
+                  style={{
+                    flex: 2,
+                    padding: '0.65rem 1rem',
+                    background: submittingDump ? '#94a3b8' : '#e11d48',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontWeight: 800,
+                    fontSize: '0.85rem',
+                    cursor: submittingDump ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  {submittingDump ? 'Submitting Request...' : `Submit Dump Request for ₹${(Number(dumpAmount) || 0).toLocaleString()}`}
                 </button>
               </div>
             </form>

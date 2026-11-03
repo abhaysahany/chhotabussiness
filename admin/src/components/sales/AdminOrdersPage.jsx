@@ -5,7 +5,10 @@ import {
   confirmOrderIncomeAllocation,
   getPaymentIncomeAllocation,
   confirmPaymentIncomeAllocation,
-  updateOrderDumpAmount,
+  getOrderDetails,
+  approveDumpRequest,
+  rejectDumpRequest,
+  getAdminDumpRequestDetails,
 } from '../../api/adminOrdersService';
 
 function AdminOrdersPage() {
@@ -21,8 +24,15 @@ function AdminOrdersPage() {
 
   // Order Details & Payments History Modal State (Section A & Section B)
   const [selectedOrderForDetails, setSelectedOrderForDetails] = useState(null);
-  const [editingDumpAmount, setEditingDumpAmount] = useState('0.00');
-  const [savingDumpAmount, setSavingDumpAmount] = useState(false);
+  const [refreshingOrderDetails, setRefreshingOrderDetails] = useState(false);
+
+  // Dump Action Modals inside Order Details Section B
+  const [selectedDumpForReview, setSelectedDumpForReview] = useState(null);
+  const [selectedDumpForReject, setSelectedDumpForReject] = useState(null);
+  const [dumpRejectionReason, setDumpRejectionReason] = useState('');
+  const [isProcessingDump, setIsProcessingDump] = useState(false);
+  const [dumpActionError, setDumpActionError] = useState('');
+  const [selectedDumpDetails, setSelectedDumpDetails] = useState(null);
 
   // Payment-Specific Allocation Modal State
   const [selectedPaymentForAllocation, setSelectedPaymentForAllocation] = useState(null);
@@ -72,39 +82,82 @@ function AdminOrdersPage() {
   }, []);
 
   // Open Order Details & Payment History Modal
-  const openOrderDetails = (order) => {
+  const openOrderDetails = async (order) => {
     setSelectedOrderForDetails(order);
-    const dumpVal = order.dump_amount ?? order.dumpAmount ?? 0;
-    setEditingDumpAmount(String(dumpVal));
-  };
-
-  // Save Dump Amount on Order
-  const handleSaveDumpAmount = async () => {
-    if (!selectedOrderForDetails) return;
-    const num = parseFloat(editingDumpAmount);
-    if (isNaN(num) || num < 0) {
-      showToast('Dump amount must be a non-negative number (>= 0)');
-      return;
-    }
-    setSavingDumpAmount(true);
+    setDumpActionError('');
     try {
-      const res = await updateOrderDumpAmount(selectedOrderForDetails.id, num);
-      if (res?.status === 'success') {
-        showToast(res.message || `Dump amount updated to ₹${num.toFixed(2)}`);
-        const updatedOrder = {
-          ...selectedOrderForDetails,
-          dump_amount: num,
-          dumpAmount: num,
-        };
-        setSelectedOrderForDetails(updatedOrder);
-        await loadSales();
-      } else {
-        showToast(res?.message || 'Failed to update dump amount');
+      const fresh = await getOrderDetails(order.id);
+      if (fresh) {
+        setSelectedOrderForDetails(fresh);
       }
     } catch (e) {
-      showToast(e?.message || 'Error updating dump amount');
+      console.warn('Using initial order data for modal:', e);
+    }
+  };
+
+  // Helper to re-fetch and update current order modal
+  const refreshCurrentOrderDetails = async (orderId) => {
+    setRefreshingOrderDetails(true);
+    try {
+      const fresh = await getOrderDetails(orderId);
+      if (fresh) {
+        setSelectedOrderForDetails(fresh);
+      }
+      await loadSales();
+    } catch (e) {
+      console.error('Error refreshing order details:', e);
+      await loadSales();
     } finally {
-      setSavingDumpAmount(false);
+      setRefreshingOrderDetails(false);
+    }
+  };
+
+  // Approve Dump Request Action
+  const handleApproveDump = async (dumpId) => {
+    setIsProcessingDump(true);
+    setDumpActionError('');
+    try {
+      const res = await approveDumpRequest(dumpId);
+      showToast(res.message || 'Dump Payment approved successfully. Balance updated.');
+      setSelectedDumpForReview(null);
+      if (selectedOrderForDetails) {
+        await refreshCurrentOrderDetails(selectedOrderForDetails.id);
+      } else {
+        await loadSales();
+      }
+    } catch (err) {
+      console.error('Error approving dump request:', err);
+      setDumpActionError(err?.message || 'Failed to approve dump request.');
+    } finally {
+      setIsProcessingDump(false);
+    }
+  };
+
+  // Reject Dump Request Action
+  const handleRejectDump = async (e) => {
+    e.preventDefault();
+    if (!selectedDumpForReject) return;
+    if (!dumpRejectionReason.trim() || dumpRejectionReason.trim().length < 3) {
+      setDumpActionError('Please provide a valid rejection reason (minimum 3 characters).');
+      return;
+    }
+    setIsProcessingDump(true);
+    setDumpActionError('');
+    try {
+      const res = await rejectDumpRequest(selectedDumpForReject.id, dumpRejectionReason.trim());
+      showToast(res.message || 'Dump request rejected.');
+      setSelectedDumpForReject(null);
+      setDumpRejectionReason('');
+      if (selectedOrderForDetails) {
+        await refreshCurrentOrderDetails(selectedOrderForDetails.id);
+      } else {
+        await loadSales();
+      }
+    } catch (err) {
+      console.error('Error rejecting dump request:', err);
+      setDumpActionError(err?.message || 'Failed to reject dump request.');
+    } finally {
+      setIsProcessingDump(false);
     }
   };
 
@@ -910,21 +963,120 @@ function AdminOrdersPage() {
                 const orderPayments = selectedOrderForDetails.payments || [];
                 const orderPaymentsSum = orderPayments.reduce((acc, p) => acc + (Number(p.amount) || 0), 0);
                 const orderReceived = orderPaymentsSum > 0 ? orderPaymentsSum : Number(selectedOrderForDetails.advancePayment ?? selectedOrderForDetails.advance_payment ?? 0);
-                const orderBalance = Number(selectedOrderForDetails.balanceDue ?? selectedOrderForDetails.balance_due ?? Math.max(0, orderGross - orderReceived));
+
+                // Approved Dump Calculations
+                const dumpList = selectedOrderForDetails.dumpRequests || selectedOrderForDetails.dump_requests || [];
+                const approvedDumps = dumpList.filter((d) => d.status === 'approved');
+                const orderApprovedDump = approvedDumps.length > 0
+                  ? approvedDumps.reduce((acc, d) => acc + (Number(d.dump_amount) || 0), 0)
+                  : Number(selectedOrderForDetails.approvedDumpAmount ?? selectedOrderForDetails.dump_amount ?? 0);
+
+                const orderDumpAdminCut = approvedDumps.length > 0
+                  ? approvedDumps.reduce((acc, d) => acc + (Number(d.admin_commission_cut) || 0), 0)
+                  : (orderApprovedDump > 0 ? Math.round((orderApprovedDump * orderRate) / 100) : 0);
+
+                // Remaining Collectible Balance (Max 0, Gross - Received - Approved Dump)
+                const orderBalance = Math.max(0, Math.round((orderGross - orderReceived - orderApprovedDump) * 100) / 100);
+
                 const orderCollectedCut = orderPayments.length > 0
                   ? orderPayments.reduce((acc, p) => acc + (Number(p.adminCommissionCut ?? p.admin_commission_cut) || 0), 0)
                   : Number(selectedOrderForDetails.adminCommissionCollected ?? selectedOrderForDetails.admin_commission_collected ?? 0);
-                const orderRemainingCut = Math.max(0, Math.round((orderExpectedCut - orderCollectedCut) * 100) / 100);
+
+                // Remaining Expected Admin Cut (Expected - Collected Cash Cut - Approved Dump Cut)
+                const orderRemainingCut = Math.max(0, Math.round((orderExpectedCut - orderCollectedCut - orderDumpAdminCut) * 100) / 100);
+
                 const orderDistributedCut = Number(selectedOrderForDetails.distributed_admin_cut_amount ?? selectedOrderForDetails.distributedAdminCutAmount ?? 0);
                 const directCut = Number(selectedOrderForDetails.direct_income_amount ?? selectedOrderForDetails.directIncomeAmount ?? 0);
                 const levelCut = Number(selectedOrderForDetails.level_income_amount ?? selectedOrderForDetails.levelIncomeAmount ?? 0);
                 const rewardCut = Number(selectedOrderForDetails.reward_income_amount ?? selectedOrderForDetails.rewardIncomeAmount ?? 0);
 
+                // Derived Payment Settlement Status
+                let paymentSettlementStatus = 'Unpaid';
+                if (orderReceived >= orderGross && orderGross > 0) {
+                  paymentSettlementStatus = 'Fully Paid (Cash)';
+                } else if (orderBalance <= 0 && orderApprovedDump > 0) {
+                  paymentSettlementStatus = 'Closed via Dump';
+                } else if (orderReceived > 0 && orderBalance > 0) {
+                  paymentSettlementStatus = 'Partially Paid';
+                } else if (orderReceived <= 0 && orderApprovedDump > 0 && orderBalance > 0) {
+                  paymentSettlementStatus = 'Partial Dump Write-Off';
+                }
+
+                // Construct Chronologically Unified Ledger Entries (Cash Receipts + Dump Entries)
+                const unifiedLedgerEntries = (() => {
+                  const entries = [];
+
+                  // 1. Cash Receipts from sale_payments
+                  orderPayments.forEach((p) => {
+                    entries.push({
+                      entryKey: `cash-${p.id}`,
+                      id: p.id,
+                      displayId: `RCPT-${p.id}`,
+                      category: 'cash_payment',
+                      paymentType: p.payment_type || p.paymentType || 'advance',
+                      date: p.payment_date || p.paymentDate || p.created_at || p.createdAt,
+                      amount: Number(p.amount || 0),
+                      adminRate: Number(p.admin_commission_percent ?? p.adminCommissionPercent ?? orderRate),
+                      adminCut: Number(p.admin_commission_cut ?? p.adminCommissionCut ?? 0),
+                      directIncome: Number(p.direct_income_amount ?? p.directIncomeAmount ?? 0),
+                      levelIncome: Number(p.level_income_amount ?? p.levelIncomeAmount ?? 0),
+                      rewardIncome: Number(p.reward_income_amount ?? p.rewardIncomeAmount ?? 0),
+                      status: p.income_distribution_status || p.incomeDistributionStatus || 'pending',
+                      referenceNo: p.reference_no || p.referenceNo || 'N/A',
+                      rawPayment: p,
+                    });
+                  });
+
+                  // 2. Dump Entries from order_payment_dumps
+                  dumpList.forEach((d) => {
+                    const isApproved = d.status === 'approved';
+                    const isPending = d.status === 'pending';
+                    const dRate = Number(d.admin_commission_percent ?? orderRate);
+                    const dAmount = Number(d.dump_amount ?? 0);
+                    const dCut = Number(d.admin_commission_cut ?? Math.round((dAmount * dRate) / 100));
+                    const dDirect = Number(d.direct_income_amount ?? Math.round(dCut * 0.4));
+                    const dLevel = Number(d.level_income_amount ?? Math.round(dCut * 0.4));
+                    const dReward = Number(d.reward_income_amount ?? Math.round(dCut * 0.2));
+
+                    entries.push({
+                      entryKey: `dump-${d.id}`,
+                      id: d.id,
+                      displayId: `DUMP-${d.id}`,
+                      category: 'dump_entry',
+                      dumpStatus: d.status,
+                      paymentType: isApproved
+                        ? 'Approved Dump Write-Off'
+                        : (isPending ? 'Pending Dump Request' : 'Rejected Dump Request'),
+                      date: isApproved ? (d.approved_at || d.updated_at || d.created_at) : (d.requested_at || d.created_at),
+                      amount: dAmount,
+                      adminRate: dRate,
+                      adminCut: dCut,
+                      directIncome: dDirect,
+                      levelIncome: dLevel,
+                      rewardIncome: dReward,
+                      status: d.status,
+                      dumpReason: d.dump_reason,
+                      rejectionReason: d.admin_rejection_reason,
+                      approvedAt: d.approved_at,
+                      rejectedAt: d.rejected_at,
+                      notes: d.notes,
+                      rawDump: d,
+                    });
+                  });
+
+                  return entries.sort((a, b) => {
+                    const timeA = a.date ? new Date(a.date).getTime() : 0;
+                    const timeB = b.date ? new Date(b.date).getTime() : 0;
+                    return timeB - timeA;
+                  });
+                })();
+
                 return (
                   <>
+                    {/* Primary Order Accounting Cards */}
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.6rem', marginBottom: '0.75rem' }}>
                       <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '0.65rem' }}>
-                        <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 600 }}>PROJECT AMOUNT</div>
+                        <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 600 }}>PROJECT VALUE</div>
                         <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', marginTop: '0.15rem' }}>
                           ₹{orderGross.toLocaleString()}
                         </div>
@@ -940,11 +1092,11 @@ function AdminOrdersPage() {
                       </div>
 
                       <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '0.65rem' }}>
-                        <div style={{ fontSize: '0.68rem', color: '#2563eb', fontWeight: 600 }}>PAYMENT RECEIVED</div>
+                        <div style={{ fontSize: '0.68rem', color: '#2563eb', fontWeight: 600 }}>CASH RECEIVED</div>
                         <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#2563eb', marginTop: '0.15rem' }}>
                           ₹{orderReceived.toLocaleString()}
                         </div>
-                        <div style={{ fontSize: '0.62rem', color: '#2563eb' }}>{orderPayments.length} Receipt{orderPayments.length > 1 ? 's' : ''}</div>
+                        <div style={{ fontSize: '0.62rem', color: '#2563eb' }}>{orderPayments.length} Cash Receipt{orderPayments.length > 1 ? 's' : ''}</div>
                       </div>
 
                       <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '0.65rem' }}>
@@ -952,23 +1104,31 @@ function AdminOrdersPage() {
                         <div style={{ fontSize: '1.05rem', fontWeight: 800, color: orderBalance > 0 ? '#d97706' : '#16a34a', marginTop: '0.15rem' }}>
                           ₹{orderBalance.toLocaleString()}
                         </div>
-                        <div style={{ fontSize: '0.62rem', color: '#64748b' }}>Due from customer</div>
+                        <div style={{ fontSize: '0.62rem', color: '#64748b' }}>Collectible from client</div>
                       </div>
 
                       <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '0.65rem' }}>
-                        <div style={{ fontSize: '0.68rem', color: '#16a34a', fontWeight: 600 }}>ADMIN CUT COLLECTED</div>
+                        <div style={{ fontSize: '0.68rem', color: '#16a34a', fontWeight: 600 }}>CASH CUT COLLECTED</div>
                         <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#16a34a', marginTop: '0.15rem' }}>
                           ₹{orderCollectedCut.toLocaleString()}
                         </div>
                         <div style={{ fontSize: '0.62rem', color: '#16a34a' }}>From receipts</div>
                       </div>
 
+                      <div style={{ background: '#faf5ff', border: '1px solid #e9d5ff', borderRadius: '8px', padding: '0.65rem' }}>
+                        <div style={{ fontSize: '0.68rem', color: '#7c3aed', fontWeight: 600 }}>DUMP ADMIN CUT</div>
+                        <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#7c3aed', marginTop: '0.15rem' }}>
+                          ₹{orderDumpAdminCut.toLocaleString()}
+                        </div>
+                        <div style={{ fontSize: '0.62rem', color: '#7c3aed' }}>Approved write-off cut</div>
+                      </div>
+
                       <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '0.65rem' }}>
                         <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 600 }}>REMAINING ADMIN CUT</div>
-                        <div style={{ fontSize: '1.05rem', fontWeight: 800, color: orderRemainingCut > 0 ? '#d97706' : '#64748b', marginTop: '0.15rem' }}>
+                        <div style={{ fontSize: '1.05rem', fontWeight: 800, color: orderRemainingCut > 0 ? '#d97706' : '#16a34a', marginTop: '0.15rem' }}>
                           ₹{orderRemainingCut.toLocaleString()}
                         </div>
-                        <div style={{ fontSize: '0.62rem', color: '#64748b' }}>Expected - Collected</div>
+                        <div style={{ fontSize: '0.62rem', color: '#64748b' }}>Expected - Cash - Dump</div>
                       </div>
                     </div>
 
@@ -979,7 +1139,7 @@ function AdminOrdersPage() {
                         <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#16a34a', marginTop: '0.15rem' }}>
                           ₹{orderDistributedCut.toLocaleString()}
                         </div>
-                        <div style={{ fontSize: '0.62rem', color: '#16a34a' }}>Persisted on order</div>
+                        <div style={{ fontSize: '0.62rem', color: '#16a34a' }}>From cash receipts</div>
                       </div>
 
                       <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '8px', padding: '0.65rem' }}>
@@ -1006,208 +1166,436 @@ function AdminOrdersPage() {
                         <div style={{ fontSize: '0.62rem', color: '#2563eb' }}>Order cumulative</div>
                       </div>
                     </div>
+
+                    {/* Read-Only Summary Banner: Approved Dump Write-Off & Settlement Status */}
+                    <div style={{ background: '#faf5ff', border: '1px solid #e9d5ff', borderRadius: '10px', padding: '0.85rem 1.15rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+                      <div>
+                        <div style={{ fontSize: '0.86rem', fontWeight: 800, color: '#6b21a8', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                          <span>📦</span> APPROVED DUMP WRITE-OFF: ₹{orderApprovedDump.toLocaleString()}
+                        </div>
+                        <div style={{ fontSize: '0.74rem', color: '#7e22ce', marginTop: '0.2rem' }}>
+                          Uncollectible project balance formally approved by Admin. Formally written off from customer collectible balance.
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <div>
+                          <div style={{ fontSize: '0.68rem', color: '#6b21a8', fontWeight: 700 }}>DUMP ADMIN CUT ({orderRate}%)</div>
+                          <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#6b21a8', marginTop: '0.1rem' }}>
+                            ₹{orderDumpAdminCut.toLocaleString()}
+                          </div>
+                        </div>
+
+                        <div>
+                          <div style={{ fontSize: '0.68rem', color: '#6b21a8', fontWeight: 700 }}>SETTLEMENT STATUS</div>
+                          <div
+                            style={{
+                              marginTop: '0.15rem',
+                              padding: '0.2rem 0.6rem',
+                              borderRadius: '6px',
+                              fontSize: '0.75rem',
+                              fontWeight: 800,
+                              background: paymentSettlementStatus === 'Closed via Dump' ? '#f3e8ff' : (paymentSettlementStatus === 'Fully Paid (Cash)' ? '#dcfce7' : '#eff6ff'),
+                              color: paymentSettlementStatus === 'Closed via Dump' ? '#7e22ce' : (paymentSettlementStatus === 'Fully Paid (Cash)' ? '#15803d' : '#1d4ed8'),
+                              border: paymentSettlementStatus === 'Closed via Dump' ? '1px solid #c084fc' : (paymentSettlementStatus === 'Fully Paid (Cash)' ? '1px solid #86efac' : '1px solid #bfdbfe'),
+                              display: 'inline-block',
+                            }}
+                          >
+                            {paymentSettlementStatus}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </>
                 );
               })()}
-
-              {/* Dump Amount Box */}
-              <div style={{ background: '#faf5ff', border: '1px solid #e9d5ff', borderRadius: '10px', padding: '0.85rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
-                <div>
-                  <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#6b21a8', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                    <span>📦</span> Order Dump Amount
-                  </div>
-                  <div style={{ fontSize: '0.73rem', color: '#7e22ce', marginTop: '0.15rem' }}>
-                    Isolated Admin-managed field. Excluded from commission & income distribution math.
-                  </div>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <div style={{ position: 'relative' }}>
-                    <span style={{ position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-50%)', color: '#6b21a8', fontWeight: 700, fontSize: '0.85rem' }}>₹</span>
-                    <input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={editingDumpAmount}
-                      onChange={(e) => setEditingDumpAmount(e.target.value)}
-                      style={{
-                        padding: '0.4rem 0.6rem 0.4rem 1.6rem',
-                        borderRadius: '6px',
-                        border: '1px solid #c084fc',
-                        fontSize: '0.85rem',
-                        fontWeight: 700,
-                        width: '120px',
-                        background: '#ffffff',
-                      }}
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    disabled={savingDumpAmount}
-                    onClick={handleSaveDumpAmount}
-                    style={{
-                      padding: '0.42rem 0.85rem',
-                      background: '#7c3aed',
-                      color: '#ffffff',
-                      border: 'none',
-                      borderRadius: '6px',
-                      fontSize: '0.78rem',
-                      fontWeight: 700,
-                      cursor: savingDumpAmount ? 'not-allowed' : 'pointer',
-                    }}
-                  >
-                    {savingDumpAmount ? 'Saving...' : 'Save Dump'}
-                  </button>
-                </div>
-              </div>
             </div>
 
-            {/* SECTION B: Payment Receipts Ledger & Incremental Allocation */}
+            {/* SECTION B: Unified Order Payment & Dump Write-Off Ledger */}
             <div style={{ border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.15rem', background: '#ffffff' }}>
-              <div style={{ marginBottom: '0.85rem' }}>
-                <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                  <span>💳</span> SECTION B: PAYMENT RECEIPTS LEDGER & INCREMENTAL ALLOCATION
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <div>
+                  <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <span>💳</span> SECTION B: UNIFIED PAYMENT & DUMP WRITE-OFF LEDGER
+                  </div>
+                  <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.75rem', color: '#64748b' }}>
+                    Single auditable ledger showing both genuine customer cash receipts and formal Dump balance write-offs.
+                  </p>
                 </div>
-                <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.75rem', color: '#64748b' }}>
-                  Each payment receipt row is the independent unit of allocation. Admin Cut is calculated from received payment amount and allocated 40/40/20 exactly once.
-                </p>
+                {refreshingOrderDetails && (
+                  <span style={{ fontSize: '0.72rem', color: '#2563eb', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                    <div className="spinner" style={{ width: '12px', height: '12px' }}></div> Updating ledger...
+                  </span>
+                )}
               </div>
 
-              {(!selectedOrderForDetails.payments || selectedOrderForDetails.payments.length === 0) ? (
-                <div style={{ padding: '2rem 1rem', textAlign: 'center', color: '#64748b', fontSize: '0.82rem', background: '#f8fafc', borderRadius: '8px' }}>
-                  No individual payment receipts recorded yet for this order.
-                </div>
-              ) : (
-                <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
-                    <thead>
-                      <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left', color: '#475569' }}>
-                        <th style={{ padding: '0.65rem 0.75rem' }}>Receipt #</th>
-                        <th style={{ padding: '0.65rem 0.75rem' }}>Type</th>
-                        <th style={{ padding: '0.65rem 0.75rem' }}>Date</th>
-                        <th style={{ padding: '0.65rem 0.75rem' }}>Received</th>
-                        <th style={{ padding: '0.65rem 0.75rem' }}>Admin Cut</th>
-                        <th style={{ padding: '0.65rem 0.75rem' }}>Direct (40%)</th>
-                        <th style={{ padding: '0.65rem 0.75rem' }}>Level (40%)</th>
-                        <th style={{ padding: '0.65rem 0.75rem' }}>Reward (20%)</th>
-                        <th style={{ padding: '0.65rem 0.75rem' }}>Status</th>
-                        <th style={{ padding: '0.65rem 0.75rem', textAlign: 'right' }}>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {selectedOrderForDetails.payments.map((p) => {
-                        const pAmount = Number(p.amount || 0);
-                        const pCut = Number(p.admin_commission_cut ?? p.adminCommissionCut ?? 0);
-                        const pDirect = Number(p.direct_income_amount ?? p.directIncomeAmount ?? 0);
-                        const pLevel = Number(p.level_income_amount ?? p.levelIncomeAmount ?? 0);
-                        const pReward = Number(p.reward_income_amount ?? p.rewardIncomeAmount ?? 0);
-                        const pStatus = p.income_distribution_status || p.incomeDistributionStatus || 'pending';
-                        const isPending = pStatus === 'pending';
-                        const isLegacy = pStatus === 'legacy_completed';
+              {(() => {
+                const orderRate = Number(selectedOrderForDetails.adminCommissionPercent ?? selectedOrderForDetails.admin_commission_percent ?? 15);
+                const orderPayments = selectedOrderForDetails.payments || [];
+                const dumpList = selectedOrderForDetails.dumpRequests || selectedOrderForDetails.dump_requests || [];
 
-                        return (
-                          <tr key={p.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                            <td style={{ padding: '0.65rem 0.75rem', fontWeight: 700, color: '#0f172a' }}>
-                              <div>#{p.id}</div>
-                              <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 400 }}>
-                                {p.reference_no || p.referenceNo || 'N/A'}
-                              </div>
-                            </td>
-                            <td style={{ padding: '0.65rem 0.75rem' }}>
-                              <span
-                                style={{
-                                  textTransform: 'capitalize',
-                                  fontSize: '0.7rem',
-                                  fontWeight: 700,
-                                  padding: '0.1rem 0.4rem',
-                                  borderRadius: '4px',
-                                  background: (p.payment_type || p.paymentType) === 'advance' ? '#eff6ff' : '#f0fdf4',
-                                  color: (p.payment_type || p.paymentType) === 'advance' ? '#1d4ed8' : '#15803d',
-                                }}
-                              >
-                                {p.payment_type || p.paymentType || 'advance'}
-                              </span>
-                            </td>
-                            <td style={{ padding: '0.65rem 0.75rem', color: '#64748b', whiteSpace: 'nowrap' }}>
-                              {p.payment_date ? new Date(p.payment_date).toLocaleDateString() : (p.created_at ? new Date(p.created_at).toLocaleDateString() : 'N/A')}
-                            </td>
-                            <td style={{ padding: '0.65rem 0.75rem', fontWeight: 700, color: '#2563eb' }}>
-                              ₹{pAmount.toLocaleString()}
-                            </td>
-                            <td style={{ padding: '0.65rem 0.75rem', fontWeight: 800, color: '#16a34a' }}>
-                              ₹{pCut.toLocaleString()}
-                            </td>
-                            <td style={{ padding: '0.65rem 0.75rem', color: '#0f172a', fontWeight: 600 }}>
-                              ₹{pDirect.toLocaleString()}
-                            </td>
-                            <td style={{ padding: '0.65rem 0.75rem', color: '#0f172a', fontWeight: 600 }}>
-                              ₹{pLevel.toLocaleString()}
-                            </td>
-                            <td style={{ padding: '0.65rem 0.75rem', color: '#0f172a', fontWeight: 600 }}>
-                              ₹{pReward.toLocaleString()}
-                            </td>
-                            <td style={{ padding: '0.65rem 0.75rem' }}>
-                              <span
-                                style={{
-                                  display: 'inline-block',
-                                  padding: '0.12rem 0.45rem',
-                                  borderRadius: '4px',
-                                  fontSize: '0.68rem',
-                                  fontWeight: 700,
-                                  whiteSpace: 'nowrap',
-                                  background: isPending ? '#fffbeb' : (isLegacy ? '#f1f5f9' : '#f0fdf4'),
-                                  color: isPending ? '#b45309' : (isLegacy ? '#475569' : '#15803d'),
-                                  border: isPending ? '1px solid #fde68a' : (isLegacy ? '1px solid #cbd5e1' : '1px solid #bbf7d0'),
-                                }}
-                              >
-                                {isPending ? 'Pending' : (isLegacy ? 'Legacy Settled' : 'Allocated')}
-                              </span>
-                            </td>
-                            <td style={{ padding: '0.65rem 0.75rem', textAlign: 'right' }}>
-                              {isPending ? (
-                                <button
-                                  type="button"
-                                  onClick={() => openPaymentAllocationModal(p, selectedOrderForDetails)}
+                const unifiedLedgerEntries = (() => {
+                  const entries = [];
+
+                  // 1. Cash Receipts
+                  orderPayments.forEach((p) => {
+                    entries.push({
+                      entryKey: `cash-${p.id}`,
+                      id: p.id,
+                      displayId: `RCPT-${p.id}`,
+                      category: 'cash_payment',
+                      paymentType: p.payment_type || p.paymentType || 'advance',
+                      date: p.payment_date || p.paymentDate || p.created_at || p.createdAt,
+                      amount: Number(p.amount || 0),
+                      adminRate: Number(p.admin_commission_percent ?? p.adminCommissionPercent ?? orderRate),
+                      adminCut: Number(p.admin_commission_cut ?? p.adminCommissionCut ?? 0),
+                      directIncome: Number(p.direct_income_amount ?? p.directIncomeAmount ?? 0),
+                      levelIncome: Number(p.level_income_amount ?? p.levelIncomeAmount ?? 0),
+                      rewardIncome: Number(p.reward_income_amount ?? p.rewardIncomeAmount ?? 0),
+                      status: p.income_distribution_status || p.incomeDistributionStatus || 'pending',
+                      referenceNo: p.reference_no || p.referenceNo || 'N/A',
+                      rawPayment: p,
+                    });
+                  });
+
+                  // 2. Dump Entries
+                  dumpList.forEach((d) => {
+                    const isApproved = d.status === 'approved';
+                    const isPending = d.status === 'pending';
+                    const dRate = Number(d.admin_commission_percent ?? orderRate);
+                    const dAmount = Number(d.dump_amount ?? 0);
+                    const dCut = Number(d.admin_commission_cut ?? Math.round((dAmount * dRate) / 100));
+                    const dDirect = Number(d.direct_income_amount ?? Math.round(dCut * 0.4));
+                    const dLevel = Number(d.level_income_amount ?? Math.round(dCut * 0.4));
+                    const dReward = Number(d.reward_income_amount ?? Math.round(dCut * 0.2));
+
+                    entries.push({
+                      entryKey: `dump-${d.id}`,
+                      id: d.id,
+                      displayId: `DUMP-${d.id}`,
+                      category: 'dump_entry',
+                      dumpStatus: d.status,
+                      paymentType: isApproved
+                        ? 'Approved Dump Write-Off'
+                        : (isPending ? 'Pending Dump Request' : 'Rejected Dump Request'),
+                      date: isApproved ? (d.approved_at || d.updated_at || d.created_at) : (d.requested_at || d.created_at),
+                      amount: dAmount,
+                      adminRate: dRate,
+                      adminCut: dCut,
+                      directIncome: dDirect,
+                      levelIncome: dLevel,
+                      rewardIncome: dReward,
+                      status: d.status,
+                      dumpReason: d.dump_reason,
+                      rejectionReason: d.admin_rejection_reason,
+                      approvedAt: d.approved_at,
+                      rejectedAt: d.rejected_at,
+                      notes: d.notes,
+                      rawDump: d,
+                    });
+                  });
+
+                  return entries.sort((a, b) => {
+                    const timeA = a.date ? new Date(a.date).getTime() : 0;
+                    const timeB = b.date ? new Date(b.date).getTime() : 0;
+                    return timeB - timeA;
+                  });
+                })();
+
+                if (unifiedLedgerEntries.length === 0) {
+                  return (
+                    <div style={{ padding: '2rem 1rem', textAlign: 'center', color: '#64748b', fontSize: '0.82rem', background: '#f8fafc', borderRadius: '8px' }}>
+                      No payment receipts or dump requests recorded yet for this order.
+                    </div>
+                  );
+                }
+
+                return (
+                  <div style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
+                      <thead>
+                        <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left', color: '#475569' }}>
+                          <th style={{ padding: '0.65rem 0.75rem' }}>Entry ID</th>
+                          <th style={{ padding: '0.65rem 0.75rem' }}>Type & Mode</th>
+                          <th style={{ padding: '0.65rem 0.75rem' }}>Date</th>
+                          <th style={{ padding: '0.65rem 0.75rem' }}>Amount</th>
+                          <th style={{ padding: '0.65rem 0.75rem' }}>Admin Cut</th>
+                          <th style={{ padding: '0.65rem 0.75rem' }}>Direct (40%)</th>
+                          <th style={{ padding: '0.65rem 0.75rem' }}>Level (40%)</th>
+                          <th style={{ padding: '0.65rem 0.75rem' }}>Reward (20%)</th>
+                          <th style={{ padding: '0.65rem 0.75rem' }}>Status</th>
+                          <th style={{ padding: '0.65rem 0.75rem', textAlign: 'right' }}>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {unifiedLedgerEntries.map((entry) => {
+                          const isCash = entry.category === 'cash_payment';
+                          const isDump = entry.category === 'dump_entry';
+
+                          if (isCash) {
+                            const p = entry.rawPayment;
+                            const isPending = entry.status === 'pending';
+                            const isLegacy = entry.status === 'legacy_completed';
+
+                            return (
+                              <tr key={entry.entryKey} style={{ borderBottom: '1px solid #f1f5f9', background: '#ffffff' }}>
+                                <td style={{ padding: '0.65rem 0.75rem', fontWeight: 700, color: '#0f172a' }}>
+                                  <div>{entry.displayId}</div>
+                                  <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 400 }}>
+                                    UTR: {entry.referenceNo}
+                                  </div>
+                                </td>
+                                <td style={{ padding: '0.65rem 0.75rem' }}>
+                                  <span
+                                    style={{
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      gap: '0.25rem',
+                                      textTransform: 'capitalize',
+                                      fontSize: '0.7rem',
+                                      fontWeight: 700,
+                                      padding: '0.12rem 0.45rem',
+                                      borderRadius: '4px',
+                                      background: entry.paymentType === 'advance' ? '#eff6ff' : '#f0fdf4',
+                                      color: entry.paymentType === 'advance' ? '#1d4ed8' : '#15803d',
+                                      border: entry.paymentType === 'advance' ? '1px solid #bfdbfe' : '1px solid #bbf7d0',
+                                    }}
+                                  >
+                                    <span>💳</span> Cash ({entry.paymentType})
+                                  </span>
+                                </td>
+                                <td style={{ padding: '0.65rem 0.75rem', color: '#64748b', whiteSpace: 'nowrap' }}>
+                                  {entry.date ? new Date(entry.date).toLocaleDateString('en-IN') : 'N/A'}
+                                </td>
+                                <td style={{ padding: '0.65rem 0.75rem', fontWeight: 700, color: '#2563eb' }}>
+                                  ₹{entry.amount.toLocaleString()}
+                                </td>
+                                <td style={{ padding: '0.65rem 0.75rem', fontWeight: 800, color: '#16a34a' }}>
+                                  ₹{entry.adminCut.toLocaleString()}
+                                </td>
+                                <td style={{ padding: '0.65rem 0.75rem', color: '#0f172a', fontWeight: 600 }}>
+                                  ₹{entry.directIncome.toLocaleString()}
+                                </td>
+                                <td style={{ padding: '0.65rem 0.75rem', color: '#0f172a', fontWeight: 600 }}>
+                                  ₹{entry.levelIncome.toLocaleString()}
+                                </td>
+                                <td style={{ padding: '0.65rem 0.75rem', color: '#0f172a', fontWeight: 600 }}>
+                                  ₹{entry.rewardIncome.toLocaleString()}
+                                </td>
+                                <td style={{ padding: '0.65rem 0.75rem' }}>
+                                  <span
+                                    style={{
+                                      display: 'inline-block',
+                                      padding: '0.12rem 0.45rem',
+                                      borderRadius: '4px',
+                                      fontSize: '0.68rem',
+                                      fontWeight: 700,
+                                      whiteSpace: 'nowrap',
+                                      background: isPending ? '#fffbeb' : (isLegacy ? '#f1f5f9' : '#f0fdf4'),
+                                      color: isPending ? '#b45309' : (isLegacy ? '#475569' : '#15803d'),
+                                      border: isPending ? '1px solid #fde68a' : (isLegacy ? '1px solid #cbd5e1' : '1px solid #bbf7d0'),
+                                    }}
+                                  >
+                                    {isPending ? 'Pending Allocation' : (isLegacy ? 'Legacy Settled' : 'Allocated')}
+                                  </span>
+                                </td>
+                                <td style={{ padding: '0.65rem 0.75rem', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                                  {isPending ? (
+                                    <button
+                                      type="button"
+                                      onClick={() => openPaymentAllocationModal(p, selectedOrderForDetails)}
+                                      style={{
+                                        padding: '0.3rem 0.65rem',
+                                        background: '#2563eb',
+                                        color: '#ffffff',
+                                        border: 'none',
+                                        borderRadius: '6px',
+                                        fontSize: '0.74rem',
+                                        fontWeight: 700,
+                                        cursor: 'pointer',
+                                      }}
+                                    >
+                                      💰 Distribute
+                                    </button>
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      onClick={() => openPaymentAllocationModal(p, selectedOrderForDetails)}
+                                      style={{
+                                        padding: '0.3rem 0.65rem',
+                                        background: '#f1f5f9',
+                                        color: '#334155',
+                                        border: '1px solid #cbd5e1',
+                                        borderRadius: '6px',
+                                        fontSize: '0.74rem',
+                                        fontWeight: 700,
+                                        cursor: 'pointer',
+                                      }}
+                                    >
+                                      View Allocation
+                                    </button>
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          }
+
+                          // Dump Entry Row
+                          const d = entry.rawDump;
+                          const isApproved = entry.dumpStatus === 'approved';
+                          const isPending = entry.dumpStatus === 'pending';
+                          const isRejected = entry.dumpStatus === 'rejected';
+
+                          return (
+                            <tr
+                              key={entry.entryKey}
+                              style={{
+                                borderBottom: '1px solid #f1f5f9',
+                                background: isApproved ? '#faf5ff' : (isPending ? '#fffbeb' : '#fff1f2'),
+                              }}
+                            >
+                              <td style={{ padding: '0.65rem 0.75rem', fontWeight: 700, color: '#0f172a' }}>
+                                <div style={{ color: isApproved ? '#7c3aed' : (isPending ? '#b45309' : '#be123c') }}>
+                                  {entry.displayId}
+                                </div>
+                                <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 400 }}>
+                                  Write-Off Record
+                                </div>
+                              </td>
+                              <td style={{ padding: '0.65rem 0.75rem' }}>
+                                <span
                                   style={{
-                                    padding: '0.3rem 0.65rem',
-                                    background: '#2563eb',
-                                    color: '#ffffff',
-                                    border: 'none',
-                                    borderRadius: '6px',
-                                    fontSize: '0.74rem',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '0.25rem',
+                                    fontSize: '0.7rem',
                                     fontWeight: 700,
-                                    cursor: 'pointer',
+                                    padding: '0.12rem 0.45rem',
+                                    borderRadius: '4px',
+                                    background: isApproved ? '#f3e8ff' : (isPending ? '#fef3c7' : '#fee2e2'),
+                                    color: isApproved ? '#6b21a8' : (isPending ? '#92400e' : '#991b1b'),
+                                    border: isApproved ? '1px solid #d8b4fe' : (isPending ? '1px solid #fde68a' : '1px solid #fecaca'),
                                     whiteSpace: 'nowrap',
                                   }}
                                 >
-                                  Distribute Income
-                                </button>
-                              ) : (
-                                <button
-                                  type="button"
-                                  onClick={() => openPaymentAllocationModal(p, selectedOrderForDetails)}
+                                  <span>{isApproved ? '🛡️' : (isPending ? '⏳' : '❌')}</span>
+                                  {entry.paymentType}
+                                </span>
+                              </td>
+                              <td style={{ padding: '0.65rem 0.75rem', color: '#64748b', whiteSpace: 'nowrap' }}>
+                                {entry.date ? new Date(entry.date).toLocaleDateString('en-IN') : 'N/A'}
+                              </td>
+                              <td style={{ padding: '0.65rem 0.75rem', fontWeight: 700 }}>
+                                <div style={{ color: isApproved ? '#7c3aed' : (isPending ? '#b45309' : '#64748b'), textDecoration: isRejected ? 'line-through' : 'none' }}>
+                                  ₹{entry.amount.toLocaleString()}
+                                </div>
+                                <div style={{ fontSize: '0.64rem', color: '#64748b' }}>
+                                  {isApproved ? '(Written Off)' : (isPending ? '(Requested)' : '(Rejected)')}
+                                </div>
+                              </td>
+                              <td style={{ padding: '0.65rem 0.75rem', fontWeight: 800, color: isApproved ? '#7c3aed' : (isPending ? '#b45309' : '#64748b') }}>
+                                ₹{entry.adminCut.toLocaleString()}
+                                {isPending && <span style={{ fontSize: '0.65rem', fontWeight: 400 }}> (Est.)</span>}
+                              </td>
+                              <td style={{ padding: '0.65rem 0.75rem', color: isApproved ? '#7c3aed' : '#64748b', fontWeight: 600 }}>
+                                ₹{entry.directIncome.toLocaleString()}
+                                {isPending && <span style={{ fontSize: '0.65rem', fontWeight: 400 }}> (Est.)</span>}
+                              </td>
+                              <td style={{ padding: '0.65rem 0.75rem', color: isApproved ? '#7c3aed' : '#64748b', fontWeight: 600 }}>
+                                ₹{entry.levelIncome.toLocaleString()}
+                                {isPending && <span style={{ fontSize: '0.65rem', fontWeight: 400 }}> (Est.)</span>}
+                              </td>
+                              <td style={{ padding: '0.65rem 0.75rem', color: isApproved ? '#7c3aed' : '#64748b', fontWeight: 600 }}>
+                                ₹{entry.rewardIncome.toLocaleString()}
+                                {isPending && <span style={{ fontSize: '0.65rem', fontWeight: 400 }}> (Est.)</span>}
+                              </td>
+                              <td style={{ padding: '0.65rem 0.75rem' }}>
+                                <span
                                   style={{
-                                    padding: '0.3rem 0.65rem',
-                                    background: '#f1f5f9',
-                                    color: '#334155',
-                                    border: '1px solid #cbd5e1',
-                                    borderRadius: '6px',
-                                    fontSize: '0.74rem',
+                                    display: 'inline-block',
+                                    padding: '0.12rem 0.45rem',
+                                    borderRadius: '4px',
+                                    fontSize: '0.68rem',
                                     fontWeight: 700,
-                                    cursor: 'pointer',
                                     whiteSpace: 'nowrap',
+                                    background: isApproved ? '#f3e8ff' : (isPending ? '#fef3c7' : '#fee2e2'),
+                                    color: isApproved ? '#7c3aed' : (isPending ? '#b45309' : '#b91c1c'),
+                                    border: isApproved ? '1px solid #d8b4fe' : (isPending ? '1px solid #fde68a' : '1px solid #f87171'),
                                   }}
                                 >
-                                  View Allocation
-                                </button>
-                              )}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              )}
+                                  {isApproved ? 'Approved Write-Off' : (isPending ? 'Pending Review' : 'Rejected')}
+                                </span>
+                              </td>
+                              <td style={{ padding: '0.65rem 0.75rem', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                                {isPending ? (
+                                  <div style={{ display: 'inline-flex', gap: '0.35rem', justifyContent: 'flex-end' }}>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setSelectedDumpForReview(d);
+                                        setDumpActionError('');
+                                      }}
+                                      style={{
+                                        padding: '0.28rem 0.55rem',
+                                        background: '#7c3aed',
+                                        color: '#ffffff',
+                                        border: 'none',
+                                        borderRadius: '6px',
+                                        fontSize: '0.72rem',
+                                        fontWeight: 700,
+                                        cursor: 'pointer',
+                                      }}
+                                    >
+                                      ✓ Review / Approve
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setSelectedDumpForReject(d);
+                                        setDumpRejectionReason('');
+                                        setDumpActionError('');
+                                      }}
+                                      style={{
+                                        padding: '0.28rem 0.55rem',
+                                        background: '#fee2e2',
+                                        color: '#b91c1c',
+                                        border: '1px solid #fca5a5',
+                                        borderRadius: '6px',
+                                        fontSize: '0.72rem',
+                                        fontWeight: 700,
+                                        cursor: 'pointer',
+                                      }}
+                                    >
+                                      ✕ Reject
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() => setSelectedDumpDetails(d)}
+                                    style={{
+                                      padding: '0.28rem 0.6rem',
+                                      background: '#f1f5f9',
+                                      color: '#334155',
+                                      border: '1px solid #cbd5e1',
+                                      borderRadius: '6px',
+                                      fontSize: '0.72rem',
+                                      fontWeight: 600,
+                                      cursor: 'pointer',
+                                    }}
+                                  >
+                                    View Audit Info
+                                  </button>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                );
+              })()}
             </div>
 
             {/* Modal Footer */}
@@ -1227,6 +1615,350 @@ function AdminOrdersPage() {
                 }}
               >
                 Close Order Details
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Review & Approve Dump Request Modal */}
+      {selectedDumpForReview && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.75)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 99995,
+            padding: '1rem',
+          }}
+        >
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '16px',
+              width: '100%',
+              maxWidth: '560px',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              padding: '1.75rem',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.85rem', marginBottom: '1.25rem' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#6b21a8', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <span>🛡️</span> Review & Approve Dump Payment
+                </h3>
+                <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.78rem', color: '#64748b' }}>
+                  Dump Request #{selectedDumpForReview.id} • Order: <strong>{selectedDumpForReview.invoice_number}</strong>
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedDumpForReview(null)}
+                style={{ background: 'none', border: 'none', fontSize: '1.4rem', color: '#64748b', cursor: 'pointer' }}
+              >
+                ×
+              </button>
+            </div>
+
+            {dumpActionError && (
+              <div style={{ background: '#fee2e2', border: '1px solid #f87171', borderRadius: '8px', padding: '0.65rem 0.85rem', color: '#b91c1c', fontSize: '0.82rem', marginBottom: '1rem' }}>
+                {dumpActionError}
+              </div>
+            )}
+
+            {/* Calculations Breakdown */}
+            {(() => {
+              const dumpAmt = Number(selectedDumpForReview.dump_amount || 0);
+              const orderRate = Number(selectedDumpForReview.admin_commission_percent ?? selectedOrderForDetails?.admin_commission_percent ?? 15);
+              const dumpCut = Number(selectedDumpForReview.admin_commission_cut ?? Math.round((dumpAmt * orderRate) / 100));
+              const directDump = Math.round(dumpCut * 0.4);
+              const levelDump = Math.round(dumpCut * 0.4);
+              const rewardDump = Math.round(dumpCut * 0.2);
+
+              return (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', fontSize: '0.82rem', marginBottom: '1.25rem' }}>
+                  <div style={{ background: '#faf5ff', border: '1px solid #e9d5ff', borderRadius: '10px', padding: '1rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.35rem' }}>
+                      <span style={{ color: '#6b21a8', fontWeight: 600 }}>Requested Dump Amount:</span>
+                      <strong style={{ color: '#6b21a8', fontSize: '1.05rem' }}>₹{dumpAmt.toLocaleString()}</strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.35rem' }}>
+                      <span style={{ color: '#64748b' }}>Approved Commission Rate:</span>
+                      <strong>{orderRate}%</strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #e9d5ff', paddingTop: '0.35rem', color: '#15803d', fontWeight: 700 }}>
+                      <span>Calculated Dump Admin Cut:</span>
+                      <span>₹{dumpCut.toLocaleString()}</span>
+                    </div>
+                  </div>
+
+                  <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '0.85rem 1rem' }}>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
+                      40 / 40 / 20 Dump Accounting Breakdown
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5rem', textAlign: 'center' }}>
+                      <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '6px', padding: '0.45rem' }}>
+                        <div style={{ fontSize: '0.65rem', color: '#1d4ed8', fontWeight: 700 }}>DIRECT (40%)</div>
+                        <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#1d4ed8', marginTop: '0.1rem' }}>₹{directDump.toLocaleString()}</div>
+                      </div>
+                      <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '6px', padding: '0.45rem' }}>
+                        <div style={{ fontSize: '0.65rem', color: '#1d4ed8', fontWeight: 700 }}>LEVEL (40%)</div>
+                        <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#1d4ed8', marginTop: '0.1rem' }}>₹{levelDump.toLocaleString()}</div>
+                      </div>
+                      <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '6px', padding: '0.45rem' }}>
+                        <div style={{ fontSize: '0.65rem', color: '#1d4ed8', fontWeight: 700 }}>REWARD (20%)</div>
+                        <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#1d4ed8', marginTop: '0.1rem' }}>₹{rewardDump.toLocaleString()}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '0.85rem 1rem' }}>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569', marginBottom: '0.25rem' }}>
+                      Entity's Uncollectibility Reason:
+                    </div>
+                    <div style={{ color: '#0f172a', fontStyle: 'italic', lineHeight: 1.4 }}>
+                      "{selectedDumpForReview.dump_reason}"
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <button
+                type="button"
+                onClick={() => setSelectedDumpForReview(null)}
+                disabled={isProcessingDump}
+                style={{ flex: 1, padding: '0.65rem 1rem', background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', borderRadius: '8px', fontWeight: 600, fontSize: '0.82rem', cursor: 'pointer' }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => handleApproveDump(selectedDumpForReview.id)}
+                disabled={isProcessingDump}
+                style={{
+                  flex: 2,
+                  padding: '0.65rem 1rem',
+                  background: isProcessingDump ? '#94a3b8' : '#7c3aed',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontWeight: 800,
+                  fontSize: '0.82rem',
+                  cursor: isProcessingDump ? 'not-allowed' : 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.4rem',
+                }}
+              >
+                {isProcessingDump ? 'Approving Dump...' : `Confirm & Approve Dump of ₹${Number(selectedDumpForReview.dump_amount || 0).toLocaleString()}`}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reject Dump Request Modal */}
+      {selectedDumpForReject && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.75)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 99995,
+            padding: '1rem',
+          }}
+        >
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '16px',
+              width: '100%',
+              maxWidth: '520px',
+              padding: '1.75rem',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.85rem', marginBottom: '1.25rem' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#b91c1c', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <span>❌</span> Reject Dump Payment Request
+                </h3>
+                <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.78rem', color: '#64748b' }}>
+                  Request #{selectedDumpForReject.id} • Amount: ₹{Number(selectedDumpForReject.dump_amount || 0).toLocaleString()}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedDumpForReject(null)}
+                style={{ background: 'none', border: 'none', fontSize: '1.4rem', color: '#64748b', cursor: 'pointer' }}
+              >
+                ×
+              </button>
+            </div>
+
+            {dumpActionError && (
+              <div style={{ background: '#fee2e2', border: '1px solid #f87171', borderRadius: '8px', padding: '0.65rem 0.85rem', color: '#b91c1c', fontSize: '0.82rem', marginBottom: '1rem' }}>
+                {dumpActionError}
+              </div>
+            )}
+
+            <form onSubmit={handleRejectDump}>
+              <div style={{ marginBottom: '1.25rem' }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>
+                  Mandatory Rejection Reason <span style={{ color: '#ef4444' }}>*</span>
+                </label>
+                <textarea
+                  rows={3}
+                  required
+                  value={dumpRejectionReason}
+                  onChange={(e) => setDumpRejectionReason(e.target.value)}
+                  placeholder="Explain why this dump request is rejected (e.g., client payment verified, insufficient evidence of uncollectibility)..."
+                  style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.75rem' }}>
+                <button
+                  type="button"
+                  onClick={() => setSelectedDumpForReject(null)}
+                  disabled={isProcessingDump}
+                  style={{ flex: 1, padding: '0.65rem 1rem', background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', borderRadius: '8px', fontWeight: 600, fontSize: '0.82rem', cursor: 'pointer' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isProcessingDump}
+                  style={{
+                    flex: 2,
+                    padding: '0.65rem 1rem',
+                    background: isProcessingDump ? '#94a3b8' : '#dc2626',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontWeight: 800,
+                    fontSize: '0.82rem',
+                    cursor: isProcessingDump ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  {isProcessingDump ? 'Rejecting...' : 'Confirm Rejection'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* View Dump Audit Details Modal */}
+      {selectedDumpDetails && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.75)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 99995,
+            padding: '1rem',
+          }}
+        >
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '16px',
+              width: '100%',
+              maxWidth: '520px',
+              padding: '1.75rem',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.85rem', marginBottom: '1.25rem' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: selectedDumpDetails.status === 'approved' ? '#6b21a8' : '#be123c', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <span>{selectedDumpDetails.status === 'approved' ? '🛡️' : '❌'}</span> Dump Audit Details
+                </h3>
+                <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.78rem', color: '#64748b' }}>
+                  Record #{selectedDumpDetails.id} • Status: <strong>{selectedDumpDetails.status.toUpperCase()}</strong>
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedDumpDetails(null)}
+                style={{ background: 'none', border: 'none', fontSize: '1.4rem', color: '#64748b', cursor: 'pointer' }}
+              >
+                ×
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', fontSize: '0.82rem', marginBottom: '1.25rem' }}>
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '0.85rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.35rem' }}>
+                  <span style={{ color: '#64748b' }}>Dump Amount:</span>
+                  <strong>₹{Number(selectedDumpDetails.dump_amount || 0).toLocaleString()}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.35rem' }}>
+                  <span style={{ color: '#64748b' }}>Admin Cut ({selectedDumpDetails.admin_commission_percent}%):</span>
+                  <strong style={{ color: '#16a34a' }}>₹{Number(selectedDumpDetails.admin_commission_cut || 0).toLocaleString()}</strong>
+                </div>
+                {selectedDumpDetails.status === 'approved' && (
+                  <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '0.35rem', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.4rem', textAlign: 'center', fontSize: '0.75rem' }}>
+                    <div>Direct (40%): <strong>₹{Number(selectedDumpDetails.direct_income_amount || 0).toLocaleString()}</strong></div>
+                    <div>Level (40%): <strong>₹{Number(selectedDumpDetails.level_income_amount || 0).toLocaleString()}</strong></div>
+                    <div>Reward (20%): <strong>₹{Number(selectedDumpDetails.reward_income_amount || 0).toLocaleString()}</strong></div>
+                  </div>
+                )}
+              </div>
+
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '0.85rem' }}>
+                <div style={{ fontWeight: 700, color: '#475569', marginBottom: '0.2rem' }}>Entity's Stated Reason:</div>
+                <div style={{ color: '#0f172a', fontStyle: 'italic' }}>"{selectedDumpDetails.dump_reason}"</div>
+              </div>
+
+              {selectedDumpDetails.admin_rejection_reason && (
+                <div style={{ background: '#fff1f2', border: '1px solid #fecdd3', borderRadius: '8px', padding: '0.85rem' }}>
+                  <div style={{ fontWeight: 700, color: '#9f1239', marginBottom: '0.2rem' }}>Admin Rejection Reason:</div>
+                  <div style={{ color: '#be123c' }}>"{selectedDumpDetails.admin_rejection_reason}"</div>
+                </div>
+              )}
+
+              <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                {selectedDumpDetails.requested_at && <div>Requested at: {new Date(selectedDumpDetails.requested_at).toLocaleString('en-IN')}</div>}
+                {selectedDumpDetails.approved_at && <div>Approved at: {new Date(selectedDumpDetails.approved_at).toLocaleString('en-IN')}</div>}
+                {selectedDumpDetails.rejected_at && <div>Rejected at: {new Date(selectedDumpDetails.rejected_at).toLocaleString('en-IN')}</div>}
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                type="button"
+                onClick={() => setSelectedDumpDetails(null)}
+                style={{ padding: '0.55rem 1.25rem', background: '#0f172a', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer' }}
+              >
+                Close
               </button>
             </div>
           </div>

@@ -239,6 +239,14 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
           {!collapsed && salesOpen && (
             <div className="submenu-list">
               <button
+                type="button"
+                className={`submenu-item ${activeTab === 'orders-pending' ? 'active' : ''}`}
+                onClick={() => setActiveTab('orders-pending')}
+              >
+                Pending Orders
+              </button>
+              <button
+                type="button"
                 className={`submenu-item ${activeTab === 'orders-management' || activeTab === 'sales-reports' || activeTab === 'sales-records' ? 'active' : ''}`}
                 onClick={() => setActiveTab('orders-management')}
               >
