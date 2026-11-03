@@ -1455,6 +1455,7 @@ function AdminContentLibraryPage() {
                     ref={handleVideoRef}
                     key={previewingAsset.id || previewingAsset.file_url}
                     src={previewingAsset.file_url}
+                    preload="metadata"
                     controls
                     autoPlay={false}
                     onLoadedMetadata={handleVideoLoadedMetadata}

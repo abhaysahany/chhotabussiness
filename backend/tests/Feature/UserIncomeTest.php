@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\DirectIncomeAccount;
-use App\Models\LevelIncomeAccount;
+use App\Models\DirectIncome;
+use App\Models\LevelIncome;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
@@ -119,10 +119,9 @@ class UserIncomeTest extends TestCase
      */
     public function test_authenticated_user_reads_own_direct_income_record(): void
     {
-        DirectIncomeAccount::create([
-            'user_id' => $this->user1->id,
-            'member_id' => $this->user1->user_code,
-            'user_name' => $this->user1->name,
+        DirectIncome::create([
+            'user_code' => $this->user1->user_code,
+            'sponsor_id' => 'SPONSOR_' . uniqid(),
             'total_amount' => 15000.00,
             'paid_amount' => 5000.00,
             'balance_amount' => 10000.00,
@@ -147,23 +146,21 @@ class UserIncomeTest extends TestCase
      */
     public function test_authenticated_user_reads_level_income_breakdown(): void
     {
-        // Populate Level 2 and Level 3 accounts for user1
-        LevelIncomeAccount::create([
-            'user_id' => $this->user1->id,
-            'member_id' => $this->user1->user_code,
-            'user_name' => $this->user1->name,
-            'level_number' => 2,
+        // Populate Level 2 and Level 3 records for user1
+        LevelIncome::create([
+            'user_code' => $this->user1->user_code,
+            'level_id' => 'ROOT',
+            'level' => '2',
             'total_amount' => 8000.00,
             'paid_amount' => 2000.00,
             'balance_amount' => 6000.00,
             'dump_amount' => 100.00,
         ]);
 
-        LevelIncomeAccount::create([
-            'user_id' => $this->user1->id,
-            'member_id' => $this->user1->user_code,
-            'user_name' => $this->user1->name,
-            'level_number' => 3,
+        LevelIncome::create([
+            'user_code' => $this->user1->user_code,
+            'level_id' => 'ROOT',
+            'level' => '3',
             'total_amount' => 4000.00,
             'paid_amount' => 1000.00,
             'balance_amount' => 3000.00,
@@ -205,10 +202,9 @@ class UserIncomeTest extends TestCase
     public function test_user_cannot_access_another_users_income_summary(): void
     {
         // User 1 has records
-        DirectIncomeAccount::create([
-            'user_id' => $this->user1->id,
-            'member_id' => $this->user1->user_code,
-            'user_name' => $this->user1->name,
+        DirectIncome::create([
+            'user_code' => $this->user1->user_code,
+            'sponsor_id' => 'SPONSOR_' . uniqid(),
             'total_amount' => 50000.00,
             'paid_amount' => 20000.00,
             'balance_amount' => 30000.00,
@@ -231,22 +227,21 @@ class UserIncomeTest extends TestCase
     }
 
     /**
-     * Test 9: Balance calculation is always MAX(total_amount - paid_amount, 0)
-     * and dump_amount is separately displayed and never subtracted from balance.
+     * Test 9: Balance calculation is always MAX(total_amount - paid_amount - dump_amount, 0)
+     * and dump_amount is separately displayed and isolated.
      */
     public function test_balance_amount_is_max_total_minus_paid_and_dump_isolated(): void
     {
-        $account = DirectIncomeAccount::create([
-            'user_id' => $this->user1->id,
-            'member_id' => $this->user1->user_code,
-            'user_name' => $this->user1->name,
+        $income = DirectIncome::create([
+            'user_code' => $this->user1->user_code,
+            'sponsor_id' => 'SPONSOR_' . uniqid(),
             'total_amount' => 1000.00,
             'paid_amount' => 1500.00, // edge case: paid > total
             'balance_amount' => 0.00,
             'dump_amount' => 300.00,
         ]);
 
-        $this->assertEquals(0.0, (float) $account->balance_amount);
-        $this->assertEquals(300.0, (float) $account->dump_amount);
+        $this->assertEquals(0.0, (float) $income->balance_amount);
+        $this->assertEquals(300.0, (float) $income->dump_amount);
     }
 }

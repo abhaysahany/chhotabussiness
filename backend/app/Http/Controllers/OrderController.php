@@ -393,7 +393,7 @@ class OrderController extends Controller
 
         $status = ($balanceDue == 0) ? 'completed' : (($advancePayment > 0) ? 'partial' : 'pending');
 
-        $finalSponsor = $sponsor ?: ($member->sponsor_id ?: 'CB100001');
+        $finalSponsor = $sponsor ?: ($member?->sponsor_id ?: null);
 
         $orderData = [
             'invoice_number' => $invoiceNumber,

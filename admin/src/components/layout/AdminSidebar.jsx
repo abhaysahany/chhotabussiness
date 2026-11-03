@@ -200,13 +200,6 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
               >
                 Pricing Packages
               </button>
-              <button
-                type="button"
-                className={`submenu-item ${activeTab === 'products-commissions' || activeTab === 'entities-commissions' ? 'active' : ''}`}
-                onClick={() => setActiveTab('products-commissions')}
-              >
-                Set Commission
-              </button>
             </div>
           )}
         </div>
