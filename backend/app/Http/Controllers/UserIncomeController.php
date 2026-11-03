@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\DirectIncomeAccount;
-use App\Models\LevelIncomeAccount;
+use App\Models\DirectIncome;
+use App\Models\LevelIncome;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Laravel\Sanctum\PersonalAccessToken;
@@ -52,22 +52,26 @@ class UserIncomeController extends Controller
             ], 401);
         }
 
-        // Always query exclusively by the authenticated user's ID
-        $account = DirectIncomeAccount::where('user_id', $user->id)->first();
+        // Query direct_incomes exclusively for the authenticated user by user_code
+        $directIncomes = $user->user_code
+            ? DirectIncome::where('user_code', $user->user_code)->orderBy('id', 'desc')->get()
+            : collect([]);
 
-        $totalAmount = (float) ($account?->total_amount ?? 0.0);
-        $paidAmount = (float) ($account?->paid_amount ?? 0.0);
+        $totalAmount = (float) $directIncomes->sum('total_amount');
+        $paidAmount = (float) $directIncomes->sum('paid_amount');
+        $dumpAmount = (float) $directIncomes->sum('dump_amount');
         $balanceAmount = max(0.0, round($totalAmount - $paidAmount, 2));
-        $dumpAmount = (float) ($account?->dump_amount ?? 0.0);
+
+        $latestRecord = $directIncomes->first();
 
         $summary = [
-            'id' => $account?->id,
+            'id' => $latestRecord?->id,
             'user_id' => $user->id,
             'userId' => $user->id,
-            'member_id' => $account?->member_id ?: ($user->user_code ?: "USR-{$user->id}"),
-            'memberId' => $account?->member_id ?: ($user->user_code ?: "USR-{$user->id}"),
-            'user_name' => $account?->user_name ?: ($user->name ?: 'Member'),
-            'userName' => $account?->user_name ?: ($user->name ?: 'Member'),
+            'member_id' => $user->user_code ?: "USR-{$user->id}",
+            'memberId' => $user->user_code ?: "USR-{$user->id}",
+            'user_name' => $user->name ?: 'Member',
+            'userName' => $user->name ?: 'Member',
             'total_amount' => $totalAmount,
             'totalAmount' => $totalAmount,
             'paid_amount' => $paidAmount,
@@ -76,10 +80,34 @@ class UserIncomeController extends Controller
             'balanceAmount' => $balanceAmount,
             'dump_amount' => $dumpAmount,
             'dumpAmount' => $dumpAmount,
-            'has_record' => (bool) $account,
-            'created_at' => $account?->created_at?->toIso8601String(),
-            'updated_at' => $account?->updated_at?->toIso8601String(),
+            'has_record' => $directIncomes->isNotEmpty(),
+            'created_at' => $latestRecord?->created_at?->toIso8601String(),
+            'updated_at' => $latestRecord?->updated_at?->toIso8601String(),
         ];
+
+        $records = $directIncomes->map(function ($rec) use ($user) {
+            return [
+                'id' => $rec->id,
+                'user_id' => $user->id,
+                'userId' => $user->id,
+                'member_id' => $rec->user_code ?: $user->user_code,
+                'memberId' => $rec->user_code ?: $user->user_code,
+                'user_name' => $user->name ?: 'Member',
+                'userName' => $user->name ?: 'Member',
+                'user_code' => $rec->user_code,
+                'sponsor_id' => $rec->sponsor_id,
+                'total_amount' => (float) $rec->total_amount,
+                'totalAmount' => (float) $rec->total_amount,
+                'paid_amount' => (float) $rec->paid_amount,
+                'paidAmount' => (float) $rec->paid_amount,
+                'balance_amount' => (float) $rec->balance_amount,
+                'balanceAmount' => (float) $rec->balance_amount,
+                'dump_amount' => (float) $rec->dump_amount,
+                'dumpAmount' => (float) $rec->dump_amount,
+                'created_at' => $rec->created_at?->toIso8601String(),
+                'updated_at' => $rec->updated_at?->toIso8601String(),
+            ];
+        })->values()->all();
 
         return response()->json([
             'status' => 'success',
@@ -90,7 +118,7 @@ class UserIncomeController extends Controller
                 'email' => $user->email,
             ],
             'summary' => $summary,
-            'records' => $account ? [$account] : [],
+            'records' => $records,
         ], 200);
     }
 
@@ -109,36 +137,38 @@ class UserIncomeController extends Controller
             ], 401);
         }
 
-        // Always query exclusively by the authenticated user's ID
-        $records = LevelIncomeAccount::where('user_id', $user->id)
-            ->orderBy('level_number', 'asc')
-            ->get();
+        // Query level_incomes by user_code
+        $records = $user->user_code
+            ? LevelIncome::where('user_code', $user->user_code)->orderBy('level', 'asc')->get()
+            : collect([]);
 
-        // Calculate cumulative totals across existing level accounts
+        // Calculate cumulative totals across existing level records
         $totalAmount = (float) $records->sum('total_amount');
         $paidAmount = (float) $records->sum('paid_amount');
         $balanceAmount = max(0.0, round($totalAmount - $paidAmount, 2));
         $dumpAmount = (float) $records->sum('dump_amount');
 
-        $recordsByLevel = $records->keyBy('level_number');
+        $recordsByLevel = $records->groupBy('level');
 
         // Build Level 2, 3, 4, 5 structure
         $levelsBreakdown = [];
         foreach ([2, 3, 4, 5] as $levelNum) {
-            $levelRecord = $recordsByLevel->get($levelNum);
-            $lvlTotal = (float) ($levelRecord?->total_amount ?? 0.0);
-            $lvlPaid = (float) ($levelRecord?->paid_amount ?? 0.0);
+            $levelGroup = $recordsByLevel->get($levelNum, collect([]));
+            $lvlTotal = (float) $levelGroup->sum('total_amount');
+            $lvlPaid = (float) $levelGroup->sum('paid_amount');
             $lvlBalance = max(0.0, round($lvlTotal - $lvlPaid, 2));
-            $lvlDump = (float) ($levelRecord?->dump_amount ?? 0.0);
+            $lvlDump = (float) $levelGroup->sum('dump_amount');
+
+            $firstRec = $levelGroup->first();
 
             $levelsBreakdown[] = [
-                'id' => $levelRecord?->id,
+                'id' => $firstRec?->id,
                 'user_id' => $user->id,
                 'userId' => $user->id,
-                'member_id' => $levelRecord?->member_id ?: ($user->user_code ?: "USR-{$user->id}"),
-                'memberId' => $levelRecord?->member_id ?: ($user->user_code ?: "USR-{$user->id}"),
-                'user_name' => $levelRecord?->user_name ?: ($user->name ?: 'Member'),
-                'userName' => $levelRecord?->user_name ?: ($user->name ?: 'Member'),
+                'member_id' => $user->user_code ?: "USR-{$user->id}",
+                'memberId' => $user->user_code ?: "USR-{$user->id}",
+                'user_name' => $user->name ?: 'Member',
+                'userName' => $user->name ?: 'Member',
                 'level_number' => $levelNum,
                 'levelNumber' => $levelNum,
                 'total_amount' => $lvlTotal,
@@ -149,9 +179,9 @@ class UserIncomeController extends Controller
                 'balanceAmount' => $lvlBalance,
                 'dump_amount' => $lvlDump,
                 'dumpAmount' => $lvlDump,
-                'has_record' => (bool) $levelRecord,
-                'created_at' => $levelRecord?->created_at?->toIso8601String(),
-                'updated_at' => $levelRecord?->updated_at?->toIso8601String(),
+                'has_record' => $levelGroup->isNotEmpty(),
+                'created_at' => $firstRec?->created_at?->toIso8601String(),
+                'updated_at' => $firstRec?->updated_at?->toIso8601String(),
             ];
         }
 

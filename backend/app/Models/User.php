@@ -73,14 +73,19 @@ class User extends Authenticatable
         return $this->hasMany(UserUpiAccount::class, 'user_id');
     }
 
-    public function directIncomeAccount()
+    public function directIncomes()
     {
-        return $this->hasOne(DirectIncomeAccount::class, 'user_id');
+        return $this->hasMany(DirectIncome::class, 'user_code', 'user_code');
     }
 
-    public function levelIncomeAccounts()
+    public function directIncome()
     {
-        return $this->hasMany(LevelIncomeAccount::class, 'user_id');
+        return $this->hasOne(DirectIncome::class, 'user_code', 'user_code')->latestOfMany();
+    }
+
+    public function levelIncomes()
+    {
+        return $this->hasMany(LevelIncome::class, 'user_code', 'user_code');
     }
 
     /**

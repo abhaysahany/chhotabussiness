@@ -178,6 +178,30 @@ class AdminIncomeAllocationService
             // 7. Recompute parent order's aggregate distribution status
             $this->syncOrderIncomeDistributionStatus($order);
 
+            // 8. Distribute Direct Income using helper (Direct Income only to customer's upline sponsor)
+            if ($split['direct_amount'] > 0) {
+                $customer = $order->customer_user_code ? \App\Models\User::where('user_code', $order->customer_user_code)->first() : null;
+                $sponsorCode = $customer ? $customer->sponsor_id : $order->sponsor;
+
+                if (!empty($sponsorCode) && strtolower(trim((string) $sponsorCode)) !== 'root' && trim((string) $sponsorCode) !== trim((string) $order->customer_user_code)) {
+                    directIncome(
+                        $sponsorCode,
+                        $order->customer_user_code,
+                        $split['direct_amount'],
+                        (float) ($order->dump_amount ?? 0)
+                    );
+                }
+            }
+
+            // 9. Distribute Level Income using helper (Levels 2-5 across upline hierarchy)
+            if ($split['level_amount'] > 0 && !empty($order->customer_user_code)) {
+                levelIncome(
+                    $order->customer_user_code,
+                    $split['level_amount'],
+                    (float) ($order->dump_amount ?? 0)
+                );
+            }
+
             return [
                 'payment' => $payment->fresh(),
                 'order' => $order->fresh(['payments']),
