@@ -5,14 +5,39 @@
     RewriteRule ^api/(.*)$ backend/public/index.php [L,QSA]
     RewriteRule ^api$ backend/public/index.php [L,QSA]
 
-    # 2. Allow direct access to admin, entity, and backend sub-applications
-    RewriteCond %{REQUEST_URI} ^/admin(/.*)?$ [OR]
-    RewriteCond %{REQUEST_URI} ^/entity(/.*)?$ [OR]
+    # 2. Allow direct access to backend sub-application and static files
     RewriteCond %{REQUEST_URI} ^/backend(/.*)?$
     RewriteRule ^ - [L]
 
-    # 3. SPA fallback for root User panel
+    # 3. Entity Panel SPA:
+    # If the requested resource under /entity exists as a real file or directory, serve it directly
+    RewriteCond %{REQUEST_URI} ^/entity(/.*)?$
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # If the requested resource under /entity is not a file or directory, rewrite to /entity/index.html
+    RewriteCond %{REQUEST_URI} ^/entity(/.*)?$
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^ index.html [L]
+    RewriteRule ^ /entity/index.html [L,QSA]
+
+    # 4. Admin Panel SPA:
+    # If the requested resource under /admin exists as a real file or directory, serve it directly
+    RewriteCond %{REQUEST_URI} ^/admin(/.*)?$
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # If the requested resource under /admin is not a file or directory, rewrite to /admin/index.html
+    RewriteCond %{REQUEST_URI} ^/admin(/.*)?$
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ /admin/index.html [L,QSA]
+
+    # 5. User Panel SPA:
+    # Root domain fallback for all other routes that are not physical files or directories
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.html [L,QSA]
 </IfModule>

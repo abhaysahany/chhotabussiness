@@ -2,9 +2,14 @@
     RewriteEngine On
     RewriteBase /entity/
 
+    # If the requested resource is index.html, stop rewriting
+    RewriteRule ^index\.html$ - [L]
+
+    # If the requested resource exists as a physical file or directory, serve it directly
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d
     RewriteRule ^ - [L]
 
-    RewriteRule ^ index.html [L]
+    # Rewrite all other requests to /entity/index.html for React Router SPA
+    RewriteRule . /entity/index.html [L]
 </IfModule>
