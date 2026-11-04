@@ -59,7 +59,9 @@ function AdminLoginForm({ onLoginSuccess }) {
         (err.response?.data?.errors
           ? Object.values(err.response.data.errors).flat().join(' ')
           : !err.response
-            ? 'Unable to connect to backend server. Please verify that "php artisan serve" is running on port 8000.'
+            ? (typeof window !== 'undefined' && window.location.origin.includes('vyaparadnet.com')
+                ? 'Unable to connect to backend server. Please verify your connection or try again shortly.'
+                : 'Unable to connect to backend server. Please verify that "php artisan serve" is running on port 8000.')
             : 'Invalid email/username or password credentials.');
       setError(errMsg);
     } finally {

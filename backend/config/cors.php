@@ -19,6 +19,7 @@ return [
 
     'allowed_origins' => [
         'https://vyaparadnet.com',
+        'https://www.vyaparadnet.com',
         'http://localhost:5173',
         'http://localhost:5174',
         'http://localhost:5175',
