@@ -1,47 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useBranding } from '../../utils/branding';
 
-function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogout, currentAdmin }) {
+function AdminSidebar({ collapsed, setCollapsed, onLogout, currentAdmin }) {
   const { appName } = useBranding();
-  const [entitiesOpen, setEntitiesOpen] = useState(() => Boolean(activeTab === 'entities-businesses' || activeTab === 'entities-freelancers'));
-  const [productsOpen, setProductsOpen] = useState(() => Boolean(activeTab?.startsWith('products-') || activeTab?.startsWith('services-') || activeTab === 'entities-commissions'));
-  const [salesOpen, setSalesOpen] = useState(() => Boolean(activeTab?.startsWith('sales-') || activeTab?.startsWith('orders-')));
-  const [paymentsOpen, setPaymentsOpen] = useState(() => Boolean(activeTab?.startsWith('payments-')));
-  const [supportOpen, setSupportOpen] = useState(() => Boolean(activeTab?.startsWith('support-') && activeTab !== 'support-notifications' && activeTab !== 'notifications'));
-  const [usersOpen, setUsersOpen] = useState(() => Boolean(activeTab?.startsWith('users-')));
-  const [userPayoutsOpen, setUserPayoutsOpen] = useState(() => Boolean(activeTab?.startsWith('users-payout-')));
-  const [userRewardsOpen, setUserRewardsOpen] = useState(() => Boolean(activeTab?.startsWith('users-rewards')));
-  const [contentOpen, setContentOpen] = useState(() => Boolean(activeTab?.startsWith('content-')));
+  const location = useLocation();
+  const currentPath = location.pathname;
 
-  React.useEffect(() => {
-    if (activeTab === 'entities-businesses' || activeTab === 'entities-freelancers') {
-      setEntitiesOpen(true);
-    }
-    if (activeTab?.startsWith('products-') || activeTab?.startsWith('services-') || activeTab === 'entities-commissions') {
-      setProductsOpen(true);
-    }
-    if (activeTab?.startsWith('sales-') || activeTab?.startsWith('orders-')) {
-      setSalesOpen(true);
-    }
-    if (activeTab?.startsWith('payments-')) {
-      setPaymentsOpen(true);
-    }
-    if (activeTab?.startsWith('support-') && activeTab !== 'support-notifications' && activeTab !== 'notifications') {
-      setSupportOpen(true);
-    }
-    if (activeTab?.startsWith('users-')) {
-      setUsersOpen(true);
-    }
-    if (activeTab?.startsWith('users-payout-')) {
-      setUserPayoutsOpen(true);
-    }
-    if (activeTab?.startsWith('users-rewards')) {
-      setUserRewardsOpen(true);
-    }
-    if (activeTab?.startsWith('content-')) {
-      setContentOpen(true);
-    }
-  }, [activeTab]);
+  const [entitiesOpen, setEntitiesOpen] = useState(() => currentPath.startsWith('/entities'));
+  const [productsOpen, setProductsOpen] = useState(() => currentPath.startsWith('/products'));
+  const [salesOpen, setSalesOpen] = useState(() => currentPath.startsWith('/orders'));
+  const [paymentsOpen, setPaymentsOpen] = useState(() => currentPath.startsWith('/payments'));
+  const [supportOpen, setSupportOpen] = useState(() => currentPath.startsWith('/support'));
+  const [userPayoutsOpen, setUserPayoutsOpen] = useState(() => currentPath.startsWith('/payouts'));
+  const [userRewardsOpen, setUserRewardsOpen] = useState(() => currentPath.startsWith('/rewards'));
+  const [contentOpen, setContentOpen] = useState(() => currentPath.startsWith('/content'));
+
+  useEffect(() => {
+    if (currentPath.startsWith('/entities')) setEntitiesOpen(true);
+    if (currentPath.startsWith('/products')) setProductsOpen(true);
+    if (currentPath.startsWith('/orders')) setSalesOpen(true);
+    if (currentPath.startsWith('/payments')) setPaymentsOpen(true);
+    if (currentPath.startsWith('/support')) setSupportOpen(true);
+    if (currentPath.startsWith('/payouts')) setUserPayoutsOpen(true);
+    if (currentPath.startsWith('/rewards')) setUserRewardsOpen(true);
+    if (currentPath.startsWith('/content')) setContentOpen(true);
+  }, [currentPath]);
 
   return (
     <aside className={`sidebar-container ${collapsed ? 'collapsed' : ''}`}>
@@ -79,9 +63,10 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
         <div className="menu-group">
           {!collapsed && <div className="menu-group-title">MAIN</div>}
 
-          <button
-            className={`menu-item ${activeTab === 'dashboard' ? 'active' : ''}`}
-            onClick={() => setActiveTab('dashboard')}
+          <NavLink
+            to="/dashboard"
+            className={({ isActive }) => `menu-item ${isActive ? 'active' : ''}`}
+            style={{ textDecoration: 'none' }}
           >
             <span className="menu-item-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -90,15 +75,16 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
               </svg>
             </span>
             {!collapsed && <span className="menu-item-label">Dashboard</span>}
-          </button>
+          </NavLink>
         </div>
 
         {/* BUSINESS GROUP */}
         <div className="menu-group">
           {!collapsed && <div className="menu-group-title">BUSINESS</div>}
-          <button
-            className={`menu-item ${activeTab === 'entities-categories' ? 'active' : ''}`}
-            onClick={() => setActiveTab('entities-categories')}
+          <NavLink
+            to="/entities/categories"
+            className={({ isActive }) => `menu-item ${isActive ? 'active' : ''}`}
+            style={{ textDecoration: 'none' }}
           >
             <span className="menu-item-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -109,10 +95,11 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
               </svg>
             </span>
             {!collapsed && <span className="menu-item-label">Categories</span>}
-          </button>
+          </NavLink>
+
           <button
             type="button"
-            className={`menu-item ${activeTab === 'entities-businesses' || activeTab === 'entities-freelancers' ? 'active' : ''}`}
+            className={`menu-item ${currentPath.startsWith('/entities') && !currentPath.includes('/categories') ? 'active' : ''}`}
             onClick={(e) => {
               e.preventDefault();
               setEntitiesOpen((prev) => !prev);
@@ -135,27 +122,34 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
           {/* Collapsible Submenu */}
           {!collapsed && entitiesOpen && (
             <div className="submenu-list">
-              <button
-                type="button"
-                className={`submenu-item ${activeTab === 'entities-businesses' ? 'active' : ''}`}
-                onClick={() => setActiveTab('entities-businesses')}
+              <NavLink
+                to="/entities/businesses"
+                className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
+                style={{ textDecoration: 'none' }}
               >
                 Register Business
-              </button>
-              <button
-                type="button"
-                className={`submenu-item ${activeTab === 'entities-freelancers' ? 'active' : ''}`}
-                onClick={() => setActiveTab('entities-freelancers')}
+              </NavLink>
+              <NavLink
+                to="/entities/freelancers"
+                className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
+                style={{ textDecoration: 'none' }}
               >
                 Register Freelance
-              </button>
+              </NavLink>
+              <NavLink
+                to="/entities/commissions"
+                className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
+                style={{ textDecoration: 'none' }}
+              >
+                Entity Commissions
+              </NavLink>
             </div>
           )}
 
           {/* Products & Services Collapsible Item */}
           <button
             type="button"
-            className={`menu-item ${activeTab?.startsWith('products') || activeTab?.startsWith('services') || activeTab === 'entities-commissions' ? 'active' : ''}`}
+            className={`menu-item ${currentPath.startsWith('/products') ? 'active' : ''}`}
             onClick={(e) => {
               e.preventDefault();
               setProductsOpen((prev) => !prev);
@@ -179,27 +173,27 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
           {/* Products & Services Collapsible Submenu */}
           {!collapsed && productsOpen && (
             <div className="submenu-list">
-              <button
-                type="button"
-                className={`submenu-item ${activeTab === 'products-catalog' ? 'active' : ''}`}
-                onClick={() => setActiveTab('products-catalog')}
+              <NavLink
+                to="/products/catalog"
+                className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
+                style={{ textDecoration: 'none' }}
               >
                 Products Catalog
-              </button>
-              <button
-                type="button"
-                className={`submenu-item ${activeTab === 'services-listings' ? 'active' : ''}`}
-                onClick={() => setActiveTab('services-listings')}
+              </NavLink>
+              <NavLink
+                to="/products/services"
+                className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
+                style={{ textDecoration: 'none' }}
               >
                 Services Listings
-              </button>
-              <button
-                type="button"
-                className={`submenu-item ${activeTab === 'products-packages' ? 'active' : ''}`}
-                onClick={() => setActiveTab('products-packages')}
+              </NavLink>
+              <NavLink
+                to="/products/packages"
+                className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
+                style={{ textDecoration: 'none' }}
               >
                 Pricing Packages
-              </button>
+              </NavLink>
             </div>
           )}
         </div>
@@ -210,7 +204,7 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
 
           <button
             type="button"
-            className={`menu-item ${activeTab?.startsWith('orders-') || activeTab?.startsWith('sales-') ? 'active' : ''}`}
+            className={`menu-item ${currentPath.startsWith('/orders') ? 'active' : ''}`}
             onClick={() => setSalesOpen(!salesOpen)}
           >
             <span className="menu-item-icon">
@@ -231,27 +225,35 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
           {/* Collapsible Submenu */}
           {!collapsed && salesOpen && (
             <div className="submenu-list">
-              <button
-                type="button"
-                className={`submenu-item ${activeTab === 'orders-pending' ? 'active' : ''}`}
-                onClick={() => setActiveTab('orders-pending')}
+              <NavLink
+                to="/orders/pending"
+                className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
+                style={{ textDecoration: 'none' }}
               >
                 Pending Orders
-              </button>
-              <button
-                type="button"
-                className={`submenu-item ${activeTab === 'orders-management' || activeTab === 'sales-reports' || activeTab === 'sales-records' ? 'active' : ''}`}
-                onClick={() => setActiveTab('orders-management')}
+              </NavLink>
+              <NavLink
+                to="/orders"
+                end
+                className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
+                style={{ textDecoration: 'none' }}
               >
                 Order Management
-              </button>
+              </NavLink>
+              <NavLink
+                to="/orders/dumps"
+                className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
+                style={{ textDecoration: 'none' }}
+              >
+                Dump Payment Requests
+              </NavLink>
             </div>
           )}
 
           {/* Payments Collapsible Item */}
           <button
             type="button"
-            className={`menu-item ${activeTab?.startsWith('payments-') ? 'active' : ''}`}
+            className={`menu-item ${currentPath.startsWith('/payments') ? 'active' : ''}`}
             onClick={() => setPaymentsOpen(!paymentsOpen)}
           >
             <span className="menu-item-icon">
@@ -271,12 +273,13 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
           {/* Payments Submenu */}
           {!collapsed && paymentsOpen && (
             <div className="submenu-list">
-              <button
-                className={`submenu-item ${activeTab === 'payments-history' || activeTab === 'payments-receive' ? 'active' : ''}`}
-                onClick={() => setActiveTab('payments-history')}
+              <NavLink
+                to="/payments/history"
+                className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
+                style={{ textDecoration: 'none' }}
               >
                 Payment Receipts & History
-              </button>
+              </NavLink>
             </div>
           )}
         </div>
@@ -286,9 +289,11 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
           {!collapsed && <div className="menu-group-title">USER MANAGEMENT</div>}
 
           {/* User Details */}
-          <button
-            className={`menu-item ${activeTab === 'users-details' ? 'active' : ''}`}
-            onClick={() => setActiveTab('users-details')}
+          <NavLink
+            to="/users"
+            end
+            className={({ isActive }) => `menu-item ${isActive ? 'active' : ''}`}
+            style={{ textDecoration: 'none' }}
           >
             <span className="menu-item-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -297,12 +302,13 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
               </svg>
             </span>
             {!collapsed && <span className="menu-item-label">User Details</span>}
-          </button>
+          </NavLink>
 
           {/* User KYC System */}
-          <button
-            className={`menu-item ${activeTab === 'users-kyc' ? 'active' : ''}`}
-            onClick={() => setActiveTab('users-kyc')}
+          <NavLink
+            to="/users/kyc"
+            className={({ isActive }) => `menu-item ${isActive ? 'active' : ''}`}
+            style={{ textDecoration: 'none' }}
           >
             <span className="menu-item-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -310,11 +316,12 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
               </svg>
             </span>
             {!collapsed && <span className="menu-item-label">User KYC System</span>}
-          </button>
+          </NavLink>
 
           {/* User Payout Dropdown Tab */}
           <button
-            className={`menu-item ${activeTab.startsWith('users-payout-') ? 'active' : ''}`}
+            type="button"
+            className={`menu-item ${currentPath.startsWith('/payouts') ? 'active' : ''}`}
             onClick={() => setUserPayoutsOpen(!userPayoutsOpen)}
           >
             <span className="menu-item-icon">
@@ -336,30 +343,34 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
           {/* User Payout Collapsible Submenu */}
           {!collapsed && userPayoutsOpen && (
             <div className="submenu-list">
-              <button
-                className={`submenu-item ${activeTab === 'users-payout-requests' ? 'active' : ''}`}
-                onClick={() => setActiveTab('users-payout-requests')}
+              <NavLink
+                to="/payouts/requests"
+                className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
+                style={{ textDecoration: 'none' }}
               >
                 Payout Requests
-              </button>
-              <button
-                className={`submenu-item ${activeTab === 'users-payout-history' ? 'active' : ''}`}
-                onClick={() => setActiveTab('users-payout-history')}
+              </NavLink>
+              <NavLink
+                to="/payouts/history"
+                className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
+                style={{ textDecoration: 'none' }}
               >
                 Payout History
-              </button>
-              <button
-                className={`submenu-item ${activeTab === 'users-payout-reports' ? 'active' : ''}`}
-                onClick={() => setActiveTab('users-payout-reports')}
+              </NavLink>
+              <NavLink
+                to="/payouts/reports"
+                className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
+                style={{ textDecoration: 'none' }}
               >
                 Payout Reports
-              </button>
+              </NavLink>
             </div>
           )}
 
           {/* User Rewards Dropdown Tab */}
           <button
-            className={`menu-item ${activeTab.startsWith('users-rewards') ? 'active' : ''}`}
+            type="button"
+            className={`menu-item ${currentPath.startsWith('/rewards') ? 'active' : ''}`}
             onClick={() => setUserRewardsOpen(!userRewardsOpen)}
           >
             <span className="menu-item-icon">
@@ -382,18 +393,21 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
           {/* User Rewards Collapsible Submenu */}
           {!collapsed && userRewardsOpen && (
             <div className="submenu-list">
-              <button
-                className={`submenu-item ${activeTab === 'users-rewards' ? 'active' : ''}`}
-                onClick={() => setActiveTab('users-rewards')}
+              <NavLink
+                to="/rewards"
+                end
+                className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
+                style={{ textDecoration: 'none' }}
               >
                 Rewards
-              </button>
-              <button
-                className={`submenu-item ${activeTab === 'users-rewards-claim' ? 'active' : ''}`}
-                onClick={() => setActiveTab('users-rewards-claim')}
+              </NavLink>
+              <NavLink
+                to="/rewards/claims"
+                className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
+                style={{ textDecoration: 'none' }}
               >
                 Rewards Claim
-              </button>
+              </NavLink>
             </div>
           )}
         </div>
@@ -403,9 +417,10 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
           {!collapsed && <div className="menu-group-title">CONTENT MANAGEMENT</div>}
 
           {/* Content Library */}
-          <button
-            className={`menu-item ${activeTab === 'content-library' || activeTab === 'content-media' || activeTab === 'content-upload' ? 'active' : ''}`}
-            onClick={() => setActiveTab('content-library')}
+          <NavLink
+            to="/content/library"
+            className={({ isActive }) => `menu-item ${isActive ? 'active' : ''}`}
+            style={{ textDecoration: 'none' }}
           >
             <span className="menu-item-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -415,12 +430,13 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
               </svg>
             </span>
             {!collapsed && <span className="menu-item-label">Content Library</span>}
-          </button>
+          </NavLink>
 
           {/* Content Support */}
-          <button
-            className={`menu-item ${activeTab === 'content-support-uploads' ? 'active' : ''}`}
-            onClick={() => setActiveTab('content-support-uploads')}
+          <NavLink
+            to="/content/support"
+            className={({ isActive }) => `menu-item ${isActive ? 'active' : ''}`}
+            style={{ textDecoration: 'none' }}
           >
             <span className="menu-item-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -430,18 +446,18 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
               </svg>
             </span>
             {!collapsed && <span className="menu-item-label">Content Support</span>}
-          </button>
+          </NavLink>
         </div>
-
 
         {/* USER SUPPORT SYSTEM GROUP */}
         <div className="menu-group">
           {!collapsed && <div className="menu-group-title">SUPPORT SYSTEM</div>}
 
           {/* Direct Separate Notification Tab */}
-          <button
-            className={`menu-item ${activeTab === 'support-notifications' || activeTab === 'notifications' ? 'active' : ''}`}
-            onClick={() => setActiveTab('support-notifications')}
+          <NavLink
+            to="/notifications"
+            className={({ isActive }) => `menu-item ${isActive ? 'active' : ''}`}
+            style={{ textDecoration: 'none' }}
           >
             <span className="menu-item-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -450,11 +466,12 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
               </svg>
             </span>
             {!collapsed && <span className="menu-item-label">Notifications</span>}
-          </button>
+          </NavLink>
 
           {/* Support System Dropdown */}
           <button
-            className={`menu-item ${activeTab.startsWith('support-') && activeTab !== 'support-notifications' && activeTab !== 'notifications' ? 'active' : ''}`}
+            type="button"
+            className={`menu-item ${currentPath.startsWith('/support') ? 'active' : ''}`}
             onClick={() => setSupportOpen(!supportOpen)}
           >
             <span className="menu-item-icon">
@@ -476,30 +493,34 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
           {/* Collapsible Dropdown Submenu */}
           {!collapsed && supportOpen && (
             <div className="submenu-list">
-              <button
-                className={`submenu-item ${activeTab === 'support-tickets' ? 'active' : ''}`}
-                onClick={() => setActiveTab('support-tickets')}
+              <NavLink
+                to="/support/tickets"
+                className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
+                style={{ textDecoration: 'none' }}
               >
                 Support Tickets
-              </button>
-              <button
-                className={`submenu-item ${activeTab === 'support-live' ? 'active' : ''}`}
-                onClick={() => setActiveTab('support-live')}
+              </NavLink>
+              <NavLink
+                to="/support/live"
+                className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
+                style={{ textDecoration: 'none' }}
               >
                 Live Helpdesk
-              </button>
-              <button
-                className={`submenu-item ${activeTab === 'support-contact' ? 'active' : ''}`}
-                onClick={() => setActiveTab('support-contact')}
+              </NavLink>
+              <NavLink
+                to="/support/contact"
+                className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
+                style={{ textDecoration: 'none' }}
               >
                 Contact Channels
-              </button>
-              <button
-                className={`submenu-item ${activeTab === 'support-kb' ? 'active' : ''}`}
-                onClick={() => setActiveTab('support-kb')}
+              </NavLink>
+              <NavLink
+                to="/support/kb"
+                className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
+                style={{ textDecoration: 'none' }}
               >
                 Knowledge Base
-              </button>
+              </NavLink>
             </div>
           )}
         </div>
@@ -507,9 +528,10 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
         {/* SYSTEM CONFIG GROUP */}
         <div className="menu-group">
           {!collapsed && <div className="menu-group-title">SYSTEM CONFIG</div>}
-          <button
-            className={`menu-item ${activeTab === 'settings' ? 'active' : ''}`}
-            onClick={() => setActiveTab('settings')}
+          <NavLink
+            to="/settings"
+            className={({ isActive }) => `menu-item ${isActive ? 'active' : ''}`}
+            style={{ textDecoration: 'none' }}
           >
             <span className="menu-item-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -518,8 +540,7 @@ function AdminSidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogo
               </svg>
             </span>
             {!collapsed && <span className="menu-item-label">Settings</span>}
-
-          </button>
+          </NavLink>
         </div>
       </div>
 
