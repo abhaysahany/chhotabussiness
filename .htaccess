@@ -5,13 +5,20 @@
     RewriteRule ^api/(.*)$ backend/public/index.php [L,QSA]
     RewriteRule ^api$ backend/public/index.php [L,QSA]
 
-    # 2. Allow direct access to admin, entity, and backend sub-applications
-    RewriteCond %{REQUEST_URI} ^/admin(/.*)?$ [OR]
+    # 2. Admin SPA routing: serve real files and directories directly, fallback non-existent /admin/* to admin/index.html
+    RewriteCond %{REQUEST_URI} ^/admin
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    RewriteRule ^admin(/.*)?$ admin/index.html [L]
+
+    # 3. Allow direct access to entity and backend sub-applications
     RewriteCond %{REQUEST_URI} ^/entity(/.*)?$ [OR]
     RewriteCond %{REQUEST_URI} ^/backend(/.*)?$
     RewriteRule ^ - [L]
 
-    # 3. SPA fallback for root User panel
+    # 4. SPA fallback for root User panel
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^ index.html [L]
