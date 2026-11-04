@@ -205,10 +205,6 @@ function EntityPayoutTransactionsPage() {
     return summaryData.balance || 48500.00;
   }, [summaryData.balance]);
 
-  const computedTotalDump = useMemo(() => {
-    return filteredPayouts.reduce((acc, curr) => acc + (Number(curr.dump_amount ?? curr.dumpAmount) || 0), 0) || summaryData.dump_amount || 12450.00;
-  }, [filteredPayouts, summaryData.dump_amount]);
-
   const computedTotalTds = useMemo(() => {
     return filteredPayouts.reduce((acc, curr) => acc + (Number(curr.tds_deduction ?? curr.tdsDeduction) || 0), 0);
   }, [filteredPayouts]);
@@ -246,7 +242,6 @@ function EntityPayoutTransactionsPage() {
       'TDS (5%)',
       'Processing Fee',
       'Net Paid (INR)',
-      'Dump Amount (INR)',
       'Payment Method',
       'Bank / UPI',
       'Account No',
@@ -261,7 +256,6 @@ function EntityPayoutTransactionsPage() {
       (p.tds_deduction ?? p.tdsDeduction ?? 0).toFixed(2),
       (p.admin_processing_fee ?? p.adminProcessingFee ?? 0).toFixed(2),
       (p.net_payable_amount ?? p.netPayableAmount ?? 0).toFixed(2),
-      (p.dump_amount ?? p.dumpAmount ?? 0).toFixed(2),
       `"${p.payment_method || p.paymentMethod || 'Bank Transfer'}"`,
       `"${p.bank_name || p.bankName || 'HDFC Bank'}"`,
       `"${p.account_number || p.accountNumber || ''}"`,
@@ -454,33 +448,6 @@ function EntityPayoutTransactionsPage() {
           </div>
         </div>
 
-        {/* 3. DUMP AMOUNT CARD */}
-        <div
-          className="stat-card"
-          style={{
-            background: 'linear-gradient(135deg, #ffffff 0%, #faf5ff 100%)',
-            border: '1px solid #e9d5ff',
-            borderRadius: '12px',
-            padding: '1.25rem',
-            boxShadow: '0 4px 12px rgba(168, 85, 247, 0.08)',
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#6b21a8', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Dump Amount
-            </span>
-            <div style={{ width: '34px', height: '34px', borderRadius: '8px', background: '#f3e8ff', color: '#9333ea', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>
-              📦
-            </div>
-          </div>
-          <div style={{ fontSize: '1.65rem', fontWeight: 800, color: '#581c87', letterSpacing: '-0.02em' }}>
-            ₹{computedTotalDump.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.4rem', fontSize: '0.74rem', color: '#7e22ce', fontWeight: 600 }}>
-            <span>🔒</span> Escrow buffer & batch clearance hold
-          </div>
-        </div>
-
         {/* 4. TOTAL TRANSACTIONS CARD */}
         <div
           className="stat-card"
@@ -650,7 +617,6 @@ function EntityPayoutTransactionsPage() {
               <option value="all">All Statuses</option>
               <option value="paid">✓ Paid / Completed</option>
               <option value="pending">⏳ Pending / Processing</option>
-              <option value="dumped">📦 In Escrow / Dump</option>
               <option value="failed">✕ Failed / Rejected</option>
             </select>
           </div>
@@ -787,7 +753,6 @@ function EntityPayoutTransactionsPage() {
                 <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Gross Amount</th>
                 <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>TDS (5%)</th>
                 <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Net Paid</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Dump / Escrow</th>
                 <th style={{ padding: '0.75rem 1rem' }}>Mode</th>
                 <th style={{ padding: '0.75rem 1rem' }}>UTR / Ref No</th>
                 <th style={{ padding: '0.75rem 1rem' }}>Status</th>
@@ -797,7 +762,7 @@ function EntityPayoutTransactionsPage() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="10" style={{ padding: '3rem 1rem', textAlign: 'center', color: '#64748b' }}>
+                  <td colSpan="9" style={{ padding: '3rem 1rem', textAlign: 'center', color: '#64748b' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
                       <span style={{ fontSize: '1.5rem', animation: 'spin 1s linear infinite' }}>⏳</span>
                       <span>Loading payout transaction records...</span>
@@ -806,7 +771,7 @@ function EntityPayoutTransactionsPage() {
                 </tr>
               ) : paginatedPayouts.length === 0 ? (
                 <tr>
-                  <td colSpan="10" style={{ padding: '3rem 1rem', textAlign: 'center', color: '#64748b' }}>
+                  <td colSpan="9" style={{ padding: '3rem 1rem', textAlign: 'center', color: '#64748b' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
                       <span style={{ fontSize: '2rem' }}>🔍</span>
                       <strong style={{ color: '#0f172a', fontSize: '1rem' }}>No payout records found</strong>
@@ -899,16 +864,6 @@ function EntityPayoutTransactionsPage() {
                         </span>
                       </td>
 
-                      {/* Dump Amount */}
-                      <td style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>
-                        {dumpAmt > 0 ? (
-                          <span style={{ background: '#faf5ff', color: '#7e22ce', padding: '2px 6px', borderRadius: '4px', fontWeight: 700, fontSize: '0.75rem', border: '1px solid #e9d5ff' }}>
-                            ₹{dumpAmt.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                          </span>
-                        ) : (
-                          <span style={{ color: '#94a3b8', fontSize: '0.75rem' }}>₹0.00</span>
-                        )}
-                      </td>
 
                       {/* Payment Mode */}
                       <td style={{ padding: '0.85rem 1rem' }}>
@@ -952,12 +907,7 @@ function EntityPayoutTransactionsPage() {
                             Pending
                           </span>
                         )}
-                        {isDumped && (
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', background: '#f3e8ff', color: '#7e22ce', padding: '3px 8px', borderRadius: '12px', fontSize: '0.72rem', fontWeight: 800, border: '1px solid #e9d5ff' }}>
-                            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#9333ea' }} />
-                            In Escrow / Dump
-                          </span>
-                        )}
+
                         {!isPaid && !isPending && !isDumped && (
                           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', background: '#fee2e2', color: '#b91c1c', padding: '3px 8px', borderRadius: '12px', fontSize: '0.72rem', fontWeight: 800 }}>
                             ✕ {status}
@@ -1187,14 +1137,6 @@ function EntityPayoutTransactionsPage() {
                         -₹{(Number(selectedPayout.tds_deduction ?? selectedPayout.tdsDeduction) || 0).toFixed(2)}
                       </td>
                     </tr>
-                    {Number(selectedPayout.dump_amount ?? selectedPayout.dumpAmount) > 0 && (
-                      <tr style={{ borderBottom: '1px solid #f1f5f9', background: '#faf5ff' }}>
-                        <td style={{ padding: '0.6rem 0.85rem', color: '#7e22ce' }}>Escrow / Dump Buffer Hold</td>
-                        <td style={{ padding: '0.6rem 0.85rem', textAlign: 'right', fontWeight: 700, color: '#7e22ce' }}>
-                          ₹{(Number(selectedPayout.dump_amount ?? selectedPayout.dumpAmount) || 0).toFixed(2)}
-                        </td>
-                      </tr>
-                    )}
                     <tr style={{ background: '#f0fdf4' }}>
                       <td style={{ padding: '0.75rem 0.85rem', fontWeight: 800, color: '#15803d', fontSize: '0.9rem' }}>Net Amount Disbursed to Bank</td>
                       <td style={{ padding: '0.75rem 0.85rem', textAlign: 'right', fontWeight: 800, color: '#15803d', fontSize: '1.1rem' }}>
