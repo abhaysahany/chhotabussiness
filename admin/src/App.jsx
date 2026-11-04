@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import {
-  getSystemStatus,
-  getAdminInfo,
   getAdminProfile,
   adminLogout,
 } from './api/adminService';
 import AdminLoginForm from './components/AdminLoginForm';
-import AdminLayout from './components/layout/AdminLayout';
+import AdminProtectedRoute from './components/auth/AdminProtectedRoute';
+import AdminNotFoundPage from './components/pages/AdminNotFoundPage';
 import StarterPage from './components/pages/StarterPage';
 
 // Import Dedicated Admin Support System Pages
@@ -29,11 +29,7 @@ import AdminPackagesPage from './components/products/AdminPackagesPage';
 import AdminOrdersPage from './components/sales/AdminOrdersPage';
 import AdminPendingOrdersPage from './components/sales/AdminPendingOrdersPage';
 import AdminDumpRequestsPage from './components/sales/AdminDumpRequestsPage';
-import AdminCreateSalePage from './components/sales/AdminCreateSalePage';
-import AdminSalesReportsPage from './components/sales/AdminSalesReportsPage';
-import AdminPaymentReportsPage from './components/sales/AdminPaymentReportsPage';
 import AdminPaymentHistoryPage from './components/sales/AdminPaymentHistoryPage';
-
 
 // Import User Management Suite Pages
 import AdminUserDetailsPage from './components/users/AdminUserDetailsPage';
@@ -51,17 +47,11 @@ import AdminSettingsPage from './components/settings/AdminSettingsPage';
 import AdminDashboardOverview from './components/dashboard/AdminDashboardOverview';
 
 function App() {
-
+  const navigate = useNavigate();
   const [currentAdmin, setCurrentAdmin] = useState(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
-  const [activeTab, setActiveTab] = useState('dashboard'); // Default to Dashboard
 
-  const [status, setStatus] = useState(null);
-  const [adminInfo, setAdminInfo] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  // Check existing token on app load
+  // Check existing token on app load and verify via backend /api/admin/me
   useEffect(() => {
     const verifyAuth = async () => {
       const token = localStorage.getItem('admin_token');
@@ -76,10 +66,12 @@ function App() {
           setCurrentAdmin(response.admin);
         } else {
           localStorage.removeItem('admin_token');
+          setCurrentAdmin(null);
         }
       } catch (err) {
         console.error('Session verification error:', err);
         localStorage.removeItem('admin_token');
+        setCurrentAdmin(null);
       } finally {
         setCheckingAuth(false);
       }
@@ -87,31 +79,6 @@ function App() {
 
     verifyAuth();
   }, []);
-
-  // Fetch dashboard stats once authenticated
-  const fetchData = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const [statusRes, adminRes] = await Promise.all([
-        getSystemStatus(),
-        getAdminInfo(),
-      ]);
-      setStatus(statusRes);
-      setAdminInfo(adminRes);
-    } catch (err) {
-      console.error('Dashboard API Error:', err);
-      setError(err.message || 'Failed to connect to Laravel Backend');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (currentAdmin) {
-      fetchData();
-    }
-  }, [currentAdmin]);
 
   const handleLogout = async () => {
     try {
@@ -121,149 +88,245 @@ function App() {
     } finally {
       localStorage.removeItem('admin_token');
       setCurrentAdmin(null);
+      navigate('/login', { replace: true });
     }
   };
 
-  if (checkingAuth) {
-    return (
-      <div className="auth-page-container">
-        <div className="spinner" style={{ width: '32px', height: '32px', borderColor: '#3b82f6 transparent transparent transparent' }}></div>
-        <p style={{ marginTop: '1rem', color: '#64748b', fontSize: '0.875rem' }}>Loading Admin Session...</p>
-      </div>
-    );
-  }
+  // Compatibility navigation handler for legacy internal components using onNavigate(tabKey)
+  const handleNavigate = (target) => {
+    const routeMap = {
+      dashboard: '/dashboard',
+      'entities-categories': '/entities/categories',
+      'entities-businesses': '/entities/businesses',
+      businesses: '/entities/businesses',
+      'entities-freelancers': '/entities/freelancers',
+      freelancers: '/entities/freelancers',
+      'entities-commissions': '/entities/commissions',
+      'products-commissions': '/entities/commissions',
+      'products-catalog': '/products/catalog',
+      'services-listings': '/products/services',
+      'products-packages': '/products/packages',
+      'orders-pending': '/orders/pending',
+      'orders-management': '/orders',
+      'sales-reports': '/orders',
+      'sales-create': '/orders',
+      'orders-dump-requests': '/orders/dumps',
+      'dump-payment-requests': '/orders/dumps',
+      'payments-history': '/payments/history',
+      'payments-receive': '/payments/history',
+      'payments-reports': '/orders',
+      'users-details': '/users',
+      'users-kyc': '/users/kyc',
+      'users-payout-requests': '/payouts/requests',
+      'users-payout-history': '/payouts/history',
+      'users-payout-reports': '/payouts/reports',
+      'users-rewards': '/rewards',
+      'users-rewards-claim': '/rewards/claims',
+      'content-library': '/content/library',
+      'content-upload': '/content/library',
+      'content-support-uploads': '/content/support',
+      'support-notifications': '/notifications',
+      notifications: '/notifications',
+      'support-tickets': '/support/tickets',
+      'support-live': '/support/live',
+      'support-contact': '/support/contact',
+      'support-kb': '/support/kb',
+      settings: '/settings',
+      starter: '/starter',
+    };
 
-  // Render Login Page if not authenticated
-  if (!currentAdmin) {
-    return <AdminLoginForm onLoginSuccess={(admin) => setCurrentAdmin(admin)} />;
-  }
-
-  // Render Active Page View inside Pro Layout
-  const renderContent = () => {
-    switch (activeTab) {
-      // Business Entity Suite - Separate Pages
-      case 'entities-categories':
-        return <AdminCategoryPage onNavigate={(tab) => setActiveTab(tab)} />;
-
-      case 'entities-businesses':
-        return <AdminBusinessPage onNavigate={(tab) => setActiveTab(tab)} />;
-
-      case 'entities-freelancers':
-        return <AdminFreelancerPage onNavigate={(tab) => setActiveTab(tab)} />;
-
-      // Products & Services Suite - Separate Pages
-      case 'products-catalog':
-        return <AdminProductsPage />;
-
-      case 'services-listings':
-        return <AdminServicesPage />;
-
-      case 'products-packages':
-        return <AdminPackagesPage />;
-
-      case 'products-commissions':
-      case 'entities-commissions':
-        return <AdminEntityCommissionPage onNavigate={(tab) => setActiveTab(tab)} />;
-
-      // Orders & Payments Suite - Separate Pages
-      case 'orders-pending':
-        return <AdminPendingOrdersPage onNavigate={(tab) => setActiveTab(tab)} />;
-
-      case 'orders-dump-requests':
-      case 'dump-payment-requests':
-        return <AdminDumpRequestsPage onNavigate={(tab) => setActiveTab(tab)} />;
-
-      case 'sales-create':
-        return <AdminOrdersPage />;
-
-      case 'orders-management':
-      case 'sales-reports':
-        return <AdminOrdersPage />;
-
-      case 'payments-reports':
-      case 'payments-distribution':
-        // Legacy Payment Commission Distribution module retired; redirect to Order Management
-        return <AdminOrdersPage />;
-
-      case 'payments-history':
-      case 'payments-receive':
-        return <AdminPaymentHistoryPage />;
-
-
-      // User Management Suite - Separate Pages
-      case 'users-details':
-        return <AdminUserDetailsPage />;
-
-      case 'users-kyc':
-        return <AdminUserKycPage />;
-
-      case 'users-payout-requests':
-        return <AdminPayoutRequestsPage />;
-
-      case 'users-payout-history':
-        return <AdminPayoutHistoryPage />;
-
-      case 'users-payout-reports':
-        return <AdminPayoutReportsPage />;
-
-      case 'users-rewards':
-        return <AdminRewardsPage />;
-
-      case 'users-rewards-claim':
-        return <AdminRewardsClaimPage />;
-
-      // Content Management Suite
-      case 'content-library':
-      case 'content-upload':
-        return <AdminContentLibraryPage />;
-
-      case 'content-support-uploads':
-        return <AdminContentSupportUploadsPage />;
-
-      // Support System Suite
-      case 'notifications':
-      case 'support-notifications':
-        return <AdminSendNotificationPage />;
-
-      case 'support-tickets':
-        return <AdminSupportTicketsPage currentAdmin={currentAdmin} />;
-
-      case 'support-live':
-        return <AdminLiveHelpdeskPage currentAdmin={currentAdmin} />;
-
-      case 'support-contact':
-        return <AdminContactInquiriesPage />;
-
-      case 'support-kb':
-        return <AdminKnowledgeBasePage />;
-
-      case 'settings':
-        return <AdminSettingsPage />;
-
-      case 'starter':
-        return <StarterPage />;
-
-      case 'dashboard':
-      default:
-        return (
-          <AdminDashboardOverview
-            currentAdmin={currentAdmin}
-            onNavigate={(tab) => setActiveTab(tab)}
-          />
-        );
-    }
+    const destination = routeMap[target] || (target.startsWith('/') ? target : `/${target}`);
+    navigate(destination);
   };
 
+  const wrapProtected = (component) => (
+    <AdminProtectedRoute
+      currentAdmin={currentAdmin}
+      checkingAuth={checkingAuth}
+      onLogout={handleLogout}
+    >
+      {component}
+    </AdminProtectedRoute>
+  );
 
   return (
-    <AdminLayout
-      currentAdmin={currentAdmin}
-      onLogout={handleLogout}
-      activeTab={activeTab}
-      setActiveTab={setActiveTab}
-    >
-      {renderContent()}
-    </AdminLayout>
+    <Routes>
+      {/* Root Path Redirect */}
+      <Route
+        path="/"
+        element={
+          checkingAuth ? (
+            <div className="auth-page-container">
+              <div className="spinner" style={{ width: '32px', height: '32px', borderColor: '#3b82f6 transparent transparent transparent' }}></div>
+              <p style={{ marginTop: '1rem', color: '#64748b', fontSize: '0.875rem' }}>Loading Admin Session...</p>
+            </div>
+          ) : currentAdmin ? (
+            <Navigate to="/dashboard" replace />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+
+      {/* Public Auth Route */}
+      <Route
+        path="/login"
+        element={
+          checkingAuth ? (
+            <div className="auth-page-container">
+              <div className="spinner" style={{ width: '32px', height: '32px', borderColor: '#3b82f6 transparent transparent transparent' }}></div>
+              <p style={{ marginTop: '1rem', color: '#64748b', fontSize: '0.875rem' }}>Loading Admin Session...</p>
+            </div>
+          ) : currentAdmin ? (
+            <Navigate to="/dashboard" replace />
+          ) : (
+            <AdminLoginForm onLoginSuccess={(admin) => setCurrentAdmin(admin)} />
+          )
+        }
+      />
+
+      {/* Protected Admin Routes */}
+      <Route
+        path="/dashboard"
+        element={wrapProtected(<AdminDashboardOverview currentAdmin={currentAdmin} onNavigate={handleNavigate} />)}
+      />
+
+      {/* Business Entities Suite */}
+      <Route
+        path="/entities/categories"
+        element={wrapProtected(<AdminCategoryPage onNavigate={handleNavigate} />)}
+      />
+      <Route
+        path="/entities/businesses"
+        element={wrapProtected(<AdminBusinessPage onNavigate={handleNavigate} />)}
+      />
+      <Route
+        path="/entities/freelancers"
+        element={wrapProtected(<AdminFreelancerPage onNavigate={handleNavigate} />)}
+      />
+      <Route
+        path="/entities/commissions"
+        element={wrapProtected(<AdminEntityCommissionPage onNavigate={handleNavigate} />)}
+      />
+
+      {/* Products & Services Suite */}
+      <Route
+        path="/products/catalog"
+        element={wrapProtected(<AdminProductsPage />)}
+      />
+      <Route
+        path="/products/services"
+        element={wrapProtected(<AdminServicesPage />)}
+      />
+      <Route
+        path="/products/packages"
+        element={wrapProtected(<AdminPackagesPage />)}
+      />
+
+      {/* Orders & Payments Suite */}
+      <Route
+        path="/orders/pending"
+        element={wrapProtected(<AdminPendingOrdersPage onNavigate={handleNavigate} />)}
+      />
+      <Route
+        path="/orders"
+        element={wrapProtected(<AdminOrdersPage />)}
+      />
+      <Route
+        path="/orders/dumps"
+        element={wrapProtected(<AdminDumpRequestsPage onNavigate={handleNavigate} />)}
+      />
+      <Route
+        path="/payments/history"
+        element={wrapProtected(<AdminPaymentHistoryPage />)}
+      />
+
+      {/* User Management Suite */}
+      <Route
+        path="/users"
+        element={wrapProtected(<AdminUserDetailsPage />)}
+      />
+      <Route
+        path="/users/kyc"
+        element={wrapProtected(<AdminUserKycPage />)}
+      />
+      <Route
+        path="/payouts/requests"
+        element={wrapProtected(<AdminPayoutRequestsPage />)}
+      />
+      <Route
+        path="/payouts/history"
+        element={wrapProtected(<AdminPayoutHistoryPage />)}
+      />
+      <Route
+        path="/payouts/reports"
+        element={wrapProtected(<AdminPayoutReportsPage />)}
+      />
+      <Route
+        path="/rewards"
+        element={wrapProtected(<AdminRewardsPage />)}
+      />
+      <Route
+        path="/rewards/claims"
+        element={wrapProtected(<AdminRewardsClaimPage />)}
+      />
+
+      {/* Content Management Suite */}
+      <Route
+        path="/content/library"
+        element={wrapProtected(<AdminContentLibraryPage />)}
+      />
+      <Route
+        path="/content/support"
+        element={wrapProtected(<AdminContentSupportUploadsPage />)}
+      />
+
+      {/* Support System Suite */}
+      <Route
+        path="/notifications"
+        element={wrapProtected(<AdminSendNotificationPage />)}
+      />
+      <Route
+        path="/support/tickets"
+        element={wrapProtected(<AdminSupportTicketsPage currentAdmin={currentAdmin} />)}
+      />
+      <Route
+        path="/support/live"
+        element={wrapProtected(<AdminLiveHelpdeskPage currentAdmin={currentAdmin} />)}
+      />
+      <Route
+        path="/support/contact"
+        element={wrapProtected(<AdminContactInquiriesPage />)}
+      />
+      <Route
+        path="/support/kb"
+        element={wrapProtected(<AdminKnowledgeBasePage />)}
+      />
+
+      {/* System Settings & Starter Guide */}
+      <Route
+        path="/settings"
+        element={wrapProtected(<AdminSettingsPage />)}
+      />
+      <Route
+        path="/starter"
+        element={wrapProtected(<StarterPage />)}
+      />
+
+      {/* Backward-Compatible Route Aliases */}
+      <Route path="/orders/management" element={<Navigate to="/orders" replace />} />
+      <Route path="/orders/dump-requests" element={<Navigate to="/orders/dumps" replace />} />
+      <Route path="/sales" element={<Navigate to="/orders" replace />} />
+      <Route path="/sales/reports" element={<Navigate to="/orders" replace />} />
+      <Route path="/payments/ledger" element={<Navigate to="/payments/history" replace />} />
+      <Route path="/payouts" element={<Navigate to="/payouts/requests" replace />} />
+
+      {/* 404 Fallback Route */}
+      <Route
+        path="*"
+        element={wrapProtected(<AdminNotFoundPage currentAdmin={currentAdmin} />)}
+      />
+    </Routes>
   );
 }
 

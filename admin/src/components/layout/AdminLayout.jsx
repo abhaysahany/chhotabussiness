@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Outlet } from 'react-router-dom';
 import AdminSidebar from './AdminSidebar';
 import AdminHeader from './AdminHeader';
 import AdminFooter from './AdminFooter';
@@ -10,8 +11,6 @@ function AdminLayout({ currentAdmin, onLogout, activeTab, setActiveTab, children
   return (
     <div className={`admin-app-layout ${darkMode ? 'dark-mode' : 'light-mode'}`}>
       <AdminSidebar
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
         collapsed={collapsed}
         setCollapsed={setCollapsed}
         onLogout={onLogout}
@@ -26,7 +25,7 @@ function AdminLayout({ currentAdmin, onLogout, activeTab, setActiveTab, children
           setDarkMode={setDarkMode}
         />
 
-        <main className="admin-page-body">{children}</main>
+        <main className="admin-page-body">{children || <Outlet />}</main>
 
         <AdminFooter />
       </div>

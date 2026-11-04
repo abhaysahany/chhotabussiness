@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useBranding } from '../utils/branding';
 import {
   adminLogin,
@@ -8,6 +9,7 @@ import {
 } from '../api/adminService';
 
 function AdminLoginForm({ onLoginSuccess }) {
+  const navigate = useNavigate();
   const { appName } = useBranding();
   const [login, setLogin] = useState('admin');
   const [password, setPassword] = useState('123456');
@@ -46,6 +48,7 @@ function AdminLoginForm({ onLoginSuccess }) {
         if (onLoginSuccess) {
           onLoginSuccess(response.admin);
         }
+        navigate('/dashboard', { replace: true });
       } else {
         setError(response.message || 'Login failed. Please check your credentials.');
       }
