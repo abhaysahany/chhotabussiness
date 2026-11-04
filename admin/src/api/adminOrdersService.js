@@ -122,20 +122,11 @@ export const confirmPaymentIncomeAllocation = async (paymentId) => {
   }
 };
 
-// Update order Dump Amount
+// Update order Dump Amount (Deprecated & Disabled: Bug 1 Fix)
 export const updateOrderDumpAmount = async (orderId, dumpAmount) => {
-  try {
-    const response = await api.put(`/admin/orders/${orderId}/dump-amount`, { dump_amount: dumpAmount });
-    return response.data;
-  } catch (err) {
-    try {
-      const fallback = await api.post(`/admin/orders/${orderId}/dump-amount`, { dump_amount: dumpAmount });
-      return fallback.data;
-    } catch (e) {
-      console.error('Error updating order dump amount:', e);
-      throw (e.response?.data || e);
-    }
-  }
+  throw new Error(
+    'updateOrderDumpAmount is deprecated and disabled. Dump amount write-offs must be requested by the Entity and approved by Admin via Order Management Section B.'
+  );
 };
 
 // Get distributed payment receipts ledger across all entities (Show ONLY completed distributed payments)

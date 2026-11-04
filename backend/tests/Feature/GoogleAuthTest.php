@@ -22,7 +22,7 @@ class GoogleAuthTest extends TestCase
             'services.google.client_id' => 'test-google-client-id',
             'services.google.client_secret' => 'test-google-client-secret',
             'services.google.redirect_uri' => 'http://localhost:5174',
-            'services.google.allowed_origins' => ['http://localhost:5174', 'http://127.0.0.1:5174'],
+            'services.google.allowed_origins' => ['https://vyaparadnet.com', 'http://localhost:5174', 'http://127.0.0.1:5174'],
         ]);
         User::where('email', 'like', '%@test.com')->delete();
     }
@@ -83,6 +83,40 @@ class GoogleAuthTest extends TestCase
                 'status' => 'error',
                 'message' => 'Origin not allowed for Google authentication.',
             ]);
+    }
+
+    public function test_request_from_production_origin_is_allowed(): void
+    {
+        $this->mockGoogleAuthService([
+            'sub' => 'google-sub-prod-12345',
+            'email' => 'prodfan@test.com',
+            'email_verified' => true,
+            'name' => 'Prod User',
+            'avatar' => null,
+        ]);
+
+        $user = User::create([
+            'name' => 'Prod User',
+            'email' => 'prodfan@test.com',
+            'user_code' => 'CB' . rand(100000, 999999),
+            'password' => Hash::make('password123'),
+            'provider' => 'google',
+            'provider_id' => 'google-sub-prod-12345',
+        ]);
+
+        $response = $this->postJson('/api/auth/google', [
+            'code' => 'valid_prod_auth_code',
+            'mode' => 'login',
+        ], [
+            'X-Requested-With' => 'XMLHttpRequest',
+            'Origin' => 'https://vyaparadnet.com',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'status' => 'success',
+            ]);
+        $this->assertNotEmpty($response->json('token'));
     }
 
     public function test_missing_configuration_returns_actionable_500_message(): void

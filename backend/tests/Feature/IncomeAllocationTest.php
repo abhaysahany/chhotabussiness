@@ -612,22 +612,19 @@ class IncomeAllocationTest extends TestCase
         // Default is 0.00
         $this->assertEquals(0.0, (float) $order->dump_amount);
 
-        // Update dump amount to ₹2,500.50 via PUT
+        // Bug 1 Fix: Legacy PUT endpoint must return 410 Gone and NOT modify orders.dump_amount
         $updateRes = $this->withHeader('Authorization', 'Bearer ' . $this->adminToken)
             ->putJson("/api/admin/orders/{$order->id}/dump-amount", [
                 'dump_amount' => 2500.50,
             ]);
 
-        $updateRes->assertStatus(200);
+        $updateRes->assertStatus(410);
         $order->refresh();
-        $this->assertEquals(2500.50, (float) $order->dump_amount);
+        $this->assertEquals(0.0, (float) $order->dump_amount);
 
-        // Negative dump amount must be rejected with 422
-        $negRes = $this->withHeader('Authorization', 'Bearer ' . $this->adminToken)
-            ->putJson("/api/admin/orders/{$order->id}/dump-amount", [
-                'dump_amount' => -100,
-            ]);
-        $negRes->assertStatus(422);
+        // Set dump_amount directly on model to test that allocation preview does not subtract it
+        $order->dump_amount = 2500.50;
+        $order->save();
 
         // Allocation preview must NOT subtract or change based on dump amount
         $previewRes = $this->withHeader('Authorization', 'Bearer ' . $this->adminToken)

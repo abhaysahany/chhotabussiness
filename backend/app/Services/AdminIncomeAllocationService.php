@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+require_once app_path('Helpers/admin_function.php');
+
 use App\Models\Order;
 use App\Models\SalePayment;
 use Illuminate\Support\Facades\DB;
@@ -201,21 +203,21 @@ class AdminIncomeAllocationService
                 $sponsorCode = $customer ? $customer->sponsor_id : $order->sponsor;
 
                 if (!empty($sponsorCode) && strtolower(trim((string) $sponsorCode)) !== 'root' && trim((string) $sponsorCode) !== trim((string) $order->customer_user_code)) {
-                    directIncome(
+                    \directIncome(
                         $sponsorCode,
                         $order->customer_user_code,
                         $split['direct_amount'],
-                        (float) ($order->dump_amount ?? 0)
+                        0.00 // Bug 2 Fix: Never propagate order dump_amount to direct income
                     );
                 }
             }
 
             // 9. Distribute Level Income using helper (Levels 2-5 across upline hierarchy)
             if ($split['level_amount'] > 0 && !empty($order->customer_user_code)) {
-                levelIncome(
+                \levelIncome(
                     $order->customer_user_code,
                     $split['level_amount'],
-                    (float) ($order->dump_amount ?? 0)
+                    0.00 // Bug 2 Fix: Never propagate order dump_amount to level income
                 );
             }
 
