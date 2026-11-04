@@ -27,3 +27,17 @@ export const getUserLevelIncome = async () => {
     throw (err.response?.data || err);
   }
 };
+
+/**
+ * Fetch authenticated user's consolidated Income summary cards & streams.
+ * GET /api/user/income/summary
+ */
+export const getUserIncomeSummary = async () => {
+  try {
+    const response = await api.get('/user/income/summary');
+    return response.data;
+  } catch (err) {
+    console.error('Error fetching combined income summary:', err);
+    throw (err.response?.data || err);
+  }
+};

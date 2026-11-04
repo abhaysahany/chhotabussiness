@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
+use App\Models\DirectIncome;
+use App\Models\LevelIncome;
 use App\Models\SalesRecord;
 use App\Models\SalePayment;
 use App\Models\UserPayout;
@@ -21,6 +23,14 @@ class UserDashboardController extends Controller
     {
         // Resolve target user from authentication or parameter
         $user = auth('sanctum')->user() ?: $request->user();
+        if (!$user && $request->bearerToken()) {
+            if (class_exists(\Laravel\Sanctum\PersonalAccessToken::class)) {
+                $token = \Laravel\Sanctum\PersonalAccessToken::findToken($request->bearerToken());
+                if ($token && $token->tokenable instanceof User) {
+                    $user = $token->tokenable;
+                }
+            }
+        }
         if (!$user && $request->filled('user_code')) {
             $user = User::where('user_code', $request->input('user_code'))->first();
         }
@@ -48,6 +58,27 @@ class UserDashboardController extends Controller
         }
 
         $totalEarnings = $totalPaidPayouts + $commissionBalance;
+
+        // 2b. Dynamic Direct & Level Incomes strictly from MySQL Income Tables
+        $directIncomeTotal = 0.00;
+        $todayDirectIncome = 0.00;
+        $levelIncomeTotal = 0.00;
+        $todayLevelIncome = 0.00;
+
+        if ($user && !empty($userCode)) {
+            $directIncomeTotal = (float) DirectIncome::where('user_code', $userCode)->sum('total_amount');
+            $todayDirectIncome = (float) DirectIncome::where('user_code', $userCode)
+                ->whereDate('created_at', Carbon::today())
+                ->sum('total_amount');
+
+            $levelIncomeTotal = (float) LevelIncome::where('user_code', $userCode)->sum('total_amount');
+            $todayLevelIncome = (float) LevelIncome::where('user_code', $userCode)
+                ->whereDate('created_at', Carbon::today())
+                ->sum('total_amount');
+        }
+
+        $totalIncomeFromTables = round($directIncomeTotal + $levelIncomeTotal, 2);
+        $todayIncomeFromTables = round($todayDirectIncome + $todayLevelIncome, 2);
 
         // 3. Team Network Numbers from `users` Database Table
         $directMembersCount = 0;
@@ -207,10 +238,24 @@ class UserDashboardController extends Controller
                 'bpBalance' => $bpBalance,
                 'rewardsClaimedValue' => $rewardsClaimedValue,
                 'rewardsClaimedCount' => $rewardsClaimedCount,
+                'todayIncome' => $todayIncomeFromTables,
+                'totalIncome' => $totalIncomeFromTables,
+                'directIncome' => $directIncomeTotal,
+                'levelIncome' => $levelIncomeTotal,
+                'todayDirectIncome' => $todayDirectIncome,
+                'todayLevelIncome' => $todayLevelIncome,
                 'nextRankProgress' => 0,
                 'nextRankTargetBv' => 0,
                 'nextRankCurrentBv' => 0,
                 'nextRankName' => 'Standard Member',
+            ],
+            'incomeStats' => [
+                'todayIncome' => $todayIncomeFromTables,
+                'totalIncome' => $totalIncomeFromTables,
+                'directIncome' => $directIncomeTotal,
+                'levelIncome' => $levelIncomeTotal,
+                'todayDirectIncome' => $todayDirectIncome,
+                'todayLevelIncome' => $todayLevelIncome,
             ],
             'charts' => [
                 'revenue' => $revenueChart,

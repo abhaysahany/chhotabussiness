@@ -68,10 +68,15 @@ function DashboardOverview({ user, onNavigate }) {
     setTimeout(() => setCopiedLink(false), 2500);
   };
 
-  // KPIs with safe numeric defaults
+  // KPIs with safe numeric defaults (Including Dynamic Income Tables Integration)
   const kpis = useMemo(() => {
     const raw = data?.kpis || {};
+    const incomeStats = data?.incomeStats || {};
     return {
+      todayIncome: Number(raw.todayIncome ?? incomeStats.todayIncome ?? data?.todayIncome) || 0,
+      totalIncome: Number(raw.totalIncome ?? incomeStats.totalIncome ?? data?.totalIncome ?? raw.totalEarnings) || 0,
+      directIncome: Number(raw.directIncome ?? incomeStats.directIncome ?? data?.directIncome) || 0,
+      levelIncome: Number(raw.levelIncome ?? incomeStats.levelIncome ?? data?.levelIncome) || 0,
       totalEarnings: Number(raw.totalEarnings) || 0,
       commissionBalance: Number(raw.commissionBalance) || 0,
       teamVolumeBv: Number(raw.teamVolumeBv) || 0,
@@ -386,6 +391,118 @@ function DashboardOverview({ user, onNavigate }) {
             >
               <span>QR Card →</span>
             </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Dynamic Member Income Cards (Direct & Level Tables Integration) */}
+      <div style={{ marginBottom: '0.25rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <div>
+            <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--van-brand-navy)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span>💰 Member Income Summary</span>
+              <span className="van-badge van-badge-info" style={{ fontSize: '0.68rem', padding: '0.15rem 0.5rem' }}>Dynamic Real-Time</span>
+            </h3>
+            <p className="van-text-xs van-text-muted" style={{ margin: '0.15rem 0 0 0' }}>
+              Dynamic calculations from your Direct Income and Level Income ledger records.
+            </p>
+          </div>
+          <button
+            type="button"
+            className="van-btn van-btn-sm van-btn-outline"
+            onClick={() => onNavigate && onNavigate('my-income')}
+            style={{ fontSize: '0.75rem', fontWeight: 700 }}
+          >
+            <span>Open My Income Hub →</span>
+          </button>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
+          {/* Income Card 1: Today's Income */}
+          <div className="van-stat-card" style={{ borderLeft: '4px solid #10b981' }}>
+            <div className="van-stat-header">
+              <span className="van-stat-label" style={{ color: '#047857', fontWeight: 700 }}>Today's Income</span>
+              <div className="van-stat-icon-wrapper" style={{ color: '#059669', background: '#ecfdf5' }}>
+                <Zap size={16} />
+              </div>
+            </div>
+            <div className="van-stat-value" style={{ color: '#065f46' }}>
+              ₹{kpis.todayIncome.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+            </div>
+            <div className="van-stat-footer">
+              <span className="van-badge van-badge-success" style={{ background: '#d1fae5', color: '#065f46', border: 'none' }}>
+                ● Today's Payout
+              </span>
+            </div>
+          </div>
+
+          {/* Income Card 2: Total Income */}
+          <div className="van-stat-card" style={{ borderLeft: '4px solid #1e40af' }}>
+            <div className="van-stat-header">
+              <span className="van-stat-label" style={{ color: '#1e40af', fontWeight: 700 }}>Total Income</span>
+              <div className="van-stat-icon-wrapper" style={{ color: '#1e40af', background: '#eff6ff' }}>
+                <Wallet size={16} />
+              </div>
+            </div>
+            <div className="van-stat-value" style={{ color: '#1e3a8a' }}>
+              ₹{kpis.totalIncome.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+            </div>
+            <div className="van-stat-footer" style={{ justifyContent: 'space-between' }}>
+              <span className="van-badge van-badge-info">Direct + Level</span>
+              <button
+                type="button"
+                onClick={() => onNavigate && onNavigate('my-income')}
+                style={{ background: 'none', border: 'none', color: '#1e40af', fontWeight: 700, fontSize: '0.74rem', cursor: 'pointer', padding: 0 }}
+              >
+                Ledger →
+              </button>
+            </div>
+          </div>
+
+          {/* Income Card 3: Direct Income */}
+          <div className="van-stat-card" style={{ borderLeft: '4px solid #0284c7' }}>
+            <div className="van-stat-header">
+              <span className="van-stat-label" style={{ color: '#0284c7', fontWeight: 700 }}>Direct Income</span>
+              <div className="van-stat-icon-wrapper" style={{ color: '#0284c7', background: '#f0f9ff' }}>
+                <Users size={16} />
+              </div>
+            </div>
+            <div className="van-stat-value" style={{ color: '#0369a1' }}>
+              ₹{kpis.directIncome.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+            </div>
+            <div className="van-stat-footer" style={{ justifyContent: 'space-between' }}>
+              <span className="van-text-xs van-text-muted">40% Sponsor Cut</span>
+              <button
+                type="button"
+                onClick={() => onNavigate && onNavigate('income-direct')}
+                style={{ background: 'none', border: 'none', color: '#0284c7', fontWeight: 700, fontSize: '0.74rem', cursor: 'pointer', padding: 0 }}
+              >
+                Table →
+              </button>
+            </div>
+          </div>
+
+          {/* Income Card 4: Level Income */}
+          <div className="van-stat-card" style={{ borderLeft: '4px solid #7c3aed' }}>
+            <div className="van-stat-header">
+              <span className="van-stat-label" style={{ color: '#7c3aed', fontWeight: 700 }}>Level Income</span>
+              <div className="van-stat-icon-wrapper" style={{ color: '#7c3aed', background: '#faf5ff' }}>
+                <BarChart3 size={16} />
+              </div>
+            </div>
+            <div className="van-stat-value" style={{ color: '#6d28d9' }}>
+              ₹{kpis.levelIncome.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+            </div>
+            <div className="van-stat-footer" style={{ justifyContent: 'space-between' }}>
+              <span className="van-text-xs van-text-muted">Levels 2–5 Team</span>
+              <button
+                type="button"
+                onClick={() => onNavigate && onNavigate('income-levels')}
+                style={{ background: 'none', border: 'none', color: '#7c3aed', fontWeight: 700, fontSize: '0.74rem', cursor: 'pointer', padding: 0 }}
+              >
+                Table →
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -244,4 +244,83 @@ class UserIncomeTest extends TestCase
         $this->assertEquals(0.0, (float) $income->balance_amount);
         $this->assertEquals(300.0, (float) $income->dump_amount);
     }
+
+    /**
+     * Test 10: /api/user/income/summary returns combined dynamic cards, direct records, and level records.
+     */
+    public function test_authenticated_user_income_summary_returns_combined_cards_and_tables(): void
+    {
+        DirectIncome::create([
+            'user_code' => $this->user1->user_code,
+            'sponsor_id' => 'SPONSOR_1',
+            'total_amount' => 4000.00,
+            'paid_amount' => 1000.00,
+            'balance_amount' => 3000.00,
+            'dump_amount' => 0.00,
+        ]);
+
+        LevelIncome::create([
+            'user_code' => $this->user1->user_code,
+            'level' => 2,
+            'level_id' => 99,
+            'total_amount' => 1600.00,
+            'paid_amount' => 400.00,
+            'balance_amount' => 1200.00,
+            'dump_amount' => 0.00,
+        ]);
+
+        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token1)
+            ->getJson('/api/user/income/summary');
+
+        $response->assertStatus(200);
+        $data = $response->json();
+
+        $this->assertEquals('success', $data['status']);
+        $this->assertEquals(5600.00, (float) $data['cards']['total_income']);
+        $this->assertEquals(4000.00, (float) $data['cards']['direct_income']);
+        $this->assertEquals(1600.00, (float) $data['cards']['level_income']);
+        $this->assertEquals(1400.00, (float) $data['cards']['paid_amount']);
+        $this->assertEquals(4200.00, (float) $data['cards']['balance_amount']);
+        $this->assertCount(1, $data['direct']['records']);
+        $this->assertCount(1, $data['level']['records']);
+    }
+
+    /**
+     * Test 11: /api/user/dashboard/stats includes dynamic income cards for authenticated member.
+     */
+    public function test_user_dashboard_stats_includes_real_dynamic_income_cards(): void
+    {
+        DirectIncome::create([
+            'user_code' => $this->user1->user_code,
+            'sponsor_id' => 'SPONSOR_DASH',
+            'total_amount' => 2500.00,
+            'paid_amount' => 500.00,
+            'balance_amount' => 2000.00,
+            'dump_amount' => 0.00,
+        ]);
+
+        LevelIncome::create([
+            'user_code' => $this->user1->user_code,
+            'level' => 3,
+            'level_id' => 101,
+            'total_amount' => 1200.00,
+            'paid_amount' => 200.00,
+            'balance_amount' => 1000.00,
+            'dump_amount' => 0.00,
+        ]);
+
+        $response = $this->withHeader('Authorization', 'Bearer ' . $this->token1)
+            ->getJson('/api/user/dashboard/stats');
+
+        $response->assertStatus(200);
+        $data = $response->json();
+
+        $this->assertEquals('success', $data['status']);
+        $this->assertEquals(3700.00, (float) $data['kpis']['totalIncome']);
+        $this->assertEquals(2500.00, (float) $data['kpis']['directIncome']);
+        $this->assertEquals(1200.00, (float) $data['kpis']['levelIncome']);
+        $this->assertEquals(3700.00, (float) $data['incomeStats']['totalIncome']);
+        $this->assertEquals(2500.00, (float) $data['incomeStats']['directIncome']);
+        $this->assertEquals(1200.00, (float) $data['incomeStats']['levelIncome']);
+    }
 }

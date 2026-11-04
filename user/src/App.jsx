@@ -42,6 +42,7 @@ import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import LandingPage from './pages/landing/LandingPage';
 import DirectIncomePage from './pages/income/DirectIncomePage';
 import LevelIncomePage from './pages/income/LevelIncomePage';
+import MyIncomePage from './pages/income/MyIncomePage';
 import {
   getSystemStatus,
   getUserInfo,
@@ -365,6 +366,12 @@ function App() {
         return <PaymentTransactions user={user} />;
 
       // MY INCOME Suite (Direct Income & Level Income)
+      case 'my-income':
+      case 'income':
+      case 'income-overview':
+      case 'income-all':
+      case '/user/income':
+        return <MyIncomePage user={user} onNavigate={(page) => setActivePage(page)} />;
       case 'income-direct':
       case 'user-income-direct':
       case '/user/income/direct':

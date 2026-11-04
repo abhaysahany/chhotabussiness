@@ -69,6 +69,7 @@ Route::get('/user/info', function () {
     ]);
 });
 Route::get('/user/dashboard-stats', [UserDashboardController::class, 'getDashboardStats']);
+Route::get('/user/dashboard/stats', [UserDashboardController::class, 'getDashboardStats']);
 
 
 use App\Http\Controllers\AuthController;
@@ -209,6 +210,7 @@ use App\Http\Controllers\UserIncomeController;
 
 Route::get('/user/income/direct', [UserIncomeController::class, 'getDirectIncome']);
 Route::get('/user/income/levels', [UserIncomeController::class, 'getLevelIncome']);
+Route::get('/user/income/summary', [UserIncomeController::class, 'getIncomeSummary']);
 
 // User Payouts Management Endpoints (MySQL Database Backed)
 use App\Http\Controllers\UserPayoutController;

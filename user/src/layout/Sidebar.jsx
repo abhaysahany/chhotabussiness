@@ -292,7 +292,7 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
         {/* 6. My Income Tab */}
         <div className="nav-item">
           <button
-            className={`nav-link ${openMenus.income || activePage?.startsWith('income-') || activePage?.includes('/income/') ? 'active-parent-pill' : ''}`}
+            className={`nav-link ${openMenus.income || activePage === 'my-income' || activePage?.startsWith('income-') || activePage?.includes('/income') ? 'active-parent-pill' : ''}`}
             onClick={() => toggleMenu('income')}
           >
             <span className="nav-icon">
@@ -307,6 +307,13 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
 
           {!collapsed && openMenus.income && (
             <div className="sub-nav-list">
+              <button
+                className={`sub-nav-link ${activePage === 'my-income' || activePage === 'income' ? 'active' : ''}`}
+                onClick={() => onNavigate('my-income')}
+              >
+                <span className="sub-icon"><SubDot /></span>
+                <span className="sub-text">Income Overview (Both)</span>
+              </button>
               <button
                 className={`sub-nav-link ${activePage === 'income-direct' || activePage === '/user/income/direct' ? 'active' : ''}`}
                 onClick={() => onNavigate('income-direct')}
