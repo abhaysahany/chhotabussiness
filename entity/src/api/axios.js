@@ -27,10 +27,16 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401 && window.location.pathname !== '/') {
+    // Only redirect to login if 401 is NOT from an authentication request and not already on a login page
+    const requestUrl = error.config?.url || '';
+    const isAuthRequest = requestUrl.includes('/entity/login') || requestUrl.includes('/login');
+    const currentPath = window.location.pathname;
+    const isAuthPage = currentPath === '/' || currentPath === '/login' || currentPath === '/entity/login' || currentPath === '/entity-login';
+
+    if (error.response?.status === 401 && !isAuthRequest && !isAuthPage) {
       localStorage.removeItem('entity_token');
       localStorage.removeItem('entity_user');
-      window.location.href = '/';
+      window.location.href = '/entity/login';
     }
     return Promise.reject(error);
   }

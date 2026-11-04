@@ -179,6 +179,7 @@ use App\Http\Controllers\EntityAuthController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\SalesRecordController;
 
+Route::get('/entity/selectable-entities', [EntityAuthController::class, 'getSelectableEntities']);
 Route::post('/entity/login', [EntityAuthController::class, 'login']);
 Route::post('/entity/logout', [EntityAuthController::class, 'logout']);
 Route::get('/entity/info', [EntityAuthController::class, 'info']);

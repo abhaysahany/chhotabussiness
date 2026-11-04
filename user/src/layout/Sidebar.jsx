@@ -1,47 +1,74 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const currentPath = location.pathname;
+
   const [openMenus, setOpenMenus] = useState(() => ({
-    contents: Boolean(activePage?.startsWith('content-')),
-    connections: Boolean(activePage?.startsWith('connections-') || activePage?.startsWith('network-') || activePage === 'network'),
-    businessEntities: Boolean(activePage?.startsWith('business-entities') || activePage === 'business-reports' || activePage?.startsWith('business-reports-')),
-    businessReports: Boolean(activePage?.startsWith('reports-')),
-    income: Boolean(activePage?.startsWith('income-') || activePage?.startsWith('user-income-') || activePage?.includes('/income/')),
-    payments: Boolean(activePage?.startsWith('payment') || activePage?.startsWith('reward') || activePage?.startsWith('commission')),
-    payouts: Boolean(activePage?.startsWith('payout') || activePage === 'current-payouts'),
-    settings: Boolean(activePage?.startsWith('profile')),
-    support: Boolean(activePage?.startsWith('support')),
+    contents: Boolean(currentPath?.startsWith('/content') || activePage?.startsWith('content-')),
+    connections: Boolean(currentPath?.startsWith('/network') || activePage?.startsWith('connections-') || activePage?.startsWith('network-') || activePage === 'network'),
+    businessEntities: Boolean(currentPath?.startsWith('/business') || activePage?.startsWith('business-entities') || activePage === 'business-reports' || activePage?.startsWith('business-reports-')),
+    businessReports: Boolean(currentPath?.startsWith('/reports') || activePage?.startsWith('reports-')),
+    income: Boolean(currentPath?.includes('income') || activePage?.startsWith('income-') || activePage?.startsWith('user-income-') || activePage === 'my-income'),
+    payments: Boolean(currentPath?.startsWith('/payments') || activePage?.startsWith('payment') || activePage?.startsWith('reward') || activePage?.startsWith('commission')),
+    payouts: Boolean(currentPath?.startsWith('/payouts') || activePage?.startsWith('payout') || activePage === 'current-payouts'),
+    settings: Boolean(currentPath?.startsWith('/profile') || activePage?.startsWith('profile')),
+    support: Boolean(currentPath?.startsWith('/support') || currentPath === '/notifications' || activePage?.startsWith('support')),
   }));
 
-  React.useEffect(() => {
-    if (activePage?.startsWith('connections-') || activePage?.startsWith('network-') || activePage === 'network') {
+  // Auto-expand menu categories when route changes
+  useEffect(() => {
+    if (currentPath?.startsWith('/content') || activePage?.startsWith('content-')) {
+      setOpenMenus((prev) => ({ ...prev, contents: true }));
+    }
+    if (currentPath?.startsWith('/network') || activePage?.startsWith('connections-') || activePage?.startsWith('network-') || activePage === 'network') {
       setOpenMenus((prev) => ({ ...prev, connections: true }));
     }
-    if (activePage?.startsWith('business-entities') || activePage === 'business-reports' || activePage?.startsWith('business-reports-')) {
+    if (currentPath?.startsWith('/business') || activePage?.startsWith('business-entities') || activePage === 'business-reports' || activePage?.startsWith('business-reports-')) {
       setOpenMenus((prev) => ({ ...prev, businessEntities: true }));
     }
-    if (activePage?.startsWith('reports-')) {
+    if (currentPath?.startsWith('/reports') || activePage?.startsWith('reports-')) {
       setOpenMenus((prev) => ({ ...prev, businessReports: true }));
     }
-    if (activePage?.startsWith('income-') || activePage?.startsWith('user-income-') || activePage?.includes('/income/')) {
+    if (currentPath?.includes('income') || activePage?.startsWith('income-') || activePage?.startsWith('user-income-') || activePage === 'my-income') {
       setOpenMenus((prev) => ({ ...prev, income: true }));
     }
-    if (activePage?.startsWith('payment') || activePage?.startsWith('reward') || activePage?.startsWith('commission')) {
+    if (currentPath?.startsWith('/payments') || activePage?.startsWith('payment') || activePage?.startsWith('reward') || activePage?.startsWith('commission')) {
       setOpenMenus((prev) => ({ ...prev, payments: true }));
     }
-    if (activePage?.startsWith('payout') || activePage === 'current-payouts') {
+    if (currentPath?.startsWith('/payouts') || activePage?.startsWith('payout') || activePage === 'current-payouts') {
       setOpenMenus((prev) => ({ ...prev, payouts: true }));
     }
-    if (activePage?.startsWith('profile')) {
+    if (currentPath?.startsWith('/profile') || activePage?.startsWith('profile')) {
       setOpenMenus((prev) => ({ ...prev, settings: true }));
     }
-  }, [activePage]);
+    if (currentPath?.startsWith('/support') || currentPath === '/notifications' || activePage?.startsWith('support')) {
+      setOpenMenus((prev) => ({ ...prev, support: true }));
+    }
+  }, [currentPath, activePage]);
 
   const toggleMenu = (menuKey) => {
     setOpenMenus((prev) => ({
       ...prev,
       [menuKey]: !prev[menuKey],
     }));
+  };
+
+  const handleNav = (targetPath) => {
+    navigate(targetPath);
+    if (onNavigate) {
+      onNavigate(targetPath);
+    }
+  };
+
+  const isPathActive = (primaryPath, aliases = []) => {
+    if (currentPath === primaryPath) return true;
+    if (aliases.some((a) => currentPath === a || currentPath === `/${a}`)) return true;
+    if (activePage === primaryPath) return true;
+    if (aliases.some((a) => activePage === a || activePage === `/${a}`)) return true;
+    return false;
   };
 
   // Modern Chevron SVG Icons
@@ -58,16 +85,16 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
   );
 
   const SubDot = () => (
-    <svg width="6" height="6" viewBox="0 0 6 6" fill="currentColor">
-      <circle cx="3" cy="3" r="3" />
+    <svg width="6" height="6" viewBox="0 0 24 24" fill="currentColor">
+      <circle cx="12" cy="12" r="10" />
     </svg>
   );
 
   return (
     <aside className={`pro-sidebar ${collapsed ? 'collapsed' : ''}`}>
-      {/* Sidebar Brand Header: Approved Circular Logo Only */}
-      <div className="sidebar-brand-header">
-        <div className="van-sidebar-brand" onClick={() => onNavigate('sales')} title="Vyapar AdNET Dashboard">
+      {/* Brand & System Logo Header */}
+      <div className="van-sidebar-header">
+        <div className="van-sidebar-brand" onClick={() => handleNav('/dashboard')} title="Vyapar AdNET Dashboard" style={{ cursor: 'pointer' }}>
           <img src="/logo.png" alt="Vyapar AdNET Logo" className="van-sidebar-logo-img" />
         </div>
       </div>
@@ -77,11 +104,11 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
         {/* MAIN GROUP */}
         <div className="nav-group-title">{!collapsed && 'MAIN'}</div>
 
-        {/* 1. Dashboard — Single Direct Destination */}
+        {/* 1. Dashboard */}
         <div className="nav-item">
           <button
-            className={`nav-link ${activePage === 'dashboard' || activePage === 'sales' ? 'active' : ''}`}
-            onClick={() => onNavigate('sales')}
+            className={`nav-link ${isPathActive('/dashboard', ['/sales', 'dashboard', 'sales']) ? 'active' : ''}`}
+            onClick={() => handleNav('/dashboard')}
             title="Dashboard Overview"
           >
             <span className="nav-icon">
@@ -101,7 +128,7 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
         {/* 2. Contents Tab */}
         <div className="nav-item">
           <button
-            className={`nav-link ${openMenus.contents ? 'active-parent-pill' : ''}`}
+            className={`nav-link ${openMenus.contents || currentPath.startsWith('/content') ? 'active-parent-pill' : ''}`}
             onClick={() => toggleMenu('contents')}
           >
             <span className="nav-icon">
@@ -117,29 +144,29 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
           {!collapsed && openMenus.contents && (
             <div className="sub-nav-list">
               <button
-                className={`sub-nav-link ${activePage === 'content-products-services' ? 'active' : ''}`}
-                onClick={() => onNavigate('content-products-services')}
+                className={`sub-nav-link ${isPathActive('/content/products-services', ['products-services', 'content-products-services']) ? 'active' : ''}`}
+                onClick={() => handleNav('/content/products-services')}
               >
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Products & Services</span>
               </button>
               <button
-                className={`sub-nav-link ${activePage === 'content-library' || activePage === 'content-media' ? 'active' : ''}`}
-                onClick={() => onNavigate('content-library')}
+                className={`sub-nav-link ${isPathActive('/content/library', ['content-library', 'content-media', 'content-banners', 'content-posts']) ? 'active' : ''}`}
+                onClick={() => handleNav('/content/library')}
               >
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Content Library</span>
               </button>
               <button
-                className={`sub-nav-link ${activePage === 'content-support' ? 'active' : ''}`}
-                onClick={() => onNavigate('content-support')}
+                className={`sub-nav-link ${isPathActive('/content/support', ['content-support', 'content-faq']) ? 'active' : ''}`}
+                onClick={() => handleNav('/content/support')}
               >
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Content Support</span>
               </button>
               <button
-                className={`sub-nav-link ${activePage === 'content-social-platforms' || activePage === 'social-platforms' ? 'active' : ''}`}
-                onClick={() => onNavigate('content-social-platforms')}
+                className={`sub-nav-link ${isPathActive('/content/social-platforms', ['content-social-platforms', 'social-platforms']) ? 'active' : ''}`}
+                onClick={() => handleNav('/content/social-platforms')}
               >
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Social Platforms</span>
@@ -154,7 +181,7 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
         {/* 3. Connections Tab */}
         <div className="nav-item">
           <button
-            className={`nav-link ${openMenus.connections ? 'active-parent-pill' : ''}`}
+            className={`nav-link ${openMenus.connections || currentPath.startsWith('/network') ? 'active-parent-pill' : ''}`}
             onClick={() => toggleMenu('connections')}
           >
             <span className="nav-icon">
@@ -172,29 +199,29 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
           {!collapsed && openMenus.connections && (
             <div className="sub-nav-list">
               <button
-                className={`sub-nav-link ${activePage === 'network-direct' || activePage === 'connections-downlines' ? 'active' : ''}`}
-                onClick={() => onNavigate('network-direct')}
+                className={`sub-nav-link ${isPathActive('/network/direct', ['network-direct', 'connections-downlines']) ? 'active' : ''}`}
+                onClick={() => handleNav('/network/direct')}
               >
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Direct Connections</span>
               </button>
               <button
-                className={`sub-nav-link ${activePage === 'network-team' || activePage === 'connections-team' ? 'active' : ''}`}
-                onClick={() => onNavigate('network-team')}
+                className={`sub-nav-link ${isPathActive('/network/team', ['network-team', 'connections-team']) ? 'active' : ''}`}
+                onClick={() => handleNav('/network/team')}
               >
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Team Connections</span>
               </button>
               <button
-                className={`sub-nav-link ${activePage === 'network-genealogy' || activePage === 'network' || activePage === 'connections-sponsor' ? 'active' : ''}`}
-                onClick={() => onNavigate('network-genealogy')}
+                className={`sub-nav-link ${isPathActive('/network/genealogy', ['network-genealogy', 'network-tree', 'network', 'connections-sponsor']) ? 'active' : ''}`}
+                onClick={() => handleNav('/network/genealogy')}
               >
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Genealogy Tree</span>
               </button>
               <button
-                className={`sub-nav-link ${activePage === 'network-referral' || activePage === 'connections-referral' ? 'active' : ''}`}
-                onClick={() => onNavigate('network-referral')}
+                className={`sub-nav-link ${isPathActive('/network/referral', ['network-referral', 'connections-referral']) ? 'active' : ''}`}
+                onClick={() => handleNav('/network/referral')}
               >
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Referral Link</span>
@@ -209,7 +236,7 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
         {/* 4. Business Entities Tab */}
         <div className="nav-item">
           <button
-            className={`nav-link ${openMenus.businessEntities || activePage.startsWith('business-entities') || activePage.startsWith('business-reports-') ? 'active-parent-pill' : ''}`}
+            className={`nav-link ${openMenus.businessEntities || currentPath.startsWith('/business') ? 'active-parent-pill' : ''}`}
             onClick={() => toggleMenu('businessEntities')}
           >
             <span className="nav-icon">
@@ -225,22 +252,22 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
           {!collapsed && openMenus.businessEntities && (
             <div className="sub-nav-list">
               <button
-                className={`sub-nav-link ${activePage === 'business-entities' || activePage === 'business-reports' ? 'active' : ''}`}
-                onClick={() => onNavigate('business-entities')}
+                className={`sub-nav-link ${isPathActive('/business/directory', ['business-entities', 'business-reports']) ? 'active' : ''}`}
+                onClick={() => handleNav('/business/directory')}
               >
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Directory & All Entities</span>
               </button>
               <button
-                className={`sub-nav-link ${activePage === 'business-entities-biz' || activePage === 'business-reports-biz' ? 'active' : ''}`}
-                onClick={() => onNavigate('business-entities-biz')}
+                className={`sub-nav-link ${isPathActive('/business/registered-businesses', ['business-entities-biz', 'business-reports-biz']) ? 'active' : ''}`}
+                onClick={() => handleNav('/business/registered-businesses')}
               >
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Registered Businesses</span>
               </button>
               <button
-                className={`sub-nav-link ${activePage === 'business-entities-free' || activePage === 'business-reports-free' ? 'active' : ''}`}
-                onClick={() => onNavigate('business-entities-free')}
+                className={`sub-nav-link ${isPathActive('/business/registered-freelancers', ['business-entities-free', 'business-reports-free']) ? 'active' : ''}`}
+                onClick={() => handleNav('/business/registered-freelancers')}
               >
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Registered Freelancers</span>
@@ -252,7 +279,7 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
         {/* 5. Business Reports Tab */}
         <div className="nav-item">
           <button
-            className={`nav-link ${openMenus.businessReports ? 'active-parent-pill' : ''}`}
+            className={`nav-link ${openMenus.businessReports || currentPath.startsWith('/reports') ? 'active-parent-pill' : ''}`}
             onClick={() => toggleMenu('businessReports')}
           >
             <span className="nav-icon">
@@ -270,15 +297,15 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
 
           {!collapsed && openMenus.businessReports && (
             <div className="sub-nav-list">
-              <button className={`sub-nav-link ${activePage === 'reports-sales' ? 'active' : ''}`} onClick={() => onNavigate('reports-sales')}>
+              <button className={`sub-nav-link ${isPathActive('/reports/sales', ['reports-sales', 'reports-sales-performance']) ? 'active' : ''}`} onClick={() => handleNav('/reports/sales')}>
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Sales Performance</span>
               </button>
-              <button className={`sub-nav-link ${activePage === 'reports-revenue' ? 'active' : ''}`} onClick={() => onNavigate('reports-revenue')}>
+              <button className={`sub-nav-link ${isPathActive('/reports/revenue', ['reports-revenue', 'reports-revenue-analytics']) ? 'active' : ''}`} onClick={() => handleNav('/reports/revenue')}>
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Revenue Analytics</span>
               </button>
-              <button className={`sub-nav-link ${activePage === 'reports-mlm' ? 'active' : ''}`} onClick={() => onNavigate('reports-mlm')}>
+              <button className={`sub-nav-link ${isPathActive('/reports/mlm', ['reports-mlm', 'reports-team-performance']) ? 'active' : ''}`} onClick={() => handleNav('/reports/mlm')}>
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Network Commissions</span>
               </button>
@@ -292,7 +319,7 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
         {/* 6. My Income Tab */}
         <div className="nav-item">
           <button
-            className={`nav-link ${openMenus.income || activePage === 'my-income' || activePage?.startsWith('income-') || activePage?.includes('/income') ? 'active-parent-pill' : ''}`}
+            className={`nav-link ${openMenus.income || currentPath.includes('income') ? 'active-parent-pill' : ''}`}
             onClick={() => toggleMenu('income')}
           >
             <span className="nav-icon">
@@ -308,22 +335,22 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
           {!collapsed && openMenus.income && (
             <div className="sub-nav-list">
               <button
-                className={`sub-nav-link ${activePage === 'my-income' || activePage === 'income' ? 'active' : ''}`}
-                onClick={() => onNavigate('my-income')}
+                className={`sub-nav-link ${isPathActive('/my-income', ['my-income', 'income', 'income-overview']) ? 'active' : ''}`}
+                onClick={() => handleNav('/my-income')}
               >
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Income Overview (Both)</span>
               </button>
               <button
-                className={`sub-nav-link ${activePage === 'income-direct' || activePage === '/user/income/direct' ? 'active' : ''}`}
-                onClick={() => onNavigate('income-direct')}
+                className={`sub-nav-link ${isPathActive('/direct-income', ['income-direct', '/user/income/direct', 'direct-income']) ? 'active' : ''}`}
+                onClick={() => handleNav('/direct-income')}
               >
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Direct Income</span>
               </button>
               <button
-                className={`sub-nav-link ${activePage === 'income-levels' || activePage === '/user/income/levels' ? 'active' : ''}`}
-                onClick={() => onNavigate('income-levels')}
+                className={`sub-nav-link ${isPathActive('/level-income', ['income-levels', '/user/income/levels', 'level-income']) ? 'active' : ''}`}
+                onClick={() => handleNav('/level-income')}
               >
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Level Income</span>
@@ -332,10 +359,10 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
           )}
         </div>
 
-        {/* 7. Payments Tab — Flattened 2-Level Clean Menu */}
+        {/* 7. Payments Tab */}
         <div className="nav-item">
           <button
-            className={`nav-link ${openMenus.payments ? 'active-parent-pill' : ''}`}
+            className={`nav-link ${openMenus.payments || currentPath.startsWith('/payments') ? 'active-parent-pill' : ''}`}
             onClick={() => toggleMenu('payments')}
           >
             <span className="nav-icon">
@@ -351,36 +378,36 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
           {!collapsed && openMenus.payments && (
             <div className="sub-nav-list">
               <button
-                className={`sub-nav-link ${activePage === 'reward-details' ? 'active' : ''}`}
-                onClick={() => onNavigate('reward-details')}
+                className={`sub-nav-link ${isPathActive('/payments/rewards', ['reward-details', 'rewards']) ? 'active' : ''}`}
+                onClick={() => handleNav('/payments/rewards')}
               >
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Reward Details</span>
               </button>
               <button
-                className={`sub-nav-link ${activePage === 'rewards-claimed' ? 'active' : ''}`}
-                onClick={() => onNavigate('rewards-claimed')}
+                className={`sub-nav-link ${isPathActive('/payments/rewards-claimed', ['rewards-claimed']) ? 'active' : ''}`}
+                onClick={() => handleNav('/payments/rewards-claimed')}
               >
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Rewards Claimed</span>
               </button>
               <button
-                className={`sub-nav-link ${activePage === 'base-commission' ? 'active' : ''}`}
-                onClick={() => onNavigate('base-commission')}
+                className={`sub-nav-link ${isPathActive('/payments/base-commission', ['base-commission']) ? 'active' : ''}`}
+                onClick={() => handleNav('/payments/base-commission')}
               >
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Base Commission</span>
               </button>
               <button
-                className={`sub-nav-link ${activePage === 'team-commission' ? 'active' : ''}`}
-                onClick={() => onNavigate('team-commission')}
+                className={`sub-nav-link ${isPathActive('/payments/team-commission', ['team-commission']) ? 'active' : ''}`}
+                onClick={() => handleNav('/payments/team-commission')}
               >
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Team Commission</span>
               </button>
               <button
-                className={`sub-nav-link ${activePage === 'payment-transactions' ? 'active' : ''}`}
-                onClick={() => onNavigate('payment-transactions')}
+                className={`sub-nav-link ${isPathActive('/payments/transactions', ['payment-transactions']) ? 'active' : ''}`}
+                onClick={() => handleNav('/payments/transactions')}
               >
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Payment Transactions</span>
@@ -389,10 +416,10 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
           )}
         </div>
 
-        {/* 7. Payouts Tab */}
+        {/* 8. Payouts Tab */}
         <div className="nav-item">
           <button
-            className={`nav-link ${openMenus.payouts ? 'active-parent-pill' : ''}`}
+            className={`nav-link ${openMenus.payouts || currentPath.startsWith('/payouts') ? 'active-parent-pill' : ''}`}
             onClick={() => toggleMenu('payouts')}
           >
             <span className="nav-icon">
@@ -407,19 +434,19 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
 
           {!collapsed && openMenus.payouts && (
             <div className="sub-nav-list">
-              <button className={`sub-nav-link ${activePage === 'current-payouts' ? 'active' : ''}`} onClick={() => onNavigate('current-payouts')}>
+              <button className={`sub-nav-link ${isPathActive('/payouts/current', ['current-payouts', 'payouts']) ? 'active' : ''}`} onClick={() => handleNav('/payouts/current')}>
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Current Payouts</span>
               </button>
-              <button className={`sub-nav-link ${activePage === 'payout-history' ? 'active' : ''}`} onClick={() => onNavigate('payout-history')}>
+              <button className={`sub-nav-link ${isPathActive('/payouts/history', ['payout-history']) ? 'active' : ''}`} onClick={() => handleNav('/payouts/history')}>
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Payout History</span>
               </button>
-              <button className={`sub-nav-link ${activePage === 'payout-withdraw' ? 'active' : ''}`} onClick={() => onNavigate('payout-withdraw')}>
+              <button className={`sub-nav-link ${isPathActive('/payouts/withdraw', ['payout-withdraw', 'withdraw']) ? 'active' : ''}`} onClick={() => handleNav('/payouts/withdraw')}>
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Request Withdrawal</span>
               </button>
-              <button className={`sub-nav-link ${activePage === 'payout-tds' ? 'active' : ''}`} onClick={() => onNavigate('payout-tds')}>
+              <button className={`sub-nav-link ${isPathActive('/payouts/tds', ['payout-tds', 'tds']) ? 'active' : ''}`} onClick={() => handleNav('/payouts/tds')}>
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">TDS & Tax Summary</span>
               </button>
@@ -430,10 +457,10 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
         {/* SYSTEM & SETTINGS GROUP */}
         <div className="nav-group-title">{!collapsed && 'SYSTEM & SUPPORT'}</div>
 
-        {/* 8. Settings Tab */}
+        {/* 9. Settings Tab */}
         <div className="nav-item">
           <button
-            className={`nav-link ${activePage?.startsWith('profile') || openMenus.settings ? 'active-parent-pill' : ''}`}
+            className={`nav-link ${openMenus.settings || currentPath.startsWith('/profile') ? 'active-parent-pill' : ''}`}
             onClick={() => toggleMenu('settings')}
           >
             <span className="nav-icon">
@@ -448,19 +475,19 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
 
           {!collapsed && openMenus.settings && (
             <div className="sub-nav-list">
-              <button className={`sub-nav-link ${activePage === 'profile' ? 'active' : ''}`} onClick={() => onNavigate('profile')}>
+              <button className={`sub-nav-link ${isPathActive('/profile', ['profile']) ? 'active' : ''}`} onClick={() => handleNav('/profile')}>
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Personal Profile</span>
               </button>
-              <button className={`sub-nav-link ${activePage === 'profile-security' ? 'active' : ''}`} onClick={() => onNavigate('profile-security')}>
+              <button className={`sub-nav-link ${isPathActive('/profile/security', ['profile-security', 'security', 'security-password']) ? 'active' : ''}`} onClick={() => handleNav('/profile/security')}>
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Security & Password</span>
               </button>
-              <button className={`sub-nav-link ${activePage === 'profile-kyc' ? 'active' : ''}`} onClick={() => onNavigate('profile-kyc')}>
+              <button className={`sub-nav-link ${isPathActive('/profile/kyc', ['profile-kyc', 'kyc']) ? 'active' : ''}`} onClick={() => handleNav('/profile/kyc')}>
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">KYC Verification</span>
               </button>
-              <button className={`sub-nav-link ${activePage === 'profile-bank' ? 'active' : ''}`} onClick={() => onNavigate('profile-bank')}>
+              <button className={`sub-nav-link ${isPathActive('/profile/bank', ['profile-bank', 'bank-accounts', 'bank']) ? 'active' : ''}`} onClick={() => handleNav('/profile/bank')}>
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Bank & Payout Accounts</span>
               </button>
@@ -468,10 +495,10 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
           )}
         </div>
 
-        {/* 9. Support Tab */}
+        {/* 10. Support Tab */}
         <div className="nav-item">
           <button
-            className={`nav-link ${openMenus.support ? 'active-parent-pill' : ''}`}
+            className={`nav-link ${openMenus.support || currentPath.startsWith('/support') || currentPath === '/notifications' ? 'active-parent-pill' : ''}`}
             onClick={() => toggleMenu('support')}
           >
             <span className="nav-icon">
@@ -487,15 +514,15 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
 
           {!collapsed && openMenus.support && (
             <div className="sub-nav-list">
-              <button className={`sub-nav-link ${activePage === 'support-notifications' ? 'active' : ''}`} onClick={() => onNavigate('support-notifications')}>
+              <button className={`sub-nav-link ${isPathActive('/notifications', ['support-notifications', 'notifications']) ? 'active' : ''}`} onClick={() => handleNav('/notifications')}>
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Notifications</span>
               </button>
-              <button className={`sub-nav-link ${activePage === 'support-tickets' ? 'active' : ''}`} onClick={() => onNavigate('support-tickets')}>
+              <button className={`sub-nav-link ${isPathActive('/support/tickets', ['support-tickets']) ? 'active' : ''}`} onClick={() => handleNav('/support/tickets')}>
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Support Tickets</span>
               </button>
-              <button className={`sub-nav-link ${activePage === 'support-kb' ? 'active' : ''}`} onClick={() => onNavigate('support-kb')}>
+              <button className={`sub-nav-link ${isPathActive('/support/kb', ['support-kb']) ? 'active' : ''}`} onClick={() => handleNav('/support/kb')}>
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Knowledge Base & FAQs</span>
               </button>
