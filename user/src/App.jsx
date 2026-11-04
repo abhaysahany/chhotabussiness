@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Building2 } from 'lucide-react';
 import { useBranding } from './utils/branding';
 import LoginForm from './components/LoginForm';
@@ -54,33 +55,229 @@ import {
 } from './api/userService';
 import { redirectToSocialProvider, handleSocialOAuthCallback } from './utils/socialOAuth';
 
-function App() {
+// Canonical route mapping for legacy keys and aliases
+export const pageToRouteMap = {
+  // Main
+  dashboard: '/dashboard',
+  sales: '/dashboard',
+
+  // Income
+  'my-income': '/my-income',
+  income: '/my-income',
+  'income-overview': '/my-income',
+  'income-all': '/my-income',
+  'direct-income': '/direct-income',
+  'income-direct': '/direct-income',
+  'user-income-direct': '/direct-income',
+  'level-income': '/level-income',
+  'income-levels': '/level-income',
+  'user-income-levels': '/level-income',
+
+  // Network / Connections
+  'network/direct': '/network/direct',
+  'network-direct': '/network/direct',
+  'connections-downlines': '/network/direct',
+  'network/team': '/network/team',
+  'network-team': '/network/team',
+  'connections-team': '/network/team',
+  'network/genealogy': '/network/genealogy',
+  'network-tree': '/network/genealogy',
+  'network-genealogy': '/network/genealogy',
+  network: '/network/genealogy',
+  'connections-sponsor': '/network/genealogy',
+  'network/referral': '/network/referral',
+  'network-referral': '/network/referral',
+  'connections-referral': '/network/referral',
+
+  // Settings & Profile
+  profile: '/profile',
+  'profile/security': '/profile/security',
+  'profile-security': '/profile/security',
+  security: '/profile/security',
+  'security-password': '/profile/security',
+  'profile/kyc': '/profile/kyc',
+  'profile-kyc': '/profile/kyc',
+  kyc: '/profile/kyc',
+  'profile/bank': '/profile/bank',
+  'profile-bank': '/profile/bank',
+  bank: '/profile/bank',
+  'bank-accounts': '/profile/bank',
+
+  // Payouts
+  'payouts/current': '/payouts/current',
+  'current-payouts': '/payouts/current',
+  'payouts/history': '/payouts/history',
+  'payout-history': '/payouts/history',
+  'payouts/withdraw': '/payouts/withdraw',
+  'payout-withdraw': '/payouts/withdraw',
+  'payouts/tds': '/payouts/tds',
+  'payout-tds': '/payouts/tds',
+
+  // Payments & Rewards
+  'payments/rewards': '/payments/rewards',
+  'reward-details': '/payments/rewards',
+  'payments/rewards-claimed': '/payments/rewards-claimed',
+  'rewards-claimed': '/payments/rewards-claimed',
+  'payments/base-commission': '/payments/base-commission',
+  'base-commission': '/payments/base-commission',
+  'payments/team-commission': '/payments/team-commission',
+  'team-commission': '/payments/team-commission',
+  'payments/transactions': '/payments/transactions',
+  'payment-transactions': '/payments/transactions',
+
+  // Business Directory & Entities
+  'business/directory': '/business/directory',
+  'business-entities': '/business/directory',
+  'business-entities-all': '/business/directory',
+  'business-reports': '/business/directory',
+  'business/registered-businesses': '/business/registered-businesses',
+  'business-entities-biz': '/business/registered-businesses',
+  'business-reports-biz': '/business/registered-businesses',
+  'business/registered-freelancers': '/business/registered-freelancers',
+  'business-entities-free': '/business/registered-freelancers',
+  'business-reports-free': '/business/registered-freelancers',
+
+  // Reports
+  'reports/sales': '/reports/sales',
+  'reports-sales': '/reports/sales',
+  'reports-sales-performance': '/reports/sales',
+  'reports/revenue': '/reports/revenue',
+  'reports-revenue': '/reports/revenue',
+  'reports-revenue-analytics': '/reports/revenue',
+  'reports/mlm': '/reports/mlm',
+  'reports-mlm': '/reports/mlm',
+  'reports-team-performance': '/reports/mlm',
+  'reports/tax': '/reports/tax',
+  'reports-tax': '/reports/tax',
+  'reports-tax-audit': '/reports/tax',
+
+  // Content Management
+  'content/products-services': '/content/products-services',
+  'content-products-services': '/content/products-services',
+  'products-services': '/content/products-services',
+  'content/library': '/content/library',
+  'content-library': '/content/library',
+  'content-media': '/content/library',
+  'content-banners': '/content/library',
+  'content-posts': '/content/library',
+  'content/social-platforms': '/content/social-platforms',
+  'content-social-platforms': '/content/social-platforms',
+  'social-platforms': '/content/social-platforms',
+  'content/support': '/content/support',
+  'content-support': '/content/support',
+  'content-faq': '/content/support',
+
+  // Support
+  notifications: '/notifications',
+  'support-notifications': '/notifications',
+  'support/tickets': '/support/tickets',
+  'support-tickets': '/support/tickets',
+  'support/live': '/support/live',
+  'support-live': '/support/live',
+  'support/kb': '/support/kb',
+  'support-kb': '/support/kb',
+  'support/contact': '/support/contact',
+  'support-contact': '/support/contact',
+
+  // Public / Informational
+  landing: '/',
+  home: '/',
+  login: '/login',
+  register: '/register',
+  terms: '/terms',
+  'terms-conditions': '/terms',
+  privacy: '/privacy',
+  'privacy-policy': '/privacy',
+  empty: '/empty',
+};
+
+// Loading Screen Component
+function LoadingScreen({ appName }) {
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--van-bg-app)', padding: '1rem' }}>
+      <div style={{ background: '#ffffff', borderRadius: '20px', padding: '2.5rem 2rem', textAlign: 'center', boxShadow: '0 20px 45px -10px rgba(15, 76, 129, 0.08)', border: '1px solid #E2E8F0', maxWidth: '380px', width: '100%' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.65rem', marginBottom: '1rem' }}>
+          <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'linear-gradient(135deg, #0F4C81 0%, #1e3a5f 100%)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(15, 76, 129, 0.2)' }}>
+            <Building2 size={24} />
+          </div>
+          <div style={{ fontFamily: 'Poppins, sans-serif', fontSize: '1.25rem', fontWeight: 900, color: '#0F4C81', letterSpacing: '-0.03em' }}>
+            {appName}
+          </div>
+        </div>
+        <p style={{ color: '#64748B', fontSize: '0.88rem', margin: 0 }}>Connecting to partner portal...</p>
+      </div>
+    </div>
+  );
+}
+
+// Protected Route Guard (enforces authenticated user)
+function ProtectedRoute({ user, loading, appName }) {
+  const location = useLocation();
+
+  if (loading) {
+    return <LoadingScreen appName={appName} />;
+  }
+
+  if (!user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return <Outlet />;
+}
+
+// Public Route Guard (redirects already authenticated users)
+function PublicRoute({ user, loading, appName, redirectIfAuthenticated = true }) {
+  if (loading) {
+    return <LoadingScreen appName={appName} />;
+  }
+
+  if (user && redirectIfAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <Outlet />;
+}
+
+// Master Layout Wrapper for User Panel
+function UserPanelLayout({ user, onLogout, onNavigate }) {
+  const location = useLocation();
+
+  return (
+    <Layout
+      activePage={location.pathname}
+      onNavigate={onNavigate}
+      user={user}
+      onLogout={onLogout}
+    >
+      <Outlet />
+    </Layout>
+  );
+}
+
+// Main App Inner Router Component
+function AppContent() {
   const { appName } = useBranding();
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('user_token'));
-  const [authView, setAuthView] = useState('landing'); // 'landing' | 'login' | 'register'
-  const [activePage, setActivePage] = useState(() => {
-    const saved = localStorage.getItem('addnet_user_active_page') || localStorage.getItem('chhota_user_active_page');
-    return saved && saved !== 'empty' ? saved : 'dashboard';
-  });
-
-
+  const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState(null);
   const [userInfo, setUserInfo] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Sync active page to localStorage to maintain route on refresh
-  useEffect(() => {
-    if (activePage && activePage !== 'empty') {
-      localStorage.setItem('chhota_user_active_page', activePage);
-    }
-  }, [activePage]);
+  // General navigation handler supporting canonical paths and legacy keys
+  const handleNavigate = (pathOrKey) => {
+    if (!pathOrKey) return;
+    const cleanKey = pathOrKey.startsWith('/') ? pathOrKey.slice(1) : pathOrKey;
+    const target = pageToRouteMap[pathOrKey] || pageToRouteMap[cleanKey] || (pathOrKey.startsWith('/') ? pathOrKey : `/${pathOrKey}`);
+    navigate(target);
+  };
 
   // Check auth status & Social OAuth Redirect Callback on mount
   useEffect(() => {
     const initAuth = async () => {
-      // Check if returning from Google / Facebook OAuth Redirect
       try {
         const handled = await handleSocialOAuthCallback(handleSocialLogin, (errMsg) => {
           console.error('Social OAuth Callback Error:', errMsg);
@@ -136,6 +333,8 @@ function App() {
       localStorage.setItem('user_token', res.token);
       setToken(res.token);
       setUser(res.user);
+      const from = location.state?.from?.pathname || '/dashboard';
+      navigate(from, { replace: true });
     }
   };
 
@@ -145,6 +344,7 @@ function App() {
       localStorage.setItem('user_token', res.token);
       setToken(res.token);
       setUser(res.user);
+      navigate('/dashboard', { replace: true });
     }
   };
 
@@ -154,6 +354,7 @@ function App() {
       localStorage.setItem('user_token', res.token);
       setToken(res.token);
       setUser(res.user);
+      navigate('/dashboard', { replace: true });
     }
   };
 
@@ -162,6 +363,7 @@ function App() {
       localStorage.setItem('user_token', res.token);
       setToken(res.token);
       setUser(res.user);
+      navigate('/dashboard', { replace: true });
     }
   };
 
@@ -177,283 +379,312 @@ function App() {
       localStorage.removeItem('chhota_user_active_page');
       setToken(null);
       setUser(null);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--van-bg-app)", padding: "1rem" }}>
-        <div style={{ background: '#ffffff', borderRadius: '20px', padding: '2.5rem 2rem', textAlign: 'center', boxShadow: '0 20px 45px -10px rgba(15, 76, 129, 0.08)', border: '1px solid #E2E8F0', maxWidth: '380px', width: '100%' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.65rem', marginBottom: '1rem' }}>
-            <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'linear-gradient(135deg, #0F4C81 0%, #1e3a5f 100%)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(15, 76, 129, 0.2)' }}>
-              <Building2 size={24} />
-            </div>
-            <div style={{ fontFamily: 'Poppins, sans-serif', fontSize: '1.25rem', fontWeight: 900, color: '#0F4C81', letterSpacing: '-0.03em' }}>
-              {appName}
-            </div>
-          </div>
-          <p style={{ color: '#64748B', fontSize: '0.88rem', margin: 0 }}>Connecting to partner portal...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Render Landing Page, Login, Register, Terms, or Privacy Policy if not logged in
-  if (!user) {
-    if (authView === 'landing' || authView === 'home') {
-      return (
-        <LandingPage
-          onLoginClick={() => setAuthView('login')}
-          onRegisterClick={() => setAuthView('register')}
-          onNavigateLegal={(page) => setAuthView(page)}
-        />
-      );
-    }
-
-    if (authView === 'privacy' || authView === 'privacy-policy') {
-      return (
-        <div style={{ minHeight: '100vh', background: '#f8fafc', padding: '2rem 1rem' }}>
-          <div style={{ maxWidth: '1000px', margin: '0 auto 1.5rem auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
-              <button
-                type="button"
-                onClick={() => setAuthView('landing')}
-                style={{ background: '#0F4C81', color: '#ffffff', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-              >
-                ← Back to Homepage
-              </button>
-              <button
-                type="button"
-                onClick={() => setAuthView('register')}
-                style={{ background: '#FF7A00', color: '#ffffff', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-              >
-                Register as Partner
-              </button>
-            </div>
-            <button
-              type="button"
-              onClick={() => setAuthView('terms')}
-              style={{ background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', padding: '0.6rem 1rem', borderRadius: '8px', fontWeight: '600', fontSize: '0.82rem', cursor: 'pointer' }}
-            >
-              View Terms & Conditions →
-            </button>
-          </div>
-          <PrivacyPolicyPage onNavigate={(page) => setAuthView(page === 'dashboard' ? 'register' : page)} />
-        </div>
-      );
-    }
-
-    if (authView === 'terms' || authView === 'terms-conditions') {
-      return (
-        <div style={{ minHeight: '100vh', background: '#f8fafc', padding: '2rem 1rem' }}>
-          <div style={{ maxWidth: '1000px', margin: '0 auto 1.5rem auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
-              <button
-                type="button"
-                onClick={() => setAuthView('landing')}
-                style={{ background: '#0F4C81', color: '#ffffff', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-              >
-                ← Back to Homepage
-              </button>
-              <button
-                type="button"
-                onClick={() => setAuthView('register')}
-                style={{ background: '#FF7A00', color: '#ffffff', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-              >
-                Register as Partner
-              </button>
-            </div>
-            <button
-              type="button"
-              onClick={() => setAuthView('privacy')}
-              style={{ background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', padding: '0.6rem 1rem', borderRadius: '8px', fontWeight: '600', fontSize: '0.82rem', cursor: 'pointer' }}
-            >
-              View Privacy Policy →
-            </button>
-          </div>
-          <TermsAndConditionsPage onNavigate={(page) => setAuthView(page === 'dashboard' ? 'register' : page)} />
-        </div>
-      );
-    }
-
-    if (authView === 'login') {
-      return (
-        <LoginForm
-          onLoginSuccess={handleLogin}
-          onGoogleSuccess={handleGoogleAuthSuccess}
-          onSwitchToRegister={() => setAuthView('register')}
-          onBackToHome={() => setAuthView('landing')}
-          onSocialClick={(provider) => redirectToSocialProvider(provider, 'login')}
-          onOpenLegalPage={(page) => setAuthView(page)}
-        />
-      );
-    }
-
-    return (
-      <RegisterForm
-        onRegisterSuccess={handleRegister}
-        onGoogleSuccess={handleGoogleAuthSuccess}
-        onSwitchToLogin={() => setAuthView('login')}
-        onBackToHome={() => setAuthView('landing')}
-        onSocialClick={(provider) => redirectToSocialProvider(provider, 'register')}
-        onOpenLegalPage={(page) => setAuthView(page)}
-      />
-    );
-  }
-
-
-  // Render Page Content based on Active Menu Selection inside Pro Master Layout
-  const renderMainContent = () => {
-    switch (activePage) {
-      case 'empty':
-        return <EmptyPage />;
-      case 'network-direct':
-      case 'connections-downlines':
-        return <DirectConnectionsPage user={user} onNavigate={(page) => setActivePage(page)} />;
-      case 'network-team':
-      case 'connections-team':
-        return <TeamConnectionsPage user={user} onNavigate={(page) => setActivePage(page)} />;
-      case 'network':
-      case 'network-tree':
-      case 'network-genealogy':
-      case 'connections-sponsor':
-        return <GenealogyTreePage user={user} onNavigate={(page) => setActivePage(page)} />;
-      case 'network-referral':
-      case 'connections-referral':
-        return <ReferralLinkPage user={user} onNavigate={(page) => setActivePage(page)} />;
-
-      case 'profile':
-        return <PersonalProfile user={user} onNavigate={(page) => setActivePage(page)} />;
-      case 'profile-security':
-      case 'security':
-      case 'security-password':
-        return <SecurityPassword user={user} onNavigate={(page) => setActivePage(page)} />;
-      case 'profile-kyc':
-      case 'kyc':
-        return <KycVerification user={user} onNavigate={(page) => setActivePage(page)} />;
-      case 'profile-bank':
-      case 'bank-accounts':
-      case 'bank':
-        return <BankAccounts user={user} onNavigate={(page) => setActivePage(page)} />;
-      case 'support-notifications':
-      case 'notifications':
-        return <UserNotificationsPage user={user} onNavigate={(page) => setActivePage(page)} />;
-      case 'support-tickets':
-        return <SupportTickets user={user} />;
-      case 'support-live':
-        return <LiveHelpdesk user={user} />;
-      case 'support-kb':
-        return <KnowledgeBase />;
-      case 'support-contact':
-        return <ContactSupport user={user} />;
-      case 'current-payouts':
-        return <CurrentPayouts user={user} onNavigate={(page) => setActivePage(page)} />;
-      case 'payout-history':
-        return <PayoutHistory user={user} />;
-      case 'payout-withdraw':
-        return <RequestWithdrawal user={user} onNavigate={(page) => setActivePage(page)} />;
-      case 'payout-tds':
-        return <TdsTaxSummary user={user} />;
-      case 'reward-details':
-        return <RewardDetails user={user} />;
-      case 'rewards-claimed':
-        return <RewardsClaimed user={user} />;
-      case 'base-commission':
-        return <BaseCommission user={user} />;
-      case 'team-commission':
-        return <TeamCommission user={user} />;
-      case 'payment-transactions':
-        return <PaymentTransactions user={user} />;
-
-      // MY INCOME Suite (Direct Income & Level Income)
-      case 'my-income':
-      case 'income':
-      case 'income-overview':
-      case 'income-all':
-      case '/user/income':
-        return <MyIncomePage user={user} onNavigate={(page) => setActivePage(page)} />;
-      case 'income-direct':
-      case 'user-income-direct':
-      case '/user/income/direct':
-        return <DirectIncomePage user={user} onNavigate={(page) => setActivePage(page)} />;
-      case 'income-levels':
-      case 'user-income-levels':
-      case '/user/income/levels':
-        return <LevelIncomePage user={user} onNavigate={(page) => setActivePage(page)} />;
-
-      // Business Entities & Directory Reports
-      case 'business-entities':
-      case 'business-entities-all':
-      case 'business-reports':
-        return <BusinessReportsPage user={user} initialTypeFilter="all" />;
-      case 'business-entities-biz':
-      case 'business-reports-biz':
-        return <BusinessReportsPage user={user} initialTypeFilter="business" />;
-      case 'business-entities-free':
-      case 'business-reports-free':
-        return <BusinessReportsPage user={user} initialTypeFilter="freelancer" />;
-
-      // BUSINESS Section -> 4 Separate Dedicated Report Pages with Filters
-      case 'reports-sales':
-      case 'reports-sales-performance':
-        return <SalesReportPage user={user} />;
-      case 'reports-revenue':
-      case 'reports-revenue-analytics':
-        return <RevenueAnalyticsPage user={user} />;
-      case 'reports-mlm':
-      case 'reports-team-performance':
-        return <MlmEarningsPage user={user} />;
-      case 'reports-tax':
-      case 'reports-tax-audit':
-        return <TaxLedgerPage user={user} />;
-      // CONTENT MANAGEMENT Suite (Products & Services, Content Library, Social Platforms, Content Support)
-      case 'content-products-services':
-      case 'products-services':
-        return <UserProductsServicesPage user={user} onNavigate={(page) => setActivePage(page)} />;
-      case 'content-library':
-      case 'content-media':
-      case 'content-banners':
-      case 'content-posts':
-        return <UserMediaContentPage user={user} />;
-      case 'content-social-platforms':
-      case 'social-platforms':
-        return <UserSocialPlatformsPage user={user} onNavigate={(page) => setActivePage(page)} />;
-      case 'content-support':
-      case 'content-faq':
-        return <UserContentSupportPage user={user} onNavigate={(page) => setActivePage(page)} />;
-      case 'terms-conditions':
-      case 'terms':
-        return <TermsAndConditionsPage onNavigate={(page) => setActivePage(page)} />;
-      case 'privacy-policy':
-      case 'privacy':
-        return <PrivacyPolicyPage onNavigate={(page) => setActivePage(page)} />;
-      case 'landing':
-      case 'home':
-        return (
-          <LandingPage
-            onLoginClick={() => setActivePage('dashboard')}
-            onRegisterClick={() => setActivePage('dashboard')}
-            onNavigateLegal={(page) => setActivePage(page)}
-          />
-        );
-      case 'sales':
-      case 'dashboard':
-      default:
-        return <DashboardOverview user={user} onNavigate={(page) => setActivePage(page)} />;
-
+      navigate('/login', { replace: true });
     }
   };
 
   return (
-    <Layout
-      activePage={activePage}
-      onNavigate={(page) => setActivePage(page)}
-      user={user}
-      onLogout={handleLogout}
-    >
-      {renderMainContent()}
-    </Layout>
+    <Routes>
+      {/* ============================================================== */}
+      {/* PUBLIC ROUTES (Landing, Login, Register)                      */}
+      {/* ============================================================== */}
+      <Route element={<PublicRoute user={user} loading={loading} appName={appName} redirectIfAuthenticated={false} />}>
+        {/* Root Route: Shows Landing Page if guest, redirects to /dashboard if logged in */}
+        <Route
+          path="/"
+          element={
+            user ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <LandingPage
+                onLoginClick={() => handleNavigate('/login')}
+                onRegisterClick={() => handleNavigate('/register')}
+                onNavigateLegal={(page) => handleNavigate(page === 'terms' || page === 'terms-conditions' ? '/terms' : '/privacy')}
+              />
+            )
+          }
+        />
+        <Route path="/landing" element={<Navigate to="/" replace />} />
+        <Route path="/home" element={<Navigate to="/" replace />} />
+
+        {/* Legal Pages (Accessible publicly or by logged-in users) */}
+        <Route
+          path="/privacy"
+          element={
+            <div style={{ minHeight: '100vh', background: '#f8fafc', padding: '2rem 1rem' }}>
+              <div style={{ maxWidth: '1000px', margin: '0 auto 1.5rem auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                  <button
+                    type="button"
+                    onClick={() => handleNavigate(user ? '/dashboard' : '/')}
+                    style={{ background: '#0F4C81', color: '#ffffff', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                  >
+                    ← {user ? 'Back to Dashboard' : 'Back to Homepage'}
+                  </button>
+                  {!user && (
+                    <button
+                      type="button"
+                      onClick={() => handleNavigate('/register')}
+                      style={{ background: '#FF7A00', color: '#ffffff', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                    >
+                      Register as Partner
+                    </button>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleNavigate('/terms')}
+                  style={{ background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', padding: '0.6rem 1rem', borderRadius: '8px', fontWeight: '600', fontSize: '0.82rem', cursor: 'pointer' }}
+                >
+                  View Terms & Conditions →
+                </button>
+              </div>
+              <PrivacyPolicyPage onNavigate={(page) => handleNavigate(page === 'dashboard' ? (user ? '/dashboard' : '/register') : page)} />
+            </div>
+          }
+        />
+        <Route path="/privacy-policy" element={<Navigate to="/privacy" replace />} />
+
+        <Route
+          path="/terms"
+          element={
+            <div style={{ minHeight: '100vh', background: '#f8fafc', padding: '2rem 1rem' }}>
+              <div style={{ maxWidth: '1000px', margin: '0 auto 1.5rem auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                  <button
+                    type="button"
+                    onClick={() => handleNavigate(user ? '/dashboard' : '/')}
+                    style={{ background: '#0F4C81', color: '#ffffff', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                  >
+                    ← {user ? 'Back to Dashboard' : 'Back to Homepage'}
+                  </button>
+                  {!user && (
+                    <button
+                      type="button"
+                      onClick={() => handleNavigate('/register')}
+                      style={{ background: '#FF7A00', color: '#ffffff', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                    >
+                      Register as Partner
+                    </button>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleNavigate('/privacy')}
+                  style={{ background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', padding: '0.6rem 1rem', borderRadius: '8px', fontWeight: '600', fontSize: '0.82rem', cursor: 'pointer' }}
+                >
+                  View Privacy Policy →
+                </button>
+              </div>
+              <TermsAndConditionsPage onNavigate={(page) => handleNavigate(page === 'dashboard' ? (user ? '/dashboard' : '/register') : page)} />
+            </div>
+          }
+        />
+        <Route path="/terms-conditions" element={<Navigate to="/terms" replace />} />
+      </Route>
+
+      {/* Auth Entry Routes (Redirect to /dashboard if already logged in) */}
+      <Route element={<PublicRoute user={user} loading={loading} appName={appName} redirectIfAuthenticated={true} />}>
+        <Route
+          path="/login"
+          element={
+            <LoginForm
+              onLoginSuccess={handleLogin}
+              onGoogleSuccess={handleGoogleAuthSuccess}
+              onSwitchToRegister={() => handleNavigate('/register')}
+              onBackToHome={() => handleNavigate('/')}
+              onSocialClick={(provider) => redirectToSocialProvider(provider, 'login')}
+              onOpenLegalPage={(page) => handleNavigate(page === 'terms' ? '/terms' : '/privacy')}
+            />
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <RegisterForm
+              onRegisterSuccess={handleRegister}
+              onGoogleSuccess={handleGoogleAuthSuccess}
+              onSwitchToLogin={() => handleNavigate('/login')}
+              onBackToHome={() => handleNavigate('/')}
+              onSocialClick={(provider) => redirectToSocialProvider(provider, 'register')}
+              onOpenLegalPage={(page) => handleNavigate(page === 'terms' ? '/terms' : '/privacy')}
+            />
+          }
+        />
+      </Route>
+
+      {/* ============================================================== */}
+      {/* PROTECTED ROUTES (Requires Active Member Authentication)      */}
+      {/* ============================================================== */}
+      <Route element={<ProtectedRoute user={user} loading={loading} appName={appName} />}>
+        <Route element={<UserPanelLayout user={user} onLogout={handleLogout} onNavigate={handleNavigate} />}>
+
+          {/* 1. Dashboard Overview */}
+          <Route path="/dashboard" element={<DashboardOverview user={user} onNavigate={handleNavigate} />} />
+          <Route path="/sales" element={<Navigate to="/dashboard" replace />} />
+
+          {/* 2. My Income Suite */}
+          <Route path="/my-income" element={<MyIncomePage user={user} onNavigate={handleNavigate} />} />
+          <Route path="/income" element={<Navigate to="/my-income" replace />} />
+          <Route path="/income-overview" element={<Navigate to="/my-income" replace />} />
+          <Route path="/income-all" element={<Navigate to="/my-income" replace />} />
+
+          <Route path="/direct-income" element={<DirectIncomePage user={user} onNavigate={handleNavigate} />} />
+          <Route path="/income-direct" element={<Navigate to="/direct-income" replace />} />
+          <Route path="/user-income-direct" element={<Navigate to="/direct-income" replace />} />
+
+          <Route path="/level-income" element={<LevelIncomePage user={user} onNavigate={handleNavigate} />} />
+          <Route path="/income-levels" element={<Navigate to="/level-income" replace />} />
+          <Route path="/user-income-levels" element={<Navigate to="/level-income" replace />} />
+
+          {/* 3. Network & Connections */}
+          <Route path="/network/direct" element={<DirectConnectionsPage user={user} onNavigate={handleNavigate} />} />
+          <Route path="/network-direct" element={<Navigate to="/network/direct" replace />} />
+          <Route path="/connections-downlines" element={<Navigate to="/network/direct" replace />} />
+
+          <Route path="/network/team" element={<TeamConnectionsPage user={user} onNavigate={handleNavigate} />} />
+          <Route path="/network-team" element={<Navigate to="/network/team" replace />} />
+          <Route path="/connections-team" element={<Navigate to="/network/team" replace />} />
+
+          <Route path="/network/genealogy" element={<GenealogyTreePage user={user} onNavigate={handleNavigate} />} />
+          <Route path="/network" element={<Navigate to="/network/genealogy" replace />} />
+          <Route path="/network-tree" element={<Navigate to="/network/genealogy" replace />} />
+          <Route path="/network-genealogy" element={<Navigate to="/network/genealogy" replace />} />
+          <Route path="/connections-sponsor" element={<Navigate to="/network/genealogy" replace />} />
+
+          <Route path="/network/referral" element={<ReferralLinkPage user={user} onNavigate={handleNavigate} />} />
+          <Route path="/network-referral" element={<Navigate to="/network/referral" replace />} />
+          <Route path="/connections-referral" element={<Navigate to="/network/referral" replace />} />
+
+          {/* 4. Settings & Profile */}
+          <Route path="/profile" element={<PersonalProfile user={user} onNavigate={handleNavigate} />} />
+          <Route path="/profile/security" element={<SecurityPassword user={user} onNavigate={handleNavigate} />} />
+          <Route path="/security" element={<Navigate to="/profile/security" replace />} />
+          <Route path="/security-password" element={<Navigate to="/profile/security" replace />} />
+          <Route path="/profile-security" element={<Navigate to="/profile/security" replace />} />
+
+          <Route path="/profile/kyc" element={<KycVerification user={user} onNavigate={handleNavigate} />} />
+          <Route path="/kyc" element={<Navigate to="/profile/kyc" replace />} />
+          <Route path="/profile-kyc" element={<Navigate to="/profile/kyc" replace />} />
+
+          <Route path="/profile/bank" element={<BankAccounts user={user} onNavigate={handleNavigate} />} />
+          <Route path="/bank" element={<Navigate to="/profile/bank" replace />} />
+          <Route path="/bank-accounts" element={<Navigate to="/profile/bank" replace />} />
+          <Route path="/profile-bank" element={<Navigate to="/profile/bank" replace />} />
+
+          {/* 5. Payouts & Withdrawals */}
+          <Route path="/payouts/current" element={<CurrentPayouts user={user} onNavigate={handleNavigate} />} />
+          <Route path="/current-payouts" element={<Navigate to="/payouts/current" replace />} />
+
+          <Route path="/payouts/history" element={<PayoutHistory user={user} />} />
+          <Route path="/payout-history" element={<Navigate to="/payouts/history" replace />} />
+
+          <Route path="/payouts/withdraw" element={<RequestWithdrawal user={user} onNavigate={handleNavigate} />} />
+          <Route path="/payout-withdraw" element={<Navigate to="/payouts/withdraw" replace />} />
+
+          <Route path="/payouts/tds" element={<TdsTaxSummary user={user} />} />
+          <Route path="/payout-tds" element={<Navigate to="/payouts/tds" replace />} />
+
+          {/* 6. Payments & Earnings */}
+          <Route path="/payments/rewards" element={<RewardDetails user={user} />} />
+          <Route path="/reward-details" element={<Navigate to="/payments/rewards" replace />} />
+
+          <Route path="/payments/rewards-claimed" element={<RewardsClaimed user={user} />} />
+          <Route path="/rewards-claimed" element={<Navigate to="/payments/rewards-claimed" replace />} />
+
+          <Route path="/payments/base-commission" element={<BaseCommission user={user} />} />
+          <Route path="/base-commission" element={<Navigate to="/payments/base-commission" replace />} />
+
+          <Route path="/payments/team-commission" element={<TeamCommission user={user} />} />
+          <Route path="/team-commission" element={<Navigate to="/payments/team-commission" replace />} />
+
+          <Route path="/payments/transactions" element={<PaymentTransactions user={user} />} />
+          <Route path="/payment-transactions" element={<Navigate to="/payments/transactions" replace />} />
+
+          {/* 7. Business Directory & Registered Entities */}
+          <Route path="/business/directory" element={<BusinessReportsPage user={user} initialTypeFilter="all" />} />
+          <Route path="/business-entities" element={<Navigate to="/business/directory" replace />} />
+          <Route path="/business-entities-all" element={<Navigate to="/business/directory" replace />} />
+          <Route path="/business-reports" element={<Navigate to="/business/directory" replace />} />
+
+          <Route path="/business/registered-businesses" element={<BusinessReportsPage user={user} initialTypeFilter="business" />} />
+          <Route path="/business-entities-biz" element={<Navigate to="/business/registered-businesses" replace />} />
+          <Route path="/business-reports-biz" element={<Navigate to="/business/registered-businesses" replace />} />
+
+          <Route path="/business/registered-freelancers" element={<BusinessReportsPage user={user} initialTypeFilter="freelancer" />} />
+          <Route path="/business-entities-free" element={<Navigate to="/business/registered-freelancers" replace />} />
+          <Route path="/business-reports-free" element={<Navigate to="/business/registered-freelancers" replace />} />
+
+          {/* 8. Business Reports & Analytics */}
+          <Route path="/reports/sales" element={<SalesReportPage user={user} />} />
+          <Route path="/reports-sales" element={<Navigate to="/reports/sales" replace />} />
+          <Route path="/reports-sales-performance" element={<Navigate to="/reports/sales" replace />} />
+
+          <Route path="/reports/revenue" element={<RevenueAnalyticsPage user={user} />} />
+          <Route path="/reports-revenue" element={<Navigate to="/reports/revenue" replace />} />
+          <Route path="/reports-revenue-analytics" element={<Navigate to="/reports/revenue" replace />} />
+
+          <Route path="/reports/mlm" element={<MlmEarningsPage user={user} />} />
+          <Route path="/reports-mlm" element={<Navigate to="/reports/mlm" replace />} />
+          <Route path="/reports-team-performance" element={<Navigate to="/reports/mlm" replace />} />
+
+          <Route path="/reports/tax" element={<TaxLedgerPage user={user} />} />
+          <Route path="/reports-tax" element={<Navigate to="/reports/tax" replace />} />
+          <Route path="/reports-tax-audit" element={<Navigate to="/reports/tax" replace />} />
+
+          {/* 9. Content Management */}
+          <Route path="/content/products-services" element={<UserProductsServicesPage user={user} onNavigate={handleNavigate} />} />
+          <Route path="/content-products-services" element={<Navigate to="/content/products-services" replace />} />
+          <Route path="/products-services" element={<Navigate to="/content/products-services" replace />} />
+
+          <Route path="/content/library" element={<UserMediaContentPage user={user} />} />
+          <Route path="/content-library" element={<Navigate to="/content/library" replace />} />
+          <Route path="/content-media" element={<Navigate to="/content/library" replace />} />
+          <Route path="/content-banners" element={<Navigate to="/content/library" replace />} />
+          <Route path="/content-posts" element={<Navigate to="/content/library" replace />} />
+
+          <Route path="/content/social-platforms" element={<UserSocialPlatformsPage user={user} onNavigate={handleNavigate} />} />
+          <Route path="/content-social-platforms" element={<Navigate to="/content/social-platforms" replace />} />
+          <Route path="/social-platforms" element={<Navigate to="/content/social-platforms" replace />} />
+
+          <Route path="/content/support" element={<UserContentSupportPage user={user} onNavigate={handleNavigate} />} />
+          <Route path="/content-support" element={<Navigate to="/content/support" replace />} />
+          <Route path="/content-faq" element={<Navigate to="/content/support" replace />} />
+
+          {/* 10. Support & Notifications */}
+          <Route path="/notifications" element={<UserNotificationsPage user={user} onNavigate={handleNavigate} />} />
+          <Route path="/support-notifications" element={<Navigate to="/notifications" replace />} />
+
+          <Route path="/support/tickets" element={<SupportTickets user={user} />} />
+          <Route path="/support-tickets" element={<Navigate to="/support/tickets" replace />} />
+
+          <Route path="/support/live" element={<LiveHelpdesk user={user} />} />
+          <Route path="/support-live" element={<Navigate to="/support/live" replace />} />
+
+          <Route path="/support/kb" element={<KnowledgeBase />} />
+          <Route path="/support-kb" element={<Navigate to="/support/kb" replace />} />
+
+          <Route path="/support/contact" element={<ContactSupport user={user} />} />
+          <Route path="/support-contact" element={<Navigate to="/support/contact" replace />} />
+
+          {/* Utility / Empty */}
+          <Route path="/empty" element={<EmptyPage />} />
+        </Route>
+      </Route>
+
+      {/* ============================================================== */}
+      {/* 404 / CATCH-ALL FALLBACK ROUTE                                 */}
+      {/* ============================================================== */}
+      <Route path="*" element={<Navigate to={user ? '/dashboard' : '/login'} replace />} />
+    </Routes>
   );
 }
 
-export default App;
+// Top-Level App with BrowserRouter
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
+  );
+}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import Footer from './Footer';
@@ -6,6 +7,7 @@ import Footer from './Footer';
 function Layout({ children, activePage, onNavigate, user, onLogout }) {
   const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 768 : false));
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 768 : false));
+  const location = useLocation();
 
   useEffect(() => {
     const handleResize = () => {
@@ -19,12 +21,12 @@ function Layout({ children, activePage, onNavigate, user, onLogout }) {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // When active page changes on mobile, auto-close the mobile drawer
+  // When route changes on mobile, auto-close the mobile drawer
   useEffect(() => {
     if (isMobile) {
       setSidebarCollapsed(true);
     }
-  }, [activePage, isMobile]);
+  }, [location?.pathname, activePage, isMobile]);
 
   const toggleSidebar = () => {
     setSidebarCollapsed((prev) => !prev);
@@ -44,7 +46,7 @@ function Layout({ children, activePage, onNavigate, user, onLogout }) {
       {/* Left Collapsible Sidebar */}
       <Sidebar
         collapsed={sidebarCollapsed}
-        activePage={activePage}
+        activePage={activePage || location?.pathname}
         onNavigate={onNavigate}
         user={user}
         onLogout={onLogout}

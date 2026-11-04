@@ -19,11 +19,20 @@ import EntityHelp from './pages/EntityHelp';
 import EntitySettings from './pages/EntitySettings';
 import './index.css';
 
-// Guard for protected entity routes
+// Guard for public authentication routes (redirects to dashboard if already authenticated)
+function PublicAuthRoute({ children }) {
+  const token = localStorage.getItem('entity_token');
+  if (token) {
+    return <Navigate to="/entity/dashboard" replace />;
+  }
+  return children;
+}
+
+// Guard for protected entity routes (redirects to login if unauthenticated)
 function ProtectedRoute({ children, activeTab }) {
   const token = localStorage.getItem('entity_token');
   if (!token) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/entity/login" replace />;
   }
   return <EntityLayout activeTab={activeTab}>{children}</EntityLayout>;
 }
@@ -32,9 +41,12 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Auth Route */}
-        <Route path="/" element={<EntityLogin />} />
-        <Route path="/login" element={<EntityLogin />} />
+        {/* Auth Routes - Direct, Canonical & Backward-Compatible Aliases */}
+        <Route path="/" element={<PublicAuthRoute><EntityLogin /></PublicAuthRoute>} />
+        <Route path="/login" element={<PublicAuthRoute><EntityLogin /></PublicAuthRoute>} />
+        <Route path="/entity/login" element={<PublicAuthRoute><EntityLogin /></PublicAuthRoute>} />
+        <Route path="/entity-login" element={<PublicAuthRoute><EntityLogin /></PublicAuthRoute>} />
+        <Route path="/entity" element={<Navigate to="/entity/dashboard" replace />} />
 
         {/* Protected Entity Routes */}
         <Route
