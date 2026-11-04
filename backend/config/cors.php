@@ -18,6 +18,7 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
+        'https://vyaparadnet.com',
         'http://localhost:5173',
         'http://localhost:5174',
         'http://localhost:5175',

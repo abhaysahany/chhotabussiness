@@ -135,55 +135,20 @@ class IncomeAllocationController extends Controller
     }
 
     /**
-     * Update order-level Dump Amount.
+     * Update order-level Dump Amount (DEPRECATED & DISABLED).
+     *
+     * Manual dump amount updates are disabled to protect the Order Dump Approval Workflow.
+     * All Dump write-offs must be submitted via Entity dump requests and approved via
+     * Order Management Section B (POST /api/admin/dump-requests/{id}/approve).
      *
      * PUT/POST /api/admin/orders/{orderId}/dump-amount
      */
     public function updateDumpAmount(Request $request, $orderId)
     {
-        $admin = $this->authenticateAdmin($request);
-        if (!$admin) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Unauthorized. Admin credentials required.',
-            ], 401);
-        }
-
-        $order = Order::where('id', $orderId)
-            ->orWhere('invoice_number', $orderId)
-            ->first();
-
-        if (!$order) {
-            return response()->json([
-                'status' => 'error',
-                'message' => "Order #{$orderId} not found.",
-            ], 404);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'dump_amount' => 'required|numeric|min:0',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Validation error',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
-        $dumpAmount = round((float) $request->input('dump_amount'), 2);
-
-        $order->update([
-            'dump_amount' => $dumpAmount,
-        ]);
-
         return response()->json([
-            'status' => 'success',
-            'message' => "Dump amount updated to ₹{$dumpAmount} successfully.",
-            'dump_amount' => $dumpAmount,
-            'order' => $order->fresh(),
-        ], 200);
+            'status' => 'error',
+            'message' => 'Direct manual dump amount updates are disabled. All Dump write-offs must be submitted by the Entity and approved via the Order Management approval workflow (POST /api/admin/dump-requests/{id}/approve).',
+        ], 410);
     }
 
     /**

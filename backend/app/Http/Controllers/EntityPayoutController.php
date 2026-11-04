@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\UserPayout;
 use App\Models\SalePayment;
+use App\Models\SalesRecord;
 use Carbon\Carbon;
 
 class EntityPayoutController extends Controller
@@ -57,7 +58,8 @@ class EntityPayoutController extends Controller
         $dbPayouts = $payoutsQuery->orderBy('request_date', 'desc')->orderBy('id', 'desc')->get();
 
         $allPayouts = $dbPayouts->map(function ($p, $idx) use ($entityName) {
-            $dumpAmount = ($p->status === 'pending' || $p->status === 'dumped') ? (float)$p->requested_amount * 0.15 : 0;
+            // Bug 3 Fix: Remove false 15% dump calculation. Payouts do not have fictitious dump amounts.
+            $dumpAmount = 0.00;
             return [
                 'id' => $p->id,
                 'payoutCode' => $p->payout_code,
@@ -110,7 +112,7 @@ class EntityPayoutController extends Controller
         $totalBalance = (float) SalesRecord::where(function ($q) use ($entityName) {
             $q->where('entity_name', $entityName)->orWhere('entity_type', 'business');
         })->sum('balance_due');
-        $totalDump = $allPayoutsList->sum(fn($i) => (float)$i['dump_amount']);
+        $totalDump = 0.00; // Bug 3 Fix: No false dump on entity payouts
         $totalTds = $allPayoutsList->whereIn('status', ['paid', 'completed'])->sum(fn($i) => (float)$i['tds_deduction']);
         $totalGross = $allPayoutsList->sum(fn($i) => (float)$i['gross_amount']);
 
@@ -166,7 +168,7 @@ class EntityPayoutController extends Controller
             $monthlyTrend[] = [
                 'month' => $month,
                 'paid' => (float)$items->whereIn('status', ['paid', 'completed'])->sum('net_payable_amount'),
-                'dump' => (float)$items->sum('dump_amount'),
+                'dump' => 0.0, // Bug 3 Fix
                 'balance' => (float)$items->sum('balance_after'),
                 'count' => $items->count(),
             ];

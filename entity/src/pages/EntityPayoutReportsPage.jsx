@@ -76,9 +76,8 @@ function EntityPayoutReportsPage() {
   ];
 
   const statusDistribution = reportData?.status_distribution || [
-    { status: 'Paid / Settled', amount: summary.total_paid || 385450, percentage: 88.5, color: '#10b981' },
-    { status: 'Pending / Processing', amount: 28500, percentage: 6.5, color: '#f59e0b' },
-    { status: 'Dump / In Escrow', amount: summary.dump_amount || 12450, percentage: 5.0, color: '#6366f1' },
+    { status: 'Paid / Settled', amount: summary.total_paid || 385450, percentage: 93.1, color: '#10b981' },
+    { status: 'Pending / Processing', amount: 28500, percentage: 6.9, color: '#f59e0b' },
   ];
 
   const statementRows = useMemo(() => {
@@ -155,7 +154,6 @@ function EntityPayoutReportsPage() {
       'Gross Settlement Volume (INR)',
       'Total Paid (INR)',
       'Balance Remaining (INR)',
-      'Dump Amount (INR)',
       'TDS Deducted (5%)',
       'Transactions Count',
       'Reconciliation Status',
@@ -166,7 +164,6 @@ function EntityPayoutReportsPage() {
       r.grossVolume.toFixed(2),
       r.totalPaid.toFixed(2),
       r.balance.toFixed(2),
-      r.dumpAmount.toFixed(2),
       r.tdsDeducted.toFixed(2),
       r.payoutCount,
       `"${r.status}"`,
@@ -220,7 +217,7 @@ function EntityPayoutReportsPage() {
             Payout Reports & Analytics
           </h1>
           <p className="page-description" style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>
-            Comprehensive settlement statements, tax deductions (TDS u/s 194H), monthly trend analytics, and dump reserves.
+            Comprehensive settlement statements, tax deductions (TDS u/s 194H), and monthly trend analytics.
           </p>
         </div>
         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
@@ -354,33 +351,6 @@ function EntityPayoutReportsPage() {
           </div>
         </div>
 
-        {/* 3. DUMP AMOUNT */}
-        <div
-          className="stat-card"
-          style={{
-            background: 'linear-gradient(135deg, #ffffff 0%, #faf5ff 100%)',
-            border: '1px solid #e9d5ff',
-            borderRadius: '12px',
-            padding: '1.25rem',
-            boxShadow: '0 4px 12px rgba(168, 85, 247, 0.08)',
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#6b21a8', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Dump Amount
-            </span>
-            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#f3e8ff', color: '#9333ea', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>
-              📦
-            </div>
-          </div>
-          <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#581c87', letterSpacing: '-0.02em' }}>
-            ₹{summary.dump_amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </div>
-          <div style={{ marginTop: '0.35rem', fontSize: '0.74rem', color: '#7e22ce', fontWeight: 600 }}>
-            <span>🔒</span> Retained escrow hold & dump buffer
-          </div>
-        </div>
-
         {/* 4. TOTAL TDS DEDUCTIONS */}
         <div
           className="stat-card"
@@ -456,7 +426,7 @@ function EntityPayoutReportsPage() {
                 Monthly Settlement Trend (2026)
               </h3>
               <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.75rem', color: '#64748b' }}>
-                Paid volume vs balance vs dump amount
+                Paid volume vs balance
               </p>
             </div>
             <span style={{ fontSize: '0.72rem', background: '#f0fdf4', color: '#166534', padding: '2px 8px', borderRadius: '10px', fontWeight: 700, border: '1px solid #bbf7d0' }}>
@@ -615,7 +585,6 @@ function EntityPayoutReportsPage() {
                 <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Gross Volume</th>
                 <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Total Paid</th>
                 <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Balance Settled</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Dump Amount</th>
                 <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>TDS Withheld (5%)</th>
                 <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Payouts</th>
                 <th style={{ padding: '0.75rem 1rem' }}>Status</th>
@@ -625,13 +594,13 @@ function EntityPayoutReportsPage() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="9" style={{ padding: '2.5rem 1rem', textAlign: 'center', color: '#64748b' }}>
+                  <td colSpan="8" style={{ padding: '2.5rem 1rem', textAlign: 'center', color: '#64748b' }}>
                     Loading settlement statement reports...
                   </td>
                 </tr>
               ) : statementRows.length === 0 ? (
                 <tr>
-                  <td colSpan="9" style={{ padding: '2.5rem 1rem', textAlign: 'center', color: '#64748b' }}>
+                  <td colSpan="8" style={{ padding: '2.5rem 1rem', textAlign: 'center', color: '#64748b' }}>
                     No statement periods found matching query.
                   </td>
                 </tr>
@@ -663,12 +632,6 @@ function EntityPayoutReportsPage() {
                       ₹{r.balance.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>
 
-                    {/* Dump Amount */}
-                    <td style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>
-                      <span style={{ background: '#faf5ff', color: '#7e22ce', padding: '2px 6px', borderRadius: '4px', fontWeight: 700, fontSize: '0.75rem', border: '1px solid #e9d5ff' }}>
-                        ₹{r.dumpAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                      </span>
-                    </td>
 
                     {/* TDS */}
                     <td style={{ padding: '0.85rem 1rem', textAlign: 'right', fontWeight: 600, color: '#dc2626' }}>
@@ -807,12 +770,6 @@ function EntityPayoutReportsPage() {
                       <td style={{ padding: '0.6rem 0.85rem', color: '#1d4ed8' }}>Current Period Balance</td>
                       <td style={{ padding: '0.6rem 0.85rem', textAlign: 'right', fontWeight: 700, color: '#1e40af' }}>
                         ₹{selectedStatement.balance.toFixed(2)}
-                      </td>
-                    </tr>
-                    <tr style={{ borderBottom: '1px solid #f1f5f9', background: '#faf5ff' }}>
-                      <td style={{ padding: '0.6rem 0.85rem', color: '#7e22ce' }}>Dump / Escrow Amount</td>
-                      <td style={{ padding: '0.6rem 0.85rem', textAlign: 'right', fontWeight: 700, color: '#7e22ce' }}>
-                        ₹{selectedStatement.dumpAmount.toFixed(2)}
                       </td>
                     </tr>
                     <tr style={{ borderBottom: '1px solid #f1f5f9', background: '#fff1f2' }}>

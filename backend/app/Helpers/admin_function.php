@@ -41,7 +41,7 @@ function directIncome($sponsorid, $memberid, $amount, $dumpAmount = 0)
     $direct->total_amount = $amount;
     $direct->paid_amount = $amount;
     $direct->balance_amount = 0.00;
-    $direct->dump_amount = round((float) $dumpAmount, 2);
+    $direct->dump_amount = 0.00; // Bug 2 Fix: Direct incomes must not replicate order dump amount
     $direct->save();
 
     // 5. Update sponsor wallet balance
@@ -120,7 +120,7 @@ function levelIncome($buyerUserCode, $levelIncomePool, $dumpAmount = 0)
                 $record->total_amount = $incomeAmount;
                 $record->paid_amount = $incomeAmount;
                 $record->balance_amount = 0.00;
-                $record->dump_amount = round((float) $dumpAmount, 2);
+                $record->dump_amount = 0.00; // Bug 2 Fix: Level incomes must not replicate order dump amount
                 $record->save();
 
                 // Update recipient wallet balance
