@@ -44,6 +44,12 @@ export const getEntityDashboardStats = async (period = '7d') => {
 
 
 
+// Selectable Entities for Login
+export const getSelectableEntities = async () => {
+  const response = await api.get('/entity/selectable-entities');
+  return response.data;
+};
+
 // Entity Login
 
 export const loginEntity = async (credentials) => {

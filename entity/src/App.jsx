@@ -47,6 +47,7 @@ function App() {
         <Route path="/entity/login" element={<PublicAuthRoute><EntityLogin /></PublicAuthRoute>} />
         <Route path="/entity-login" element={<PublicAuthRoute><EntityLogin /></PublicAuthRoute>} />
         <Route path="/entity" element={<Navigate to="/entity/dashboard" replace />} />
+        <Route path="/entity/" element={<Navigate to="/entity/dashboard" replace />} />
 
         {/* Protected Entity Routes */}
         <Route
