@@ -871,7 +871,7 @@ function AdminContentLibraryPage() {
               {/* Asset Info */}
               <div style={{ padding: '1rem', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div>
-                  <div style={{ fontSize: '0.75rem', color: '#0284c7', fontWeight: '700', marginBottom: '0.25rem' }}>{asset.category}</div>
+                  <div style={{ fontSize: '0.75rem', color: '#0284c7', fontWeight: '700', marginBottom: '0.25rem' }}>{typeof asset.category === 'object' && asset.category !== null ? (asset.category.name || 'General') : String(asset.category || 'General')}</div>
                   <h4 style={{ margin: '0 0 0.35rem 0', fontSize: '0.95rem', fontWeight: '800', color: '#0f172a', lineHeight: '1.3' }}>{asset.title}</h4>
                   <div style={{ fontSize: '0.78rem', color: '#64748b', marginBottom: '0.65rem' }}>
                     🏢 <strong>{asset.entity_name}</strong>
@@ -936,7 +936,7 @@ function AdminContentLibraryPage() {
                   <td style={{ padding: '0.85rem 1rem', fontWeight: '700', color: '#64748b' }}>#{asset.id}</td>
                   <td style={{ padding: '0.85rem 1rem' }}>
                     <div style={{ fontWeight: '800', color: '#0f172a' }}>{asset.title}</div>
-                    <div style={{ fontSize: '0.75rem', color: '#0284c7' }}>{asset.category}</div>
+                    <div style={{ fontSize: '0.75rem', color: '#0284c7' }}>{typeof asset.category === 'object' && asset.category !== null ? (asset.category.name || 'General') : String(asset.category || 'General')}</div>
                   </td>
                   <td style={{ padding: '0.85rem 1rem' }}>
                     <span style={{ padding: '0.2rem 0.5rem', borderRadius: '4px', background: '#f1f5f9', fontWeight: '700', fontSize: '0.75rem', textTransform: 'uppercase' }}>

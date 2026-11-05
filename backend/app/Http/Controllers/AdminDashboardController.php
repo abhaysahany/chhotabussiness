@@ -188,17 +188,34 @@ class AdminDashboardController extends Controller
         $targetProgress = $monthlyTarget > 0 ? min(100.0, round(($monthlyGmv / $monthlyTarget) * 100, 1)) : 0;
 
         // 10. Real Merchant Partners from Database
-        $dbBusinesses = \App\Models\BusinessEntity::all();
-        $dbFreelancers = \App\Models\FreelancerEntity::all();
+        $dbBusinesses = \App\Models\BusinessEntity::with('category')->get();
+        $dbFreelancers = \App\Models\FreelancerEntity::with('category')->get();
         $merchantPartners = [];
         foreach ($dbBusinesses as $b) {
             $bName = $b->business_name ?: $b->name;
             $gmv = (float) SalesRecord::where('entity_name', $bName)->sum('gross_amount');
             $adminCut = (float) SalesRecord::where('entity_name', $bName)->sum('admin_commission_cut');
             $cnt = SalesRecord::where('entity_name', $bName)->count();
+
+            $categoryData = 'Business Entity';
+            if ($b->category) {
+                if (is_object($b->category)) {
+                    $categoryData = [
+                        'id' => $b->category->id,
+                        'name' => $b->category->name ?: 'Business Entity',
+                        'badge_color' => $b->category->badge_color ?: '#6366f1',
+                        'status' => $b->category->status ?: 'active',
+                        'created_at' => $b->category->created_at,
+                        'updated_at' => $b->category->updated_at,
+                    ];
+                } else {
+                    $categoryData = (string) $b->category;
+                }
+            }
+
             $merchantPartners[] = [
                 'name' => $bName,
-                'category' => $b->category ?: 'Business Entity',
+                'category' => $categoryData,
                 'gmv' => '₹' . number_format($gmv, 2),
                 'adminCut' => '₹' . number_format($adminCut, 2),
                 'count' => $cnt . ' Invoices',
@@ -210,9 +227,26 @@ class AdminDashboardController extends Controller
             $gmv = (float) SalesRecord::where('entity_name', $fName)->sum('gross_amount');
             $adminCut = (float) SalesRecord::where('entity_name', $fName)->sum('admin_commission_cut');
             $cnt = SalesRecord::where('entity_name', $fName)->count();
+
+            $categoryData = 'Freelancer';
+            if ($f->category) {
+                if (is_object($f->category)) {
+                    $categoryData = [
+                        'id' => $f->category->id,
+                        'name' => $f->category->name ?: 'Freelancer',
+                        'badge_color' => $f->category->badge_color ?: '#6366f1',
+                        'status' => $f->category->status ?: 'active',
+                        'created_at' => $f->category->created_at,
+                        'updated_at' => $f->category->updated_at,
+                    ];
+                } else {
+                    $categoryData = (string) $f->category;
+                }
+            }
+
             $merchantPartners[] = [
                 'name' => $fName,
-                'category' => $f->category ?: 'Freelancer',
+                'category' => $categoryData,
                 'gmv' => '₹' . number_format($gmv, 2),
                 'adminCut' => '₹' . number_format($adminCut, 2),
                 'count' => $cnt . ' Invoices',

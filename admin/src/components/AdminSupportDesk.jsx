@@ -308,8 +308,8 @@ function AdminSupportDesk({ currentAdmin }) {
                     </h4>
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                      <span>👤 {t.user_name}</span>
-                      <span>{t.category}</span>
+                      <span>👤 {typeof t.user_name === 'object' && t.user_name !== null ? (t.user_name.name || 'User') : String(t.user_name || 'User')}</span>
+                      <span>{typeof t.category === 'object' && t.category !== null ? (t.category.name || 'General') : String(t.category || 'General')}</span>
                     </div>
                   </div>
                 );
