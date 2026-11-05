@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\Models\BusinessEntity;
 use App\Models\FreelancerEntity;
+use App\Services\PasswordResetOtpService;
 
 class EntityAuthController extends Controller
 {
@@ -166,13 +167,10 @@ class EntityAuthController extends Controller
 
             if ($pwMatchesBusiness || $pwMatchesUser) {
                 $authenticated = true;
-                if (!$user) {
-                    $user = User::create([
-                        'name' => $business->name,
-                        'email' => $business->email,
-                        'password' => $business->password ?: Hash::make($password),
-                        'user_code' => 'ENT-B' . str_pad($business->id, 5, '0', STR_PAD_LEFT),
-                    ]);
+                // Backfill password on business entity if historically only set on user
+                if (!$pwMatchesBusiness && $pwMatchesUser && empty($business->password)) {
+                    $business->password = $user->password;
+                    $business->save();
                 }
             } else {
                 return response()->json([
@@ -214,13 +212,10 @@ class EntityAuthController extends Controller
 
             if ($pwMatchesFreelancer || $pwMatchesUser) {
                 $authenticated = true;
-                if (!$user) {
-                    $user = User::create([
-                        'name' => $freelancer->name,
-                        'email' => $freelancer->email,
-                        'password' => $freelancer->password ?: Hash::make($password),
-                        'user_code' => 'ENT-F' . str_pad($freelancer->id, 5, '0', STR_PAD_LEFT),
-                    ]);
+                // Backfill password on freelancer entity if historically only set on user
+                if (!$pwMatchesFreelancer && $pwMatchesUser && empty($freelancer->password)) {
+                    $freelancer->password = $user->password;
+                    $freelancer->save();
                 }
             } else {
                 return response()->json([
@@ -239,12 +234,10 @@ class EntityAuthController extends Controller
             ], 422);
         }
 
-        if ($authenticated && $user) {
-            $token = $user->createToken('entity_token')->plainTextToken;
-
-            // Determine entity details if attached
+        if ($authenticated && ($business || $freelancer)) {
             $entityDetails = null;
             if ($business) {
+                $token = $business->createToken('entity_token')->plainTextToken;
                 $entityDetails = [
                     'entity_type' => 'business',
                     'entity_id' => $business->id,
@@ -258,7 +251,15 @@ class EntityAuthController extends Controller
                     'documents_count' => is_array($business->documents) ? count($business->documents) : 0,
                     'documents' => $business->documents ?? [],
                 ];
-            } elseif ($freelancer) {
+                $userPayload = [
+                    'id' => $business->id,
+                    'name' => $business->name,
+                    'email' => $business->email,
+                    'user_code' => 'ENT-B' . str_pad($business->id, 5, '0', STR_PAD_LEFT),
+                    'entity_details' => $entityDetails,
+                ];
+            } else {
+                $token = $freelancer->createToken('entity_token')->plainTextToken;
                 $entityDetails = [
                     'entity_type' => 'freelancer',
                     'entity_id' => $freelancer->id,
@@ -271,19 +272,20 @@ class EntityAuthController extends Controller
                     'documents_count' => is_array($freelancer->documents) ? count($freelancer->documents) : 0,
                     'documents' => $freelancer->documents ?? [],
                 ];
+                $userPayload = [
+                    'id' => $freelancer->id,
+                    'name' => $freelancer->name,
+                    'email' => $freelancer->email,
+                    'user_code' => 'ENT-F' . str_pad($freelancer->id, 5, '0', STR_PAD_LEFT),
+                    'entity_details' => $entityDetails,
+                ];
             }
 
             return response()->json([
                 'success' => true,
                 'status' => 'success',
                 'message' => 'Login successful! Welcome to the Entity Portal.',
-                'user' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'user_code' => $user->user_code ?? null,
-                    'entity_details' => $entityDetails,
-                ],
+                'user' => $userPayload,
                 'token' => $token,
             ], 200);
         }
@@ -301,26 +303,50 @@ class EntityAuthController extends Controller
      */
     public function me(Request $request)
     {
-        $user = $request->user() ?? Auth::guard('entity')->user() ?? Auth::guard('web')->user();
+        $principal = $request->user();
 
-        if (!$user && $request->bearerToken()) {
-            $tokenObj = \Laravel\Sanctum\PersonalAccessToken::findToken($request->bearerToken());
-            if ($tokenObj && $tokenObj->tokenable) {
-                $user = $tokenObj->tokenable;
+        if (!$principal && $request->bearerToken()) {
+            if (class_exists(\Laravel\Sanctum\PersonalAccessToken::class)) {
+                $tokenObj = \Laravel\Sanctum\PersonalAccessToken::findToken($request->bearerToken());
+                if ($tokenObj && $tokenObj->tokenable) {
+                    $principal = $tokenObj->tokenable;
+                }
             }
         }
 
-        if (!$user) {
+        if (!$principal) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Unauthenticated entity session',
             ], 401);
         }
 
-        $business = BusinessEntity::with('category')->where('email', $user->email)->first();
-        $freelancer = FreelancerEntity::with('category')->where('email', $user->email)->first();
+        $business = null;
+        $freelancer = null;
 
-        $entityDetails = null;
+        // 1. Direct BusinessEntity token
+        if ($principal instanceof BusinessEntity) {
+            $business = $principal->loadMissing('category');
+        }
+        // 2. Direct FreelancerEntity token
+        elseif ($principal instanceof FreelancerEntity) {
+            $freelancer = $principal->loadMissing('category');
+        }
+        // 3. Legacy User token (backward compatibility for historical sessions like User #19)
+        elseif ($principal instanceof User) {
+            $business = BusinessEntity::with('category')->where('email', $principal->email)->first();
+            if (!$business) {
+                $freelancer = FreelancerEntity::with('category')->where('email', $principal->email)->first();
+            }
+        }
+
+        if (!$business && !$freelancer) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Entity record not found for authenticated session',
+            ], 404);
+        }
+
         if ($business) {
             $entityDetails = [
                 'entity_type' => 'business',
@@ -335,7 +361,14 @@ class EntityAuthController extends Controller
                 'documents_count' => is_array($business->documents) ? count($business->documents) : 0,
                 'documents' => $business->documents ?? [],
             ];
-        } elseif ($freelancer) {
+            $userPayload = [
+                'id' => $business->id,
+                'name' => $business->name,
+                'email' => $business->email,
+                'user_code' => 'ENT-B' . str_pad($business->id, 5, '0', STR_PAD_LEFT),
+                'entity_details' => $entityDetails,
+            ];
+        } else {
             $entityDetails = [
                 'entity_type' => 'freelancer',
                 'entity_id' => $freelancer->id,
@@ -348,18 +381,19 @@ class EntityAuthController extends Controller
                 'documents_count' => is_array($freelancer->documents) ? count($freelancer->documents) : 0,
                 'documents' => $freelancer->documents ?? [],
             ];
+            $userPayload = [
+                'id' => $freelancer->id,
+                'name' => $freelancer->name,
+                'email' => $freelancer->email,
+                'user_code' => 'ENT-F' . str_pad($freelancer->id, 5, '0', STR_PAD_LEFT),
+                'entity_details' => $entityDetails,
+            ];
         }
 
         return response()->json([
             'status' => 'success',
             'success' => true,
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'user_code' => $user->user_code ?? null,
-                'entity_details' => $entityDetails,
-            ],
+            'user' => $userPayload,
         ]);
     }
 
@@ -408,12 +442,49 @@ class EntityAuthController extends Controller
     }
 
     /**
-     * Send OTP for Entity Password Recovery
+     * Resolve target entity account scoped strictly by type to prevent shared-email collisions.
+     */
+    protected function resolveTargetEntity(string $email, ?string $type = null): array
+    {
+        $normalizedType = strtolower(trim((string) $type));
+
+        if (in_array($normalizedType, ['business', 'business_entity'])) {
+            $business = BusinessEntity::where('email', $email)->first();
+            return [$business, 'business', 'Business Entity'];
+        }
+
+        if (in_array($normalizedType, ['freelancer', 'freelancer_entity', 'freelance'])) {
+            $freelancer = FreelancerEntity::where('email', $email)->first();
+            return [$freelancer, 'freelancer', 'Freelancer'];
+        }
+
+        // Backwards compatibility fallback if type was not provided
+        $business = BusinessEntity::where('email', $email)->first();
+        $freelancer = FreelancerEntity::where('email', $email)->first();
+
+        if ($business && $freelancer) {
+            return [null, 'ambiguous', 'Both'];
+        }
+
+        if ($business) {
+            return [$business, 'business', 'Business Entity'];
+        }
+
+        if ($freelancer) {
+            return [$freelancer, 'freelancer', 'Freelancer'];
+        }
+
+        return [null, null, null];
+    }
+
+    /**
+     * Send OTP for Entity Password Recovery (Business Entity or Freelancer)
      */
     public function forgotPassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
+            'entity_type' => 'nullable|string|in:business,freelancer,business_entity,freelancer_entity',
         ]);
 
         if ($validator->fails()) {
@@ -424,32 +495,51 @@ class EntityAuthController extends Controller
             ], 422);
         }
 
-        $email = $request->input('email');
+        $email = trim($request->input('email'));
+        $entityType = $request->input('entity_type');
 
-        // Check if any business, freelancer, or user exists with this email
-        $userExists = User::where('email', $email)->exists();
-        $businessExists = BusinessEntity::where('email', $email)->exists();
-        $freelancerExists = FreelancerEntity::where('email', $email)->exists();
+        [$targetEntity, $resolvedType, $typeLabel] = $this->resolveTargetEntity($email, $entityType);
 
-        if (!$userExists && !$businessExists && !$freelancerExists) {
+        if ($resolvedType === 'ambiguous') {
             return response()->json([
                 'status' => 'error',
-                'message' => 'No registered business entity or freelancer found with this email address.',
+                'requires_type_selection' => true,
+                'message' => 'Both a Business Entity and a Freelancer account share this email address. Please select your specific account type.',
+            ], 422);
+        }
+
+        if (!$targetEntity) {
+            $typeName = $entityType ? ucfirst(str_replace('_entity', '', $entityType)) : 'entity';
+            return response()->json([
+                'status' => 'error',
+                'message' => "No registered {$typeName} account found with this email address.",
             ], 404);
         }
 
-        // Generate 6-digit OTP
-        $otp = (string) rand(100000, 999999);
+        // Synchronous secure dispatch
+        $result = PasswordResetOtpService::sendResetOtp(
+            accountType: 'entity_' . $resolvedType,
+            accountId: $targetEntity->id,
+            recipientEmail: $targetEntity->email,
+            recipientName: $targetEntity->name,
+            accountLabel: $typeLabel
+        );
 
-        // Store OTP in Cache for 15 minutes
-        Cache::put('entity_reset_otp_' . $email, $otp, now()->addMinutes(15));
+        if (!$result['success']) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $result['message'],
+                'retry_after_seconds' => $result['retry_after_seconds'] ?? null,
+            ], $result['status_code']);
+        }
 
         return response()->json([
             'status' => 'success',
             'success' => true,
-            'message' => "Password reset OTP sent to {$email} successfully!",
-            'otp' => $otp, // Included for testing and demonstration ease
-            'expires_in_minutes' => 15,
+            'message' => "Password reset verification code dispatched to {$result['masked_email']}!",
+            'entity_type' => $resolvedType,
+            'masked_email' => $result['masked_email'],
+            'expires_in_minutes' => $result['expires_in_minutes'],
         ], 200);
     }
 
@@ -460,6 +550,7 @@ class EntityAuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
+            'entity_type' => 'nullable|string|in:business,freelancer,business_entity,freelancer_entity',
             'otp' => 'required|string|size:6',
         ]);
 
@@ -471,22 +562,38 @@ class EntityAuthController extends Controller
             ], 422);
         }
 
-        $email = $request->input('email');
-        $otp = $request->input('otp');
+        $email = trim($request->input('email'));
+        $entityType = $request->input('entity_type');
+        $otp = trim($request->input('otp'));
 
-        $cachedOtp = Cache::get('entity_reset_otp_' . $email);
+        [$targetEntity, $resolvedType] = $this->resolveTargetEntity($email, $entityType);
 
-        if (!$cachedOtp || $cachedOtp !== $otp) {
+        if (!$targetEntity) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Invalid or expired OTP. Please request a new verification code.',
-            ], 400);
+                'message' => 'Entity account not found.',
+            ], 404);
+        }
+
+        $result = PasswordResetOtpService::verifyOtp('entity_' . $resolvedType, $targetEntity->id, $otp);
+
+        if (!$result['valid'] && Cache::has('entity_reset_otp_' . $email) && Cache::get('entity_reset_otp_' . $email) === $otp) {
+            $result = ['valid' => true, 'message' => 'OTP verified successfully.', 'status_code' => 200];
+        }
+
+        if (!$result['valid']) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $result['message'],
+                'remaining_attempts' => $result['remaining_attempts'] ?? null,
+            ], $result['status_code']);
         }
 
         return response()->json([
             'status' => 'success',
             'success' => true,
-            'message' => 'OTP verified successfully! You may now set your new password.',
+            'message' => $result['message'],
+            'entity_type' => $resolvedType,
         ], 200);
     }
 
@@ -497,6 +604,7 @@ class EntityAuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
+            'entity_type' => 'nullable|string|in:business,freelancer,business_entity,freelancer_entity',
             'otp' => 'required|string|size:6',
             'password' => 'required|string|min:6|confirmed',
         ]);
@@ -509,63 +617,44 @@ class EntityAuthController extends Controller
             ], 422);
         }
 
-        $email = $request->input('email');
-        $otp = $request->input('otp');
+        $email = trim($request->input('email'));
+        $entityType = $request->input('entity_type');
+        $otp = trim($request->input('otp'));
         $newPassword = $request->input('password');
 
-        $cachedOtp = Cache::get('entity_reset_otp_' . $email);
+        [$targetEntity, $resolvedType] = $this->resolveTargetEntity($email, $entityType);
 
-        if (!$cachedOtp || $cachedOtp !== $otp) {
+        if (!$targetEntity) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Invalid or expired OTP. Please start the password reset process again.',
+                'message' => 'No registered entity account found for this email address.',
+            ], 404);
+        }
+
+        // Consume OTP (verifies hash and evicts challenge from cache)
+        $consumed = PasswordResetOtpService::consumeOtp('entity_' . $resolvedType, $targetEntity->id, $otp);
+
+        if (!$consumed && Cache::has('entity_reset_otp_' . $email) && Cache::get('entity_reset_otp_' . $email) === $otp) {
+            Cache::forget('entity_reset_otp_' . $email);
+            $consumed = true;
+        }
+
+        if (!$consumed) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid or expired verification code. Please start the password reset process again.',
             ], 400);
         }
 
-        $hashed = Hash::make($newPassword);
-
-        // Update standard user table
-        $user = User::where('email', $email)->first();
-        if ($user) {
-            $user->password = $hashed;
-            $user->save();
-        }
-
-        // Update business entity table
-        $business = BusinessEntity::where('email', $email)->first();
-        if ($business) {
-            $business->password = $hashed;
-            $business->save();
-            if (!$user) {
-                User::create([
-                    'name' => $business->name,
-                    'email' => $business->email,
-                    'password' => $hashed,
-                ]);
-            }
-        }
-
-        // Update freelancer entity table
-        $freelancer = FreelancerEntity::where('email', $email)->first();
-        if ($freelancer) {
-            $freelancer->password = $hashed;
-            $freelancer->save();
-            if (!$user) {
-                User::create([
-                    'name' => $freelancer->name,
-                    'email' => $freelancer->email,
-                    'password' => $hashed,
-                ]);
-            }
-        }
-
-        // Clear used OTP from cache
-        Cache::forget('entity_reset_otp_' . $email);
+        // Update strictly only the targeted entity model
+        $targetEntity->password = Hash::make($newPassword);
+        $targetEntity->save();
 
         return response()->json([
             'status' => 'success',
             'success' => true,
             'message' => 'Password reset successfully! You can now log in with your new credentials.',
+            'entity_type' => $resolvedType,
         ], 200);
     }
 }

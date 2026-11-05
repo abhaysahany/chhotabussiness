@@ -38,11 +38,14 @@ class UserDashboardController extends Controller
             $user = User::find($request->input('user_id'));
         }
         if (!$user) {
-            $user = User::first();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthenticated user session.',
+            ], 401);
         }
 
-        $userId = $user ? $user->id : null;
-        $userCode = $user ? $user->user_code : '';
+        $userId = $user->id;
+        $userCode = $user->user_code ?: '';
 
         // 1. Commission & Balance Stats from User Model in Database
         $commissionBalance = $user ? (float)$user->commission_balance : 0.00;
@@ -105,47 +108,85 @@ class UserDashboardController extends Controller
         // 5. KYC Status
         $kycStatus = $user ? ($user->kyc_status ?: 'unverified') : 'unverified';
 
-        // 6. Dynamic Weekly Revenue Area Chart strictly from MySQL payouts
+        // 6. Dynamic Multi-Period Revenue Chart strictly from MySQL Income Tables
+        $period = $request->query('period', '7d');
         $revenueCategories = [];
-        $revenueData = [];
-        for ($d = 6; $d >= 0; $d--) {
-            $day = Carbon::now()->subDays($d);
-            $revenueCategories[] = $day->format('D');
-            $dStart = $day->copy()->startOfDay();
-            $dEnd = $day->copy()->endOfDay();
-            $val = 0.00;
-            if ($userId || $userCode) {
-                $val = (float) UserPayout::where(function ($q) use ($userId, $userCode) {
-                    if ($userId) $q->where('user_id', $userId);
-                    if ($userCode) $q->orWhere('user_code', $userCode);
-                })->whereBetween('created_at', [$dStart, $dEnd])->sum('net_payable_amount');
+        $directSeries = [];
+        $levelSeries = [];
+
+        if ($period === '6m' || $period === '1y') {
+            for ($i = 5; $i >= 0; $i--) {
+                $m = Carbon::now()->subMonths($i);
+                $revenueCategories[] = $m->format('M Y');
+                $mStart = $m->copy()->startOfMonth();
+                $mEnd = $m->copy()->endOfMonth();
+                $dVal = 0.0;
+                $lVal = 0.0;
+                if ($userCode) {
+                    $dVal = (float) DirectIncome::where('user_code', $userCode)->whereBetween('created_at', [$mStart, $mEnd])->sum('total_amount');
+                    $lVal = (float) LevelIncome::where('user_code', $userCode)->whereBetween('created_at', [$mStart, $mEnd])->sum('total_amount');
+                }
+                $directSeries[] = round($dVal, 2);
+                $levelSeries[] = round($lVal, 2);
             }
-            $revenueData[] = $val;
+        } elseif ($period === '30d') {
+            $revenueCategories = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+            for ($w = 3; $w >= 0; $w--) {
+                $wStart = Carbon::now()->subWeeks($w)->startOfWeek();
+                $wEnd = Carbon::now()->subWeeks($w)->endOfWeek();
+                $dVal = 0.0;
+                $lVal = 0.0;
+                if ($userCode) {
+                    $dVal = (float) DirectIncome::where('user_code', $userCode)->whereBetween('created_at', [$wStart, $wEnd])->sum('total_amount');
+                    $lVal = (float) LevelIncome::where('user_code', $userCode)->whereBetween('created_at', [$wStart, $wEnd])->sum('total_amount');
+                }
+                $directSeries[] = round($dVal, 2);
+                $levelSeries[] = round($lVal, 2);
+            }
+        } else {
+            for ($d = 6; $d >= 0; $d--) {
+                $day = Carbon::now()->subDays($d);
+                $revenueCategories[] = $day->format('D');
+                $dStart = $day->copy()->startOfDay();
+                $dEnd = $day->copy()->endOfDay();
+                $dVal = 0.0;
+                $lVal = 0.0;
+                if ($userCode) {
+                    $dVal = (float) DirectIncome::where('user_code', $userCode)->whereBetween('created_at', [$dStart, $dEnd])->sum('total_amount');
+                    $lVal = (float) LevelIncome::where('user_code', $userCode)->whereBetween('created_at', [$dStart, $dEnd])->sum('total_amount');
+                }
+                $directSeries[] = round($dVal, 2);
+                $levelSeries[] = round($lVal, 2);
+            }
         }
 
         $revenueChart = [
             'categories' => $revenueCategories,
             'series' => [
-                ['name' => 'Commissions Earned', 'data' => $revenueData],
+                ['name' => 'Direct Referral Bonus', 'data' => $directSeries],
+                ['name' => 'Binary Team Commissions', 'data' => $levelSeries],
             ],
         ];
 
-        // 7. Commission Breakdown Streams Donut Chart
-        $commissionDistribution = [
-            'labels' => ['Direct Sales', 'Level Bonus', 'Leadership Pool', 'Rewards'],
-            'series' => [
-                $totalEarnings > 0 ? 40 : 0,
-                $totalEarnings > 0 ? 30 : 0,
-                $totalEarnings > 0 ? 20 : 0,
-                $totalEarnings > 0 ? 10 : 0,
-            ],
-            'amounts' => [
-                round($totalEarnings * 0.40, 2),
-                round($totalEarnings * 0.30, 2),
-                round($totalEarnings * 0.20, 2),
-                round($totalEarnings * 0.10, 2),
-            ],
-        ];
+        // 7. Dynamic Commission Breakdown Donut Chart strictly from User's Actual Earnings
+        $sumIncomeSources = $directIncomeTotal + $levelIncomeTotal + $rewardsClaimedValue;
+        if ($sumIncomeSources > 0) {
+            $directPct = round(($directIncomeTotal / $sumIncomeSources) * 100, 1);
+            $levelPct = round(($levelIncomeTotal / $sumIncomeSources) * 100, 1);
+            $rewardPct = round(($rewardsClaimedValue / $sumIncomeSources) * 100, 1);
+            $otherPct = max(0, round(100 - $directPct - $levelPct - $rewardPct, 1));
+            $commissionDistribution = [
+                'labels' => ['Direct Bonus', 'Team Match', 'Leadership Bonus', 'Rewards'],
+                'series' => [$directPct, $levelPct, $otherPct, $rewardPct],
+                'amounts' => [$directIncomeTotal, $levelIncomeTotal, 0.00, $rewardsClaimedValue],
+            ];
+        } else {
+            $commissionDistribution = [
+                'labels' => ['Direct Bonus', 'Team Match', 'Leadership Bonus', 'Rewards'],
+                'series' => [0, 0, 0, 0],
+                'amounts' => [0.00, 0.00, 0.00, 0.00],
+            ];
+        }
 
         // 8. Dynamic Network Growth Sparkline
         $sparklineCategories = [];
@@ -199,6 +240,28 @@ class UserDashboardController extends Controller
 
         // 10. Real-time Activity Feed from database events
         $activityFeed = [];
+        if ($userCode) {
+            $recentDirects = DirectIncome::where('user_code', $userCode)->latest()->take(3)->get();
+            foreach ($recentDirects as $rd) {
+                $activityFeed[] = [
+                    'id' => 'di_' . $rd->id,
+                    'title' => 'Direct Referral Income',
+                    'desc' => 'Earned ₹' . number_format($rd->total_amount, 2) . ' from member referral ' . ($rd->from_user_code ?: '') . '.',
+                    'time' => $rd->created_at ? Carbon::parse($rd->created_at)->diffForHumans() : 'Recently',
+                    'type' => 'income',
+                ];
+            }
+            $recentLevels = LevelIncome::where('user_code', $userCode)->latest()->take(3)->get();
+            foreach ($recentLevels as $rl) {
+                $activityFeed[] = [
+                    'id' => 'li_' . $rl->id,
+                    'title' => 'Level ' . ($rl->level ?: 'Team') . ' Commission',
+                    'desc' => 'Earned ₹' . number_format($rl->total_amount, 2) . ' team volume match from ' . ($rl->from_user_code ?: '') . '.',
+                    'time' => $rl->created_at ? Carbon::parse($rl->created_at)->diffForHumans() : 'Recently',
+                    'type' => 'income',
+                ];
+            }
+        }
 
         // 11. Real Leaderboard from Database Users Table
         $dbUsers = User::where('commission_balance', '>', 0)->orderBy('commission_balance', 'desc')->take(4)->get();

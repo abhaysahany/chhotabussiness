@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useBranding } from '../utils/branding';
 import {
   Building2,
@@ -24,10 +24,15 @@ import {
 } from 'lucide-react';
 import './auth.css';
 import { initiateGoogleCodePopup } from '../utils/googleOAuth';
-import { authenticateWithGoogle } from '../api/userService';
+import {
+  authenticateWithGoogle,
+  forgotPasswordUser,
+  verifyResetOtpUser,
+  resetPasswordUser,
+} from '../api/userService';
 
 function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackToHome, onOpenLegalPage, onGoogleSuccess }) {
-  const { appName } = useBranding();
+  const { appName, logoUrl } = useBranding();
   const [email, setEmail] = useState('user@addnet.com');
   const [password, setPassword] = useState('password123');
   const [rememberMe, setRememberMe] = useState(true);
@@ -45,8 +50,143 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
 
   // Forgot password modal state
   const [showForgotModal, setShowForgotModal] = useState(false);
-  const [forgotEmail, setForgotEmail] = useState('');
-  const [forgotSubmitted, setForgotSubmitted] = useState(false);
+  const [forgotStep, setForgotStep] = useState(1); // 1: Email/UserCode, 2: OTP, 3: New Password, 4: Success
+  const [forgotLogin, setForgotLogin] = useState('');
+  const [forgotOtp, setForgotOtp] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotError, setForgotError] = useState(null);
+  const [maskedEmail, setMaskedEmail] = useState('');
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  // 60-second cooldown timer
+  useEffect(() => {
+    let timer;
+    if (resendCooldown > 0) {
+      timer = setInterval(() => {
+        setResendCooldown((prev) => (prev <= 1 ? 0 : prev - 1));
+      }, 1000);
+    }
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [resendCooldown]);
+
+  const handleOpenForgotModal = () => {
+    setForgotLogin(email || '');
+    setForgotOtp('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setForgotStep(1);
+    setForgotError(null);
+    setMaskedEmail('');
+    setResendCooldown(0);
+    setShowForgotModal(true);
+  };
+
+  const handleSendOtp = async (e) => {
+    if (e) e.preventDefault();
+    if (!forgotLogin.trim()) {
+      setForgotError('Please enter your registered email address or partner ID.');
+      return;
+    }
+
+    setForgotLoading(true);
+    setForgotError(null);
+
+    try {
+      const res = await forgotPasswordUser({ email: forgotLogin.trim() });
+      if (res.status === 'success') {
+        if (res.masked_email) {
+          setMaskedEmail(res.masked_email);
+        }
+        setResendCooldown(60);
+        setForgotStep(2);
+      } else {
+        setForgotError(res.message || 'Failed to dispatch verification code.');
+      }
+    } catch (err) {
+      console.error('User forgot password error:', err);
+      const remainingSeconds = err.response?.data?.retry_after_seconds;
+      if (remainingSeconds) {
+        setResendCooldown(remainingSeconds);
+      }
+      setForgotError(
+        err.response?.data?.message || 'No partner account found with that email or ID.'
+      );
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e) => {
+    if (e) e.preventDefault();
+    if (forgotOtp.length !== 6) {
+      setForgotError('Please enter the 6-digit verification code.');
+      return;
+    }
+
+    setForgotLoading(true);
+    setForgotError(null);
+
+    try {
+      const res = await verifyResetOtpUser({ email: forgotLogin.trim(), otp: forgotOtp.trim() });
+      if (res.status === 'success' || res.success) {
+        setForgotStep(3);
+      } else {
+        setForgotError(res.message || 'Invalid or expired OTP code.');
+      }
+    } catch (err) {
+      console.error('User verify OTP error:', err);
+      setForgotError(err.response?.data?.message || 'Invalid or expired OTP code.');
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    if (newPassword.length < 6) {
+      setForgotError('Password must be at least 6 characters long.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setForgotError('Passwords do not match. Please verify both fields.');
+      return;
+    }
+
+    setForgotLoading(true);
+    setForgotError(null);
+
+    try {
+      const res = await resetPasswordUser({
+        email: forgotLogin.trim(),
+        otp: forgotOtp.trim(),
+        password: newPassword,
+        password_confirmation: confirmPassword,
+      });
+
+      if (res.status === 'success') {
+        setForgotStep(4);
+        setEmail(forgotLogin);
+        setPassword('');
+      } else {
+        setForgotError(res.message || 'Failed to reset password.');
+      }
+    } catch (err) {
+      console.error('User reset password error:', err);
+      setForgotError(
+        err.response?.data?.message ||
+          (err.response?.data?.errors
+            ? Object.values(err.response.data.errors).flat().join(' ')
+            : 'Failed to reset password.')
+      );
+    } finally {
+      setForgotLoading(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -139,12 +279,6 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
     } finally {
       setLinkingLoading(false);
     }
-  };
-
-  const handleForgotSubmit = (e) => {
-    e.preventDefault();
-    if (!forgotEmail) return;
-    setForgotSubmitted(true);
   };
 
   return (
@@ -259,7 +393,7 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
             
             {/* Brand Logo Header */}
             <div className="cb-auth-brand-header">
-              <div className="cb-auth-logo-badge" style={{ background: "transparent", padding: 0 }}><img src="/logo.png" alt="Vyapar AdNET" style={{ width: "36px", height: "36px", borderRadius: "50%" }} /></div>
+              <div className="cb-auth-logo-badge" style={{ background: "transparent", padding: 0 }}><img src={logoUrl || "/logo.png"} alt={appName} style={{ width: "36px", height: "36px", borderRadius: "50%", objectFit: "contain" }} onError={(e) => { e.target.src = "/logo.png"; }} /></div>
               <div>
                 <div className="cb-auth-logo-text-title">
                   {appName}
@@ -385,11 +519,7 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
                 <button
                   type="button"
                   className="cb-link-btn"
-                  onClick={() => {
-                    setForgotEmail(email);
-                    setForgotSubmitted(false);
-                    setShowForgotModal(true);
-                  }}
+                  onClick={handleOpenForgotModal}
                 >
                   Forgot password?
                 </button>
@@ -689,59 +819,55 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
                   Reset Password
                 </h3>
                 <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748B' }}>
-                  We'll send password recovery instructions to your email.
+                  {forgotStep === 1 && "We'll send a 6-digit OTP to your registered email."}
+                  {forgotStep === 2 && 'Enter the verification code sent to your email.'}
+                  {forgotStep === 3 && 'Choose a secure new password for your account.'}
+                  {forgotStep === 4 && 'Password successfully updated.'}
                 </p>
               </div>
             </div>
 
-            {forgotSubmitted ? (
-              <div style={{ textAlign: 'center', padding: '1.5rem 0' }}>
-                <div
-                  style={{
-                    width: '54px',
-                    height: '54px',
-                    borderRadius: '50%',
-                    background: '#DCFCE7',
-                    color: '#16A34A',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    margin: '0 auto 1rem auto',
-                  }}
-                >
-                  <CheckCircle2 size={30} />
-                </div>
-                <h4 style={{ margin: '0 0 0.5rem 0', color: '#0F172A', fontSize: '1.1rem', fontWeight: 700 }}>
-                  Reset Link Dispatched!
-                </h4>
-                <p style={{ fontSize: '0.88rem', color: '#64748B', lineHeight: 1.5, margin: '0 0 1.5rem 0' }}>
-                  If an account exists for <strong>{forgotEmail}</strong>, password reset instructions have been dispatched to your inbox.
-                </p>
-                <button
-                  type="button"
-                  className="cb-submit-btn"
-                  onClick={() => setShowForgotModal(false)}
-                >
-                  Return to Sign In
-                </button>
+            {/* Stepper Indicator */}
+            {forgotStep < 4 && (
+              <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem' }}>
+                <div style={{ flex: 1, height: '4px', borderRadius: '2px', background: forgotStep >= 1 ? 'var(--cb-primary, #0F4C81)' : '#E2E8F0', transition: 'background 0.3s' }} />
+                <div style={{ flex: 1, height: '4px', borderRadius: '2px', background: forgotStep >= 2 ? 'var(--cb-primary, #0F4C81)' : '#E2E8F0', transition: 'background 0.3s' }} />
+                <div style={{ flex: 1, height: '4px', borderRadius: '2px', background: forgotStep >= 3 ? 'var(--cb-primary, #0F4C81)' : '#E2E8F0', transition: 'background 0.3s' }} />
               </div>
-            ) : (
-              <form onSubmit={handleForgotSubmit}>
+            )}
+
+            {/* Error Message */}
+            {forgotError && (
+              <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', color: '#B91C1C', padding: '0.65rem 0.85rem', borderRadius: '8px', fontSize: '0.82rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <AlertCircle size={16} style={{ flexShrink: 0 }} />
+                <span>{forgotError}</span>
+              </div>
+            )}
+
+            {/* STEP 1: Enter Email / User Code */}
+            {forgotStep === 1 && (
+              <form onSubmit={handleSendOtp}>
+                <p style={{ color: '#64748B', fontSize: '0.85rem', marginBottom: '1rem' }}>
+                  Enter your registered partner email address or Member ID to receive a 6-digit verification code.
+                </p>
+
                 <div className="cb-form-group">
                   <label className="cb-input-label">
-                    <span>Registered Account Email</span>
+                    <span>Registered Email or Member ID</span>
+                    <span className="required-dot">*</span>
                   </label>
                   <div className="cb-input-wrapper">
                     <span className="cb-input-icon">
                       <Mail size={18} />
                     </span>
                     <input
-                      type="email"
+                      type="text"
                       className="cb-input-field"
-                      value={forgotEmail}
-                      onChange={(e) => setForgotEmail(e.target.value)}
-                      placeholder="partner@addnet.com"
+                      value={forgotLogin}
+                      onChange={(e) => setForgotLogin(e.target.value)}
+                      placeholder="e.g. partner@addnet.com or AD12345"
                       required
+                      autoFocus
                     />
                   </div>
                 </div>
@@ -757,13 +883,217 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
                   </button>
                   <button
                     type="submit"
+                    disabled={forgotLoading}
                     className="cb-submit-btn"
                     style={{ flex: 1.5 }}
                   >
-                    Send Reset Link
+                    {forgotLoading ? (
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}>
+                        <Loader2 size={16} className="animate-spin" /> Sending...
+                      </span>
+                    ) : (
+                      'Send OTP Code'
+                    )}
                   </button>
                 </div>
               </form>
+            )}
+
+            {/* STEP 2: Enter OTP */}
+            {forgotStep === 2 && (
+              <form onSubmit={handleVerifyOtp}>
+                <p style={{ color: '#64748B', fontSize: '0.85rem', marginBottom: '1rem' }}>
+                  We sent a 6-digit code to{' '}
+                  <strong style={{ color: '#0F172A' }}>{maskedEmail || forgotLogin}</strong>.
+                  Code expires in 15 minutes.
+                </p>
+
+                <div className="cb-form-group">
+                  <label className="cb-input-label">
+                    <span>6-Digit Verification Code</span>
+                    <span className="required-dot">*</span>
+                  </label>
+                  <div className="cb-input-wrapper">
+                    <span className="cb-input-icon">
+                      <KeyRound size={18} />
+                    </span>
+                    <input
+                      type="text"
+                      maxLength={6}
+                      required
+                      className="cb-input-field"
+                      value={forgotOtp}
+                      onChange={(e) => setForgotOtp(e.target.value.replace(/[^0-9]/g, ''))}
+                      placeholder="123456"
+                      style={{ letterSpacing: '0.3em', fontWeight: 700, fontSize: '1.1rem' }}
+                      autoFocus
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem', marginBottom: '1.25rem' }}>
+                  <button
+                    type="button"
+                    onClick={() => setForgotStep(1)}
+                    style={{ background: 'none', border: 'none', color: '#64748B', fontSize: '0.8rem', cursor: 'pointer', textDecoration: 'underline' }}
+                  >
+                    ← Change ID/Email
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleSendOtp}
+                    disabled={forgotLoading || resendCooldown > 0}
+                    style={{ padding: '0.45rem 0.8rem', background: '#F1F5F9', color: resendCooldown > 0 ? '#94A3B8' : '#475569', border: 'none', borderRadius: '8px', fontWeight: 600, fontSize: '0.8rem', cursor: resendCooldown > 0 ? 'not-allowed' : 'pointer' }}
+                  >
+                    {resendCooldown > 0 ? `Resend (${resendCooldown}s)` : 'Resend Code'}
+                  </button>
+                </div>
+
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                  <button
+                    type="button"
+                    className="cb-btn-ghost"
+                    style={{ flex: 1 }}
+                    onClick={() => setForgotStep(1)}
+                  >
+                    Back
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={forgotLoading || forgotOtp.length !== 6}
+                    className="cb-submit-btn"
+                    style={{ flex: 1.5 }}
+                  >
+                    {forgotLoading ? (
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}>
+                        <Loader2 size={16} className="animate-spin" /> Verifying...
+                      </span>
+                    ) : (
+                      'Verify Code'
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* STEP 3: Enter New Password */}
+            {forgotStep === 3 && (
+              <form onSubmit={handleResetPassword}>
+                <p style={{ color: '#64748B', fontSize: '0.85rem', marginBottom: '1rem' }}>
+                  Create a new secure password for <strong style={{ color: '#0F172A' }}>{forgotLogin}</strong>.
+                </p>
+
+                <div className="cb-form-group">
+                  <label className="cb-input-label">
+                    <span>New Password</span>
+                    <span className="required-dot">*</span>
+                  </label>
+                  <div className="cb-input-wrapper">
+                    <span className="cb-input-icon">
+                      <Lock size={18} />
+                    </span>
+                    <input
+                      type={showNewPassword ? 'text' : 'password'}
+                      required
+                      minLength={6}
+                      className="cb-input-field"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="At least 6 characters"
+                      autoFocus
+                    />
+                    <button
+                      type="button"
+                      className="cb-password-toggle"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      aria-label={showNewPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="cb-form-group" style={{ marginTop: '0.85rem' }}>
+                  <label className="cb-input-label">
+                    <span>Confirm New Password</span>
+                    <span className="required-dot">*</span>
+                  </label>
+                  <div className="cb-input-wrapper">
+                    <span className="cb-input-icon">
+                      <Lock size={18} />
+                    </span>
+                    <input
+                      type={showNewPassword ? 'text' : 'password'}
+                      required
+                      minLength={6}
+                      className="cb-input-field"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Confirm new password"
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.25rem' }}>
+                  <button
+                    type="button"
+                    className="cb-btn-ghost"
+                    style={{ flex: 1 }}
+                    onClick={() => setForgotStep(2)}
+                  >
+                    Back
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={forgotLoading}
+                    className="cb-submit-btn"
+                    style={{ flex: 1.5 }}
+                  >
+                    {forgotLoading ? (
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}>
+                        <Loader2 size={16} className="animate-spin" /> Updating...
+                      </span>
+                    ) : (
+                      'Update Password'
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* STEP 4: Success */}
+            {forgotStep === 4 && (
+              <div style={{ textAlign: 'center', padding: '1.5rem 0' }}>
+                <div
+                  style={{
+                    width: '56px',
+                    height: '56px',
+                    borderRadius: '50%',
+                    background: '#DCFCE7',
+                    color: '#16A34A',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto 1rem auto',
+                  }}
+                >
+                  <CheckCircle2 size={32} />
+                </div>
+                <h4 style={{ margin: '0 0 0.5rem 0', color: '#0F172A', fontSize: '1.15rem', fontWeight: 700 }}>
+                  Password Reset Successfully!
+                </h4>
+                <p style={{ fontSize: '0.88rem', color: '#64748B', lineHeight: 1.5, margin: '0 0 1.5rem 0' }}>
+                  Your partner account password has been updated. You can now log in with your new password.
+                </p>
+                <button
+                  type="button"
+                  className="cb-submit-btn"
+                  onClick={() => setShowForgotModal(false)}
+                >
+                  Return to Sign In
+                </button>
+              </div>
             )}
           </div>
         </div>

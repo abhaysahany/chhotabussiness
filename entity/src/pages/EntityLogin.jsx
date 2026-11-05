@@ -10,7 +10,7 @@ import {
 } from '../api/entityService';
 
 function EntityLogin() {
-  const { appName } = useBranding();
+  const { appName, logoUrl } = useBranding();
   const [entities, setEntities] = useState([]);
   const [loadingEntities, setLoadingEntities] = useState(true);
   const [selectedEntityKey, setSelectedEntityKey] = useState('');
@@ -60,6 +60,7 @@ function EntityLogin() {
   const [showForgotModal, setShowForgotModal] = useState(false);
   const [forgotStep, setForgotStep] = useState(1); // 1: Email, 2: OTP, 3: New Password, 4: Success
   const [resetEmail, setResetEmail] = useState('');
+  const [resetEntityType, setResetEntityType] = useState('business');
   const [resetOtp, setResetOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -67,6 +68,18 @@ function EntityLogin() {
   const [forgotLoading, setForgotLoading] = useState(false);
   const [forgotError, setForgotError] = useState(null);
   const [demoOtpHint, setDemoOtpHint] = useState(null);
+  const [maskedEmail, setMaskedEmail] = useState('');
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  useEffect(() => {
+    let timer;
+    if (resendCooldown > 0) {
+      timer = setInterval(() => {
+        setResendCooldown((prev) => (prev > 0 ? prev - 1 : 0));
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [resendCooldown]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -124,18 +137,21 @@ function EntityLogin() {
   // Open Forgot Password Modal
   const handleOpenForgotModal = () => {
     setResetEmail(email || '');
+    setResetEntityType('business');
     setResetOtp('');
     setNewPassword('');
     setConfirmPassword('');
     setForgotStep(1);
     setForgotError(null);
     setDemoOtpHint(null);
+    setMaskedEmail('');
+    setResendCooldown(0);
     setShowForgotModal(true);
   };
 
   // Step 1: Send OTP to Email
   const handleSendOtp = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     if (!resetEmail) {
       setForgotError('Please enter your registered email address.');
       return;
@@ -145,17 +161,33 @@ function EntityLogin() {
     setForgotError(null);
 
     try {
-      const res = await forgotPasswordEntity({ email: resetEmail });
+      const res = await forgotPasswordEntity({
+        email: resetEmail,
+        entity_type: resetEntityType,
+      });
       if (res.status === 'success' || res.success) {
+        if (res.masked_email) {
+          setMaskedEmail(res.masked_email);
+        }
+        if (res.entity_type) {
+          setResetEntityType(res.entity_type);
+        }
         if (res.otp) {
           setDemoOtpHint(res.otp);
+        } else {
+          setDemoOtpHint(null);
         }
+        setResendCooldown(60);
         setForgotStep(2);
       } else {
-        setForgotError(res.message || 'Failed to send OTP code.');
+        setForgotError(res.message || 'Failed to dispatch verification code.');
       }
     } catch (err) {
       console.error('Forgot password error:', err);
+      const remainingSeconds = err.response?.data?.retry_after_seconds;
+      if (remainingSeconds) {
+        setResendCooldown(remainingSeconds);
+      }
       setForgotError(
         err.response?.data?.message || 'No registered entity found with this email address.'
       );
@@ -176,7 +208,11 @@ function EntityLogin() {
     setForgotError(null);
 
     try {
-      const res = await verifyResetOtpEntity({ email: resetEmail, otp: resetOtp });
+      const res = await verifyResetOtpEntity({
+        email: resetEmail,
+        entity_type: resetEntityType,
+        otp: resetOtp,
+      });
       if (res.status === 'success' || res.success) {
         setForgotStep(3);
       } else {
@@ -208,6 +244,7 @@ function EntityLogin() {
     try {
       const res = await resetPasswordEntity({
         email: resetEmail,
+        entity_type: resetEntityType,
         otp: resetOtp,
         password: newPassword,
         password_confirmation: confirmPassword,
@@ -239,37 +276,46 @@ function EntityLogin() {
       {/* Brand Header */}
       <div className="auth-header">
         <div className="brand-logo">
-          <svg
-            width="36"
-            height="36"
-            viewBox="0 0 36 36"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <rect width="36" height="36" rx="10" fill="url(#entity-grad)" />
-            <path
-              d="M11 11H18C20.7614 11 23 13.2386 23 16V16C23 18.7614 20.7614 21 18 21H11V11Z"
-              fill="white"
+          {logoUrl ? (
+            <img
+              src={logoUrl}
+              alt={appName}
+              style={{ width: '36px', height: '36px', borderRadius: '10px', objectFit: 'contain' }}
+              onError={(e) => { e.target.style.display = 'none'; }}
             />
-            <path
-              d="M18 21H25V25H18C15.2386 25 13 22.7614 13 20V20"
-              stroke="white"
-              strokeWidth="3.5"
-            />
-            <defs>
-              <linearGradient
-                id="entity-grad"
-                x1="0"
-                y1="0"
-                x2="36"
-                y2="36"
-                gradientUnits="userSpaceOnUse"
-              >
-                <stop stopColor="#7a8439" />
-                <stop offset="1" stopColor="#505726" />
-              </linearGradient>
-            </defs>
-          </svg>
+          ) : (
+            <svg
+              width="36"
+              height="36"
+              viewBox="0 0 36 36"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect width="36" height="36" rx="10" fill="url(#entity-grad)" />
+              <path
+                d="M11 11H18C20.7614 11 23 13.2386 23 16V16C23 18.7614 20.7614 21 18 21H11V11Z"
+                fill="white"
+              />
+              <path
+                d="M18 21H25V25H18C15.2386 25 13 22.7614 13 20V20"
+                stroke="white"
+                strokeWidth="3.5"
+              />
+              <defs>
+                <linearGradient
+                  id="entity-grad"
+                  x1="0"
+                  y1="0"
+                  x2="36"
+                  y2="36"
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop stopColor="#7a8439" />
+                  <stop offset="1" stopColor="#505726" />
+                </linearGradient>
+              </defs>
+            </svg>
+          )}
           <span className="brand-name">{appName}</span>
           <span className="brand-badge entity-badge">ENTITY PANEL</span>
         </div>
@@ -556,22 +602,72 @@ function EntityLogin() {
               </div>
             )}
 
-            {/* STEP 1: Enter Email */}
+            {/* STEP 1: Enter Email & Type */}
             {forgotStep === 1 && (
               <form onSubmit={handleSendOtp}>
                 <p style={{ color: '#64748b', fontSize: '0.85rem', marginBottom: '1rem' }}>
-                  Enter the registered email associated with your business or freelance entity. We'll send you a 6-digit OTP code.
+                  Select your account type and enter your registered email. We'll send a 6-digit verification code to your inbox.
                 </p>
 
                 <div style={{ marginBottom: '1.25rem' }}>
+                  <label style={{ display: 'block', fontWeight: '600', fontSize: '0.8125rem', color: '#334155', marginBottom: '0.5rem' }}>
+                    Select Entity Type *
+                  </label>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <button
+                      type="button"
+                      onClick={() => setResetEntityType('business')}
+                      style={{
+                        flex: 1,
+                        padding: '0.65rem 0.5rem',
+                        borderRadius: '8px',
+                        border: resetEntityType === 'business' ? '2px solid #636B2F' : '1px solid #cbd5e1',
+                        background: resetEntityType === 'business' ? '#f4f6ec' : '#ffffff',
+                        color: resetEntityType === 'business' ? '#636B2F' : '#64748b',
+                        fontWeight: resetEntityType === 'business' ? '700' : '600',
+                        fontSize: '0.82rem',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.35rem',
+                      }}
+                    >
+                      <span>🏢</span> Business Entity
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setResetEntityType('freelancer')}
+                      style={{
+                        flex: 1,
+                        padding: '0.65rem 0.5rem',
+                        borderRadius: '8px',
+                        border: resetEntityType === 'freelancer' ? '2px solid #636B2F' : '1px solid #cbd5e1',
+                        background: resetEntityType === 'freelancer' ? '#f4f6ec' : '#ffffff',
+                        color: resetEntityType === 'freelancer' ? '#636B2F' : '#64748b',
+                        fontWeight: resetEntityType === 'freelancer' ? '700' : '600',
+                        fontSize: '0.82rem',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.35rem',
+                      }}
+                    >
+                      <span>💼</span> Freelancer
+                    </button>
+                  </div>
+                </div>
+
+                <div style={{ marginBottom: '1.25rem' }}>
                   <label style={{ display: 'block', fontWeight: '600', fontSize: '0.8125rem', color: '#334155', marginBottom: '0.4rem' }}>
-                    Registered Entity Email *
+                    Registered {resetEntityType === 'freelancer' ? 'Freelancer' : 'Business'} Email *
                   </label>
                   <input
                     type="email"
                     required
                     className="form-input"
-                    placeholder="e.g. contact@yourbusiness.com"
+                    placeholder={resetEntityType === 'freelancer' ? 'e.g. freelancer@example.com' : 'e.g. contact@yourbusiness.com'}
                     value={resetEmail}
                     onChange={(e) => setResetEmail(e.target.value)}
                     style={{ width: '100%' }}
@@ -601,7 +697,7 @@ function EntityLogin() {
             {forgotStep === 2 && (
               <form onSubmit={handleVerifyOtp}>
                 <p style={{ color: '#64748b', fontSize: '0.85rem', marginBottom: '0.5rem' }}>
-                  Enter the 6-digit verification code sent to <strong style={{ color: '#0f172a' }}>{resetEmail}</strong>.
+                  Enter the 6-digit verification code sent to {maskedEmail ? <strong style={{ color: '#0f172a' }}>{maskedEmail}</strong> : <strong style={{ color: '#0f172a' }}>{resetEmail}</strong>} ({resetEntityType === 'freelancer' ? 'Freelancer' : 'Business Entity'}).
                 </p>
 
                 {demoOtpHint && (
@@ -639,17 +735,17 @@ function EntityLogin() {
                     onClick={() => setForgotStep(1)}
                     style={{ background: 'none', border: 'none', color: '#64748b', fontSize: '0.8rem', cursor: 'pointer', textDecoration: 'underline' }}
                   >
-                    ← Change Email
+                    ← Change Email / Type
                   </button>
 
                   <div style={{ display: 'flex', gap: '0.5rem' }}>
                     <button
                       type="button"
                       onClick={handleSendOtp}
-                      disabled={forgotLoading}
-                      style={{ padding: '0.55rem 0.85rem', background: '#f1f5f9', color: '#475569', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '0.8rem', cursor: 'pointer' }}
+                      disabled={forgotLoading || resendCooldown > 0}
+                      style={{ padding: '0.55rem 0.85rem', background: '#f1f5f9', color: resendCooldown > 0 ? '#94a3b8' : '#475569', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '0.8rem', cursor: resendCooldown > 0 ? 'not-allowed' : 'pointer' }}
                     >
-                      Resend OTP
+                      {resendCooldown > 0 ? `Resend (${resendCooldown}s)` : 'Resend OTP'}
                     </button>
                     <button
                       type="submit"
@@ -667,7 +763,7 @@ function EntityLogin() {
             {forgotStep === 3 && (
               <form onSubmit={handleResetPassword}>
                 <p style={{ color: '#64748b', fontSize: '0.85rem', marginBottom: '1rem' }}>
-                  Set a new secure password for <strong style={{ color: '#0f172a' }}>{resetEmail}</strong>.
+                  Set a new secure password for <strong style={{ color: '#0f172a' }}>{resetEmail}</strong> ({resetEntityType === 'freelancer' ? 'Freelancer' : 'Business Entity'}).
                 </p>
 
                 <div style={{ marginBottom: '1rem' }}>

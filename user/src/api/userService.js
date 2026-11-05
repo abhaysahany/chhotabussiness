@@ -68,12 +68,79 @@ export const updateUserPassword = async (passwordData) => {
   return response.data;
 };
 
-export const getDashboardStats = async () => {
+/**
+ * User / MLM Member Forgot Password Flow
+ */
+export const forgotPasswordUser = async (data) => {
+  const payload = typeof data === 'string' ? { email: data } : data;
+  const response = await api.post('/forgot-password', payload);
+  return response.data;
+};
+
+export const verifyResetOtpUser = async (data) => {
+  const response = await api.post('/verify-reset-otp', data);
+  return response.data;
+};
+
+export const resetPasswordUser = async (data) => {
+  const response = await api.post('/reset-password', data);
+  return response.data;
+};
+
+export const getDashboardStats = async (period = '7d') => {
   try {
-    const response = await api.get('/user/dashboard-stats');
+    const response = await api.get('/user/dashboard-stats', {
+      params: { period },
+    });
     return response.data;
   } catch (err) {
     console.error('Error fetching dashboard stats:', err);
     return null;
   }
+};
+
+/**
+ * Sponsor Onboarding for Google Sign-in / Direct Onboarding
+ */
+export const completeSponsorOnboarding = async (sponsor_id) => {
+  const payload = typeof sponsor_id === 'string' ? { sponsor_id } : sponsor_id;
+  const response = await api.post('/user/complete-sponsor-onboarding', payload);
+  return response.data;
+};
+
+export const skipSponsorOnboarding = async () => {
+  const response = await api.post('/user/skip-sponsor-onboarding');
+  return response.data;
+};
+
+/**
+ * User Profile & Avatar Management
+ */
+export const getUserProfile = async () => {
+  const response = await api.get('/user/profile');
+  return response.data;
+};
+
+export const updateUserProfile = async (profileData) => {
+  const response = await api.post('/user/profile', profileData);
+  return response.data;
+};
+
+export const uploadUserProfilePhoto = async (fileOrFormData) => {
+  let body = fileOrFormData;
+  if (fileOrFormData instanceof File) {
+    body = new FormData();
+    body.append('photo', fileOrFormData);
+  }
+  const response = await api.post('/user/profile/photo', body, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data;
+};
+
+export const removeUserProfilePhoto = async () => {
+  const response = await api.delete('/user/profile/photo');
+  return response.data;
 };

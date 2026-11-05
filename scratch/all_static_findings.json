@@ -1,0 +1,154 @@
+[
+  {
+    "panel": "admin",
+    "file": "admin/src/components/dashboard/AdminDashboardOverview.jsx",
+    "line": 87,
+    "type": "HARDCODED_METRIC_FALLBACK",
+    "description": "Fabricated fallback number: 4852400",
+    "code": "totalGmv: Number(raw.totalGmv) || 4852400.00,"
+  },
+  {
+    "panel": "admin",
+    "file": "admin/src/components/dashboard/AdminDashboardOverview.jsx",
+    "line": 88,
+    "type": "HARDCODED_METRIC_FALLBACK",
+    "description": "Fabricated fallback number: 728500",
+    "code": "totalPlatformRevenue: Number(raw.totalPlatformRevenue) || 728500.00,"
+  },
+  {
+    "panel": "admin",
+    "file": "admin/src/components/dashboard/AdminDashboardOverview.jsx",
+    "line": 89,
+    "type": "HARDCODED_METRIC_FALLBACK",
+    "description": "Fabricated fallback number: 1654200",
+    "code": "totalCommissionsPaid: Number(raw.totalCommissionsPaid) || 1654200.00,"
+  },
+  {
+    "panel": "admin",
+    "file": "admin/src/components/dashboard/AdminDashboardOverview.jsx",
+    "line": 90,
+    "type": "HARDCODED_METRIC_FALLBACK",
+    "description": "Fabricated fallback number: 82710",
+    "code": "totalTdsCollected: Number(raw.totalTdsCollected) || 82710.00,"
+  },
+  {
+    "panel": "admin",
+    "file": "admin/src/components/dashboard/AdminDashboardOverview.jsx",
+    "line": 91,
+    "type": "HARDCODED_METRIC_FALLBACK",
+    "description": "Fabricated fallback number: 1240",
+    "code": "totalUsers: Number(raw.totalUsers) || 1240,"
+  },
+  {
+    "panel": "admin",
+    "file": "admin/src/components/dashboard/AdminDashboardOverview.jsx",
+    "line": 92,
+    "type": "HARDCODED_METRIC_FALLBACK",
+    "description": "Fabricated fallback number: 980",
+    "code": "activeUsers: Number(raw.activeUsers) || 980,"
+  },
+  {
+    "panel": "admin",
+    "file": "admin/src/components/dashboard/AdminDashboardOverview.jsx",
+    "line": 93,
+    "type": "HARDCODED_METRIC_FALLBACK",
+    "description": "Fabricated fallback number: 142",
+    "code": "newUsersThisMonth: Number(raw.newUsersThisMonth) || 142,"
+  },
+  {
+    "panel": "admin",
+    "file": "admin/src/components/dashboard/AdminDashboardOverview.jsx",
+    "line": 96,
+    "type": "HARDCODED_METRIC_FALLBACK",
+    "description": "Fabricated fallback number: 84500",
+    "code": "pendingPayoutsAmount: Number(raw.pendingPayoutsAmount) || 84500.00,"
+  },
+  {
+    "panel": "admin",
+    "file": "admin/src/components/dashboard/AdminDashboardOverview.jsx",
+    "line": 327,
+    "type": "HARDCODED_DATA_ARRAY",
+    "description": "Hardcoded array of records: `merchantPartners`",
+    "code": "const merchantPartners = ["
+  },
+  {
+    "panel": "user",
+    "file": "user/src/components/support/SupportSystem.jsx",
+    "line": 7,
+    "type": "HARDCODED_DATA_ARRAY",
+    "description": "Hardcoded array of records: `initialTickets`",
+    "code": "const initialTickets = ["
+  },
+  {
+    "panel": "user",
+    "file": "user/src/pages/BusinessSalesReportPage.jsx",
+    "line": 22,
+    "type": "HARDCODED_DATA_ARRAY",
+    "description": "Hardcoded array of records: `salesTransactions`",
+    "code": "const salesTransactions = ["
+  },
+  {
+    "panel": "user",
+    "file": "user/src/pages/landing/components/BenefitsSection.jsx",
+    "line": 26,
+    "type": "HARDCODED_DATA_ARRAY",
+    "description": "Hardcoded array of records: `customerBenefits`",
+    "code": "const customerBenefits = ["
+  },
+  {
+    "panel": "user",
+    "file": "user/src/pages/landing/components/LandingNavbar.jsx",
+    "line": 16,
+    "type": "HARDCODED_DATA_ARRAY",
+    "description": "Hardcoded array of records: `navItems`",
+    "code": "const navItems = ["
+  },
+  {
+    "panel": "user",
+    "file": "user/src/pages/landing/components/StatsSection.jsx",
+    "line": 11,
+    "type": "HARDCODED_DATA_ARRAY",
+    "description": "Hardcoded array of records: `stats`",
+    "code": "const stats = ["
+  },
+  {
+    "panel": "entity",
+    "file": "entity/src/pages/EntityDashboard.jsx",
+    "line": 99,
+    "type": "HARDCODED_METRIC_FALLBACK",
+    "description": "Fabricated fallback number: 1845000",
+    "code": "totalGrossSales: Number(raw.totalGrossSales) || 1845000.00,"
+  },
+  {
+    "panel": "entity",
+    "file": "entity/src/pages/EntityDashboard.jsx",
+    "line": 100,
+    "type": "HARDCODED_METRIC_FALLBACK",
+    "description": "Fabricated fallback number: 1512900",
+    "code": "totalNetEarnings: Number(raw.totalNetEarnings) || 1512900.00,"
+  },
+  {
+    "panel": "entity",
+    "file": "entity/src/pages/EntityDashboard.jsx",
+    "line": 101,
+    "type": "HARDCODED_METRIC_FALLBACK",
+    "description": "Fabricated fallback number: 124500",
+    "code": "totalBalanceDue: Number(raw.totalBalanceDue) || 124500.00,"
+  },
+  {
+    "panel": "entity",
+    "file": "entity/src/pages/EntityDashboard.jsx",
+    "line": 102,
+    "type": "HARDCODED_METRIC_FALLBACK",
+    "description": "Fabricated fallback number: 332100",
+    "code": "totalPlatformFeePaid: Number(raw.totalPlatformFeePaid) || 332100.00,"
+  },
+  {
+    "panel": "entity",
+    "file": "entity/src/pages/EntityDashboard.jsx",
+    "line": 103,
+    "type": "HARDCODED_METRIC_FALLBACK",
+    "description": "Fabricated fallback number: 128",
+    "code": "totalInvoicesCount: Number(raw.totalInvoicesCount) || 128,"
+  }
+]

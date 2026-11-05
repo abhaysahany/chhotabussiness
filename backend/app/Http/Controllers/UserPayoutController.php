@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\UserPayout;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class UserPayoutController extends Controller
 {
@@ -87,10 +88,10 @@ class UserPayoutController extends Controller
                 'kycStatus' => $p->kyc_status,
                 'kyc_status' => $p->kyc_status,
                 'status' => $p->status,
-                'requestDate' => $p->request_date ? $p->request_date->format('Y-m-d H:i:s') : null,
-                'request_date' => $p->request_date ? $p->request_date->format('Y-m-d H:i:s') : null,
-                'processedDate' => $p->processed_date ? $p->processed_date->format('Y-m-d H:i:s') : null,
-                'processed_date' => $p->processed_date ? $p->processed_date->format('Y-m-d H:i:s') : null,
+                'requestDate' => $p->request_date ? $p->request_date->toIso8601String() : null,
+                'request_date' => $p->request_date ? $p->request_date->toIso8601String() : null,
+                'processedDate' => $p->processed_date ? $p->processed_date->toIso8601String() : null,
+                'processed_date' => $p->processed_date ? $p->processed_date->toIso8601String() : null,
                 'utrNumber' => $p->utr_number,
                 'utr_number' => $p->utr_number,
                 'adminNotes' => $p->admin_notes,
@@ -363,25 +364,35 @@ class UserPayoutController extends Controller
             $query->where('status', strtolower($request->input('status')));
         }
 
-        // Date Presets & Custom Date Range Filters
+        // Date Presets & Custom Date Range Filters (Indian calendar dates mapped to UTC storage)
         if ($request->filled('date_preset')) {
             $preset = $request->input('date_preset');
             if ($preset === 'today') {
-                $query->whereDate('request_date', now()->toDateString());
+                $start = Carbon::now('Asia/Kolkata')->startOfDay()->setTimezone('UTC');
+                $end = Carbon::now('Asia/Kolkata')->endOfDay()->setTimezone('UTC');
+                $query->whereBetween('request_date', [$start, $end]);
             } elseif ($preset === 'week') {
-                $query->whereBetween('request_date', [now()->startOfWeek(), now()->endOfWeek()]);
+                $start = Carbon::now('Asia/Kolkata')->startOfWeek()->setTimezone('UTC');
+                $end = Carbon::now('Asia/Kolkata')->endOfWeek()->setTimezone('UTC');
+                $query->whereBetween('request_date', [$start, $end]);
             } elseif ($preset === 'month') {
-                $query->whereBetween('request_date', [now()->startOfMonth(), now()->endOfMonth()]);
+                $start = Carbon::now('Asia/Kolkata')->startOfMonth()->setTimezone('UTC');
+                $end = Carbon::now('Asia/Kolkata')->endOfMonth()->setTimezone('UTC');
+                $query->whereBetween('request_date', [$start, $end]);
             } elseif ($preset === 'last_month') {
-                $query->whereBetween('request_date', [now()->subMonth()->startOfMonth(), now()->subMonth()->endOfMonth()]);
+                $start = Carbon::now('Asia/Kolkata')->subMonth()->startOfMonth()->setTimezone('UTC');
+                $end = Carbon::now('Asia/Kolkata')->subMonth()->endOfMonth()->setTimezone('UTC');
+                $query->whereBetween('request_date', [$start, $end]);
             }
         }
 
         if ($request->filled('start_date')) {
-            $query->whereDate('request_date', '>=', $request->input('start_date'));
+            $start = Carbon::parse($request->input('start_date'), 'Asia/Kolkata')->startOfDay()->setTimezone('UTC');
+            $query->where('request_date', '>=', $start);
         }
         if ($request->filled('end_date')) {
-            $query->whereDate('request_date', '<=', $request->input('end_date'));
+            $end = Carbon::parse($request->input('end_date'), 'Asia/Kolkata')->endOfDay()->setTimezone('UTC');
+            $query->where('request_date', '<=', $end);
         }
 
         $payouts = $query->orderBy('request_date', 'desc')->orderBy('id', 'desc')->get();
@@ -618,7 +629,7 @@ class UserPayoutController extends Controller
                     'netPayableAmount' => (float) $payout->net_payable_amount,
                     'payment_method' => $payout->payment_method,
                     'status' => $payout->status,
-                    'request_date' => $payout->request_date ? $payout->request_date->format('Y-m-d H:i:s') : now()->toDateTimeString(),
+                    'request_date' => $payout->request_date ? $payout->request_date->toIso8601String() : now()->toIso8601String(),
                     'bankDetails' => [
                         'bankName' => $payout->bank_name,
                         'accountNumber' => $payout->account_number,

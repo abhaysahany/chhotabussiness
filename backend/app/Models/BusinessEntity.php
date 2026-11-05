@@ -3,11 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
 
-class BusinessEntity extends Model
+class BusinessEntity extends Authenticatable
 {
-    use HasFactory;
+    use HasApiTokens, HasFactory;
+
+    protected $table = 'business_entities';
 
     protected $fillable = [
         'entity_category_id',

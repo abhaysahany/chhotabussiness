@@ -73,6 +73,7 @@ Route::get('/user/dashboard/stats', [UserDashboardController::class, 'getDashboa
 
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminSupportController;
 use App\Http\Controllers\Admin\EntityCategoryController;
@@ -172,6 +173,9 @@ Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/verify-reset-otp', [AuthController::class, 'verifyResetOtp']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+Route::post('/user/sponsor-onboarding', [AuthController::class, 'handleSponsorOnboarding']);
+Route::post('/user/complete-sponsor-onboarding', [AuthController::class, 'completeSponsorOnboarding']);
+Route::post('/user/skip-sponsor-onboarding', [AuthController::class, 'skipSponsorOnboarding']);
 
 
 // Entity Authentication Routes
@@ -391,6 +395,20 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/user/update-password', [AuthController::class, 'updatePassword']);
+
+    // User Sponsor ID Onboarding Routes
+    Route::post('/user/sponsor-onboarding', [AuthController::class, 'handleSponsorOnboarding']);
+    Route::post('/user/complete-sponsor-onboarding', [AuthController::class, 'completeSponsorOnboarding']);
+    Route::post('/user/skip-sponsor-onboarding', [AuthController::class, 'skipSponsorOnboarding']);
+
+    // User Profile Management & Avatar Photo Routes
+    Route::get('/user/profile', [UserProfileController::class, 'getProfile']);
+    Route::post('/user/profile', [UserProfileController::class, 'updateProfile']);
+    Route::put('/user/profile', [UserProfileController::class, 'updateProfile']);
+    Route::post('/user/profile/photo', [UserProfileController::class, 'uploadPhoto']);
+    Route::post('/user/profile-photo', [UserProfileController::class, 'uploadPhoto']);
+    Route::delete('/user/profile/photo', [UserProfileController::class, 'removePhoto']);
+    Route::post('/user/profile/photo/remove', [UserProfileController::class, 'removePhoto']);
     
     // Protected Entity Routes
     Route::get('/entity/me', [EntityAuthController::class, 'me']);
@@ -406,6 +424,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/admin/entity-commission-settings', [EntityCommissionSettingController::class, 'save']);
 
     // Admin Application Branding Settings
+    Route::get('/admin/branding', [SystemSettingController::class, 'getBranding']);
+    Route::post('/admin/branding', [SystemSettingController::class, 'saveBranding']);
     Route::get('/admin/settings/branding', [SystemSettingController::class, 'getBranding']);
     Route::post('/admin/settings/branding', [SystemSettingController::class, 'saveBranding']);
     Route::put('/admin/settings/branding', [SystemSettingController::class, 'saveBranding']);

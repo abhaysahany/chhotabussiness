@@ -1,0 +1,537 @@
+{
+    "App\\Models\\Admin": {
+        "table": "admins",
+        "casts": {
+            "id": "int",
+            "password": "hashed"
+        },
+        "accessors": {
+            "use_factory": "getUseFactoryAttribute"
+        }
+    },
+    "App\\Models\\BusinessEntity": {
+        "table": "business_entities",
+        "casts": {
+            "id": "int",
+            "documents": "array",
+            "featured": "boolean",
+            "password": "hashed"
+        },
+        "accessors": {
+            "use_factory": "getUseFactoryAttribute"
+        }
+    },
+    "App\\Models\\Category": {
+        "table": "categories",
+        "casts": {
+            "id": "int"
+        },
+        "accessors": {
+            "use_factory": "getUseFactoryAttribute"
+        }
+    },
+    "App\\Models\\ContentAsset": {
+        "table": "content_assets",
+        "casts": {
+            "id": "int",
+            "downloads": "integer",
+            "shares": "integer"
+        },
+        "accessors": {
+            "use_factory": "getUseFactoryAttribute"
+        }
+    },
+    "App\\Models\\DirectIncome": {
+        "table": "direct_incomes",
+        "casts": {
+            "id": "int",
+            "total_amount": "float",
+            "paid_amount": "float",
+            "balance_amount": "float",
+            "dump_amount": "float"
+        },
+        "accessors": {
+            "use_factory": "getUseFactoryAttribute"
+        }
+    },
+    "App\\Models\\EmailOtp": {
+        "table": "email_otps",
+        "casts": {
+            "id": "int",
+            "expires_at": "datetime",
+            "is_used": "boolean"
+        },
+        "accessors": {
+            "use_factory": "getUseFactoryAttribute"
+        }
+    },
+    "App\\Models\\EntityCategory": {
+        "table": "entity_categories",
+        "casts": {
+            "id": "int"
+        },
+        "accessors": {
+            "use_factory": "getUseFactoryAttribute"
+        }
+    },
+    "App\\Models\\EntityCommissionSetting": {
+        "table": "entity_commission_settings",
+        "casts": {
+            "id": "int",
+            "entity_id": "integer",
+            "direct_percent": "float",
+            "level_1_percent": "float",
+            "level_2_percent": "float",
+            "level_3_percent": "float",
+            "level_4_percent": "float",
+            "level_5_percent": "float",
+            "reward_percent": "float",
+            "is_custom": "boolean"
+        },
+        "accessors": {
+            "entity": "getEntityAttribute",
+            "use_factory": "getUseFactoryAttribute"
+        }
+    },
+    "App\\Models\\FreelancerEntity": {
+        "table": "freelancer_entities",
+        "casts": {
+            "id": "int",
+            "documents": "array",
+            "featured": "boolean",
+            "password": "hashed"
+        },
+        "accessors": {
+            "use_factory": "getUseFactoryAttribute"
+        }
+    },
+    "App\\Models\\LevelIncome": {
+        "table": "level_incomes",
+        "casts": {
+            "id": "int",
+            "level": "integer",
+            "total_amount": "float",
+            "paid_amount": "float",
+            "balance_amount": "float",
+            "dump_amount": "float"
+        },
+        "accessors": {
+            "use_factory": "getUseFactoryAttribute"
+        }
+    },
+    "App\\Models\\Notification": {
+        "table": "notifications",
+        "casts": {
+            "id": "int",
+            "recipients_count": "integer"
+        },
+        "accessors": {
+            "use_factory": "getUseFactoryAttribute"
+        }
+    },
+    "App\\Models\\Order": {
+        "table": "orders",
+        "casts": {
+            "id": "int",
+            "unit_price": "float",
+            "quantity": "integer",
+            "gross_amount": "float",
+            "dump_amount": "float",
+            "taxable_amount": "float",
+            "gst_tax": "float",
+            "admin_commission_percent": "float",
+            "admin_commission_cut": "float",
+            "net_entity_payout": "float",
+            "advance_payment": "float",
+            "balance_due": "float",
+            "direct_commission": "float",
+            "level_commissions_total": "float",
+            "team_volume_bv": "float",
+            "commission_distributed": "boolean",
+            "distribution_details": "array",
+            "direct_income_amount": "float",
+            "level_income_amount": "float",
+            "reward_income_amount": "float",
+            "distributed_admin_cut_amount": "float",
+            "income_distributed_at": "datetime",
+            "admin_confirmed_by": "integer",
+            "admin_confirmed_at": "datetime",
+            "admin_cancelled_by": "integer",
+            "admin_cancelled_at": "datetime"
+        },
+        "accessors": {
+            "entity_id": "getEntityIdAttribute",
+            "invoice_number": "getInvoiceNumberAttribute",
+            "customer_name": "getCustomerNameAttribute",
+            "customer_email": "getCustomerEmailAttribute",
+            "customer_phone": "getCustomerPhoneAttribute",
+            "customer_user_code": "getCustomerUserCodeAttribute",
+            "item_type": "getItemTypeAttribute",
+            "entity_name": "getEntityNameAttribute",
+            "entity_type": "getEntityTypeAttribute",
+            "unit_price": "getUnitPriceAttribute",
+            "gross_amount": "getGrossAmountAttribute",
+            "taxable_amount": "getTaxableAmountAttribute",
+            "gst_tax": "getGstTaxAttribute",
+            "admin_commission_percent": "getAdminCommissionPercentAttribute",
+            "admin_commission_cut": "getAdminCommissionCutAttribute",
+            "net_entity_payout": "getNetEntityPayoutAttribute",
+            "advance_payment": "getAdvancePaymentAttribute",
+            "balance_due": "getBalanceDueAttribute",
+            "payment_method": "getPaymentMethodAttribute",
+            "reference_no": "getReferenceNoAttribute",
+            "network_distribution_status": "getNetworkDistributionStatusAttribute",
+            "distribution_details": "getDistributionDetailsAttribute",
+            "direct_commission": "getDirectCommissionAttribute",
+            "level_commissions_total": "getLevelCommissionsTotalAttribute",
+            "team_volume_bv": "getTeamVolumeBvAttribute",
+            "commission_distributed": "getCommissionDistributedAttribute",
+            "direct_income_amount": "getDirectIncomeAmountAttribute",
+            "level_income_amount": "getLevelIncomeAmountAttribute",
+            "reward_income_amount": "getRewardIncomeAmountAttribute",
+            "distributed_admin_cut_amount": "getDistributedAdminCutAmountAttribute",
+            "income_distribution_status": "getIncomeDistributionStatusAttribute",
+            "income_distributed_at": "getIncomeDistributedAtAttribute",
+            "dump_amount": "getDumpAmountAttribute",
+            "approved_dump_amount": "getApprovedDumpAmountAttribute",
+            "approved_dump_admin_cut": "getApprovedDumpAdminCutAttribute",
+            "expected_admin_cut": "getExpectedAdminCutAttribute",
+            "total_payment_received": "getTotalPaymentReceivedAttribute",
+            "remaining_project_balance": "getRemainingProjectBalanceAttribute",
+            "admin_commission_collected": "getAdminCommissionCollectedAttribute",
+            "remaining_admin_commission": "getRemainingAdminCommissionAttribute",
+            "payment_settlement_status": "getPaymentSettlementStatusAttribute",
+            "dump_requests": "getDumpRequestsAttribute",
+            "approval_status": "getApprovalStatusAttribute",
+            "admin_confirmed_by": "getAdminConfirmedByAttribute",
+            "admin_confirmed_at": "getAdminConfirmedAtAttribute",
+            "admin_cancelled_by": "getAdminCancelledByAttribute",
+            "admin_cancelled_at": "getAdminCancelledAtAttribute",
+            "cancellation_reason": "getCancellationReasonAttribute"
+        }
+    },
+    "App\\Models\\OrderPaymentDump": {
+        "table": "order_payment_dumps",
+        "casts": {
+            "id": "int",
+            "dump_amount": "float",
+            "admin_commission_percent": "float",
+            "admin_commission_cut": "float",
+            "direct_income_amount": "float",
+            "level_income_amount": "float",
+            "reward_income_amount": "float",
+            "requested_at": "datetime",
+            "approved_at": "datetime",
+            "rejected_at": "datetime",
+            "approved_by": "integer",
+            "rejected_by": "integer"
+        },
+        "accessors": []
+    },
+    "App\\Models\\Product": {
+        "table": "products",
+        "casts": {
+            "id": "int",
+            "price": "decimal:2",
+            "admin_commission_percent": "decimal:2",
+            "stock": "integer"
+        },
+        "accessors": {
+            "commission_settings": "getCommissionSettingsAttribute",
+            "use_factory": "getUseFactoryAttribute"
+        }
+    },
+    "App\\Models\\ProductPackage": {
+        "table": "packages",
+        "casts": {
+            "id": "int",
+            "price": "decimal:2",
+            "commission_percent": "decimal:2",
+            "items_included": "array"
+        },
+        "accessors": {
+            "use_factory": "getUseFactoryAttribute"
+        }
+    },
+    "App\\Models\\Reward": {
+        "table": "rewards",
+        "casts": {
+            "id": "int",
+            "required_bp": "integer",
+            "reward_value_inr": "float"
+        },
+        "accessors": {
+            "use_factory": "getUseFactoryAttribute"
+        }
+    },
+    "App\\Models\\RewardClaim": {
+        "table": "reward_claims",
+        "casts": {
+            "id": "int",
+            "points_deducted": "integer",
+            "bp_balance_before": "float",
+            "bp_balance_after": "float",
+            "claim_date": "datetime",
+            "processed_date": "datetime"
+        },
+        "accessors": {
+            "use_factory": "getUseFactoryAttribute"
+        }
+    },
+    "App\\Models\\SalePayment": {
+        "table": "sale_payments",
+        "casts": {
+            "id": "int",
+            "amount": "float",
+            "admin_commission_percent": "float",
+            "admin_commission_cut": "float",
+            "net_entity_amount": "float",
+            "payment_date": "datetime",
+            "direct_income_amount": "float",
+            "level_income_amount": "float",
+            "reward_income_amount": "float",
+            "distributed_admin_cut_amount": "float",
+            "income_distributed_at": "datetime",
+            "income_distributed_by": "integer"
+        },
+        "accessors": {
+            "invoice_number": "getInvoiceNumberAttribute",
+            "entity_name": "getEntityNameAttribute",
+            "customer_name": "getCustomerNameAttribute",
+            "customer_user_code": "getCustomerUserCodeAttribute",
+            "admin_commission_percent": "getAdminCommissionPercentAttribute",
+            "admin_commission_cut": "getAdminCommissionCutAttribute",
+            "net_entity_amount": "getNetEntityAmountAttribute",
+            "payment_method": "getPaymentMethodAttribute",
+            "reference_no": "getReferenceNoAttribute",
+            "payment_type": "getPaymentTypeAttribute",
+            "payment_date": "getPaymentDateAttribute",
+            "network_distribution_status": "getNetworkDistributionStatusAttribute",
+            "direct_commission": "getDirectCommissionAttribute",
+            "level_commissions_total": "getLevelCommissionsTotalAttribute",
+            "team_volume_bv": "getTeamVolumeBvAttribute",
+            "commission_distributed": "getCommissionDistributedAttribute",
+            "distribution_details": "getDistributionDetailsAttribute",
+            "direct_income_amount": "getDirectIncomeAmountAttribute",
+            "level_income_amount": "getLevelIncomeAmountAttribute",
+            "reward_income_amount": "getRewardIncomeAmountAttribute",
+            "distributed_admin_cut_amount": "getDistributedAdminCutAmountAttribute",
+            "income_distribution_status": "getIncomeDistributionStatusAttribute",
+            "income_distributed_at": "getIncomeDistributedAtAttribute",
+            "income_distributed_by": "getIncomeDistributedByAttribute",
+            "total_project_cost": "getTotalProjectCostAttribute",
+            "total_admin_amount": "getTotalAdminAmountAttribute",
+            "remaining_admin_amount": "getRemainingAdminAmountAttribute"
+        }
+    },
+    "App\\Models\\SalesRecord": {
+        "table": "orders",
+        "casts": {
+            "id": "int",
+            "unit_price": "float",
+            "quantity": "integer",
+            "gross_amount": "float",
+            "dump_amount": "float",
+            "taxable_amount": "float",
+            "gst_tax": "float",
+            "admin_commission_percent": "float",
+            "admin_commission_cut": "float",
+            "net_entity_payout": "float",
+            "advance_payment": "float",
+            "balance_due": "float",
+            "direct_commission": "float",
+            "level_commissions_total": "float",
+            "team_volume_bv": "float",
+            "commission_distributed": "boolean",
+            "distribution_details": "array",
+            "direct_income_amount": "float",
+            "level_income_amount": "float",
+            "reward_income_amount": "float",
+            "distributed_admin_cut_amount": "float",
+            "income_distributed_at": "datetime",
+            "admin_confirmed_by": "integer",
+            "admin_confirmed_at": "datetime",
+            "admin_cancelled_by": "integer",
+            "admin_cancelled_at": "datetime"
+        },
+        "accessors": {
+            "entity_id": "getEntityIdAttribute",
+            "invoice_number": "getInvoiceNumberAttribute",
+            "customer_name": "getCustomerNameAttribute",
+            "customer_email": "getCustomerEmailAttribute",
+            "customer_phone": "getCustomerPhoneAttribute",
+            "customer_user_code": "getCustomerUserCodeAttribute",
+            "item_type": "getItemTypeAttribute",
+            "entity_name": "getEntityNameAttribute",
+            "entity_type": "getEntityTypeAttribute",
+            "unit_price": "getUnitPriceAttribute",
+            "gross_amount": "getGrossAmountAttribute",
+            "taxable_amount": "getTaxableAmountAttribute",
+            "gst_tax": "getGstTaxAttribute",
+            "admin_commission_percent": "getAdminCommissionPercentAttribute",
+            "admin_commission_cut": "getAdminCommissionCutAttribute",
+            "net_entity_payout": "getNetEntityPayoutAttribute",
+            "advance_payment": "getAdvancePaymentAttribute",
+            "balance_due": "getBalanceDueAttribute",
+            "payment_method": "getPaymentMethodAttribute",
+            "reference_no": "getReferenceNoAttribute",
+            "network_distribution_status": "getNetworkDistributionStatusAttribute",
+            "distribution_details": "getDistributionDetailsAttribute",
+            "direct_commission": "getDirectCommissionAttribute",
+            "level_commissions_total": "getLevelCommissionsTotalAttribute",
+            "team_volume_bv": "getTeamVolumeBvAttribute",
+            "commission_distributed": "getCommissionDistributedAttribute",
+            "direct_income_amount": "getDirectIncomeAmountAttribute",
+            "level_income_amount": "getLevelIncomeAmountAttribute",
+            "reward_income_amount": "getRewardIncomeAmountAttribute",
+            "distributed_admin_cut_amount": "getDistributedAdminCutAmountAttribute",
+            "income_distribution_status": "getIncomeDistributionStatusAttribute",
+            "income_distributed_at": "getIncomeDistributedAtAttribute",
+            "dump_amount": "getDumpAmountAttribute",
+            "approved_dump_amount": "getApprovedDumpAmountAttribute",
+            "approved_dump_admin_cut": "getApprovedDumpAdminCutAttribute",
+            "expected_admin_cut": "getExpectedAdminCutAttribute",
+            "total_payment_received": "getTotalPaymentReceivedAttribute",
+            "remaining_project_balance": "getRemainingProjectBalanceAttribute",
+            "admin_commission_collected": "getAdminCommissionCollectedAttribute",
+            "remaining_admin_commission": "getRemainingAdminCommissionAttribute",
+            "payment_settlement_status": "getPaymentSettlementStatusAttribute",
+            "dump_requests": "getDumpRequestsAttribute",
+            "approval_status": "getApprovalStatusAttribute",
+            "admin_confirmed_by": "getAdminConfirmedByAttribute",
+            "admin_confirmed_at": "getAdminConfirmedAtAttribute",
+            "admin_cancelled_by": "getAdminCancelledByAttribute",
+            "admin_cancelled_at": "getAdminCancelledAtAttribute",
+            "cancellation_reason": "getCancellationReasonAttribute"
+        }
+    },
+    "App\\Models\\Service": {
+        "table": "services",
+        "casts": {
+            "id": "int",
+            "price": "decimal:2",
+            "admin_commission_percent": "decimal:2"
+        },
+        "accessors": {
+            "commission_settings": "getCommissionSettingsAttribute",
+            "use_factory": "getUseFactoryAttribute"
+        }
+    },
+    "App\\Models\\SupportMessage": {
+        "table": "support_messages",
+        "casts": {
+            "id": "int"
+        },
+        "accessors": {
+            "use_factory": "getUseFactoryAttribute"
+        }
+    },
+    "App\\Models\\SupportTicket": {
+        "table": "support_tickets",
+        "casts": {
+            "id": "int"
+        },
+        "accessors": {
+            "use_factory": "getUseFactoryAttribute"
+        }
+    },
+    "App\\Models\\SupportTopic": {
+        "table": "support_topics",
+        "casts": {
+            "id": "int",
+            "views": "integer",
+            "helpful_count": "integer"
+        },
+        "accessors": {
+            "use_factory": "getUseFactoryAttribute"
+        }
+    },
+    "App\\Models\\SystemSetting": {
+        "table": "system_settings",
+        "casts": {
+            "id": "int"
+        },
+        "accessors": {
+            "use_factory": "getUseFactoryAttribute"
+        }
+    },
+    "App\\Models\\User": {
+        "table": "users",
+        "casts": {
+            "id": "int",
+            "email_verified_at": "datetime",
+            "password": "hashed",
+            "team_biz": "float",
+            "commission_balance": "float",
+            "bp_balance": "float",
+            "personal_pv": "float",
+            "group_pv": "float"
+        },
+        "accessors": {
+            "team_biz": "getTeamBizAttribute",
+            "use_factory": "getUseFactoryAttribute"
+        }
+    },
+    "App\\Models\\UserBankAccount": {
+        "table": "user_bank_accounts",
+        "casts": {
+            "id": "int",
+            "is_primary": "boolean",
+            "is_verified": "boolean"
+        },
+        "accessors": {
+            "use_factory": "getUseFactoryAttribute"
+        }
+    },
+    "App\\Models\\UserNotificationRead": {
+        "table": "user_notification_reads",
+        "casts": {
+            "id": "int",
+            "is_read": "boolean",
+            "read_at": "datetime"
+        },
+        "accessors": {
+            "use_factory": "getUseFactoryAttribute"
+        }
+    },
+    "App\\Models\\UserPayout": {
+        "table": "user_payouts",
+        "casts": {
+            "id": "int",
+            "wallet_balance_before": "float",
+            "requested_amount": "float",
+            "tds_rate": "float",
+            "tds_deduction": "float",
+            "admin_processing_fee": "float",
+            "net_payable_amount": "float",
+            "request_date": "datetime",
+            "processed_date": "datetime"
+        },
+        "accessors": {
+            "use_factory": "getUseFactoryAttribute"
+        }
+    },
+    "App\\Models\\UserUpiAccount": {
+        "table": "user_upi_accounts",
+        "casts": {
+            "id": "int",
+            "is_primary": "boolean",
+            "is_verified": "boolean"
+        },
+        "accessors": {
+            "use_factory": "getUseFactoryAttribute"
+        }
+    },
+    "App\\Models\\WalletTransfer": {
+        "table": "wallet_transfers",
+        "casts": {
+            "id": "int",
+            "credit": "float",
+            "debit": "float",
+            "balance": "float"
+        },
+        "accessors": {
+            "use_factory": "getUseFactoryAttribute"
+        }
+    }
+}

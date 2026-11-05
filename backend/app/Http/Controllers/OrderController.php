@@ -15,6 +15,7 @@ use Laravel\Sanctum\PersonalAccessToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class OrderController extends Controller
 {
@@ -44,25 +45,55 @@ class OrderController extends Controller
             return null;
         }
 
-        if ($user) {
-            $business = BusinessEntity::where('email', $user->email)->first();
-            if ($business) {
-                return [
-                    'id' => (int) $business->id,
-                    'name' => $business->name,
-                    'type' => 'business',
-                    'user' => $user,
-                ];
+        // 1A. Direct BusinessEntity Token
+        if ($user instanceof BusinessEntity) {
+            return [
+                'id' => (int) $user->id,
+                'name' => $user->name,
+                'type' => 'business',
+                'user' => $user,
+            ];
+        }
+
+        // 1B. Direct FreelancerEntity Token
+        if ($user instanceof FreelancerEntity) {
+            return [
+                'id' => (int) $user->id,
+                'name' => $user->name,
+                'type' => 'freelance',
+                'user' => $user,
+            ];
+        }
+
+        // 1C. Legacy User Token (backward compatibility for historical sessions like User #19)
+        if ($user instanceof User) {
+            $tokenName = $user->currentAccessToken()?->name;
+            if (!$tokenName && $request->bearerToken() && class_exists(PersonalAccessToken::class)) {
+                $tokenObj = PersonalAccessToken::findToken($request->bearerToken());
+                $tokenName = $tokenObj?->name;
             }
 
-            $freelancer = FreelancerEntity::where('email', $user->email)->first();
-            if ($freelancer) {
-                return [
-                    'id' => (int) $freelancer->id,
-                    'name' => $freelancer->name,
-                    'type' => 'freelance',
-                    'user' => $user,
-                ];
+            // Normal MLM member tokens must never access or scope entity context
+            if (!$tokenName || !in_array($tokenName, ['user_auth_token', 'social_auth_token'])) {
+                $business = BusinessEntity::where('email', $user->email)->first();
+                if ($business) {
+                    return [
+                        'id' => (int) $business->id,
+                        'name' => $business->name,
+                        'type' => 'business',
+                        'user' => $user,
+                    ];
+                }
+
+                $freelancer = FreelancerEntity::where('email', $user->email)->first();
+                if ($freelancer) {
+                    return [
+                        'id' => (int) $freelancer->id,
+                        'name' => $freelancer->name,
+                        'type' => 'freelance',
+                        'user' => $user,
+                    ];
+                }
             }
         }
 
@@ -133,8 +164,24 @@ class OrderController extends Controller
         // Resolve authenticated entity if present
         $authEntity = $this->resolveEntityContext($request);
         $isAdminRoute = $request->is('api/admin/*') || $request->is('admin/*');
+        $isEntityRoute = $request->is('api/entity/*') || $request->is('entity/*');
 
-        if (!$isAdminRoute && $authEntity && $authEntity['user']) {
+        if ($isEntityRoute) {
+            if ($authEntity && $authEntity['user']) {
+                // Strict authorization scoping: authenticated entity user can ONLY access its own orders
+                $query->where(function ($q) use ($authEntity) {
+                    if (!empty($authEntity['id'])) {
+                        $q->where('entity_id', $authEntity['id']);
+                    }
+                    if (!empty($authEntity['name'])) {
+                        $q->orWhere('entity_name', $authEntity['name']);
+                    }
+                });
+            } else {
+                // Entity endpoint accessed without valid entity authentication: return empty set
+                $query->whereRaw('1 = 0');
+            }
+        } elseif (!$isAdminRoute && $authEntity && $authEntity['user']) {
             // Strict authorization scoping: authenticated entity user can ONLY access its own orders
             $query->where(function ($q) use ($authEntity) {
                 if (!empty($authEntity['id'])) {
@@ -206,7 +253,7 @@ class OrderController extends Controller
         }
 
         if ($request->filled('date') && $request->input('date') === 'today') {
-            $query->whereDate('date', now()->toDateString());
+            $query->whereDate('date', Carbon::now('Asia/Kolkata')->toDateString());
         }
 
         $orders = $query->get();
@@ -326,7 +373,7 @@ class OrderController extends Controller
         }
 
         // Selling entity takes precedence over catalog owner
-        $finalEntityName = $entityName ?: ($catalogItem?->owner_name ?: 'Skyline Technologies Pvt Ltd');
+        $finalEntityName = $entityName ?: ($catalogItem?->owner_name ?: (BusinessEntity::first()?->name ?: 'Vyapar AdNET Entity'));
         $finalEntityType = $entityType ?: ($catalogItem?->owner_type ?: 'business');
         $finalEntityId = $entityId ? (int) $entityId : ($catalogItem?->owner_id ?: null);
 
@@ -397,7 +444,7 @@ class OrderController extends Controller
 
         $orderData = [
             'invoice_number' => $invoiceNumber,
-            'date' => $request->input('date') ?? date('Y-m-d'),
+            'date' => $request->input('date') ?? Carbon::now('Asia/Kolkata')->toDateString(),
             'entity_id' => $finalEntityId,
             'entity_name' => $finalEntityName,
             'entity_type' => $finalEntityType,
@@ -1153,7 +1200,7 @@ class OrderController extends Controller
             return [
                 'id' => $s->invoice_number ?: ('INV-' . $s->id),
                 'dbId' => $s->id,
-                'date' => $s->date ? (is_string($s->date) ? $s->date : $s->date->format('Y-m-d')) : ($s->created_at ? $s->created_at->format('Y-m-d') : date('Y-m-d')),
+                'date' => $s->date ? (is_string($s->date) ? $s->date : $s->date->format('Y-m-d')) : ($s->created_at ? $s->created_at->setTimezone('Asia/Kolkata')->format('Y-m-d') : Carbon::now('Asia/Kolkata')->toDateString()),
                 'customer' => $s->customer_name ?: ($s->customer ?: 'Customer'),
                 'customerUserCode' => $s->customer_user_code,
                 'entityName' => $s->entity_name ?: 'Platform Entity',

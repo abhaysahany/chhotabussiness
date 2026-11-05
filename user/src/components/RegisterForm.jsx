@@ -30,7 +30,7 @@ import { useBranding } from '../utils/branding';
 import './auth.css';
 
 function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpenLegalPage, onBackToHome, onGoogleSuccess }) {
-  const { appName } = useBranding();
+  const { appName, logoUrl } = useBranding();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -240,11 +240,6 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
       return;
     }
 
-    // 2. Validate Database-verified Sponsor ID
-    if (!sponsorStatus) {
-      setSponsorError('Please enter a valid, database-verified Sponsor ID to continue.');
-      return;
-    }
 
     setGoogleLoading(true);
 
@@ -253,8 +248,7 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
         try {
           const res = await authenticateWithGoogle({
             code,
-            mode: 'register',
-            sponsor_id: sponsorStatus.user_code || sponsorId,
+            mode: 'auto',
             terms_accepted: true,
           });
 
@@ -396,7 +390,7 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
             
             {/* Brand Logo Header */}
             <div className="cb-auth-brand-header">
-              <div className="cb-auth-logo-badge" style={{ background: "transparent", padding: 0 }}><img src="/logo.png" alt="Vyapar AdNET" style={{ width: "36px", height: "36px", borderRadius: "50%" }} /></div>
+              <div className="cb-auth-logo-badge" style={{ background: "transparent", padding: 0 }}><img src={logoUrl || "/logo.png"} alt={appName} style={{ width: "36px", height: "36px", borderRadius: "50%", objectFit: "contain" }} onError={(e) => { e.target.src = "/logo.png"; }} /></div>
               <div>
                 <div className="cb-auth-logo-text-title">
                   {appName}

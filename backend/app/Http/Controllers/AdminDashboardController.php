@@ -183,6 +183,43 @@ class AdminDashboardController extends Controller
             $topAffiliates = [];
         }
 
+        $monthlyGmv = (float) SalesRecord::where('created_at', '>=', Carbon::now()->startOfMonth())->sum('gross_amount');
+        $monthlyTarget = 5000000.00; // Benchmark platform target
+        $targetProgress = $monthlyTarget > 0 ? min(100.0, round(($monthlyGmv / $monthlyTarget) * 100, 1)) : 0;
+
+        // 10. Real Merchant Partners from Database
+        $dbBusinesses = \App\Models\BusinessEntity::all();
+        $dbFreelancers = \App\Models\FreelancerEntity::all();
+        $merchantPartners = [];
+        foreach ($dbBusinesses as $b) {
+            $bName = $b->business_name ?: $b->name;
+            $gmv = (float) SalesRecord::where('entity_name', $bName)->sum('gross_amount');
+            $adminCut = (float) SalesRecord::where('entity_name', $bName)->sum('admin_commission_cut');
+            $cnt = SalesRecord::where('entity_name', $bName)->count();
+            $merchantPartners[] = [
+                'name' => $bName,
+                'category' => $b->category ?: 'Business Entity',
+                'gmv' => '₹' . number_format($gmv, 2),
+                'adminCut' => '₹' . number_format($adminCut, 2),
+                'count' => $cnt . ' Invoices',
+                'share' => $totalGmv > 0 ? round(($gmv / $totalGmv) * 100, 1) . '%' : '0%',
+            ];
+        }
+        foreach ($dbFreelancers as $f) {
+            $fName = $f->name;
+            $gmv = (float) SalesRecord::where('entity_name', $fName)->sum('gross_amount');
+            $adminCut = (float) SalesRecord::where('entity_name', $fName)->sum('admin_commission_cut');
+            $cnt = SalesRecord::where('entity_name', $fName)->count();
+            $merchantPartners[] = [
+                'name' => $fName,
+                'category' => $f->category ?: 'Freelancer',
+                'gmv' => '₹' . number_format($gmv, 2),
+                'adminCut' => '₹' . number_format($adminCut, 2),
+                'count' => $cnt . ' Invoices',
+                'share' => $totalGmv > 0 ? round(($gmv / $totalGmv) * 100, 1) . '%' : '0%',
+            ];
+        }
+
         return response()->json([
             'status' => 'success',
             'telemetry' => [
@@ -206,6 +243,7 @@ class AdminDashboardController extends Controller
                 'pendingKycCount' => $pendingKycCount,
                 'openSupportTickets' => $openSupportTickets,
                 'rewardClaimsPending' => $rewardClaimsPending,
+                'targetProgress' => $targetProgress,
             ],
             'charts' => [
                 'revenueCategories' => $revenueCategories,
@@ -218,6 +256,15 @@ class AdminDashboardController extends Controller
             'recentTransactions' => $recentTransactions,
             'activityFeed' => $activityFeed,
             'topAffiliates' => $topAffiliates,
+            'merchantPartners' => $merchantPartners,
         ]);
+    }
+
+    /**
+     * Alias for route compatibility with /admin/dashboard-stats
+     */
+    public function getDashboardStats(Request $request)
+    {
+        return $this->stats($request);
     }
 }

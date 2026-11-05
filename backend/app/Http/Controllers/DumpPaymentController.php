@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Admin;
 use App\Models\BusinessEntity;
 use App\Models\FreelancerEntity;
+use App\Models\User;
 use App\Models\Order;
 use App\Models\OrderPaymentDump;
 use App\Services\AdminIncomeAllocationService;
@@ -63,25 +64,55 @@ class DumpPaymentController extends Controller
             return null; // Admin is not scoped as an entity
         }
 
-        if ($user) {
-            $business = BusinessEntity::where('email', $user->email)->first();
-            if ($business) {
-                return [
-                    'id' => (int) $business->id,
-                    'name' => $business->name,
-                    'type' => 'business',
-                    'user' => $user,
-                ];
+        // 1A. Direct BusinessEntity Token
+        if ($user instanceof BusinessEntity) {
+            return [
+                'id' => (int) $user->id,
+                'name' => $user->name,
+                'type' => 'business',
+                'user' => $user,
+            ];
+        }
+
+        // 1B. Direct FreelancerEntity Token
+        if ($user instanceof FreelancerEntity) {
+            return [
+                'id' => (int) $user->id,
+                'name' => $user->name,
+                'type' => 'freelance',
+                'user' => $user,
+            ];
+        }
+
+        // 1C. Legacy User Token (backward compatibility for historical sessions like User #19)
+        if ($user instanceof User) {
+            $tokenName = $user->currentAccessToken()?->name;
+            if (!$tokenName && $request->bearerToken() && class_exists(PersonalAccessToken::class)) {
+                $tokenObj = PersonalAccessToken::findToken($request->bearerToken());
+                $tokenName = $tokenObj?->name;
             }
 
-            $freelancer = FreelancerEntity::where('email', $user->email)->first();
-            if ($freelancer) {
-                return [
-                    'id' => (int) $freelancer->id,
-                    'name' => $freelancer->name,
-                    'type' => 'freelance',
-                    'user' => $user,
-                ];
+            // Normal MLM member tokens must never access or scope entity context
+            if (!$tokenName || !in_array($tokenName, ['user_auth_token', 'social_auth_token'])) {
+                $business = BusinessEntity::where('email', $user->email)->first();
+                if ($business) {
+                    return [
+                        'id' => (int) $business->id,
+                        'name' => $business->name,
+                        'type' => 'business',
+                        'user' => $user,
+                    ];
+                }
+
+                $freelancer = FreelancerEntity::where('email', $user->email)->first();
+                if ($freelancer) {
+                    return [
+                        'id' => (int) $freelancer->id,
+                        'name' => $freelancer->name,
+                        'type' => 'freelance',
+                        'user' => $user,
+                    ];
+                }
             }
         }
 

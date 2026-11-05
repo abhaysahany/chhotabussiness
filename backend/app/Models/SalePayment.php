@@ -141,7 +141,8 @@ class SalePayment extends Model
 
     public function getPaymentDateAttribute()
     {
-        return $this->attributes['payment_date'] ?? $this->attributes['created_at'] ?? null;
+        $val = $this->attributes['payment_date'] ?? $this->attributes['created_at'] ?? null;
+        return $val ? $this->asDateTime($val) : null;
     }
 
     public function getNetworkDistributionStatusAttribute()
@@ -206,7 +207,8 @@ class SalePayment extends Model
 
     public function getIncomeDistributedAtAttribute()
     {
-        return $this->attributes['income_distributed_at'] ?? null;
+        $val = $this->attributes['income_distributed_at'] ?? null;
+        return $val ? $this->asDateTime($val) : null;
     }
 
     public function getIncomeDistributedByAttribute()

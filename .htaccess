@@ -13,12 +13,19 @@
 
     RewriteRule ^admin(/.*)?$ admin/index.html [L]
 
-    # 3. Allow direct access to entity and backend sub-applications
-    RewriteCond %{REQUEST_URI} ^/entity(/.*)?$ [OR]
+    # 3. Entity SPA routing: serve real files and directories directly, fallback non-existent /entity/* to entity/index.html
+    RewriteCond %{REQUEST_URI} ^/entity
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    RewriteRule ^entity(/.*)?$ entity/index.html [L]
+
+    # 4. Allow direct access to backend sub-application
     RewriteCond %{REQUEST_URI} ^/backend(/.*)?$
     RewriteRule ^ - [L]
 
-    # 4. SPA fallback for root User panel
+    # 5. SPA fallback for root User panel
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^ index.html [L]

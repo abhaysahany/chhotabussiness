@@ -1,3 +1,4 @@
+import { useBranding } from '../../../utils/branding';
 import React from 'react';
 import {
   ArrowRight,
@@ -15,6 +16,7 @@ import {
 } from 'lucide-react';
 
 function HeroSection({ onFindServicesClick, onBecomePartnerClick }) {
+  const { appName } = useBranding();
   return (
     <section id="hero" className="cb-hero-section">
       <div className="cb-container">
@@ -168,7 +170,7 @@ function HeroSection({ onFindServicesClick, onBecomePartnerClick }) {
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
                   <Zap size={18} color="#FF7A00" />
-                  <strong style={{ fontSize: '1.05rem', color: '#ffffff' }}>ADDNET</strong>
+                  <strong style={{ fontSize: '1.05rem', color: '#ffffff' }}>{appName ? appName.toUpperCase() : 'VYAPAR ADNET'}</strong>
                 </div>
                 <p style={{ margin: 0, fontSize: '0.78rem', color: '#cbd5e1' }}>
                   Targeted Ad Campaigns • SEO • High-Intent Lead Generation
