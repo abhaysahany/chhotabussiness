@@ -224,15 +224,38 @@ class UserPayoutController extends Controller
      */
     public function disburse(Request $request, $id)
     {
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+            'utr_number' => 'nullable|string|min:4|max:100',
+            'utrNumber' => 'nullable|string|min:4|max:100',
+            'payment_method' => 'nullable|string|max:100',
+            'paymentMethod' => 'nullable|string|max:100',
+            'admin_notes' => 'nullable|string|max:500',
+            'adminNotes' => 'nullable|string|max:500',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $utr = trim((string)($request->input('utr_number') ?: $request->input('utrNumber')));
+        if (empty($utr) || strlen($utr) < 4) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'The UTR / Bank Reference Number (minimum 4 characters) is required for disbursement.',
+                'errors' => [
+                    'utr_number' => ['The UTR / Bank Reference Number is required.'],
+                ],
+            ], 422);
+        }
+
         $payout = UserPayout::where('id', $id)->orWhere('payout_code', $id)->first();
 
         if (!$payout) {
             return response()->json(['status' => 'error', 'message' => 'Payout request not found.'], 404);
-        }
-
-        $utr = $request->input('utr_number') ?: $request->input('utrNumber');
-        if (empty($utr)) {
-            $utr = 'UTR-' . date('Ymd') . rand(10000000, 99999999);
         }
 
         $paymentMethod = $request->input('payment_method') ?: $request->input('paymentMethod') ?: $payout->payment_method;
@@ -258,6 +281,31 @@ class UserPayoutController extends Controller
      */
     public function reject(Request $request, $id)
     {
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+            'reason' => 'nullable|string|min:3|max:1000',
+            'admin_notes' => 'nullable|string|min:3|max:1000',
+            'adminNotes' => 'nullable|string|min:3|max:1000',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $reason = trim((string)($request->input('reason') ?: $request->input('admin_notes') ?: $request->input('adminNotes')));
+        if (empty($reason) || strlen($reason) < 3) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'A valid rejection reason (minimum 3 characters) is required.',
+                'errors' => [
+                    'reason' => ['A valid rejection reason is required.'],
+                ],
+            ], 422);
+        }
+
         DB::beginTransaction();
         try {
             $payout = UserPayout::where('id', $id)->orWhere('payout_code', $id)->first();
@@ -266,7 +314,7 @@ class UserPayoutController extends Controller
                 return response()->json(['status' => 'error', 'message' => 'Payout request not found.'], 404);
             }
 
-            $reason = $request->input('reason') ?: $request->input('admin_notes') ?: $request->input('adminNotes') ?: 'KYC or Bank account details invalid. Payout rejected.';
+            $reason = trim((string)($request->input('reason') ?: $request->input('admin_notes') ?: $request->input('adminNotes')));
 
             // Refund gross requested amount back to user's commission balance if previously pending
             if ($payout->status === 'pending' && $payout->user_id) {

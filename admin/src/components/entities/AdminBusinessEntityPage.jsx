@@ -151,6 +151,10 @@ function AdminBusinessEntityPage() {
 
   const handleSaveCategory = async (e) => {
     e.preventDefault();
+    if (!categoryForm.name || categoryForm.name.trim().length < 2) {
+      setError('Category name must be at least 2 characters.');
+      return;
+    }
     try {
       if (editingCategory) {
         await updateEntityCategory(editingCategory.id, categoryForm);
@@ -162,7 +166,7 @@ function AdminBusinessEntityPage() {
       setShowCategoryModal(false);
       fetchAllData();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to save category');
+      setError(err.response?.data?.message || 'Failed to save category');
     }
   };
 
@@ -173,7 +177,7 @@ function AdminBusinessEntityPage() {
       showSuccess(`Category "${name}" deleted.`);
       fetchAllData();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to delete category');
+      setError(err.response?.data?.message || 'Failed to delete category');
     }
   };
 
@@ -227,7 +231,19 @@ function AdminBusinessEntityPage() {
   const handleSaveBusiness = async (e) => {
     e.preventDefault();
     if (!businessForm.entity_category_id) {
-      alert('Please select a Business Category');
+      setError('Please select a Business Category');
+      return;
+    }
+    if (!businessForm.name || businessForm.name.trim().length < 2) {
+      setError('Business name must be at least 2 characters');
+      return;
+    }
+    if (!businessForm.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(businessForm.email)) {
+      setError('Please enter a valid business email address');
+      return;
+    }
+    if (!businessForm.phone || businessForm.phone.replace(/\D/g, '').length < 10) {
+      setError('Please enter a valid phone number (at least 10 digits)');
       return;
     }
 
@@ -242,7 +258,7 @@ function AdminBusinessEntityPage() {
       setShowBusinessModal(false);
       fetchAllData();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to register business');
+      setError(err.response?.data?.message || 'Failed to register business');
     }
   };
 
@@ -252,7 +268,7 @@ function AdminBusinessEntityPage() {
       showSuccess(`Business "${biz.name}" advertisement status toggled.`);
       fetchAllData();
     } catch (err) {
-      alert('Failed to update advertisement status');
+      setError('Failed to update advertisement status');
     }
   };
 
@@ -263,7 +279,7 @@ function AdminBusinessEntityPage() {
       showSuccess(`Business "${name}" deleted.`);
       fetchAllData();
     } catch (err) {
-      alert('Failed to delete business entity');
+      setError('Failed to delete business entity');
     }
   };
 
@@ -332,7 +348,19 @@ function AdminBusinessEntityPage() {
   const handleSaveFreelancer = async (e) => {
     e.preventDefault();
     if (!freelancerForm.entity_category_id) {
-      alert('Please select a Business Category for this Freelancer');
+      setError('Please select a Business Category for this Freelancer');
+      return;
+    }
+    if (!freelancerForm.name || freelancerForm.name.trim().length < 2) {
+      setError('Freelancer name must be at least 2 characters');
+      return;
+    }
+    if (!freelancerForm.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(freelancerForm.email)) {
+      setError('Please enter a valid freelancer email address');
+      return;
+    }
+    if (!freelancerForm.phone || freelancerForm.phone.replace(/\D/g, '').length < 10) {
+      setError('Please enter a valid phone number (at least 10 digits)');
       return;
     }
 
@@ -347,7 +375,7 @@ function AdminBusinessEntityPage() {
       setShowFreelancerModal(false);
       fetchAllData();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to register freelancer');
+      setError(err.response?.data?.message || 'Failed to register freelancer');
     }
   };
 
@@ -357,7 +385,7 @@ function AdminBusinessEntityPage() {
       showSuccess(`Freelancer "${free.name}" advertisement status updated.`);
       fetchAllData();
     } catch (err) {
-      alert('Failed to update advertisement status');
+      setError('Failed to update advertisement status');
     }
   };
 

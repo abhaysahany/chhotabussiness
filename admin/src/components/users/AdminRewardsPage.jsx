@@ -5,6 +5,14 @@ import {
   updateAdminReward,
   deleteAdminReward,
 } from '../../api/adminRewardService';
+import {
+  isRequired,
+  isValidUrl,
+  validateImageFile,
+  extractBackendErrors,
+  FieldError,
+  getInputErrorStyle,
+} from '../../utils/validation';
 
 function AdminRewardsPage() {
   const [rewards, setRewards] = useState([]);
@@ -18,6 +26,10 @@ function AdminRewardsPage() {
   const [showModal, setShowModal] = useState(false);
   const [editingReward, setEditingReward] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [bannerError, setBannerError] = useState('');
+  const [deleteConfirmReward, setDeleteConfirmReward] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
@@ -57,6 +69,8 @@ function AdminRewardsPage() {
     setEditingReward(null);
     setImageFile(null);
     setImagePreview('');
+    setFieldErrors({});
+    setBannerError('');
     setFormData({
       title: '',
       image: '',
@@ -73,10 +87,12 @@ function AdminRewardsPage() {
     setEditingReward(reward);
     setImageFile(null);
     setImagePreview(reward.image || '');
+    setFieldErrors({});
+    setBannerError('');
     setFormData({
-      title: reward.title,
+      title: reward.title || '',
       image: reward.image || '',
-      required_bp: reward.required_bp,
+      required_bp: reward.required_bp || 100,
       category: reward.category || 'Gadgets & Electronics',
       description: reward.description || '',
       reward_value_inr: reward.reward_value_inr || '',
@@ -88,10 +104,13 @@ function AdminRewardsPage() {
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (!file.type.startsWith('image/')) {
-        showToast('⚠️ Please select a valid image file (PNG, JPG, WEBP).');
+      const fileErr = validateImageFile(file, { maxSizeMB: 10 });
+      if (fileErr) {
+        setFieldErrors((prev) => ({ ...prev, image: fileErr }));
+        showToast(`⚠️ ${fileErr}`);
         return;
       }
+      setFieldErrors((prev) => ({ ...prev, image: null }));
       setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -103,56 +122,91 @@ function AdminRewardsPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.title.trim()) {
-      showToast('⚠️ Reward title is required.');
-      return;
+    const errs = {};
+
+    const trimmedTitle = formData.title.trim();
+    if (!trimmedTitle) {
+      errs.title = 'Reward title is required.';
+    } else if (trimmedTitle.length < 2) {
+      errs.title = 'Title must be at least 2 characters.';
+    } else if (trimmedTitle.length > 255) {
+      errs.title = 'Title cannot exceed 255 characters.';
     }
-    if (!formData.required_bp || formData.required_bp < 1) {
-      showToast('⚠️ Required Business Points (BP) must be at least 1 BP.');
+
+    const bpVal = Number(formData.required_bp);
+    if (!formData.required_bp || isNaN(bpVal) || bpVal < 1) {
+      errs.required_bp = 'Required Business Points (BP) must be at least 1 BP.';
+    }
+
+    if (formData.reward_value_inr !== '' && formData.reward_value_inr !== null && formData.reward_value_inr !== undefined) {
+      const inrVal = Number(formData.reward_value_inr);
+      if (isNaN(inrVal) || inrVal < 0) {
+        errs.reward_value_inr = 'Estimated Market Value cannot be negative.';
+      }
+    }
+
+    if (formData.image && formData.image.trim() && !imageFile) {
+      if (!isValidUrl(formData.image.trim())) {
+        errs.image = 'Please enter a valid image URL (http:// or https://) or upload a file.';
+      }
+    }
+
+    if (Object.keys(errs).length > 0) {
+      setFieldErrors(errs);
       return;
     }
 
+    setFieldErrors({});
+    setBannerError('');
     setIsSubmitting(true);
     try {
       const payload = new FormData();
-      payload.append('title', formData.title);
+      payload.append('title', trimmedTitle);
       payload.append('required_bp', formData.required_bp);
-      payload.append('category', formData.category);
-      payload.append('description', formData.description);
+      payload.append('category', formData.category || 'Gadgets & Electronics');
+      payload.append('description', formData.description || '');
       if (formData.reward_value_inr) payload.append('reward_value_inr', formData.reward_value_inr);
-      payload.append('status', formData.status);
+      payload.append('status', formData.status || 'active');
 
       if (imageFile) {
         payload.append('image_file', imageFile);
-      } else if (formData.image) {
-        payload.append('image', formData.image);
+      } else if (formData.image && formData.image.trim()) {
+        payload.append('image', formData.image.trim());
       }
 
       if (editingReward) {
         await updateAdminReward(editingReward.id, payload);
-        showToast(`✓ Reward "${formData.title}" updated successfully!`);
+        showToast(`✓ Reward "${trimmedTitle}" updated successfully!`);
       } else {
         await createAdminReward(payload);
-        showToast(`✓ Reward "${formData.title}" created and published!`);
+        showToast(`✓ Reward "${trimmedTitle}" created and published!`);
       }
       setShowModal(false);
       await loadRewards();
     } catch (err) {
-      showToast('Failed to save reward to database.');
+      const backendErr = extractBackendErrors(err);
+      if (backendErr.errors && Object.keys(backendErr.errors).length > 0) {
+        setFieldErrors(backendErr.errors);
+      }
+      setBannerError(backendErr.message || 'Failed to save reward to database.');
+      showToast(backendErr.message || 'Failed to save reward to database.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleDelete = async (id, title) => {
-    if (window.confirm(`Are you sure you want to delete reward "${title}"?`)) {
-      try {
-        await deleteAdminReward(id);
-        showToast(`✓ Reward "${title}" deleted.`);
-        await loadRewards();
-      } catch (err) {
-        showToast('Failed to delete reward.');
-      }
+  const handleConfirmDelete = async () => {
+    if (!deleteConfirmReward) return;
+    setIsDeleting(true);
+    try {
+      await deleteAdminReward(deleteConfirmReward.id);
+      showToast(`✓ Reward "${deleteConfirmReward.title}" deleted.`);
+      setDeleteConfirmReward(null);
+      await loadRewards();
+    } catch (err) {
+      showToast('Failed to delete reward.');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -363,7 +417,7 @@ function AdminRewardsPage() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleDelete(reward.id, reward.title)}
+                    onClick={() => setDeleteConfirmReward(reward)}
                     style={{ padding: '0.55rem 0.85rem', background: '#fee2e2', color: '#b91c1c', border: 'none', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}
                   >
                     🗑️
@@ -410,40 +464,69 @@ function AdminRewardsPage() {
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
+                disabled={isSubmitting}
                 style={{ background: 'none', border: 'none', fontSize: '1.3rem', color: '#64748b', cursor: 'pointer' }}
               >
                 ×
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {bannerError && (
+              <div style={{ background: '#fee2e2', border: '1px solid #fca5a5', color: '#b91c1c', padding: '0.65rem 0.85rem', borderRadius: '8px', fontSize: '0.82rem', marginBottom: '1rem', fontWeight: 600 }}>
+                ⚠️ {bannerError}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>
-                  Reward Title *
+                  Reward Title <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <input
                   type="text"
-                  required
                   placeholder="e.g. Apple iPhone 16 Pro Max (256GB)"
                   value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  style={{ width: '100%', padding: '0.6rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                  onChange={(e) => {
+                    setFormData({ ...formData, title: e.target.value });
+                    if (fieldErrors.title) setFieldErrors({ ...fieldErrors, title: null });
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '0.6rem 0.85rem',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    fontSize: '0.85rem',
+                    ...getInputErrorStyle(fieldErrors.title),
+                  }}
                 />
+                <FieldError error={fieldErrors.title} />
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>
-                    Required Business Points (BP) *
+                    Required Business Points (BP) <span style={{ color: '#ef4444' }}>*</span>
                   </label>
                   <input
                     type="number"
                     min="1"
-                    required
                     value={formData.required_bp}
-                    onChange={(e) => setFormData({ ...formData, required_bp: parseInt(e.target.value) || 0 })}
-                    style={{ width: '100%', padding: '0.6rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: 700, color: '#7c3aed' }}
+                    onChange={(e) => {
+                      setFormData({ ...formData, required_bp: e.target.value });
+                      if (fieldErrors.required_bp) setFieldErrors({ ...fieldErrors, required_bp: null });
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '0.6rem 0.85rem',
+                      borderRadius: '8px',
+                      border: '1px solid #cbd5e1',
+                      fontSize: '0.85rem',
+                      fontWeight: 700,
+                      color: '#7c3aed',
+                      ...getInputErrorStyle(fieldErrors.required_bp),
+                    }}
                   />
+                  <FieldError error={fieldErrors.required_bp} />
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>
@@ -466,11 +549,11 @@ function AdminRewardsPage() {
               {/* Image Upload Area */}
               <div>
                 <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>
-                  Reward Image (Upload File from PC or Enter URL) *
+                  Reward Image (Upload File from PC or Enter URL)
                 </label>
 
                 {/* File Upload Box */}
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', background: '#f8fafc', padding: '0.85rem', borderRadius: '10px', border: '1px dashed #cbd5e1' }}>
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', background: '#f8fafc', padding: '0.85rem', borderRadius: '10px', border: '1px dashed #cbd5e1', ...getInputErrorStyle(fieldErrors.image) }}>
                   {imagePreview ? (
                     <div style={{ position: 'relative', width: '80px', height: '60px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #cbd5e1', flexShrink: 0 }}>
                       <img
@@ -496,7 +579,7 @@ function AdminRewardsPage() {
                     <input
                       type="file"
                       id="reward-file-input"
-                      accept="image/png, image/jpeg, image/webp, image/gif"
+                      accept="image/png, image/jpeg, image/webp"
                       onChange={handleFileChange}
                       style={{ display: 'none' }}
                     />
@@ -532,9 +615,18 @@ function AdminRewardsPage() {
                     onChange={(e) => {
                       setFormData({ ...formData, image: e.target.value });
                       if (!imageFile) setImagePreview(e.target.value);
+                      if (fieldErrors.image) setFieldErrors({ ...fieldErrors, image: null });
                     }}
-                    style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.78rem' }}
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem 0.75rem',
+                      borderRadius: '6px',
+                      border: '1px solid #cbd5e1',
+                      fontSize: '0.78rem',
+                      ...getInputErrorStyle(fieldErrors.image),
+                    }}
                   />
+                  <FieldError error={fieldErrors.image} />
                 </div>
               </div>
 
@@ -558,11 +650,23 @@ function AdminRewardsPage() {
                   </label>
                   <input
                     type="number"
+                    min="0"
                     placeholder="e.g. 50000"
                     value={formData.reward_value_inr}
-                    onChange={(e) => setFormData({ ...formData, reward_value_inr: e.target.value })}
-                    style={{ width: '100%', padding: '0.6rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                    onChange={(e) => {
+                      setFormData({ ...formData, reward_value_inr: e.target.value });
+                      if (fieldErrors.reward_value_inr) setFieldErrors({ ...fieldErrors, reward_value_inr: null });
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '0.6rem 0.85rem',
+                      borderRadius: '8px',
+                      border: '1px solid #cbd5e1',
+                      fontSize: '0.85rem',
+                      ...getInputErrorStyle(fieldErrors.reward_value_inr),
+                    }}
                   />
+                  <FieldError error={fieldErrors.reward_value_inr} />
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>
@@ -583,19 +687,67 @@ function AdminRewardsPage() {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  style={{ flex: 1, padding: '0.65rem 1rem', background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', borderRadius: '8px', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer' }}
+                  disabled={isSubmitting}
+                  style={{ flex: 1, padding: '0.65rem 1rem', background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', borderRadius: '8px', fontWeight: 700, fontSize: '0.85rem', cursor: isSubmitting ? 'not-allowed' : 'pointer' }}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  style={{ flex: 1.5, padding: '0.65rem 1rem', background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%),', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: 800, fontSize: '0.85rem', cursor: 'pointer' }}
+                  style={{ flex: 1.5, padding: '0.65rem 1rem', background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: 800, fontSize: '0.85rem', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1 }}
                 >
                   {isSubmitting ? 'Saving...' : '💾 Save Reward Item'}
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirmReward && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.75)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 999999,
+            padding: '1rem',
+          }}
+        >
+          <div style={{ background: '#ffffff', borderRadius: '16px', maxWidth: '440px', width: '100%', padding: '1.75rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}>
+            <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.15rem', fontWeight: 800, color: '#dc2626' }}>
+              🗑️ Delete Reward Item?
+            </h3>
+            <p style={{ margin: '0 0 1.25rem 0', fontSize: '0.85rem', color: '#64748b', lineHeight: 1.5 }}>
+              Are you sure you want to delete reward <strong>"{deleteConfirmReward.title}"</strong>? This will remove it from the available rewards catalog.
+            </p>
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <button
+                type="button"
+                onClick={() => setDeleteConfirmReward(null)}
+                disabled={isDeleting}
+                style={{ flex: 1, padding: '0.65rem 1rem', background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', borderRadius: '8px', fontWeight: 700, fontSize: '0.82rem', cursor: isDeleting ? 'not-allowed' : 'pointer' }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                disabled={isDeleting}
+                style={{ flex: 1, padding: '0.65rem 1rem', background: '#dc2626', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: 800, fontSize: '0.82rem', cursor: isDeleting ? 'not-allowed' : 'pointer', opacity: isDeleting ? 0.7 : 1 }}
+              >
+                {isDeleting ? 'Deleting...' : 'Confirm Delete'}
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { getAllPayouts, approveAndDisbursePayout, rejectPayout } from '../../api/adminPayoutService';
+import { getAllPayouts, approveAndDisbursePayout, rejectPayout, generateWeeklyPayoutBatch } from '../../api/adminPayoutService';
+import { isRequired, extractBackendErrors, FieldError, getInputErrorStyle } from '../../utils/validation';
 
 function AdminPayoutRequestsPage() {
   const [payouts, setPayouts] = useState([]);
@@ -13,10 +14,14 @@ function AdminPayoutRequestsPage() {
   const [utrNumber, setUtrNumber] = useState('');
   const [disburseMode, setDisburseMode] = useState('IMPS Direct Bank Transfer');
   const [disburseNote, setDisburseNote] = useState('');
+  const [disburseErrors, setDisburseErrors] = useState({});
+  const [disburseBannerError, setDisburseBannerError] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
 
   const [selectedForReject, setSelectedForReject] = useState(null);
   const [rejectReason, setRejectReason] = useState('KYC details mismatch or bank verification pending');
+  const [rejectErrors, setRejectErrors] = useState({});
+  const [rejectBannerError, setRejectBannerError] = useState('');
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -103,29 +108,72 @@ function AdminPayoutRequestsPage() {
     return pendingRequests.reduce((acc, curr) => acc + (Number(curr.netPayableAmount) || 0), 0);
   }, [pendingRequests]);
 
+  const openDisburseModal = (payout) => {
+    setSelectedForDisburse(payout);
+    setUtrNumber('');
+    setDisburseMode('IMPS Direct Bank Transfer');
+    setDisburseNote('');
+    setDisburseErrors({});
+    setDisburseBannerError('');
+  };
+
+  const closeDisburseModal = () => {
+    setSelectedForDisburse(null);
+    setDisburseErrors({});
+    setDisburseBannerError('');
+  };
+
+  const openRejectModal = (payout) => {
+    setSelectedForReject(payout);
+    setRejectReason('KYC details mismatch or bank verification pending');
+    setRejectErrors({});
+    setRejectBannerError('');
+  };
+
+  const closeRejectModal = () => {
+    setSelectedForReject(null);
+    setRejectErrors({});
+    setRejectBannerError('');
+  };
+
   const handleDisburseSubmit = async (e) => {
     e.preventDefault();
     if (!selectedForDisburse) return;
 
-    if (!utrNumber.trim()) {
-      showToast('⚠️ Please enter Bank Reference / UTR Number before disbursing.');
+    const errs = {};
+    const trimmedUtr = utrNumber.trim();
+    if (!trimmedUtr) {
+      errs.utr_number = 'Bank Reference / UTR Number is strictly required.';
+    } else if (trimmedUtr.length < 4) {
+      errs.utr_number = 'UTR Number must be at least 4 characters.';
+    } else if (trimmedUtr.length > 50) {
+      errs.utr_number = 'UTR Number cannot exceed 50 characters.';
+    }
+
+    if (Object.keys(errs).length > 0) {
+      setDisburseErrors(errs);
       return;
     }
 
+    setDisburseErrors({});
+    setDisburseBannerError('');
     setIsProcessing(true);
     try {
       await approveAndDisbursePayout(selectedForDisburse.id, {
-        utrNumber: utrNumber.trim(),
+        utrNumber: trimmedUtr,
         paymentMethod: disburseMode,
-        adminNotes: disburseNote || 'Direct bank settlement processed by Finance Admin.',
+        adminNotes: disburseNote.trim() || 'Direct bank settlement processed by Finance Admin.',
       });
       showToast(`✓ Disbursed ₹${selectedForDisburse.netPayableAmount.toLocaleString()} to ${selectedForDisburse.memberName} (${selectedForDisburse.userCode})!`);
-      setSelectedForDisburse(null);
-      setUtrNumber('');
-      setDisburseNote('');
+      closeDisburseModal();
       await loadData();
     } catch (err) {
-      showToast('Failed to process payout disbursement.');
+      const backendErr = extractBackendErrors(err);
+      if (backendErr.errors && Object.keys(backendErr.errors).length > 0) {
+        setDisburseErrors(backendErr.errors);
+      }
+      setDisburseBannerError(backendErr.message || 'Failed to process payout disbursement.');
+      showToast(backendErr.message || 'Failed to process payout disbursement.');
     } finally {
       setIsProcessing(false);
     }
@@ -135,15 +183,36 @@ function AdminPayoutRequestsPage() {
     e.preventDefault();
     if (!selectedForReject) return;
 
+    const errs = {};
+    const trimmedReason = rejectReason.trim();
+    if (!trimmedReason) {
+      errs.reject_reason = 'Rejection reason is required.';
+    } else if (trimmedReason.length < 3) {
+      errs.reject_reason = 'Rejection reason must be at least 3 characters.';
+    } else if (trimmedReason.length > 500) {
+      errs.reject_reason = 'Rejection reason cannot exceed 500 characters.';
+    }
+
+    if (Object.keys(errs).length > 0) {
+      setRejectErrors(errs);
+      return;
+    }
+
+    setRejectErrors({});
+    setRejectBannerError('');
     setIsProcessing(true);
     try {
-      await rejectPayout(selectedForReject.id, rejectReason);
+      await rejectPayout(selectedForReject.id, trimmedReason);
       showToast(`⚠️ Payout request ${selectedForReject.payoutCode} rejected. Funds returned to user wallet.`);
-      setSelectedForReject(null);
-      setRejectReason('KYC details mismatch or bank verification pending');
+      closeRejectModal();
       await loadData();
     } catch (err) {
-      showToast('Failed to reject payout.');
+      const backendErr = extractBackendErrors(err);
+      if (backendErr.errors && Object.keys(backendErr.errors).length > 0) {
+        setRejectErrors(backendErr.errors);
+      }
+      setRejectBannerError(backendErr.message || 'Failed to reject payout.');
+      showToast(backendErr.message || 'Failed to reject payout.');
     } finally {
       setIsProcessing(false);
     }
@@ -480,7 +549,7 @@ function AdminPayoutRequestsPage() {
                           <button
                             type="button"
                             onClick={() => {
-                              setSelectedForDisburse(p);
+                              openDisburseModal(p);
                               setUtrNumber(`UTR-${Math.floor(1000000000 + Math.random() * 9000000000)}`);
                               setDisburseMode(p.paymentMethod || 'IMPS Direct Bank Transfer');
                             }}
@@ -500,7 +569,7 @@ function AdminPayoutRequestsPage() {
                           </button>
                           <button
                             type="button"
-                            onClick={() => setSelectedForReject(p)}
+                            onClick={() => openRejectModal(p)}
                             style={{
                               padding: '0.4rem 0.65rem',
                               background: '#fee2e2',
@@ -566,12 +635,19 @@ function AdminPayoutRequestsPage() {
               </div>
               <button
                 type="button"
-                onClick={() => setSelectedForDisburse(null)}
+                onClick={closeDisburseModal}
+                disabled={isProcessing}
                 style={{ background: 'none', border: 'none', fontSize: '1.25rem', color: '#64748b', cursor: 'pointer' }}
               >
                 ×
               </button>
             </div>
+
+            {disburseBannerError && (
+              <div style={{ background: '#fee2e2', border: '1px solid #fca5a5', color: '#b91c1c', padding: '0.65rem 0.85rem', borderRadius: '8px', fontSize: '0.82rem', marginBottom: '1rem', fontWeight: 600 }}>
+                ⚠️ {disburseBannerError}
+              </div>
+            )}
 
             {/* Financial Summary */}
             <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '1rem', fontSize: '0.85rem', display: 'flex', flexDirection: 'column', gap: '0.4rem', marginBottom: '1.25rem' }}>
@@ -598,7 +674,7 @@ function AdminPayoutRequestsPage() {
             </div>
 
             {/* Form */}
-            <form onSubmit={handleDisburseSubmit}>
+            <form onSubmit={handleDisburseSubmit} noValidate>
               <div style={{ marginBottom: '1rem' }}>
                 <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>
                   Bank Transfer Reference / UTR Number <span style={{ color: '#ef4444' }}>*</span>
@@ -606,11 +682,23 @@ function AdminPayoutRequestsPage() {
                 <input
                   type="text"
                   value={utrNumber}
-                  onChange={(e) => setUtrNumber(e.target.value)}
+                  onChange={(e) => {
+                    setUtrNumber(e.target.value);
+                    if (disburseErrors.utr_number) {
+                      setDisburseErrors({ ...disburseErrors, utr_number: null });
+                    }
+                  }}
                   placeholder="e.g. UTR-892348109283"
-                  required
-                  style={{ width: '100%', padding: '0.6rem 0.9rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                  style={{
+                    width: '100%',
+                    padding: '0.6rem 0.9rem',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    fontSize: '0.85rem',
+                    ...getInputErrorStyle(disburseErrors.utr_number),
+                  }}
                 />
+                <FieldError error={disburseErrors.utr_number} />
               </div>
 
               <div style={{ marginBottom: '1rem' }}>
@@ -645,16 +733,16 @@ function AdminPayoutRequestsPage() {
               <div style={{ display: 'flex', gap: '0.75rem' }}>
                 <button
                   type="button"
-                  onClick={() => setSelectedForDisburse(null)}
+                  onClick={closeDisburseModal}
                   disabled={isProcessing}
-                  style={{ flex: 1, padding: '0.65rem 1rem', background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', borderRadius: '8px', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer' }}
+                  style={{ flex: 1, padding: '0.65rem 1rem', background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', borderRadius: '8px', fontWeight: 600, fontSize: '0.85rem', cursor: isProcessing ? 'not-allowed' : 'pointer' }}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isProcessing}
-                  style={{ flex: 2, padding: '0.65rem 1rem', background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: 800, fontSize: '0.85rem', cursor: 'pointer' }}
+                  style={{ flex: 2, padding: '0.65rem 1rem', background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: 800, fontSize: '0.85rem', cursor: isProcessing ? 'not-allowed' : 'pointer', opacity: isProcessing ? 0.7 : 1 }}
                 >
                   {isProcessing ? 'Processing Transfer...' : `✓ Disburse ₹${selectedForDisburse.netPayableAmount.toLocaleString()}`}
                 </button>
@@ -692,40 +780,71 @@ function AdminPayoutRequestsPage() {
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
             }}
           >
-            <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.2rem', fontWeight: 800, color: '#dc2626' }}>
-              ❌ Reject Payout Request
-            </h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+              <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#dc2626' }}>
+                ❌ Reject Payout Request
+              </h3>
+              <button
+                type="button"
+                onClick={closeRejectModal}
+                disabled={isProcessing}
+                style={{ background: 'none', border: 'none', fontSize: '1.25rem', color: '#64748b', cursor: 'pointer' }}
+              >
+                ×
+              </button>
+            </div>
+
+            {rejectBannerError && (
+              <div style={{ background: '#fee2e2', border: '1px solid #fca5a5', color: '#b91c1c', padding: '0.65rem 0.85rem', borderRadius: '8px', fontSize: '0.82rem', marginBottom: '1rem', fontWeight: 600 }}>
+                ⚠️ {rejectBannerError}
+              </div>
+            )}
+
             <p style={{ margin: '0 0 1.25rem 0', fontSize: '0.85rem', color: '#64748b' }}>
               Are you sure you want to reject request <strong>{selectedForReject.payoutCode}</strong> for <strong>{selectedForReject.memberName}</strong>? Gross amount of <strong>₹{selectedForReject.requestedAmount.toLocaleString()}</strong> will be returned to user's wallet.
             </p>
 
-            <form onSubmit={handleRejectSubmit}>
+            <form onSubmit={handleRejectSubmit} noValidate>
               <div style={{ marginBottom: '1.5rem' }}>
                 <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>
                   Rejection Reason (Visible to Member) <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <textarea
                   value={rejectReason}
-                  onChange={(e) => setRejectReason(e.target.value)}
+                  onChange={(e) => {
+                    setRejectReason(e.target.value);
+                    if (rejectErrors.reject_reason) {
+                      setRejectErrors({ ...rejectErrors, reject_reason: null });
+                    }
+                  }}
                   rows="3"
-                  required
-                  style={{ width: '100%', padding: '0.6rem 0.9rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                  style={{
+                    width: '100%',
+                    padding: '0.6rem 0.9rem',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    fontSize: '0.85rem',
+                    ...getInputErrorStyle(rejectErrors.reject_reason),
+                  }}
                 />
+                <FieldError error={rejectErrors.reject_reason} />
               </div>
 
               <div style={{ display: 'flex', gap: '0.75rem' }}>
                 <button
                   type="button"
-                  onClick={() => setSelectedForReject(null)}
-                  style={{ flex: 1, padding: '0.65rem 1rem', background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', borderRadius: '8px', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer' }}
+                  onClick={closeRejectModal}
+                  disabled={isProcessing}
+                  style={{ flex: 1, padding: '0.65rem 1rem', background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', borderRadius: '8px', fontWeight: 600, fontSize: '0.85rem', cursor: isProcessing ? 'not-allowed' : 'pointer' }}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  style={{ flex: 1.5, padding: '0.65rem 1rem', background: '#dc2626', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: 800, fontSize: '0.85rem', cursor: 'pointer' }}
+                  disabled={isProcessing}
+                  style={{ flex: 1.5, padding: '0.65rem 1rem', background: '#dc2626', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: 800, fontSize: '0.85rem', cursor: isProcessing ? 'not-allowed' : 'pointer', opacity: isProcessing ? 0.7 : 1 }}
                 >
-                  Confirm Rejection
+                  {isProcessing ? 'Rejecting...' : 'Confirm Rejection'}
                 </button>
               </div>
             </form>

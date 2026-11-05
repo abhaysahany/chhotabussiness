@@ -12,6 +12,15 @@ import {
   getBusinessEntities,
   getFreelancers,
 } from '../../api/adminEntityService';
+import {
+  isRequired,
+  isValidNumber,
+  isValidPercentage,
+  validateImageFile,
+  FieldError,
+  getInputErrorStyle,
+  extractBackendErrors,
+} from '../../utils/validation';
 
 function AdminServicesPage() {
   const [viewMode, setViewMode] = useState('table'); // 'table' | 'grid'
@@ -23,6 +32,8 @@ function AdminServicesPage() {
   const [toastMessage, setToastMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
+  const [formBannerError, setFormBannerError] = useState('');
 
   const [services, setServices] = useState([]);
   const [categoriesList, setCategoriesList] = useState([]);
@@ -130,6 +141,8 @@ function AdminServicesPage() {
 
   const openAddModal = () => {
     setEditingService(null);
+    setFormErrors({});
+    setFormBannerError('');
     const defaultCat = categoriesList[0] || 'Legal & Compliance';
     const defaultBiz = businessesList.length > 0 ? businessesList[0].business_name : 'AddNet Tax Advisory';
 
@@ -151,6 +164,8 @@ function AdminServicesPage() {
 
   const openEditModal = (s) => {
     setEditingService(s);
+    setFormErrors({});
+    setFormBannerError('');
     setFormData({
       name: s.name,
       category: s.category,
@@ -204,15 +219,57 @@ function AdminServicesPage() {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.price) {
-      alert('Please fill in service name and base price');
+    setFormErrors({});
+    setFormBannerError('');
+
+    const errors = {};
+    if (!isRequired(formData.name)) {
+      errors.name = 'Service title is required.';
+    } else if (formData.name.trim().length < 2) {
+      errors.name = 'Service title must be at least 2 characters.';
+    }
+
+    if (!isRequired(formData.category)) {
+      errors.category = 'Service category is required.';
+    }
+
+    if (!isRequired(formData.owner_name)) {
+      errors.owner_name = 'Service owner is required.';
+    }
+
+    if (!isRequired(formData.price)) {
+      errors.price = 'Price is required.';
+    } else if (!isValidNumber(formData.price, { min: 1 })) {
+      errors.price = 'Price must be greater than ₹0.';
+    }
+
+    if (formData.admin_commission_percent === '' || formData.admin_commission_percent === undefined) {
+      errors.admin_commission_percent = 'Admin commission percentage is required.';
+    } else if (!isValidPercentage(formData.admin_commission_percent)) {
+      errors.admin_commission_percent = 'Admin commission must be between 0% and 100%.';
+    }
+
+    if (!isRequired(formData.duration)) {
+      errors.duration = 'Delivery duration is required.';
+    }
+
+    if (formData.image_file) {
+      const fileErr = validateImageFile(formData.image_file, 5);
+      if (fileErr) {
+        errors.image_file = fileErr;
+      }
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      setFormBannerError('Please resolve the highlighted validation errors.');
       return;
     }
 
     setIsSubmitting(true);
     try {
       const payload = new FormData();
-      payload.append('name', formData.name);
+      payload.append('name', formData.name.trim());
       payload.append('category', formData.category);
       payload.append('owner_type', formData.owner_type);
       payload.append('owner_name', formData.owner_name);
@@ -237,7 +294,13 @@ function AdminServicesPage() {
       setShowAddModal(false);
       await loadData();
     } catch (err) {
+      console.error('Error saving service in database:', err);
+      const backendErrors = extractBackendErrors(err);
+      if (Object.keys(backendErrors).length > 0) {
+        setFormErrors(backendErrors);
+      }
       const msg = err.response?.data?.message || 'Failed to save service in database.';
+      setFormBannerError(msg);
       showToast(`❌ ${msg}`);
     } finally {
       setIsSubmitting(false);
@@ -536,6 +599,11 @@ function AdminServicesPage() {
               <button className="modal-close-btn" onClick={() => setShowAddModal(false)}>×</button>
             </div>
             <form onSubmit={handleFormSubmit} className="pro-modal-form">
+              {formBannerError && (
+                <div style={{ backgroundColor: '#fef2f2', color: '#991b1b', border: '1px solid #fecaca', padding: '0.65rem 0.85rem', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.82rem', fontWeight: 600 }}>
+                  ⚠️ {formBannerError}
+                </div>
+              )}
               <div className="form-group-grid">
                 <div className="form-col-full">
                   <label>Service Title *</label>
@@ -544,8 +612,14 @@ function AdminServicesPage() {
                     required
                     placeholder="e.g. GST Audit & Annual Compliance Filing"
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, name: e.target.value });
+                      setFormErrors((prev) => ({ ...prev, name: undefined }));
+                      setFormBannerError('');
+                    }}
+                    style={getInputErrorStyle(formErrors.name)}
                   />
+                  <FieldError error={formErrors.name} />
                 </div>
 
                 <div className="form-col-half">
@@ -619,11 +693,17 @@ function AdminServicesPage() {
                   <input
                     type="number"
                     required
-                    min="0"
+                    min="1"
                     placeholder="4999"
                     value={formData.price}
-                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, price: e.target.value });
+                      setFormErrors((prev) => ({ ...prev, price: undefined }));
+                      setFormBannerError('');
+                    }}
+                    style={getInputErrorStyle(formErrors.price)}
                   />
+                  <FieldError error={formErrors.price} />
                 </div>
 
                 <div className="form-col-third">
@@ -634,8 +714,14 @@ function AdminServicesPage() {
                     max="100"
                     placeholder="20"
                     value={formData.admin_commission_percent}
-                    onChange={(e) => setFormData({ ...formData, admin_commission_percent: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, admin_commission_percent: e.target.value });
+                      setFormErrors((prev) => ({ ...prev, admin_commission_percent: undefined }));
+                      setFormBannerError('');
+                    }}
+                    style={getInputErrorStyle(formErrors.admin_commission_percent)}
                   />
+                  <FieldError error={formErrors.admin_commission_percent} />
                 </div>
 
                 <div className="form-col-third">
@@ -645,8 +731,14 @@ function AdminServicesPage() {
                     required
                     placeholder="e.g. 3 Business Days"
                     value={formData.duration}
-                    onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, duration: e.target.value });
+                      setFormErrors((prev) => ({ ...prev, duration: undefined }));
+                      setFormBannerError('');
+                    }}
+                    style={getInputErrorStyle(formErrors.duration)}
                   />
+                  <FieldError error={formErrors.duration} />
                 </div>
 
                 <div className="form-col-full">
@@ -668,7 +760,10 @@ function AdminServicesPage() {
                       }}
                     >
                       📁 Browse & Upload Image
-                      <input type="file" accept="image/*" onChange={handleFileSelect} style={{ display: 'none' }} />
+                      <input type="file" accept="image/*" onChange={(e) => {
+                        handleFileSelect(e);
+                        setFormErrors((prev) => ({ ...prev, image_file: undefined }));
+                      }} style={{ display: 'none' }} />
                     </label>
 
                     <input
@@ -682,6 +777,7 @@ function AdminServicesPage() {
                       style={{ flex: 1, padding: '0.55rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem' }}
                     />
                   </div>
+                  <FieldError error={formErrors.image_file} />
 
                   {imagePreview && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.5rem' }}>

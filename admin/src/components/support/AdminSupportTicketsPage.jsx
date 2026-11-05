@@ -4,6 +4,12 @@ import {
   sendSupportReply,
   updateTicketStatus,
 } from '../../api/adminService';
+import {
+  isRequired,
+  extractBackendErrors,
+  FieldError,
+  getInputErrorStyle,
+} from '../../utils/validation';
 
 const LOCAL_STORAGE_KEY = 'vyapar_support_tickets_v1';
 
@@ -11,6 +17,7 @@ function AdminSupportTicketsPage({ currentAdmin }) {
   const [tickets, setTickets] = useState([]);
   const [selectedTicketId, setSelectedTicketId] = useState(null);
   const [adminReplyText, setAdminReplyText] = useState('');
+  const [replyError, setReplyError] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
   const [filterCategory, setFilterCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -87,12 +94,25 @@ function AdminSupportTicketsPage({ currentAdmin }) {
 
   const handleSendReply = async (e) => {
     e.preventDefault();
-    if (!adminReplyText.trim() || !selectedTicket) return;
+    if (!selectedTicket) return;
 
+    const trimmed = adminReplyText.trim();
+    if (!trimmed) {
+      setReplyError('Reply message cannot be empty.');
+      return;
+    }
+    if (trimmed.length < 2) {
+      setReplyError('Reply message must be at least 2 characters.');
+    } else if (trimmed.length > 2000) {
+      setReplyError('Reply message cannot exceed 2000 characters.');
+      return;
+    }
+
+    setReplyError('');
     setSending(true);
     try {
       if (typeof selectedTicket.id === 'number') {
-        await sendSupportReply(selectedTicket.id, adminReplyText, adminName);
+        await sendSupportReply(selectedTicket.id, trimmed, adminName);
       } else {
         const updated = tickets.map((t) => {
           if (t.id === selectedTicket.id) {
@@ -105,7 +125,7 @@ function AdminSupportTicketsPage({ currentAdmin }) {
                   id: `msg-${Date.now()}`,
                   sender_type: 'admin',
                   sender_name: adminName,
-                  message: adminReplyText,
+                  message: trimmed,
                   created_at: 'Just Now',
                 },
               ],
@@ -118,8 +138,11 @@ function AdminSupportTicketsPage({ currentAdmin }) {
       }
       setToastMessage(`Response sent to ${selectedTicket.user_name}!`);
       setAdminReplyText('');
+      setReplyError('');
       fetchTickets();
     } catch (err) {
+      const backendErr = extractBackendErrors(err);
+      setReplyError(backendErr.message || 'Failed to send reply.');
       console.error('Reply dispatch error:', err);
     } finally {
       setSending(false);
@@ -310,25 +333,66 @@ function AdminSupportTicketsPage({ currentAdmin }) {
 
               {/* Preset Shortcuts */}
               <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '0.5rem' }}>
-                <button className="btn-secondary" style={{ fontSize: '0.725rem', padding: '0.2rem 0.45rem' }} onClick={() => setAdminReplyText('Your KYC verification is approved and active.')}>⚡ KYC Approved</button>
-                <button className="btn-secondary" style={{ fontSize: '0.725rem', padding: '0.2rem 0.45rem' }} onClick={() => setAdminReplyText('Your withdrawal has been disbursed via IMPS.')}>⚡ Payout Disbursed</button>
-                <button className="btn-secondary" style={{ fontSize: '0.725rem', padding: '0.2rem 0.45rem' }} onClick={() => setAdminReplyText('Please upload a legible copy of your document.')}>⚡ Re-upload Document</button>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  style={{ fontSize: '0.725rem', padding: '0.2rem 0.45rem' }}
+                  onClick={() => {
+                    setAdminReplyText('Your KYC verification is approved and active.');
+                    setReplyError('');
+                  }}
+                >
+                  ⚡ KYC Approved
+                </button>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  style={{ fontSize: '0.725rem', padding: '0.2rem 0.45rem' }}
+                  onClick={() => {
+                    setAdminReplyText('Your withdrawal has been disbursed via IMPS.');
+                    setReplyError('');
+                  }}
+                >
+                  ⚡ Payout Disbursed
+                </button>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  style={{ fontSize: '0.725rem', padding: '0.2rem 0.45rem' }}
+                  onClick={() => {
+                    setAdminReplyText('Please upload a legible copy of your document.');
+                    setReplyError('');
+                  }}
+                >
+                  ⚡ Re-upload Document
+                </button>
               </div>
 
               {/* Reply Composer */}
-              <form onSubmit={handleSendReply}>
+              <form onSubmit={handleSendReply} noValidate>
                 <textarea
                   className="form-input"
                   rows="2"
                   placeholder="Type official admin response..."
                   value={adminReplyText}
-                  onChange={(e) => setAdminReplyText(e.target.value)}
-                  style={{ width: '100%', height: '60px', padding: '0.5rem', marginBottom: '0.5rem' }}
-                  required
+                  onChange={(e) => {
+                    setAdminReplyText(e.target.value);
+                    if (replyError) setReplyError('');
+                  }}
+                  style={{
+                    width: '100%',
+                    height: '60px',
+                    padding: '0.5rem',
+                    marginBottom: '0.35rem',
+                    ...getInputErrorStyle(replyError),
+                  }}
                 />
+                <div style={{ marginBottom: '0.5rem' }}>
+                  <FieldError error={replyError} />
+                </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Replying as: {adminName}</span>
-                  <button type="submit" className="btn-primary" disabled={sending} style={{ padding: '0.4rem 0.85rem' }}>
+                  <button type="submit" className="btn-primary" disabled={sending} style={{ padding: '0.4rem 0.85rem', cursor: sending ? 'not-allowed' : 'pointer', opacity: sending ? 0.7 : 1 }}>
                     {sending ? 'Sending...' : '🚀 Send Reply'}
                   </button>
                 </div>

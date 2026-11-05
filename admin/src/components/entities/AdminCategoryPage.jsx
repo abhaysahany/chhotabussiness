@@ -5,6 +5,12 @@ import {
   updateEntityCategory,
   deleteEntityCategory,
 } from '../../api/adminEntityService';
+import {
+  isRequired,
+  FieldError,
+  getInputErrorStyle,
+  extractBackendErrors,
+} from '../../utils/validation';
 
 function AdminCategoryPage({ onNavigate }) {
   const [categories, setCategories] = useState([]);
@@ -18,6 +24,9 @@ function AdminCategoryPage({ onNavigate }) {
   // Modal State
   const [showModal, setShowModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
+  const [modalError, setModalError] = useState('');
 
   const [form, setForm] = useState({
     name: '',
@@ -51,6 +60,8 @@ function AdminCategoryPage({ onNavigate }) {
   };
 
   const handleOpenModal = (cat = null) => {
+    setFormErrors({});
+    setModalError('');
     if (cat) {
       setEditingCategory(cat);
       setForm({
@@ -75,18 +86,43 @@ function AdminCategoryPage({ onNavigate }) {
 
   const handleSave = async (e) => {
     e.preventDefault();
+    setFormErrors({});
+    setModalError('');
+
+    const errors = {};
+    if (!isRequired(form.name)) {
+      errors.name = 'Category name is required.';
+    } else if (form.name.trim().length < 2) {
+      errors.name = 'Category name must be at least 2 characters.';
+    } else if (form.name.trim().length > 100) {
+      errors.name = 'Category name cannot exceed 100 characters.';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+
+    setSaving(true);
     try {
       if (editingCategory) {
-        await updateEntityCategory(editingCategory.id, form);
-        showSuccess(`Category "${form.name}" updated successfully!`);
+        await updateEntityCategory(editingCategory.id, { ...form, name: form.name.trim() });
+        showSuccess(`Category "${form.name.trim()}" updated successfully!`);
       } else {
-        await createEntityCategory(form);
-        showSuccess(`Category "${form.name}" created successfully!`);
+        await createEntityCategory({ ...form, name: form.name.trim() });
+        showSuccess(`Category "${form.name.trim()}" created successfully!`);
       }
       setShowModal(false);
       fetchCategories();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to save category');
+      console.error('Error saving category:', err);
+      const backendErrors = extractBackendErrors(err);
+      if (Object.keys(backendErrors).length > 0) {
+        setFormErrors(backendErrors);
+      }
+      setModalError(err.response?.data?.message || 'Failed to save category. Please check your inputs.');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -97,7 +133,7 @@ function AdminCategoryPage({ onNavigate }) {
       showSuccess(`Category "${name}" deleted.`);
       fetchCategories();
     } catch (err) {
-      alert('Failed to delete category');
+      setError(err.response?.data?.message || 'Failed to delete category');
     }
   };
 
@@ -433,6 +469,11 @@ function AdminCategoryPage({ onNavigate }) {
 
             <form onSubmit={handleSave}>
               <div className="pro-modal-body">
+                {modalError && (
+                  <div style={{ backgroundColor: '#fef2f2', color: '#991b1b', border: '1px solid #fecaca', padding: '0.65rem 0.85rem', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.82rem', fontWeight: 600 }}>
+                    ⚠️ {modalError}
+                  </div>
+                )}
                 <div style={{ marginBottom: '1rem' }}>
                   <label className="form-label">Category Name *</label>
                   <input
@@ -441,8 +482,14 @@ function AdminCategoryPage({ onNavigate }) {
                     required
                     placeholder="e.g. Legal & Corporate Advisory"
                     value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    onChange={(e) => {
+                      setForm({ ...form, name: e.target.value });
+                      setFormErrors((prev) => ({ ...prev, name: undefined }));
+                      setModalError('');
+                    }}
+                    style={getInputErrorStyle(formErrors.name)}
                   />
+                  <FieldError error={formErrors.name} />
                 </div>
 
                 <div style={{ marginBottom: '1rem' }}>
@@ -497,11 +544,11 @@ function AdminCategoryPage({ onNavigate }) {
               </div>
 
               <div className="pro-modal-footer">
-                <button type="button" className="pro-btn-secondary" onClick={() => setShowModal(false)}>
+                <button type="button" className="pro-btn-secondary" onClick={() => setShowModal(false)} disabled={saving}>
                   Cancel
                 </button>
-                <button type="submit" className="pro-btn-primary">
-                  {editingCategory ? 'Update Category' : 'Save Category'}
+                <button type="submit" className="pro-btn-primary" disabled={saving}>
+                  {saving ? 'Saving...' : editingCategory ? 'Update Category' : 'Save Category'}
                 </button>
               </div>
             </form>

@@ -7,12 +7,14 @@ import {
   adminVerifyOtp,
   adminResetPassword,
 } from '../api/adminService';
+import { FieldError, getInputErrorStyle } from '../utils/validation';
 
 function AdminLoginForm({ onLoginSuccess }) {
   const navigate = useNavigate();
   const { appName } = useBranding();
   const [login, setLogin] = useState('admin');
   const [password, setPassword] = useState('123456');
+  const [loginFieldErrors, setLoginFieldErrors] = useState({});
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -33,12 +35,28 @@ function AdminLoginForm({ onLoginSuccess }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const errs = {};
+    if (!login || !login.trim()) {
+      errs.login = 'Username or email address is required.';
+    }
+    if (!password) {
+      errs.password = 'Password is required.';
+    } else if (password.length < 3) {
+      errs.password = 'Password must be at least 3 characters.';
+    }
+
+    if (Object.keys(errs).length > 0) {
+      setLoginFieldErrors(errs);
+      return;
+    }
+
+    setLoginFieldErrors({});
     setError(null);
     setSuccessMsg(null);
     setLoading(true);
 
     try {
-      const response = await adminLogin({ login, password });
+      const response = await adminLogin({ login: login.trim(), password });
 
       if (response.status === 'success' && response.token) {
         localStorage.setItem('admin_token', response.token);
@@ -258,7 +276,7 @@ function AdminLoginForm({ onLoginSuccess }) {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="auth-form">
+        <form onSubmit={handleSubmit} noValidate className="auth-form">
           <div className="form-group">
             <label htmlFor="login">
               Email address / Username <span className="required-asterisk">*</span>
@@ -269,10 +287,14 @@ function AdminLoginForm({ onLoginSuccess }) {
               className="form-input"
               placeholder="you@example.com or admin"
               value={login}
-              onChange={(e) => setLogin(e.target.value)}
-              required
+              onChange={(e) => {
+                setLogin(e.target.value);
+                if (loginFieldErrors.login) setLoginFieldErrors({ ...loginFieldErrors, login: null });
+              }}
+              style={getInputErrorStyle(loginFieldErrors.login)}
               autoComplete="username"
             />
+            <FieldError error={loginFieldErrors.login} />
           </div>
 
           <div className="form-group">
@@ -286,8 +308,11 @@ function AdminLoginForm({ onLoginSuccess }) {
                 className="form-input"
                 placeholder="••••••••"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (loginFieldErrors.password) setLoginFieldErrors({ ...loginFieldErrors, password: null });
+                }}
+                style={getInputErrorStyle(loginFieldErrors.password)}
                 autoComplete="current-password"
               />
               <button
@@ -309,6 +334,7 @@ function AdminLoginForm({ onLoginSuccess }) {
                 )}
               </button>
             </div>
+            <FieldError error={loginFieldErrors.password} />
           </div>
 
           <div className="form-options">

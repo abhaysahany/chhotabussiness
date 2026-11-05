@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { getAdminNotifications, sendAdminNotification } from '../../api/adminNotificationService';
+import {
+  isRequired,
+  isValidUrl,
+  extractBackendErrors,
+  FieldError,
+  getInputErrorStyle,
+} from '../../utils/validation';
 
 function AdminSendNotificationPage() {
   const [notifications, setNotifications] = useState([]);
@@ -19,6 +26,8 @@ function AdminSendNotificationPage() {
     target_user_code: '',
     action_url: '',
   });
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [bannerError, setBannerError] = useState('');
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -44,19 +53,61 @@ function AdminSendNotificationPage() {
 
   const handleSendSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.title.trim() || !formData.message.trim()) {
-      showToast('⚠️ Title and Message are required.');
+    const errs = {};
+
+    const trimmedTitle = formData.title.trim();
+    if (!trimmedTitle) {
+      errs.title = 'Notification title is required.';
+    } else if (trimmedTitle.length < 3) {
+      errs.title = 'Title must be at least 3 characters.';
+    } else if (trimmedTitle.length > 255) {
+      errs.title = 'Title cannot exceed 255 characters.';
+    }
+
+    const trimmedMsg = formData.message.trim();
+    if (!trimmedMsg) {
+      errs.message = 'Notification message is required.';
+    } else if (trimmedMsg.length < 5) {
+      errs.message = 'Message must be at least 5 characters.';
+    } else if (trimmedMsg.length > 2000) {
+      errs.message = 'Message cannot exceed 2000 characters.';
+    }
+
+    if (formData.target_audience === 'single_user') {
+      const trimmedCode = formData.target_user_code.trim();
+      if (!trimmedCode) {
+        errs.target_user_code = 'Target User Code or Email is required for single user delivery.';
+      } else if (trimmedCode.length < 3) {
+        errs.target_user_code = 'Target User Code/Email must be at least 3 characters.';
+      }
+    }
+
+    if (formData.action_url && formData.action_url.trim()) {
+      const trimmedUrl = formData.action_url.trim();
+      const isRelative = trimmedUrl.startsWith('/');
+      const isAbsolute = isValidUrl(trimmedUrl);
+      if (!isRelative && !isAbsolute) {
+        errs.action_url = 'Action URL must be a valid link (https://...) or a relative route (e.g. /payout-history).';
+      }
+    }
+
+    if (Object.keys(errs).length > 0) {
+      setFieldErrors(errs);
       return;
     }
 
-    if (formData.target_audience === 'single_user' && !formData.target_user_code.trim()) {
-      showToast('⚠️ Please enter a Target User Code or Email for Single User delivery.');
-      return;
-    }
-
+    setFieldErrors({});
+    setBannerError('');
     setIsSending(true);
     try {
-      const res = await sendAdminNotification(formData);
+      const payload = {
+        ...formData,
+        title: trimmedTitle,
+        message: trimmedMsg,
+        target_user_code: formData.target_audience === 'single_user' ? formData.target_user_code.trim() : '',
+        action_url: formData.action_url ? formData.action_url.trim() : '',
+      };
+      const res = await sendAdminNotification(payload);
       showToast(res.message || '✓ Notification dispatched successfully!');
       setFormData({
         title: '',
@@ -68,8 +119,12 @@ function AdminSendNotificationPage() {
       });
       await loadData();
     } catch (err) {
-      const msg = err.response?.data?.message || 'Failed to dispatch notification.';
-      showToast(`❌ ${msg}`);
+      const backendErr = extractBackendErrors(err);
+      if (backendErr.errors && Object.keys(backendErr.errors).length > 0) {
+        setFieldErrors(backendErr.errors);
+      }
+      setBannerError(backendErr.message || 'Failed to dispatch notification.');
+      showToast(backendErr.message || 'Failed to dispatch notification.');
     } finally {
       setIsSending(false);
     }
@@ -165,16 +220,25 @@ function AdminSendNotificationPage() {
             </p>
           </div>
 
-          <form onSubmit={handleSendSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+          {bannerError && (
+            <div style={{ background: '#fee2e2', border: '1px solid #fca5a5', color: '#b91c1c', padding: '0.65rem 0.85rem', borderRadius: '8px', fontSize: '0.82rem', marginBottom: '1rem', fontWeight: 600 }}>
+              ⚠️ {bannerError}
+            </div>
+          )}
+
+          <form onSubmit={handleSendSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
             {/* Target Audience Selector */}
             <div>
               <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.4rem' }}>
-                Target Audience Selection *
+                Target Audience Selection <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
                 <button
                   type="button"
-                  onClick={() => setFormData({ ...formData, target_audience: 'all_users' })}
+                  onClick={() => {
+                    setFormData({ ...formData, target_audience: 'all_users' });
+                    if (fieldErrors.target_user_code) setFieldErrors({ ...fieldErrors, target_user_code: null });
+                  }}
                   style={{
                     padding: '0.65rem 0.5rem',
                     borderRadius: '8px',
@@ -191,7 +255,10 @@ function AdminSendNotificationPage() {
 
                 <button
                   type="button"
-                  onClick={() => setFormData({ ...formData, target_audience: 'active_users' })}
+                  onClick={() => {
+                    setFormData({ ...formData, target_audience: 'active_users' });
+                    if (fieldErrors.target_user_code) setFieldErrors({ ...fieldErrors, target_user_code: null });
+                  }}
                   style={{
                     padding: '0.65rem 0.5rem',
                     borderRadius: '8px',
@@ -208,7 +275,10 @@ function AdminSendNotificationPage() {
 
                 <button
                   type="button"
-                  onClick={() => setFormData({ ...formData, target_audience: 'inactive_users' })}
+                  onClick={() => {
+                    setFormData({ ...formData, target_audience: 'inactive_users' });
+                    if (fieldErrors.target_user_code) setFieldErrors({ ...fieldErrors, target_user_code: null });
+                  }}
                   style={{
                     padding: '0.65rem 0.5rem',
                     borderRadius: '8px',
@@ -246,16 +316,26 @@ function AdminSendNotificationPage() {
             {formData.target_audience === 'single_user' && (
               <div>
                 <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#6d28d9', marginBottom: '0.35rem' }}>
-                  Target User Code / Email *
+                  Target User Code / Email <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <input
                   type="text"
-                  required
                   placeholder="e.g. CB100001 or rahul@example.com"
                   value={formData.target_user_code}
-                  onChange={(e) => setFormData({ ...formData, target_user_code: e.target.value })}
-                  style={{ width: '100%', padding: '0.6rem 0.85rem', borderRadius: '8px', border: '1px solid #7c3aed', fontSize: '0.85rem' }}
+                  onChange={(e) => {
+                    setFormData({ ...formData, target_user_code: e.target.value });
+                    if (fieldErrors.target_user_code) setFieldErrors({ ...fieldErrors, target_user_code: null });
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '0.6rem 0.85rem',
+                    borderRadius: '8px',
+                    border: '1px solid #7c3aed',
+                    fontSize: '0.85rem',
+                    ...getInputErrorStyle(fieldErrors.target_user_code),
+                  }}
                 />
+                <FieldError error={fieldErrors.target_user_code} />
               </div>
             )}
 
@@ -279,31 +359,51 @@ function AdminSendNotificationPage() {
             {/* Title */}
             <div>
               <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>
-                Notification Title *
+                Notification Title <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <input
                 type="text"
-                required
                 placeholder="e.g. Weekly Payout Batch Disbursed"
                 value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                style={{ width: '100%', padding: '0.6rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                onChange={(e) => {
+                  setFormData({ ...formData, title: e.target.value });
+                  if (fieldErrors.title) setFieldErrors({ ...fieldErrors, title: null });
+                }}
+                style={{
+                  width: '100%',
+                  padding: '0.6rem 0.85rem',
+                  borderRadius: '8px',
+                  border: '1px solid #cbd5e1',
+                  fontSize: '0.85rem',
+                  ...getInputErrorStyle(fieldErrors.title),
+                }}
               />
+              <FieldError error={fieldErrors.title} />
             </div>
 
             {/* Message Body */}
             <div>
               <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>
-                Message Content *
+                Message Content <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <textarea
                 rows="4"
-                required
                 placeholder="Enter detailed announcement message..."
                 value={formData.message}
-                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                style={{ width: '100%', padding: '0.6rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                onChange={(e) => {
+                  setFormData({ ...formData, message: e.target.value });
+                  if (fieldErrors.message) setFieldErrors({ ...fieldErrors, message: null });
+                }}
+                style={{
+                  width: '100%',
+                  padding: '0.6rem 0.85rem',
+                  borderRadius: '8px',
+                  border: '1px solid #cbd5e1',
+                  fontSize: '0.85rem',
+                  ...getInputErrorStyle(fieldErrors.message),
+                }}
               />
+              <FieldError error={fieldErrors.message} />
             </div>
 
             {/* Action Link (Optional) */}
@@ -313,11 +413,22 @@ function AdminSendNotificationPage() {
               </label>
               <input
                 type="text"
-                placeholder="e.g. /payout-history or /reward-details"
+                placeholder="e.g. /payout-history or https://example.com/promo"
                 value={formData.action_url}
-                onChange={(e) => setFormData({ ...formData, action_url: e.target.value })}
-                style={{ width: '100%', padding: '0.6rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                onChange={(e) => {
+                  setFormData({ ...formData, action_url: e.target.value });
+                  if (fieldErrors.action_url) setFieldErrors({ ...fieldErrors, action_url: null });
+                }}
+                style={{
+                  width: '100%',
+                  padding: '0.6rem 0.85rem',
+                  borderRadius: '8px',
+                  border: '1px solid #cbd5e1',
+                  fontSize: '0.85rem',
+                  ...getInputErrorStyle(fieldErrors.action_url),
+                }}
               />
+              <FieldError error={fieldErrors.action_url} />
             </div>
 
             {/* Dispatch Button */}
@@ -332,7 +443,8 @@ function AdminSendNotificationPage() {
                 borderRadius: '8px',
                 fontWeight: 800,
                 fontSize: '0.9rem',
-                cursor: 'pointer',
+                cursor: isSending ? 'not-allowed' : 'pointer',
+                opacity: isSending ? 0.7 : 1,
                 boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)',
                 display: 'flex',
                 alignItems: 'center',

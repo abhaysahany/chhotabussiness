@@ -12,6 +12,15 @@ import {
   getBusinessEntities,
   getFreelancers,
 } from '../../api/adminEntityService';
+import {
+  isRequired,
+  isValidNumber,
+  isValidPercentage,
+  validateImageFile,
+  FieldError,
+  getInputErrorStyle,
+  extractBackendErrors,
+} from '../../utils/validation';
 
 function AdminProductsPage() {
   const [viewMode, setViewMode] = useState('table'); // 'table' | 'grid'
@@ -23,6 +32,8 @@ function AdminProductsPage() {
   const [toast, setToast] = useState(null); // { message: string, type: 'success' | 'error' }
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
+  const [formBannerError, setFormBannerError] = useState('');
 
   const [products, setProducts] = useState([]);
   const [categoriesList, setCategoriesList] = useState([]);
@@ -134,6 +145,8 @@ function AdminProductsPage() {
 
   const openAddModal = () => {
     setEditingProduct(null);
+    setFormErrors({});
+    setFormBannerError('');
     const defaultCat = categoriesList[0] || 'Software & IT';
     const defaultBiz = businessesList.length > 0 ? (businessesList[0].name || businessesList[0].business_name || 'Skyline Technologies Pvt Ltd') : 'Skyline Technologies Pvt Ltd';
 
@@ -156,6 +169,8 @@ function AdminProductsPage() {
 
   const openEditModal = (p) => {
     setEditingProduct(p);
+    setFormErrors({});
+    setFormBannerError('');
     setFormData({
       name: p.name,
       category: p.category,
@@ -211,15 +226,60 @@ function AdminProductsPage() {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.price) {
-      showToast('Please fill in product name and base price', 'error');
+    setFormErrors({});
+    setFormBannerError('');
+
+    const errors = {};
+    if (!isRequired(formData.name)) {
+      errors.name = 'Product title is required.';
+    } else if (formData.name.trim().length < 2) {
+      errors.name = 'Product title must be at least 2 characters.';
+    }
+
+    if (!isRequired(formData.category)) {
+      errors.category = 'Product category is required.';
+    }
+
+    if (!isRequired(formData.owner_name)) {
+      errors.owner_name = 'Product owner is required.';
+    }
+
+    if (!isRequired(formData.price)) {
+      errors.price = 'Price is required.';
+    } else if (!isValidNumber(formData.price, { min: 1 })) {
+      errors.price = 'Price must be greater than ₹0.';
+    }
+
+    if (formData.admin_commission_percent === '' || formData.admin_commission_percent === undefined) {
+      errors.admin_commission_percent = 'Admin commission percentage is required.';
+    } else if (!isValidPercentage(formData.admin_commission_percent)) {
+      errors.admin_commission_percent = 'Admin commission must be between 0% and 100%.';
+    }
+
+    if (formData.stock !== '' && formData.stock !== undefined) {
+      const stockNum = parseInt(formData.stock, 10);
+      if (isNaN(stockNum) || stockNum < 0) {
+        errors.stock = 'Stock inventory must be 0 or greater.';
+      }
+    }
+
+    if (formData.image_file) {
+      const fileErr = validateImageFile(formData.image_file, 5);
+      if (fileErr) {
+        errors.image_file = fileErr;
+      }
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      setFormBannerError('Please resolve the highlighted validation errors.');
       return;
     }
 
     setIsSubmitting(true);
     try {
       const payload = new FormData();
-      payload.append('name', formData.name);
+      payload.append('name', formData.name.trim());
       payload.append('category', formData.category);
       payload.append('owner_type', formData.owner_type);
       payload.append('owner_name', formData.owner_name);
@@ -245,13 +305,12 @@ function AdminProductsPage() {
       setShowAddModal(false);
       await loadData();
     } catch (err) {
-      const msg =
-        (err.response?.data?.errors
-          ? Object.values(err.response.data.errors).flat().join(' ')
-          : err.response?.data?.message) ||
-        err.message ||
-        'Failed to save product in database.';
-      showToast(msg, 'error');
+      console.error('Error saving product in database:', err);
+      const backendErrors = extractBackendErrors(err);
+      if (Object.keys(backendErrors).length > 0) {
+        setFormErrors(backendErrors);
+      }
+      setFormBannerError(err.response?.data?.message || 'Failed to save product in database.');
     } finally {
       setIsSubmitting(false);
     }
@@ -546,6 +605,11 @@ function AdminProductsPage() {
               <button className="modal-close-btn" onClick={() => setShowAddModal(false)}>×</button>
             </div>
             <form onSubmit={handleFormSubmit} className="pro-modal-form">
+              {formBannerError && (
+                <div style={{ backgroundColor: '#fef2f2', color: '#991b1b', border: '1px solid #fecaca', padding: '0.65rem 0.85rem', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.82rem', fontWeight: 600 }}>
+                  ⚠️ {formBannerError}
+                </div>
+              )}
               <div className="form-group-grid">
                 <div className="form-col-full">
                   <label>Product Name *</label>
@@ -554,8 +618,14 @@ function AdminProductsPage() {
                     required
                     placeholder="e.g. Enterprise Cloud ERP Suite"
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, name: e.target.value });
+                      setFormErrors((prev) => ({ ...prev, name: undefined }));
+                      setFormBannerError('');
+                    }}
+                    style={getInputErrorStyle(formErrors.name)}
                   />
+                  <FieldError error={formErrors.name} />
                 </div>
 
                 <div className="form-col-half">
@@ -629,11 +699,17 @@ function AdminProductsPage() {
                   <input
                     type="number"
                     required
-                    min="0"
+                    min="1"
                     placeholder="14999"
                     value={formData.price}
-                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, price: e.target.value });
+                      setFormErrors((prev) => ({ ...prev, price: undefined }));
+                      setFormBannerError('');
+                    }}
+                    style={getInputErrorStyle(formErrors.price)}
                   />
+                  <FieldError error={formErrors.price} />
                 </div>
 
                 <div className="form-col-third">
@@ -644,8 +720,14 @@ function AdminProductsPage() {
                     max="100"
                     placeholder="15"
                     value={formData.admin_commission_percent}
-                    onChange={(e) => setFormData({ ...formData, admin_commission_percent: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, admin_commission_percent: e.target.value });
+                      setFormErrors((prev) => ({ ...prev, admin_commission_percent: undefined }));
+                      setFormBannerError('');
+                    }}
+                    style={getInputErrorStyle(formErrors.admin_commission_percent)}
                   />
+                  <FieldError error={formErrors.admin_commission_percent} />
                 </div>
 
                 <div className="form-col-third">
@@ -655,8 +737,14 @@ function AdminProductsPage() {
                     min="0"
                     placeholder="50"
                     value={formData.stock}
-                    onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, stock: e.target.value });
+                      setFormErrors((prev) => ({ ...prev, stock: undefined }));
+                      setFormBannerError('');
+                    }}
+                    style={getInputErrorStyle(formErrors.stock)}
                   />
+                  <FieldError error={formErrors.stock} />
                 </div>
 
                 <div className="form-col-full">
@@ -678,7 +766,10 @@ function AdminProductsPage() {
                       }}
                     >
                       📁 Browse & Upload Image
-                      <input type="file" accept="image/*" onChange={handleFileSelect} style={{ display: 'none' }} />
+                      <input type="file" accept="image/*" onChange={(e) => {
+                        handleFileSelect(e);
+                        setFormErrors((prev) => ({ ...prev, image_file: undefined }));
+                      }} style={{ display: 'none' }} />
                     </label>
 
                     <input
@@ -692,6 +783,7 @@ function AdminProductsPage() {
                       style={{ flex: 1, padding: '0.55rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem' }}
                     />
                   </div>
+                  <FieldError error={formErrors.image_file} />
 
                   {imagePreview && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.5rem' }}>
