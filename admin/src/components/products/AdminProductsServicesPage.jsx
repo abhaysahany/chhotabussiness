@@ -131,21 +131,36 @@ function AdminProductsServicesPage({ initialTab = 'products-catalog', onNavigate
     }
   };
 
+  const [formErrors, setFormErrors] = useState({});
+
   const handleCreateSubmit = (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.price || !formData.entityName) {
-      alert('Please fill out all required fields');
+    setFormErrors({});
+    const errors = {};
+    if (!formData.name || formData.name.trim().length < 2) {
+      errors.name = 'Item title must be at least 2 characters.';
+    }
+    if (!formData.price || isNaN(parseFloat(formData.price)) || parseFloat(formData.price) <= 0) {
+      errors.price = 'Price must be greater than ₹0.';
+    }
+    if (!formData.entityName || formData.entityName.trim() === '') {
+      errors.entityName = 'Vendor entity name is required.';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      showToast('Please fill out all required fields properly');
       return;
     }
 
     const newItem = {
       id: Date.now(),
-      name: formData.name,
+      name: formData.name.trim(),
       type: formData.type,
       category: formData.category,
       price: parseFloat(formData.price),
       entityType: formData.entityType,
-      entityName: formData.entityName,
+      entityName: formData.entityName.trim(),
       stockOrDuration: formData.stockOrDuration || 'Standard Offering',
       status: 'active',
       salesCount: 0,
@@ -158,6 +173,16 @@ function AdminProductsServicesPage({ initialTab = 'products-catalog', onNavigate
     setFormData({
       name: '',
       type: 'product',
+      category: 'Software & IT',
+      price: '',
+      entityType: 'business',
+      entityName: '',
+      stockOrDuration: '',
+      image: '',
+    });
+    setFormErrors({});
+    showToast('✓ Catalog item successfully published!');
+  };
       category: 'Software & IT',
       price: '',
       entityType: 'business',
@@ -594,10 +619,14 @@ function AdminProductsServicesPage({ initialTab = 'products-catalog', onNavigate
                   type="text"
                   placeholder="e.g. Enterprise Cloud ERP Package"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }}
+                  onChange={(e) => {
+                    setFormData({ ...formData, name: e.target.value });
+                    setFormErrors((prev) => ({ ...prev, name: undefined }));
+                  }}
+                  style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: formErrors.name ? '1.5px solid #ef4444' : '1px solid #cbd5e1', outline: 'none' }}
                   required
                 />
+                {formErrors.name && <div style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem' }}>{formErrors.name}</div>}
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
@@ -636,10 +665,14 @@ function AdminProductsServicesPage({ initialTab = 'products-catalog', onNavigate
                     type="number"
                     placeholder="e.g. 4999"
                     value={formData.price}
-                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }}
+                    onChange={(e) => {
+                      setFormData({ ...formData, price: e.target.value });
+                      setFormErrors((prev) => ({ ...prev, price: undefined }));
+                    }}
+                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: formErrors.price ? '1.5px solid #ef4444' : '1px solid #cbd5e1', outline: 'none' }}
                     required
                   />
+                  {formErrors.price && <div style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem' }}>{formErrors.price}</div>}
                 </div>
 
                 <div>
@@ -648,10 +681,14 @@ function AdminProductsServicesPage({ initialTab = 'products-catalog', onNavigate
                     type="text"
                     placeholder="e.g. Skyline Technologies"
                     value={formData.entityName}
-                    onChange={(e) => setFormData({ ...formData, entityName: e.target.value })}
-                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }}
+                    onChange={(e) => {
+                      setFormData({ ...formData, entityName: e.target.value });
+                      setFormErrors((prev) => ({ ...prev, entityName: undefined }));
+                    }}
+                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: formErrors.entityName ? '1.5px solid #ef4444' : '1px solid #cbd5e1', outline: 'none' }}
                     required
                   />
+                  {formErrors.entityName && <div style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem' }}>{formErrors.entityName}</div>}
                 </div>
               </div>
 

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { FieldError, getInputErrorStyle } from '../../utils/validation';
 
 function AdminLiveHelpdeskPage({ currentAdmin }) {
   const [activeSessions, setActiveSessions] = useState([]);
   const [selectedSessId, setSelectedSessId] = useState('');
   const [replyText, setReplyText] = useState('');
+  const [replyError, setReplyError] = useState('');
   const [toastMsg, setToastMsg] = useState('');
 
   const currentSess = activeSessions.find((s) => s.id === selectedSessId) || activeSessions[0];
@@ -23,12 +25,21 @@ function AdminLiveHelpdeskPage({ currentAdmin }) {
 
   const handleSendLiveMessage = (e) => {
     e.preventDefault();
-    if (!replyText.trim()) return;
+    const trimmed = replyText.trim();
+    if (!trimmed) {
+      setReplyError('Message cannot be empty.');
+      return;
+    }
+    if (trimmed.length > 1000) {
+      setReplyError('Message cannot exceed 1000 characters.');
+      return;
+    }
 
+    setReplyError('');
     const newMsg = {
       sender: 'admin',
       name: currentAdmin?.name ? `${currentAdmin.name} (Senior Agent)` : 'Senior Support Agent',
-      text: replyText,
+      text: trimmed,
       time: 'Just Now',
     };
 
@@ -37,7 +48,7 @@ function AdminLiveHelpdeskPage({ currentAdmin }) {
         if (s.id === currentSess.id) {
           return {
             ...s,
-            lastMsg: replyText,
+            lastMsg: trimmed,
             messages: [...s.messages, newMsg],
           };
         }
@@ -46,6 +57,7 @@ function AdminLiveHelpdeskPage({ currentAdmin }) {
     );
 
     setReplyText('');
+    setReplyError('');
   };
 
   return (
@@ -187,18 +199,24 @@ function AdminLiveHelpdeskPage({ currentAdmin }) {
               </div>
 
               {/* Reply Form */}
-              <form onSubmit={handleSendLiveMessage} style={{ display: 'flex', gap: '0.5rem' }}>
-                <input
-                  type="text"
-                  className="form-input"
-                  placeholder="Send live chat message to user..."
-                  value={replyText}
-                  onChange={(e) => setReplyText(e.target.value)}
-                  style={{ flex: 1, height: '40px' }}
-                />
-                <button type="submit" className="btn-primary" style={{ height: '40px', padding: '0 1rem' }}>
-                  Send
-                </button>
+              <form onSubmit={handleSendLiveMessage} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="Send live chat message to user..."
+                    value={replyText}
+                    onChange={(e) => {
+                      setReplyText(e.target.value);
+                      if (replyError) setReplyError('');
+                    }}
+                    style={{ flex: 1, height: '40px', ...getInputErrorStyle(replyError) }}
+                  />
+                  <button type="submit" className="btn-primary" style={{ height: '40px', padding: '0 1rem' }}>
+                    Send
+                  </button>
+                </div>
+                <FieldError error={replyError} />
               </form>
             </div>
           ) : (

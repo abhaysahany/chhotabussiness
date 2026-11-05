@@ -4,6 +4,12 @@ import {
   createSupportTopic,
   deleteSupportTopic,
 } from '../../api/adminSupportTopicService';
+import {
+  isRequired,
+  extractBackendErrors,
+  FieldError,
+  getInputErrorStyle,
+} from '../../utils/validation';
 
 function AdminKnowledgeBasePage() {
   const [faqs, setFaqs] = useState([]);
@@ -11,6 +17,10 @@ function AdminKnowledgeBasePage() {
   const [newQuestion, setNewQuestion] = useState('');
   const [newCategory, setNewCategory] = useState('Payouts & Wallet');
   const [newAnswer, setNewAnswer] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [bannerError, setBannerError] = useState('');
+  const [deleteConfirmFaq, setDeleteConfirmFaq] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [toastMsg, setToastMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -42,17 +52,46 @@ function AdminKnowledgeBasePage() {
 
   const handleAddFaq = async (e) => {
     e.preventDefault();
-    if (!newQuestion.trim() || !newAnswer.trim()) return;
+    const errs = {};
 
+    const trimmedQ = newQuestion.trim();
+    if (!trimmedQ) {
+      errs.question = 'Article title or question is required.';
+    } else if (trimmedQ.length < 3) {
+      errs.question = 'Title must be at least 3 characters.';
+    } else if (trimmedQ.length > 255) {
+      errs.question = 'Title cannot exceed 255 characters.';
+    }
+
+    if (!newCategory || !newCategory.trim()) {
+      errs.category = 'Please select a valid category.';
+    }
+
+    const trimmedA = newAnswer.trim();
+    if (!trimmedA) {
+      errs.answer = 'Detailed answer/solution is required.';
+    } else if (trimmedA.length < 5) {
+      errs.answer = 'Answer must be at least 5 characters.';
+    } else if (trimmedA.length > 5000) {
+      errs.answer = 'Answer cannot exceed 5000 characters.';
+    }
+
+    if (Object.keys(errs).length > 0) {
+      setFieldErrors(errs);
+      return;
+    }
+
+    setFieldErrors({});
+    setBannerError('');
+    setIsSubmitting(true);
     try {
-      setIsSubmitting(true);
       const payload = {
-        title: newQuestion,
+        title: trimmedQ,
         category: newCategory,
-        summary: newAnswer.slice(0, 120),
-        article_body: newAnswer,
-        faq_question: newQuestion,
-        faq_answer: newAnswer,
+        summary: trimmedA.slice(0, 120),
+        article_body: trimmedA,
+        faq_question: trimmedQ,
+        faq_answer: trimmedA,
         status: 'published',
       };
       const res = await createSupportTopic(payload);
@@ -60,30 +99,39 @@ function AdminKnowledgeBasePage() {
         setToastMsg('New FAQ article published to MySQL database!');
         setNewQuestion('');
         setNewAnswer('');
+        setFieldErrors({});
         await fetchFaqs();
       }
     } catch (err) {
+      const backendErr = extractBackendErrors(err);
+      if (backendErr.errors && Object.keys(backendErr.errors).length > 0) {
+        setFieldErrors(backendErr.errors);
+      }
+      setBannerError(backendErr.message || 'Failed to publish FAQ article to database.');
+      setToastMsg('Failed to publish FAQ article to database.');
       console.error('Error publishing FAQ article:', err);
-      alert('Failed to publish FAQ article to database.');
     } finally {
       setIsSubmitting(false);
       setTimeout(() => setToastMsg(''), 3000);
     }
   };
 
-  const handleDeleteFaq = async (id, question) => {
-    if (window.confirm(`Delete FAQ article [${question}] from database?`)) {
-      try {
-        const res = await deleteSupportTopic(id);
-        if (res && res.status === 'success') {
-          setToastMsg('FAQ article deleted from database!');
-          await fetchFaqs();
-        }
-      } catch (err) {
-        console.error('Error deleting FAQ:', err);
-      } finally {
-        setTimeout(() => setToastMsg(''), 3000);
+  const handleConfirmDelete = async () => {
+    if (!deleteConfirmFaq) return;
+    setIsDeleting(true);
+    try {
+      const res = await deleteSupportTopic(deleteConfirmFaq.id);
+      if (res && res.status === 'success') {
+        setToastMsg('FAQ article deleted from database!');
+        setDeleteConfirmFaq(null);
+        await fetchFaqs();
       }
+    } catch (err) {
+      setToastMsg('Failed to delete FAQ article.');
+      console.error('Error deleting FAQ:', err);
+    } finally {
+      setIsDeleting(false);
+      setTimeout(() => setToastMsg(''), 3000);
     }
   };
 
@@ -116,25 +164,38 @@ function AdminKnowledgeBasePage() {
             + Publish New Article
           </h3>
 
-          <form onSubmit={handleAddFaq} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {bannerError && (
+            <div style={{ background: '#fee2e2', border: '1px solid #fca5a5', color: '#b91c1c', padding: '0.65rem 0.85rem', borderRadius: '8px', fontSize: '0.82rem', marginBottom: '1rem', fontWeight: 600 }}>
+              ⚠️ {bannerError}
+            </div>
+          )}
+
+          <form onSubmit={handleAddFaq} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div className="form-group">
-              <label>Article Title / Question *</label>
+              <label>Article Title / Question <span style={{ color: '#ef4444' }}>*</span></label>
               <input
                 type="text"
                 className="form-input"
                 placeholder="e.g. How to change bank account details?"
                 value={newQuestion}
-                onChange={(e) => setNewQuestion(e.target.value)}
-                required
+                onChange={(e) => {
+                  setNewQuestion(e.target.value);
+                  if (fieldErrors.question) setFieldErrors({ ...fieldErrors, question: null });
+                }}
+                style={getInputErrorStyle(fieldErrors.question)}
               />
+              <FieldError error={fieldErrors.question} />
             </div>
 
             <div className="form-group">
-              <label>Category *</label>
+              <label>Category <span style={{ color: '#ef4444' }}>*</span></label>
               <select
                 className="form-input"
                 value={newCategory}
-                onChange={(e) => setNewCategory(e.target.value)}
+                onChange={(e) => {
+                  setNewCategory(e.target.value);
+                  if (fieldErrors.category) setFieldErrors({ ...fieldErrors, category: null });
+                }}
               >
                 <option value="Payouts & Wallet">Payouts & Wallet</option>
                 <option value="KYC & Verification">KYC & Verification</option>
@@ -146,22 +207,31 @@ function AdminKnowledgeBasePage() {
                 <option value="Account & Security">Account & Security</option>
                 <option value="General Help">General Help</option>
               </select>
+              <FieldError error={fieldErrors.category} />
             </div>
 
             <div className="form-group">
-              <label>Detailed Answer / Solution *</label>
+              <label>Detailed Answer / Solution <span style={{ color: '#ef4444' }}>*</span></label>
               <textarea
                 className="form-input"
                 rows="4"
                 placeholder="Write step-by-step instructions for users..."
                 value={newAnswer}
-                onChange={(e) => setNewAnswer(e.target.value)}
-                style={{ height: '110px', padding: '0.625rem' }}
-                required
+                onChange={(e) => {
+                  setNewAnswer(e.target.value);
+                  if (fieldErrors.answer) setFieldErrors({ ...fieldErrors, answer: null });
+                }}
+                style={{ height: '110px', padding: '0.625rem', ...getInputErrorStyle(fieldErrors.answer) }}
               />
+              <FieldError error={fieldErrors.answer} />
             </div>
 
-            <button type="submit" disabled={isSubmitting} className="btn-primary" style={{ marginTop: '0.5rem', opacity: isSubmitting ? 0.7 : 1 }}>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="btn-primary"
+              style={{ marginTop: '0.5rem', opacity: isSubmitting ? 0.7 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}
+            >
               {isSubmitting ? 'Saving to Database...' : 'Publish Article to Database'}
             </button>
           </form>
@@ -195,7 +265,14 @@ function AdminKnowledgeBasePage() {
                       <span style={{ fontSize: '0.6875rem', fontWeight: 700, color: '#3569a7', backgroundColor: '#eef2ff', padding: '0.15rem 0.5rem', borderRadius: '4px' }}>
                         {f.category}
                       </span>
-                      <button onClick={() => handleDeleteFaq(f.id, f.question)} style={{ background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', fontSize: '0.85rem' }}>🗑️</button>
+                      <button
+                        type="button"
+                        onClick={() => setDeleteConfirmFaq(f)}
+                        style={{ background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', fontSize: '0.85rem' }}
+                        title="Delete article"
+                      >
+                        🗑️
+                      </button>
                     </div>
                   </div>
                   <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', lineHeight: '1.5', whiteSpace: 'pre-wrap' }}>
@@ -210,6 +287,53 @@ function AdminKnowledgeBasePage() {
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirmFaq && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.75)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 999999,
+            padding: '1rem',
+          }}
+        >
+          <div style={{ background: '#ffffff', borderRadius: '16px', maxWidth: '440px', width: '100%', padding: '1.75rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}>
+            <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.15rem', fontWeight: 800, color: '#dc2626' }}>
+              🗑️ Delete Article?
+            </h3>
+            <p style={{ margin: '0 0 1.25rem 0', fontSize: '0.85rem', color: '#64748b', lineHeight: 1.5 }}>
+              Are you sure you want to delete article <strong>"{deleteConfirmFaq.question}"</strong> from the database?
+            </p>
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <button
+                type="button"
+                onClick={() => setDeleteConfirmFaq(null)}
+                disabled={isDeleting}
+                style={{ flex: 1, padding: '0.65rem 1rem', background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', borderRadius: '8px', fontWeight: 700, fontSize: '0.82rem', cursor: isDeleting ? 'not-allowed' : 'pointer' }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                disabled={isDeleting}
+                style={{ flex: 1, padding: '0.65rem 1rem', background: '#dc2626', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: 800, fontSize: '0.82rem', cursor: isDeleting ? 'not-allowed' : 'pointer', opacity: isDeleting ? 0.7 : 1 }}
+              >
+                {isDeleting ? 'Deleting...' : 'Confirm Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

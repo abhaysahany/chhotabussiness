@@ -60,15 +60,27 @@ class NotificationController extends Controller
      */
     public function sendNotification(Request $request)
     {
-        $request->validate([
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'message' => 'required|string',
-            'type' => 'nullable|string', // info | success | warning | announcement
-            'target_audience' => 'required|string', // single_user | active_users | inactive_users | all_users
-            'target_user_code' => 'nullable|string',
+            'type' => 'nullable|string|in:info,success,warning,announcement,commission',
+            'target_audience' => 'required|string|in:single_user,active_users,inactive_users,all_users',
+            'target_user_code' => 'required_if:target_audience,single_user|nullable|string',
             'target_user_id' => 'nullable|integer',
-            'action_url' => 'nullable|string',
+            'action_url' => 'nullable|string|max:500',
+        ], [
+            'title.required' => 'Notification title is required.',
+            'message.required' => 'Notification message is required.',
+            'target_user_code.required_if' => 'Please provide the Target Member Code or Email when delivering to a Single User.',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors(),
+            ], 422);
+        }
 
         $audience = $request->input('target_audience');
         $targetUserId = null;

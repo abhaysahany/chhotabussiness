@@ -1,10 +1,18 @@
 import React, { useState, useMemo } from 'react';
+import {
+  isRequired,
+  isValidNumber,
+  FieldError,
+  getInputErrorStyle,
+} from '../../utils/validation';
 
 function AdminReceivePaymentPage() {
   const [activeTab, setActiveTab] = useState('active-balances'); // 'active-balances' | 'payment-ledger' | 'dumped-projects'
   const [toastMessage, setToastMessage] = useState('');
   const [showDumpModal, setShowDumpModal] = useState(false);
   const [dumpReason, setDumpReason] = useState('Client Refused Balance Payment');
+  const [dumpError, setDumpError] = useState('');
+  const [payErrors, setPayErrors] = useState({});
   const [showNetworkModal, setShowNetworkModal] = useState(false);
   const [activeDistributionLog, setActiveDistributionLog] = useState(null);
 
@@ -176,13 +184,30 @@ function AdminReceivePaymentPage() {
   // Receive Balance Payment Handler (Calculates and Credits Income on Balance Received)
   const handleReceiveBalancePayment = (e) => {
     e.preventDefault();
+    setPayErrors({});
+
+    const errors = {};
     if (!activeSale) {
-      alert('No active balance sale selected.');
-      return;
+      errors.sale = 'No active balance sale selected.';
     }
 
-    if (!balancePaymentAmt || balancePaymentAmt <= 0) {
-      alert('Please enter a valid balance payment amount.');
+    if (!receivedAmount || receivedAmount.toString().trim() === '') {
+      errors.receivedAmount = 'Please enter a balance payment amount.';
+    } else if (!isValidNumber(receivedAmount, { min: 1 })) {
+      errors.receivedAmount = 'Please enter a valid balance payment amount greater than ₹0.';
+    } else if (activeSale && parseFloat(receivedAmount) > activeSale.balanceDue) {
+      errors.receivedAmount = `Payment amount cannot exceed balance due of ₹${activeSale.balanceDue.toLocaleString()}.`;
+    }
+
+    if (!isRequired(utrReference)) {
+      errors.utrReference = 'Transaction UTR / Reference No is required.';
+    } else if (utrReference.trim().length < 3) {
+      errors.utrReference = 'UTR must be at least 3 characters.';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setPayErrors(errors);
+      showToast('Please fix the highlighted payment errors.');
       return;
     }
 
@@ -227,7 +252,13 @@ function AdminReceivePaymentPage() {
 
   // Dump Project / Cancel Order Handler
   const handleDumpProjectConfirm = () => {
+    setDumpError('');
     if (!activeSale) return;
+
+    if (!dumpReason || dumpReason.trim().length < 3) {
+      setDumpError('Please provide a reason with at least 3 characters.');
+      return;
+    }
 
     const dumpedRecord = {
       id: activeSale.id,
@@ -239,7 +270,7 @@ function AdminReceivePaymentPage() {
       totalValue: activeSale.totalValue,
       advancePaid: activeSale.advancePaid,
       lostBalance: activeSale.balanceDue,
-      reason: dumpReason,
+      reason: dumpReason.trim(),
       dumped_at: new Date().toISOString().split('T')[0],
     };
 
@@ -453,10 +484,14 @@ function AdminReceivePaymentPage() {
                         type="number"
                         className="pro-input"
                         value={receivedAmount}
-                        onChange={(e) => setReceivedAmount(e.target.value)}
-                        style={{ fontSize: '1.1rem', fontWeight: '800', color: '#059669', borderColor: '#10b981' }}
+                        onChange={(e) => {
+                          setReceivedAmount(e.target.value);
+                          setPayErrors((prev) => ({ ...prev, receivedAmount: undefined }));
+                        }}
+                        style={{ fontSize: '1.1rem', fontWeight: '800', color: '#059669', borderColor: '#10b981', ...getInputErrorStyle(payErrors.receivedAmount) }}
                         required
                       />
+                      <FieldError error={payErrors.receivedAmount} />
                     </div>
 
                     <div>
@@ -485,9 +520,14 @@ function AdminReceivePaymentPage() {
                         type="text"
                         className="pro-input"
                         value={utrReference}
-                        onChange={(e) => setUtrReference(e.target.value)}
+                        onChange={(e) => {
+                          setUtrReference(e.target.value);
+                          setPayErrors((prev) => ({ ...prev, utrReference: undefined }));
+                        }}
+                        style={getInputErrorStyle(payErrors.utrReference)}
                         required
                       />
+                      <FieldError error={payErrors.utrReference} />
                     </div>
                   </div>
 

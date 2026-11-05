@@ -238,9 +238,64 @@ class SystemSettingController extends Controller
      */
     public function saveSettings(Request $request)
     {
-        $settings = $request->input('settings', []);
         $group = $request->input('group', 'general');
 
+        if ($group === 'mlm') {
+            $validator = Validator::make($request->all(), [
+                'settings' => 'required|array',
+                'settings.bpValueInRupees' => 'required|numeric|min:0.01',
+                'settings.defaultReferralPercent' => 'required|numeric|min:0|max:100',
+                'settings.defaultTeamPercent' => 'required|numeric|min:0|max:100',
+                'settings.teamLevelsCount' => 'required|integer|min:1|max:50',
+                'settings.defaultBpPercent' => 'required|numeric|min:0|max:100',
+                'settings.bpLevelsCount' => 'required|integer|min:1|max:50',
+                'settings.minWithdrawalAmount' => 'required|numeric|min:0',
+            ], [
+                'settings.bpValueInRupees.min' => 'BP value in Rupees must be greater than 0.',
+                'settings.defaultReferralPercent.min' => 'Referral Commission cannot be negative.',
+                'settings.defaultReferralPercent.max' => 'Referral Commission cannot exceed 100%.',
+                'settings.defaultTeamPercent.min' => 'Team Commission cannot be negative.',
+                'settings.defaultTeamPercent.max' => 'Team Commission cannot exceed 100%.',
+                'settings.defaultBpPercent.min' => 'Business Points Allocation cannot be negative.',
+                'settings.defaultBpPercent.max' => 'Business Points Allocation cannot exceed 100%.',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $validator->errors()->first(),
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+
+            $settings = $request->input('settings', []);
+            $ref = (float)($settings['defaultReferralPercent'] ?? 0);
+            $team = (float)($settings['defaultTeamPercent'] ?? 0);
+            $bp = (float)($settings['defaultBpPercent'] ?? 0);
+            if (($ref + $team + $bp) > 100) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'The total sum of Referral Commission, Team Commission, and BP Allocation cannot exceed 100%.',
+                    'errors' => [
+                        'settings.total' => ['The total sum of Referral Commission, Team Commission, and BP Allocation cannot exceed 100%.'],
+                    ],
+                ], 422);
+            }
+        } else {
+            $validator = Validator::make($request->all(), [
+                'settings' => 'required|array',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $validator->errors()->first(),
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+        }
+
+        $settings = $request->input('settings', []);
         foreach ($settings as $key => $value) {
             SystemSetting::set($key, $value, $group);
         }
@@ -268,6 +323,25 @@ class SystemSettingController extends Controller
      */
     public function saveSocialLinks(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'social_links' => 'required|array',
+            'social_links.*.channelUrl' => 'nullable|url',
+            'social_links.*.profileUrl' => 'nullable|url',
+            'social_links.*.companyUrl' => 'nullable|url',
+            'social_links.*.pageUrl' => 'nullable|url',
+            'social_links.*.embedVideoUrl' => 'nullable|url',
+        ], [
+            'social_links.*.*.url' => 'Please provide valid URL addresses for social links.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
         $links = $request->input('social_links', []);
         SystemSetting::set('social_platform_links', $links, 'social');
 

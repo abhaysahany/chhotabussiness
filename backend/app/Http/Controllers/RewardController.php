@@ -112,6 +112,17 @@ class RewardController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Reward item not found.'], 404);
         }
 
+        $request->validate([
+            'title' => 'sometimes|required|string|max:255',
+            'required_bp' => 'sometimes|required|numeric|min:1',
+            'category' => 'nullable|string|max:100',
+            'image' => 'nullable|string|max:2000',
+            'image_file' => 'nullable|image|max:10240', // up to 10MB
+            'description' => 'nullable|string',
+            'reward_value_inr' => 'nullable|numeric|min:0',
+            'status' => 'nullable|string|in:active,inactive',
+        ]);
+
         $imageUrl = $request->input('image') ?: $reward->image;
 
         if ($request->hasFile('image_file')) {
@@ -206,6 +217,13 @@ class RewardController extends Controller
      */
     public function updateClaimStatus(Request $request, $id)
     {
+        $request->validate([
+            'status' => 'required|string|in:approved,dispatched,delivered,rejected',
+            'tracking_number' => 'nullable|string|max:100',
+            'courier_partner' => 'nullable|string|max:100',
+            'admin_notes' => 'nullable|string|max:1000',
+        ]);
+
         DB::beginTransaction();
         try {
             $claim = RewardClaim::find($id);

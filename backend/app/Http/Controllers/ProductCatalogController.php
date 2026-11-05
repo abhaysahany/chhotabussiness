@@ -458,12 +458,19 @@ class ProductCatalogController extends Controller
     public function storePackage(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
+            'name' => 'required|string|min:2|max:255',
+            'price' => 'required|numeric|min:0.01',
             'commission_percent' => 'nullable|numeric|min:0|max:100',
             'description' => 'nullable|string',
             'items_included' => 'nullable|array',
             'status' => 'nullable|string',
+        ], [
+            'name.required' => 'Package bundle name is required.',
+            'name.min' => 'Package name must be at least 2 characters.',
+            'price.required' => 'Package base price is required.',
+            'price.min' => 'Package price must be greater than 0.',
+            'commission_percent.min' => 'Commission percentage cannot be negative.',
+            'commission_percent.max' => 'Commission percentage cannot exceed 100%.',
         ]);
 
         $package = ProductPackage::create([
@@ -487,12 +494,19 @@ class ProductCatalogController extends Controller
         $package = ProductPackage::findOrFail($id);
 
         $request->validate([
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
+            'name' => 'required|string|min:2|max:255',
+            'price' => 'required|numeric|min:0.01',
             'commission_percent' => 'nullable|numeric|min:0|max:100',
             'description' => 'nullable|string',
             'items_included' => 'nullable|array',
             'status' => 'nullable|string',
+        ], [
+            'name.required' => 'Package bundle name is required.',
+            'name.min' => 'Package name must be at least 2 characters.',
+            'price.required' => 'Package base price is required.',
+            'price.min' => 'Package price must be greater than 0.',
+            'commission_percent.min' => 'Commission percentage cannot be negative.',
+            'commission_percent.max' => 'Commission percentage cannot exceed 100%.',
         ]);
 
         $package->update([

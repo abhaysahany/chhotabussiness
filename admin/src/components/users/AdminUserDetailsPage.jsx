@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { getAdminUsers, updateAdminUser, toggleAdminUserStatus } from '../../api/adminService';
+import {
+  isRequired,
+  isValidEmail,
+  isValidNumber,
+  FieldError,
+  getInputErrorStyle,
+  extractBackendErrors,
+} from '../../utils/validation';
 
 function AdminUserDetailsPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -8,6 +16,9 @@ function AdminUserDetailsPage() {
   const [selectedUserBpWallet, setSelectedUserBpWallet] = useState(null);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [editErrors, setEditErrors] = useState({});
+  const [modalBannerError, setModalBannerError] = useState('');
 
   // Dynamic 1 BP Value from Admin Settings
   const [bpRate, setBpRate] = useState(10);
@@ -59,6 +70,8 @@ function AdminUserDetailsPage() {
 
   const handleOpenEdit = (user) => {
     setEditingUser(user);
+    setEditErrors({});
+    setModalBannerError('');
     setFormData({
       name: user.name,
       email: user.email,
@@ -74,17 +87,59 @@ function AdminUserDetailsPage() {
 
   const handleSaveUser = async (e) => {
     e.preventDefault();
+    setEditErrors({});
+    setModalBannerError('');
+
+    const errors = {};
+    if (!isRequired(formData.name)) {
+      errors.name = 'Full name is required.';
+    } else if (formData.name.trim().length < 2) {
+      errors.name = 'Full name must be at least 2 characters.';
+    }
+
+    if (!isRequired(formData.email)) {
+      errors.email = 'Email address is required.';
+    } else if (!isValidEmail(formData.email)) {
+      errors.email = 'Please enter a valid email address.';
+    }
+
+    if (formData.bpBalance < 0) {
+      errors.bpBalance = 'BP balance cannot be negative.';
+    }
+
+    if (formData.commissionWallet < 0) {
+      errors.commissionWallet = 'Commission wallet cannot be negative.';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setEditErrors(errors);
+      setModalBannerError('Please resolve the highlighted validation errors.');
+      return;
+    }
+
+    setSaving(true);
     try {
       const targetId = editingUser.dbId || editingUser.id;
-      await updateAdminUser(targetId, formData);
-      setToastMsg(`User profile & wallets for [${editingUser.name}] updated in database!`);
+      await updateAdminUser(targetId, {
+        ...formData,
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+      });
+      setToastMsg(`User profile & wallets for [${formData.name.trim()}] updated in database!`);
       await loadUsers();
       setEditingUser(null);
     } catch (err) {
       console.error('Error saving user to database:', err);
+      const backendErrors = extractBackendErrors(err);
+      if (Object.keys(backendErrors).length > 0) {
+        setEditErrors(backendErrors);
+      }
+      setModalBannerError(err.response?.data?.message || 'Failed to update user in database.');
       setToastMsg('Failed to update user in database.');
+    } finally {
+      setSaving(false);
+      setTimeout(() => setToastMsg(''), 3500);
     }
-    setTimeout(() => setToastMsg(''), 3500);
   };
 
   const handleToggleStatus = async (userId) => {
@@ -340,31 +395,82 @@ function AdminUserDetailsPage() {
             </div>
 
             <form onSubmit={handleSaveUser} style={{ padding: '1.5rem' }}>
+              {modalBannerError && (
+                <div style={{ backgroundColor: '#fef2f2', color: '#991b1b', border: '1px solid #fecaca', padding: '0.65rem 0.85rem', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.82rem', fontWeight: 600 }}>
+                  ⚠️ {modalBannerError}
+                </div>
+              )}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', color: '#475569', marginBottom: '0.3rem' }}>Full Name</label>
-                  <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }} required />
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', color: '#475569', marginBottom: '0.3rem' }}>Full Name *</label>
+                  <input
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => {
+                      setFormData({ ...formData, name: e.target.value });
+                      setEditErrors((prev) => ({ ...prev, name: undefined }));
+                      setModalBannerError('');
+                    }}
+                    style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem', ...getInputErrorStyle(editErrors.name) }}
+                    required
+                  />
+                  <FieldError error={editErrors.name} />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', color: '#475569', marginBottom: '0.3rem' }}>Email Address</label>
-                  <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }} required />
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', color: '#475569', marginBottom: '0.3rem' }}>Email Address *</label>
+                  <input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => {
+                      setFormData({ ...formData, email: e.target.value });
+                      setEditErrors((prev) => ({ ...prev, email: undefined }));
+                      setModalBannerError('');
+                    }}
+                    style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem', ...getInputErrorStyle(editErrors.email) }}
+                    required
+                  />
+                  <FieldError error={editErrors.email} />
                 </div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', color: '#475569', marginBottom: '0.3rem' }}>💎 BP Wallet Balance (BP)</label>
-                  <input type="number" value={formData.bpBalance} onChange={(e) => setFormData({ ...formData, bpBalance: Number(e.target.value) })} style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '700', color: '#7e22ce' }} />
+                  <input
+                    type="number"
+                    min="0"
+                    value={formData.bpBalance}
+                    onChange={(e) => {
+                      setFormData({ ...formData, bpBalance: Number(e.target.value) });
+                      setEditErrors((prev) => ({ ...prev, bpBalance: undefined }));
+                      setModalBannerError('');
+                    }}
+                    style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '700', color: '#7e22ce', ...getInputErrorStyle(editErrors.bpBalance) }}
+                  />
+                  <FieldError error={editErrors.bpBalance} />
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', color: '#475569', marginBottom: '0.3rem' }}>💰 Commission Wallet (₹)</label>
-                  <input type="number" value={formData.commissionWallet} onChange={(e) => setFormData({ ...formData, commissionWallet: Number(e.target.value) })} style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '700', color: '#15803d' }} />
+                  <input
+                    type="number"
+                    min="0"
+                    value={formData.commissionWallet}
+                    onChange={(e) => {
+                      setFormData({ ...formData, commissionWallet: Number(e.target.value) });
+                      setEditErrors((prev) => ({ ...prev, commissionWallet: undefined }));
+                      setModalBannerError('');
+                    }}
+                    style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '700', color: '#15803d', ...getInputErrorStyle(editErrors.commissionWallet) }}
+                  />
+                  <FieldError error={editErrors.commissionWallet} />
                 </div>
               </div>
 
               <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem' }}>
-                <button type="button" onClick={() => setEditingUser(null)} style={{ flex: 1, padding: '0.65rem', background: '#f1f5f9', color: '#475569', border: 'none', borderRadius: '8px', fontWeight: '700', cursor: 'pointer' }}>Cancel</button>
-                <button type="submit" style={{ flex: 1, padding: '0.65rem', background: '#4338ca', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: '700', cursor: 'pointer' }}>Save Changes</button>
+                <button type="button" onClick={() => setEditingUser(null)} style={{ flex: 1, padding: '0.65rem', background: '#f1f5f9', color: '#475569', border: 'none', borderRadius: '8px', fontWeight: '700', cursor: 'pointer' }} disabled={saving}>Cancel</button>
+                <button type="submit" style={{ flex: 1, padding: '0.65rem', background: '#4338ca', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: '700', cursor: 'pointer', opacity: saving ? 0.7 : 1 }} disabled={saving}>
+                  {saving ? 'Saving...' : 'Save Changes'}
+                </button>
               </div>
             </form>
           </div>

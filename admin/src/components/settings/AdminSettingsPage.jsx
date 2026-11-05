@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useBranding, broadcastBrandingUpdate } from '../../utils/branding';
 import api from '../../api/axios';
+import { isValidUrl, isValidPercentage, FieldError, getInputErrorStyle } from '../../utils/validation';
 
 const DEFAULT_SOCIAL_LINKS = {
   youtube: {
@@ -216,6 +217,24 @@ function AdminSettingsPage() {
 
   const handleSaveSocialLinks = async (e) => {
     e.preventDefault();
+    const urlFields = [
+      { name: 'YouTube Channel', url: socialLinks.youtube?.channelUrl },
+      { name: 'YouTube Embed', url: socialLinks.youtube?.embedVideoUrl },
+      { name: 'Instagram', url: socialLinks.instagram?.profileUrl },
+      { name: 'WhatsApp', url: socialLinks.whatsapp?.channelUrl },
+      { name: 'Telegram', url: socialLinks.telegram?.channelUrl },
+      { name: 'LinkedIn', url: socialLinks.linkedin?.companyUrl },
+      { name: 'Facebook', url: socialLinks.facebook?.pageUrl },
+      { name: 'Twitter', url: socialLinks.twitter?.profileUrl },
+    ];
+
+    for (const item of urlFields) {
+      if (item.url && item.url.trim() && !isValidUrl(item.url.trim())) {
+        showToast(`⚠️ Please enter a valid URL (http:// or https://) for ${item.name}.`);
+        return;
+      }
+    }
+
     setLoading(true);
     try {
       await api.post('/settings/social-links', { social_links: socialLinks });
@@ -230,6 +249,37 @@ function AdminSettingsPage() {
 
   const handleSaveCompensation = async (e) => {
     e.preventDefault();
+    const ref = Number(settings.defaultReferralPercent) || 0;
+    const team = Number(settings.defaultTeamPercent) || 0;
+    const bp = Number(settings.defaultBpPercent) || 0;
+    const bpInr = Number(settings.bpValueInRupees) || 0;
+    const minW = Number(settings.minWithdrawalAmount) || 0;
+
+    if (ref < 0 || ref > 100) {
+      showToast('⚠️ Direct Referral Commission must be between 0% and 100%.');
+      return;
+    }
+    if (team < 0 || team > 100) {
+      showToast('⚠️ Team Matching Commission must be between 0% and 100%.');
+      return;
+    }
+    if (bp < 0 || bp > 100) {
+      showToast('⚠️ Business Points allocation must be between 0% and 100%.');
+      return;
+    }
+    if (ref + team + bp > 100) {
+      showToast(`⚠️ Total Commission allocation (${ref + team + bp}%) cannot exceed 100% of Admin Cut.`);
+      return;
+    }
+    if (bpInr < 1) {
+      showToast('⚠️ 1 BP value must be at least ₹1 INR.');
+      return;
+    }
+    if (minW < 1) {
+      showToast('⚠️ Minimum withdrawal amount must be at least ₹1 INR.');
+      return;
+    }
+
     setLoading(true);
     try {
       await api.post('/settings', { settings: settings, group: 'mlm' });

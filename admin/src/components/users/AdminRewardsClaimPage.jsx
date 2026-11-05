@@ -3,6 +3,12 @@ import {
   getAdminRewardClaims,
   updateAdminClaimStatus,
 } from '../../api/adminRewardService';
+import {
+  isRequired,
+  extractBackendErrors,
+  FieldError,
+  getInputErrorStyle,
+} from '../../utils/validation';
 
 function AdminRewardsClaimPage() {
   const [claims, setClaims] = useState([]);
@@ -17,6 +23,8 @@ function AdminRewardsClaimPage() {
   const [courierPartner, setCourierPartner] = useState('Blue Dart Express');
   const [trackingNumber, setTrackingNumber] = useState('');
   const [adminNotes, setAdminNotes] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [bannerError, setBannerError] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
 
   const showToast = (msg) => {
@@ -46,12 +54,54 @@ function AdminRewardsClaimPage() {
     setCourierPartner(claim.courier_partner || 'Blue Dart Express');
     setTrackingNumber(claim.tracking_number || '');
     setAdminNotes(claim.admin_notes || '');
+    setFieldErrors({});
+    setBannerError('');
+  };
+
+  const handleCloseAction = () => {
+    setSelectedClaimForAction(null);
+    setFieldErrors({});
+    setBannerError('');
   };
 
   const handleActionSubmit = async (e) => {
     e.preventDefault();
     if (!selectedClaimForAction) return;
 
+    const errs = {};
+    if (actionType === 'dispatch') {
+      const trimmedTracking = trackingNumber.trim();
+      if (!trimmedTracking) {
+        errs.tracking_number = 'Tracking Number / AWB is required to dispatch.';
+      } else if (trimmedTracking.length < 3) {
+        errs.tracking_number = 'Tracking number must be at least 3 characters.';
+      } else if (trimmedTracking.length > 100) {
+        errs.tracking_number = 'Tracking number cannot exceed 100 characters.';
+      }
+
+      if (!courierPartner || !courierPartner.trim()) {
+        errs.courier_partner = 'Please select a valid courier partner.';
+      }
+    }
+
+    if (actionType === 'reject') {
+      const trimmedNotes = adminNotes.trim();
+      if (!trimmedNotes) {
+        errs.admin_notes = 'Rejection reason is required so member knows why it was rejected.';
+      } else if (trimmedNotes.length < 3) {
+        errs.admin_notes = 'Rejection reason must be at least 3 characters.';
+      } else if (trimmedNotes.length > 500) {
+        errs.admin_notes = 'Rejection reason cannot exceed 500 characters.';
+      }
+    }
+
+    if (Object.keys(errs).length > 0) {
+      setFieldErrors(errs);
+      return;
+    }
+
+    setFieldErrors({});
+    setBannerError('');
     setIsProcessing(true);
     try {
       let nextStatus = actionType === 'dispatch' ? 'dispatched' : actionType === 'delivered' ? 'delivered' : 'rejected';
@@ -59,15 +109,20 @@ function AdminRewardsClaimPage() {
       await updateAdminClaimStatus(selectedClaimForAction.id, {
         status: nextStatus,
         courier_partner: courierPartner,
-        tracking_number: trackingNumber,
-        admin_notes: adminNotes || (actionType === 'reject' ? 'Claim rejected by Admin.' : 'Dispatched via surface express.'),
+        tracking_number: trackingNumber.trim(),
+        admin_notes: adminNotes.trim() || (actionType === 'reject' ? 'Claim rejected by Admin.' : 'Dispatched via surface express.'),
       });
 
       showToast(`✓ Claim ${selectedClaimForAction.claim_code} marked as ${nextStatus.toUpperCase()}!`);
-      setSelectedClaimForAction(null);
+      handleCloseAction();
       await loadClaims();
     } catch (err) {
-      showToast('Failed to update claim status.');
+      const backendErr = extractBackendErrors(err);
+      if (backendErr.errors && Object.keys(backendErr.errors).length > 0) {
+        setFieldErrors(backendErr.errors);
+      }
+      setBannerError(backendErr.message || 'Failed to update claim status.');
+      showToast(backendErr.message || 'Failed to update claim status.');
     } finally {
       setIsProcessing(false);
     }
@@ -369,12 +424,19 @@ function AdminRewardsClaimPage() {
               </h3>
               <button
                 type="button"
-                onClick={() => setSelectedClaimForAction(null)}
+                onClick={handleCloseAction}
+                disabled={isProcessing}
                 style={{ background: 'none', border: 'none', fontSize: '1.3rem', color: '#64748b', cursor: 'pointer' }}
               >
                 ×
               </button>
             </div>
+
+            {bannerError && (
+              <div style={{ background: '#fee2e2', border: '1px solid #fca5a5', color: '#b91c1c', padding: '0.65rem 0.85rem', borderRadius: '8px', fontSize: '0.82rem', marginBottom: '1rem', fontWeight: 600 }}>
+                ⚠️ {bannerError}
+              </div>
+            )}
 
             <div style={{ background: '#f8fafc', padding: '0.85rem', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '1.25rem', fontSize: '0.82rem' }}>
               <div>Claim Ref: <strong>{selectedClaimForAction.claim_code}</strong></div>
@@ -382,17 +444,28 @@ function AdminRewardsClaimPage() {
               <div>Reward: <strong>{selectedClaimForAction.reward_title}</strong> (💎 {selectedClaimForAction.points_deducted} BP)</div>
             </div>
 
-            <form onSubmit={handleActionSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <form onSubmit={handleActionSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {actionType === 'dispatch' && (
                 <>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>
-                      Courier Partner / Logistics Provider
+                      Courier Partner / Logistics Provider <span style={{ color: '#ef4444' }}>*</span>
                     </label>
                     <select
                       value={courierPartner}
-                      onChange={(e) => setCourierPartner(e.target.value)}
-                      style={{ width: '100%', padding: '0.6rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', background: '#ffffff' }}
+                      onChange={(e) => {
+                        setCourierPartner(e.target.value);
+                        if (fieldErrors.courier_partner) setFieldErrors({ ...fieldErrors, courier_partner: null });
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '0.6rem 0.85rem',
+                        borderRadius: '8px',
+                        border: '1px solid #cbd5e1',
+                        fontSize: '0.85rem',
+                        background: '#ffffff',
+                        ...getInputErrorStyle(fieldErrors.courier_partner),
+                      }}
                     >
                       <option value="Blue Dart Express">Blue Dart Express</option>
                       <option value="Delhivery">Delhivery Surface/Air</option>
@@ -400,43 +473,65 @@ function AdminRewardsClaimPage() {
                       <option value="India Post / Speed Post">India Post / Speed Post</option>
                       <option value="Hand Delivered">Hand Delivered (Direct Office Pick-up)</option>
                     </select>
+                    <FieldError error={fieldErrors.courier_partner} />
                   </div>
 
                   <div>
                     <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>
-                      Tracking Number / Air Waybill (AWB) *
+                      Tracking Number / Air Waybill (AWB) <span style={{ color: '#ef4444' }}>*</span>
                     </label>
                     <input
                       type="text"
-                      required
                       placeholder="e.g. BLUEDART-8930491823"
                       value={trackingNumber}
-                      onChange={(e) => setTrackingNumber(e.target.value)}
-                      style={{ width: '100%', padding: '0.6rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                      onChange={(e) => {
+                        setTrackingNumber(e.target.value);
+                        if (fieldErrors.tracking_number) setFieldErrors({ ...fieldErrors, tracking_number: null });
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '0.6rem 0.85rem',
+                        borderRadius: '8px',
+                        border: '1px solid #cbd5e1',
+                        fontSize: '0.85rem',
+                        ...getInputErrorStyle(fieldErrors.tracking_number),
+                      }}
                     />
+                    <FieldError error={fieldErrors.tracking_number} />
                   </div>
                 </>
               )}
 
               <div>
                 <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>
-                  {actionType === 'reject' ? 'Rejection Reason (will refund BP to user) *' : 'Admin Fulfillment Notes'}
+                  {actionType === 'reject' ? 'Rejection Reason (will refund BP to user)' : 'Admin Fulfillment Notes'} {actionType === 'reject' && <span style={{ color: '#ef4444' }}>*</span>}
                 </label>
                 <textarea
                   rows="3"
-                  required={actionType === 'reject'}
                   placeholder={actionType === 'reject' ? 'State reason for rejecting claim...' : 'Enter any notes or remarks...'}
                   value={adminNotes}
-                  onChange={(e) => setAdminNotes(e.target.value)}
-                  style={{ width: '100%', padding: '0.6rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                  onChange={(e) => {
+                    setAdminNotes(e.target.value);
+                    if (fieldErrors.admin_notes) setFieldErrors({ ...fieldErrors, admin_notes: null });
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '0.6rem 0.85rem',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    fontSize: '0.85rem',
+                    ...getInputErrorStyle(fieldErrors.admin_notes),
+                  }}
                 />
+                <FieldError error={fieldErrors.admin_notes} />
               </div>
 
               <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.75rem' }}>
                 <button
                   type="button"
-                  onClick={() => setSelectedClaimForAction(null)}
-                  style={{ flex: 1, padding: '0.65rem 1rem', background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', borderRadius: '8px', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer' }}
+                  onClick={handleCloseAction}
+                  disabled={isProcessing}
+                  style={{ flex: 1, padding: '0.65rem 1rem', background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', borderRadius: '8px', fontWeight: 700, fontSize: '0.85rem', cursor: isProcessing ? 'not-allowed' : 'pointer' }}
                 >
                   Cancel
                 </button>
@@ -452,7 +547,8 @@ function AdminRewardsClaimPage() {
                     borderRadius: '8px',
                     fontWeight: 800,
                     fontSize: '0.85rem',
-                    cursor: 'pointer',
+                    cursor: isProcessing ? 'not-allowed' : 'pointer',
+                    opacity: isProcessing ? 0.7 : 1,
                   }}
                 >
                   {isProcessing ? 'Processing...' : 'Confirm Action'}

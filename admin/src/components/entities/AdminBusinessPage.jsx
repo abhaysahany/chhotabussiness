@@ -7,6 +7,15 @@ import {
   updateBusinessStatus,
   deleteBusinessEntity,
 } from '../../api/adminEntityService';
+import {
+  isRequired,
+  isValidEmail,
+  isValidPhone,
+  isValidUrl,
+  FieldError,
+  getInputErrorStyle,
+  extractBackendErrors,
+} from '../../utils/validation';
 
 function AdminBusinessPage({ onNavigate }) {
   // View mode: 'history' by default (Business Entities History/Table first)
@@ -15,6 +24,9 @@ function AdminBusinessPage({ onNavigate }) {
   const [businesses, setBusinesses] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
+  const [formErrorBanner, setFormErrorBanner] = useState('');
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -114,6 +126,8 @@ function AdminBusinessPage({ onNavigate }) {
 
   // Open Form (new registration or edit)
   const handleOpenForm = (biz = null) => {
+    setFormErrors({});
+    setFormErrorBanner('');
     if (biz) {
       setEditingBusiness(biz);
       setForm({
@@ -141,11 +155,47 @@ function AdminBusinessPage({ onNavigate }) {
 
   const handleSave = async (e) => {
     e.preventDefault();
+    setFormErrors({});
+    setFormErrorBanner('');
+
+    const errors = {};
     if (!form.entity_category_id) {
-      alert('Please select a Business Category');
+      errors.entity_category_id = 'Please select a business category.';
+    }
+    if (!isRequired(form.name)) {
+      errors.name = 'Business name is required.';
+    } else if (form.name.trim().length < 2) {
+      errors.name = 'Business name must be at least 2 characters.';
+    }
+    if (!isRequired(form.owner_name)) {
+      errors.owner_name = 'Owner/Director name is required.';
+    } else if (form.owner_name.trim().length < 2) {
+      errors.owner_name = 'Owner name must be at least 2 characters.';
+    }
+    if (!isRequired(form.email)) {
+      errors.email = 'Email address is required.';
+    } else if (!isValidEmail(form.email)) {
+      errors.email = 'Please enter a valid email address.';
+    }
+    if (!isRequired(form.phone)) {
+      errors.phone = 'Phone number is required.';
+    } else if (!isValidPhone(form.phone)) {
+      errors.phone = 'Please enter a valid phone number (at least 10 digits).';
+    }
+    if (!editingBusiness && (!form.password || form.password.length < 6)) {
+      errors.password = 'Password must be at least 6 characters.';
+    }
+    if (form.website && form.website.trim() !== '' && !isValidUrl(form.website)) {
+      errors.website = 'Please enter a valid website URL (e.g. https://example.com).';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      setFormErrorBanner('Please correct the highlighted fields before submitting.');
       return;
     }
 
+    setSaving(true);
     try {
       if (editingBusiness) {
         await updateBusinessEntity(editingBusiness.id, form);
@@ -158,7 +208,14 @@ function AdminBusinessPage({ onNavigate }) {
       fetchData();
       setViewMode('history');
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to save business entity');
+      console.error('Error saving business entity:', err);
+      const backendErrors = extractBackendErrors(err);
+      if (Object.keys(backendErrors).length > 0) {
+        setFormErrors(backendErrors);
+      }
+      setFormErrorBanner(err.response?.data?.message || 'Failed to save business entity. Please check your inputs.');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -168,7 +225,7 @@ function AdminBusinessPage({ onNavigate }) {
       showSuccess(`Business "${biz.name}" advertisement status updated.`);
       fetchData();
     } catch (err) {
-      alert('Failed to update status');
+      setError(err.response?.data?.message || 'Failed to update advertisement status');
     }
   };
 
@@ -179,7 +236,7 @@ function AdminBusinessPage({ onNavigate }) {
       showSuccess(`Business "${name}" deleted.`);
       fetchData();
     } catch (err) {
-      alert('Failed to delete business entity');
+      setError(err.response?.data?.message || 'Failed to delete business entity');
     }
   };
 
@@ -301,6 +358,12 @@ function AdminBusinessPage({ onNavigate }) {
             </div>
 
             <form onSubmit={handleSave}>
+              {formErrorBanner && (
+                <div style={{ backgroundColor: '#fef2f2', color: '#991b1b', border: '1px solid #fecaca', padding: '0.85rem 1rem', borderRadius: '10px', marginBottom: '1.25rem', fontSize: '0.875rem', fontWeight: 600 }}>
+                  ⚠️ {formErrorBanner}
+                </div>
+              )}
+
               {/* Category Assignment */}
               <div style={{ marginBottom: '1rem', background: '#f8fafc', padding: '1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                 <label className="form-label">
@@ -310,7 +373,12 @@ function AdminBusinessPage({ onNavigate }) {
                   className="form-input"
                   required
                   value={form.entity_category_id}
-                  onChange={(e) => setForm({ ...form, entity_category_id: e.target.value })}
+                  onChange={(e) => {
+                    setForm({ ...form, entity_category_id: e.target.value });
+                    setFormErrors((prev) => ({ ...prev, entity_category_id: undefined }));
+                    setFormErrorBanner('');
+                  }}
+                  style={getInputErrorStyle(formErrors.entity_category_id)}
                 >
                   <option value="">-- Select Category --</option>
                   {categories.map((cat) => (
@@ -319,6 +387,7 @@ function AdminBusinessPage({ onNavigate }) {
                     </option>
                   ))}
                 </select>
+                <FieldError error={formErrors.entity_category_id} />
               </div>
 
               {/* Basic Details */}
@@ -331,8 +400,14 @@ function AdminBusinessPage({ onNavigate }) {
                     required
                     placeholder="e.g. Apex Financial Advisory Pvt Ltd"
                     value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    onChange={(e) => {
+                      setForm({ ...form, name: e.target.value });
+                      setFormErrors((prev) => ({ ...prev, name: undefined }));
+                      setFormErrorBanner('');
+                    }}
+                    style={getInputErrorStyle(formErrors.name)}
                   />
+                  <FieldError error={formErrors.name} />
                 </div>
 
                 <div>
@@ -343,8 +418,14 @@ function AdminBusinessPage({ onNavigate }) {
                     required
                     placeholder="e.g. Rajesh Sharma"
                     value={form.owner_name}
-                    onChange={(e) => setForm({ ...form, owner_name: e.target.value })}
+                    onChange={(e) => {
+                      setForm({ ...form, owner_name: e.target.value });
+                      setFormErrors((prev) => ({ ...prev, owner_name: undefined }));
+                      setFormErrorBanner('');
+                    }}
+                    style={getInputErrorStyle(formErrors.owner_name)}
                   />
+                  <FieldError error={formErrors.owner_name} />
                 </div>
               </div>
 
@@ -357,8 +438,14 @@ function AdminBusinessPage({ onNavigate }) {
                     required
                     placeholder="contact@apexfinance.in"
                     value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    onChange={(e) => {
+                      setForm({ ...form, email: e.target.value });
+                      setFormErrors((prev) => ({ ...prev, email: undefined }));
+                      setFormErrorBanner('');
+                    }}
+                    style={getInputErrorStyle(formErrors.email)}
                   />
+                  <FieldError error={formErrors.email} />
                 </div>
 
                 <div>
@@ -369,8 +456,14 @@ function AdminBusinessPage({ onNavigate }) {
                     required
                     placeholder="+91 98765 43210"
                     value={form.phone}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                    onChange={(e) => {
+                      setForm({ ...form, phone: e.target.value });
+                      setFormErrors((prev) => ({ ...prev, phone: undefined }));
+                      setFormErrorBanner('');
+                    }}
+                    style={getInputErrorStyle(formErrors.phone)}
                   />
+                  <FieldError error={formErrors.phone} />
                 </div>
               </div>
 
@@ -395,8 +488,12 @@ function AdminBusinessPage({ onNavigate }) {
                     required={!editingBusiness && !form.password}
                     placeholder={editingBusiness ? 'Enter new password to update...' : 'Set password for Entity Panel login (min 6 chars)'}
                     value={form.password}
-                    onChange={(e) => setForm({ ...form, password: e.target.value })}
-                    style={{ paddingRight: '4.5rem', background: '#ffffff' }}
+                    onChange={(e) => {
+                      setForm({ ...form, password: e.target.value });
+                      setFormErrors((prev) => ({ ...prev, password: undefined }));
+                      setFormErrorBanner('');
+                    }}
+                    style={{ paddingRight: '4.5rem', background: '#ffffff', ...getInputErrorStyle(formErrors.password) }}
                   />
                   <button
                     type="button"
@@ -406,6 +503,7 @@ function AdminBusinessPage({ onNavigate }) {
                     {showPassword ? 'Hide' : 'Show'}
                   </button>
                 </div>
+                <FieldError error={formErrors.password} />
                 <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.72rem', color: '#0284c7' }}>
                   This password allows the business owner to log in to the <strong>Entity Panel</strong> using their registered email.
                 </p>
@@ -430,8 +528,14 @@ function AdminBusinessPage({ onNavigate }) {
                     className="form-input"
                     placeholder="https://apexfinance.com (Optional)"
                     value={form.website}
-                    onChange={(e) => setForm({ ...form, website: e.target.value })}
+                    onChange={(e) => {
+                      setForm({ ...form, website: e.target.value });
+                      setFormErrors((prev) => ({ ...prev, website: undefined }));
+                      setFormErrorBanner('');
+                    }}
+                    style={getInputErrorStyle(formErrors.website)}
                   />
+                  <FieldError error={formErrors.website} />
                 </div>
               </div>
 
@@ -572,15 +676,17 @@ function AdminBusinessPage({ onNavigate }) {
                   type="button"
                   className="pro-btn-secondary"
                   onClick={() => setViewMode('history')}
+                  disabled={saving}
                 >
                   Back to History
                 </button>
                 <button
                   type="submit"
                   className="pro-btn-primary"
-                  style={{ background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)' }}
+                  disabled={saving}
+                  style={{ background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)', opacity: saving ? 0.7 : 1 }}
                 >
-                  {editingBusiness ? 'Update Business Entity' : 'Complete Business Registration'}
+                  {saving ? 'Saving...' : editingBusiness ? 'Update Business Entity' : 'Complete Business Registration'}
                 </button>
               </div>
             </form>

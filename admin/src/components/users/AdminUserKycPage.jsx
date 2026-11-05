@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import api, { API_BASE_URL } from '../../api/axios';
+import { isRequired, extractBackendErrors, FieldError, getInputErrorStyle } from '../../utils/validation';
 
 // API_BASE_URL is imported from axios.js
 
@@ -11,7 +12,11 @@ function AdminUserKycPage() {
 
   // Inspection Modal State
   const [selectedKyc, setSelectedKyc] = useState(null);
+  const [isRejectingMode, setIsRejectingMode] = useState(false);
   const [rejectReason, setRejectReason] = useState('Blurred / Unreadable Document');
+  const [customRejectNotes, setCustomRejectNotes] = useState('');
+  const [formErrors, setFormErrors] = useState({});
+  const [formBannerError, setFormBannerError] = useState('');
   const [toastMsg, setToastMsg] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
 
@@ -58,25 +63,66 @@ function AdminUserKycPage() {
         fetchKycRequests();
       }
     } catch (err) {
+      const backendErr = extractBackendErrors(err);
+      setFormBannerError(backendErr.message || 'Failed to approve KYC in database.');
       showToast('Failed to approve KYC in database.');
     } finally {
       setActionLoading(false);
     }
   };
 
+  const handleOpenAuditModal = (kyc) => {
+    setSelectedKyc(kyc);
+    setIsRejectingMode(false);
+    setRejectReason('Blurred / Unreadable Document');
+    setCustomRejectNotes('');
+    setFormErrors({});
+    setFormBannerError('');
+  };
+
+  const handleCloseAuditModal = () => {
+    setSelectedKyc(null);
+    setIsRejectingMode(false);
+    setFormErrors({});
+    setFormBannerError('');
+  };
+
   const handleRejectKyc = async (user) => {
+    const errs = {};
+    const finalReason = rejectReason === 'Other' 
+      ? customRejectNotes.trim() 
+      : (customRejectNotes.trim() ? `${rejectReason}: ${customRejectNotes.trim()}` : rejectReason);
+
+    if (!finalReason || finalReason.length < 3) {
+      errs.reject_reason = 'Rejection reason must be at least 3 characters long.';
+    } else if (finalReason.length > 255) {
+      errs.reject_reason = 'Rejection reason cannot exceed 255 characters.';
+    }
+
+    if (Object.keys(errs).length > 0) {
+      setFormErrors(errs);
+      return;
+    }
+
+    setFormErrors({});
+    setFormBannerError('');
     setActionLoading(true);
     try {
       const res = await api.post(`/admin/kyc/${user.id}/reject`, {
-        reason: rejectReason,
+        reason: finalReason,
       });
       if (res.data && res.data.status === 'success') {
         showToast(`⚠️ KYC rejected for ${user.name} (${user.user_code}).`);
-        setSelectedKyc(null);
+        handleCloseAuditModal();
         fetchKycRequests();
       }
     } catch (err) {
-      showToast('Failed to reject KYC.');
+      const backendErr = extractBackendErrors(err);
+      if (backendErr.errors && Object.keys(backendErr.errors).length > 0) {
+        setFormErrors(backendErr.errors);
+      }
+      setFormBannerError(backendErr.message || 'Failed to reject KYC.');
+      showToast(backendErr.message || 'Failed to reject KYC.');
     } finally {
       setActionLoading(false);
     }
@@ -296,7 +342,7 @@ function AdminUserKycPage() {
                       <td style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>
                         <button
                           type="button"
-                          onClick={() => setSelectedKyc(u)}
+                          onClick={() => handleOpenAuditModal(u)}
                           style={{
                             background: '#0f172a',
                             color: '#ffffff',
@@ -345,8 +391,14 @@ function AdminUserKycPage() {
                 <h3 style={{ margin: '0.2rem 0 0 0', fontSize: '1.3rem', fontWeight: 800, color: '#0f172a' }}>{selectedKyc.name}</h3>
                 <span style={{ fontSize: '0.75rem', color: '#64748b' }}>{selectedKyc.user_code} • {selectedKyc.email}</span>
               </div>
-              <button type="button" onClick={() => setSelectedKyc(null)} style={{ background: 'none', border: 'none', fontSize: '1.4rem', color: '#64748b', cursor: 'pointer' }}>×</button>
+              <button type="button" onClick={handleCloseAuditModal} style={{ background: 'none', border: 'none', fontSize: '1.4rem', color: '#64748b', cursor: 'pointer' }}>×</button>
             </div>
+
+            {formBannerError && (
+              <div style={{ background: '#fee2e2', border: '1px solid #fca5a5', color: '#b91c1c', padding: '0.65rem 0.85rem', borderRadius: '8px', fontSize: '0.82rem', marginBottom: '1rem', fontWeight: 600 }}>
+                ⚠️ {formBannerError}
+              </div>
+            )}
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0', borderBottom: '1px dashed #e2e8f0' }}>
@@ -401,25 +453,107 @@ function AdminUserKycPage() {
               </div>
             </div>
 
-            {/* Decision Actions */}
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
-              <button
-                type="button"
-                disabled={actionLoading}
-                onClick={() => handleRejectKyc(selectedKyc)}
-                style={{ flex: 1, padding: '0.75rem', background: '#fee2e2', color: '#b91c1c', border: '1px solid #fecdd3', borderRadius: '8px', fontWeight: 800, cursor: 'pointer' }}
-              >
-                ❌ Reject KYC
-              </button>
-              <button
-                type="button"
-                disabled={actionLoading}
-                onClick={() => handleApproveKyc(selectedKyc)}
-                style={{ flex: 1, padding: '0.75rem', background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: 800, cursor: 'pointer' }}
-              >
-                ✓ Approve KYC (Unlock Payouts)
-              </button>
-            </div>
+            {/* Rejection Form or Decision Actions */}
+            {isRejectingMode ? (
+              <div style={{ background: '#fff1f2', border: '1px solid #fecdd3', borderRadius: '12px', padding: '1.25rem', marginTop: '1rem' }}>
+                <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem', fontWeight: 800, color: '#991b1b' }}>
+                  Specify Rejection Reason <span style={{ color: '#ef4444' }}>*</span>
+                </h4>
+                <p style={{ margin: '0 0 1rem 0', fontSize: '0.78rem', color: '#64748b' }}>
+                  This reason will be displayed to the user so they can correct and re-upload valid documents.
+                </p>
+
+                <div style={{ marginBottom: '0.85rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#334155', marginBottom: '0.3rem' }}>
+                    Select Common Rejection Reason
+                  </label>
+                  <select
+                    value={rejectReason}
+                    onChange={(e) => {
+                      setRejectReason(e.target.value);
+                      if (formErrors.reject_reason) {
+                        setFormErrors({ ...formErrors, reject_reason: null });
+                      }
+                    }}
+                    style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem', background: '#ffffff' }}
+                  >
+                    <option value="Blurred / Unreadable Document">Blurred / Unreadable Document</option>
+                    <option value="PAN / Aadhaar Name Mismatch">PAN / Aadhaar Name Mismatch</option>
+                    <option value="Expired or Invalid Identity Card">Expired or Invalid Identity Card</option>
+                    <option value="Name Mismatch with Bank Account">Name Mismatch with Bank Account</option>
+                    <option value="Corner Cropped / Incomplete Photo">Corner Cropped / Incomplete Photo</option>
+                    <option value="Other">Other (Custom Explanation)</option>
+                  </select>
+                </div>
+
+                <div style={{ marginBottom: '1rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#334155', marginBottom: '0.3rem' }}>
+                    Additional Instructions / Custom Note {rejectReason === 'Other' && <span style={{ color: '#ef4444' }}>*</span>}
+                  </label>
+                  <textarea
+                    rows="3"
+                    value={customRejectNotes}
+                    onChange={(e) => {
+                      setCustomRejectNotes(e.target.value);
+                      if (formErrors.reject_reason) {
+                        setFormErrors({ ...formErrors, reject_reason: null });
+                      }
+                    }}
+                    placeholder={rejectReason === 'Other' ? 'Please explain why this KYC is rejected (min 3 chars)...' : 'Optional further instructions for member...'}
+                    style={{
+                      width: '100%',
+                      padding: '0.55rem 0.75rem',
+                      borderRadius: '6px',
+                      fontSize: '0.85rem',
+                      border: '1px solid #cbd5e1',
+                      ...getInputErrorStyle(formErrors.reject_reason),
+                    }}
+                  />
+                  <FieldError error={formErrors.reject_reason} />
+                </div>
+
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                  <button
+                    type="button"
+                    disabled={actionLoading}
+                    onClick={() => {
+                      setIsRejectingMode(false);
+                      setFormErrors({});
+                    }}
+                    style={{ flex: 1, padding: '0.65rem', background: '#ffffff', color: '#475569', border: '1px solid #cbd5e1', borderRadius: '8px', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer' }}
+                  >
+                    ← Back to Review
+                  </button>
+                  <button
+                    type="button"
+                    disabled={actionLoading}
+                    onClick={() => handleRejectKyc(selectedKyc)}
+                    style={{ flex: 1.5, padding: '0.65rem', background: '#dc2626', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: 800, fontSize: '0.82rem', cursor: actionLoading ? 'not-allowed' : 'pointer', opacity: actionLoading ? 0.7 : 1 }}
+                  >
+                    {actionLoading ? 'Rejecting...' : '⚠️ Confirm Rejection'}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', gap: '0.75rem' }}>
+                <button
+                  type="button"
+                  disabled={actionLoading}
+                  onClick={() => setIsRejectingMode(true)}
+                  style={{ flex: 1, padding: '0.75rem', background: '#fee2e2', color: '#b91c1c', border: '1px solid #fecdd3', borderRadius: '8px', fontWeight: 800, cursor: 'pointer' }}
+                >
+                  ❌ Reject KYC
+                </button>
+                <button
+                  type="button"
+                  disabled={actionLoading}
+                  onClick={() => handleApproveKyc(selectedKyc)}
+                  style={{ flex: 1, padding: '0.75rem', background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: 800, cursor: actionLoading ? 'not-allowed' : 'pointer', opacity: actionLoading ? 0.7 : 1 }}
+                >
+                  {actionLoading ? 'Approving...' : '✓ Approve KYC (Unlock Payouts)'}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

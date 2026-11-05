@@ -291,12 +291,28 @@ class UserBankKycController extends Controller
      */
     public function adminRejectKyc(Request $request, $id)
     {
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+            'reason' => 'required|string|min:3|max:500',
+        ], [
+            'reason.required' => 'A rejection reason is required.',
+            'reason.min' => 'Rejection reason must be at least 3 characters.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
         $user = User::find($id);
         if (!$user) {
             return response()->json(['status' => 'error', 'message' => 'User not found.'], 404);
         }
 
         $user->kyc_status = 'rejected';
+        $user->kyc_rejection_reason = trim($request->input('reason'));
         $user->save();
 
         return response()->json([

@@ -7,6 +7,15 @@ import {
   updateFreelancerStatus,
   deleteFreelancer,
 } from '../../api/adminEntityService';
+import {
+  isRequired,
+  isValidEmail,
+  isValidPhone,
+  isValidUrl,
+  FieldError,
+  getInputErrorStyle,
+  extractBackendErrors,
+} from '../../utils/validation';
 
 function AdminFreelancerPage({ onNavigate }) {
   // View mode: 'history' by default (Freelancer History/Table first)
@@ -15,6 +24,9 @@ function AdminFreelancerPage({ onNavigate }) {
   const [freelancers, setFreelancers] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
+  const [formErrorBanner, setFormErrorBanner] = useState('');
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -114,6 +126,8 @@ function AdminFreelancerPage({ onNavigate }) {
 
   // Open Form (new registration or edit)
   const handleOpenForm = (free = null) => {
+    setFormErrors({});
+    setFormErrorBanner('');
     if (free) {
       setEditingFreelancer(free);
       setForm({
@@ -141,11 +155,45 @@ function AdminFreelancerPage({ onNavigate }) {
 
   const handleSave = async (e) => {
     e.preventDefault();
+    setFormErrors({});
+    setFormErrorBanner('');
+
+    const errors = {};
     if (!form.entity_category_id) {
-      alert('Please select a Category for this Freelancer');
+      errors.entity_category_id = 'Please select a freelancer category.';
+    }
+    if (!isRequired(form.name)) {
+      errors.name = 'Freelancer name is required.';
+    } else if (form.name.trim().length < 2) {
+      errors.name = 'Freelancer name must be at least 2 characters.';
+    }
+    if (!isRequired(form.email)) {
+      errors.email = 'Email address is required.';
+    } else if (!isValidEmail(form.email)) {
+      errors.email = 'Please enter a valid email address.';
+    }
+    if (!isRequired(form.phone)) {
+      errors.phone = 'Phone number is required.';
+    } else if (!isValidPhone(form.phone)) {
+      errors.phone = 'Please enter a valid phone number (at least 10 digits).';
+    }
+    if (!editingFreelancer && (!form.password || form.password.length < 6)) {
+      errors.password = 'Password must be at least 6 characters.';
+    }
+    if (!isRequired(form.title)) {
+      errors.title = 'Professional title is required.';
+    }
+    if (form.portfolio_link && form.portfolio_link.trim() !== '' && !isValidUrl(form.portfolio_link)) {
+      errors.portfolio_link = 'Please enter a valid URL (e.g. https://github.com/username).';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      setFormErrorBanner('Please correct the highlighted fields before submitting.');
       return;
     }
 
+    setSaving(true);
     try {
       if (editingFreelancer) {
         await updateFreelancer(editingFreelancer.id, form);
@@ -158,7 +206,14 @@ function AdminFreelancerPage({ onNavigate }) {
       fetchData();
       setViewMode('history');
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to save freelancer');
+      console.error('Error saving freelancer:', err);
+      const backendErrors = extractBackendErrors(err);
+      if (Object.keys(backendErrors).length > 0) {
+        setFormErrors(backendErrors);
+      }
+      setFormErrorBanner(err.response?.data?.message || 'Failed to save freelancer. Please check your inputs.');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -168,7 +223,7 @@ function AdminFreelancerPage({ onNavigate }) {
       showSuccess(`Freelancer "${free.name}" advertisement status updated.`);
       fetchData();
     } catch (err) {
-      alert('Failed to update status');
+      setError(err.response?.data?.message || 'Failed to update advertisement status');
     }
   };
 
@@ -179,7 +234,7 @@ function AdminFreelancerPage({ onNavigate }) {
       showSuccess(`Freelancer "${name}" deleted.`);
       fetchData();
     } catch (err) {
-      alert('Failed to delete freelancer');
+      setError(err.response?.data?.message || 'Failed to delete freelancer');
     }
   };
 
@@ -300,6 +355,12 @@ function AdminFreelancerPage({ onNavigate }) {
             </div>
 
             <form onSubmit={handleSave}>
+              {formErrorBanner && (
+                <div style={{ backgroundColor: '#fef2f2', color: '#991b1b', border: '1px solid #fecaca', padding: '0.85rem 1rem', borderRadius: '10px', marginBottom: '1.25rem', fontSize: '0.875rem', fontWeight: 600 }}>
+                  ⚠️ {formErrorBanner}
+                </div>
+              )}
+
               {/* Category Assignment */}
               <div style={{ marginBottom: '1rem', background: '#f8fafc', padding: '1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                 <label className="form-label">
@@ -309,7 +370,12 @@ function AdminFreelancerPage({ onNavigate }) {
                   className="form-input"
                   required
                   value={form.entity_category_id}
-                  onChange={(e) => setForm({ ...form, entity_category_id: e.target.value })}
+                  onChange={(e) => {
+                    setForm({ ...form, entity_category_id: e.target.value });
+                    setFormErrors((prev) => ({ ...prev, entity_category_id: undefined }));
+                    setFormErrorBanner('');
+                  }}
+                  style={getInputErrorStyle(formErrors.entity_category_id)}
                 >
                   <option value="">-- Select Category --</option>
                   {categories.map((cat) => (
@@ -318,6 +384,7 @@ function AdminFreelancerPage({ onNavigate }) {
                     </option>
                   ))}
                 </select>
+                <FieldError error={formErrors.entity_category_id} />
               </div>
 
               {/* Profile Details */}
@@ -330,8 +397,14 @@ function AdminFreelancerPage({ onNavigate }) {
                     required
                     placeholder="e.g. Rohan Sen"
                     value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    onChange={(e) => {
+                      setForm({ ...form, name: e.target.value });
+                      setFormErrors((prev) => ({ ...prev, name: undefined }));
+                      setFormErrorBanner('');
+                    }}
+                    style={getInputErrorStyle(formErrors.name)}
                   />
+                  <FieldError error={formErrors.name} />
                 </div>
 
                 <div>
@@ -342,8 +415,14 @@ function AdminFreelancerPage({ onNavigate }) {
                     required
                     placeholder="e.g. Senior Full Stack Developer"
                     value={form.title}
-                    onChange={(e) => setForm({ ...form, title: e.target.value })}
+                    onChange={(e) => {
+                      setForm({ ...form, title: e.target.value });
+                      setFormErrors((prev) => ({ ...prev, title: undefined }));
+                      setFormErrorBanner('');
+                    }}
+                    style={getInputErrorStyle(formErrors.title)}
                   />
+                  <FieldError error={formErrors.title} />
                 </div>
               </div>
 
@@ -356,8 +435,14 @@ function AdminFreelancerPage({ onNavigate }) {
                     required
                     placeholder="rohan.dev@gmail.com"
                     value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    onChange={(e) => {
+                      setForm({ ...form, email: e.target.value });
+                      setFormErrors((prev) => ({ ...prev, email: undefined }));
+                      setFormErrorBanner('');
+                    }}
+                    style={getInputErrorStyle(formErrors.email)}
                   />
+                  <FieldError error={formErrors.email} />
                 </div>
 
                 <div>
@@ -368,8 +453,14 @@ function AdminFreelancerPage({ onNavigate }) {
                     required
                     placeholder="+91 98765 43210"
                     value={form.phone}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                    onChange={(e) => {
+                      setForm({ ...form, phone: e.target.value });
+                      setFormErrors((prev) => ({ ...prev, phone: undefined }));
+                      setFormErrorBanner('');
+                    }}
+                    style={getInputErrorStyle(formErrors.phone)}
                   />
+                  <FieldError error={formErrors.phone} />
                 </div>
               </div>
 
@@ -394,8 +485,12 @@ function AdminFreelancerPage({ onNavigate }) {
                     required={!editingFreelancer && !form.password}
                     placeholder={editingFreelancer ? 'Enter new password to update...' : 'Set password for Entity Panel login (min 6 chars)'}
                     value={form.password}
-                    onChange={(e) => setForm({ ...form, password: e.target.value })}
-                    style={{ paddingRight: '4.5rem', background: '#ffffff' }}
+                    onChange={(e) => {
+                      setForm({ ...form, password: e.target.value });
+                      setFormErrors((prev) => ({ ...prev, password: undefined }));
+                      setFormErrorBanner('');
+                    }}
+                    style={{ paddingRight: '4.5rem', background: '#ffffff', ...getInputErrorStyle(formErrors.password) }}
                   />
                   <button
                     type="button"
@@ -405,6 +500,7 @@ function AdminFreelancerPage({ onNavigate }) {
                     {showPassword ? 'Hide' : 'Show'}
                   </button>
                 </div>
+                <FieldError error={formErrors.password} />
                 <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.72rem', color: '#6d28d9' }}>
                   This password allows the freelancer to log in to the <strong>Entity Panel</strong> using their registered email.
                 </p>
@@ -426,9 +522,10 @@ function AdminFreelancerPage({ onNavigate }) {
                   <label className="form-label">Years of Experience</label>
                   <input
                     type="number"
+                    min="0"
                     className="form-input"
                     value={form.experience_years}
-                    onChange={(e) => setForm({ ...form, experience_years: parseInt(e.target.value) || 1 })}
+                    onChange={(e) => setForm({ ...form, experience_years: parseInt(e.target.value) || 0 })}
                   />
                 </div>
               </div>
@@ -440,8 +537,14 @@ function AdminFreelancerPage({ onNavigate }) {
                   className="form-input"
                   placeholder="https://github.com/username or portfolio link"
                   value={form.portfolio_link}
-                  onChange={(e) => setForm({ ...form, portfolio_link: e.target.value })}
+                  onChange={(e) => {
+                    setForm({ ...form, portfolio_link: e.target.value });
+                    setFormErrors((prev) => ({ ...prev, portfolio_link: undefined }));
+                    setFormErrorBanner('');
+                  }}
+                  style={getInputErrorStyle(formErrors.portfolio_link)}
                 />
+                <FieldError error={formErrors.portfolio_link} />
               </div>
 
               <div style={{ marginBottom: '1rem' }}>
@@ -581,15 +684,17 @@ function AdminFreelancerPage({ onNavigate }) {
                   type="button"
                   className="pro-btn-secondary"
                   onClick={() => setViewMode('history')}
+                  disabled={saving}
                 >
                   Back to History
                 </button>
                 <button
                   type="submit"
                   className="pro-btn-primary"
-                  style={{ background: 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)' }}
+                  disabled={saving}
+                  style={{ background: 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)', opacity: saving ? 0.7 : 1 }}
                 >
-                  {editingFreelancer ? 'Update Freelancer Profile' : 'Complete Freelancer Registration'}
+                  {saving ? 'Saving...' : editingFreelancer ? 'Update Freelancer Profile' : 'Complete Freelancer Registration'}
                 </button>
               </div>
             </form>

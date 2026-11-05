@@ -6,6 +6,13 @@ import {
   updateSupportTopicStatus,
   deleteSupportTopic,
 } from '../../api/adminSupportTopicService';
+import {
+  isRequired,
+  isValidUrl,
+  FieldError,
+  getInputErrorStyle,
+  extractBackendErrors,
+} from '../../utils/validation';
 
 const CATEGORY_OPTIONS = [
   { value: 'Download Content', label: '📥 Download Content' },
@@ -30,6 +37,8 @@ function AdminContentSupportUploadsPage() {
   const [toastMsg, setToastMsg] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
+  const [modalErrors, setModalErrors] = useState({});
+  const [modalBannerError, setModalBannerError] = useState('');
 
   const [formData, setFormData] = useState({
     title: '',
@@ -74,6 +83,8 @@ function AdminContentSupportUploadsPage() {
   }, [searchTerm]);
 
   const handleOpenModal = (topic = null) => {
+    setModalErrors({});
+    setModalBannerError('');
     if (topic) {
       setEditingTopic(topic);
       setFormData({
@@ -106,20 +117,43 @@ function AdminContentSupportUploadsPage() {
 
   const handleSaveTopic = async (e) => {
     e.preventDefault();
-    if (!formData.title.trim()) {
-      alert('Please enter a support topic title');
+    setModalErrors({});
+    setModalBannerError('');
+
+    const errors = {};
+    if (!isRequired(formData.title)) {
+      errors.title = 'Support topic title is required.';
+    } else if (formData.title.trim().length < 2) {
+      errors.title = 'Title must be at least 2 characters.';
+    }
+
+    if (!isRequired(formData.category)) {
+      errors.category = 'Please select a category module.';
+    }
+
+    if (formData.youtube_url && formData.youtube_url.trim() !== '' && !isValidUrl(formData.youtube_url)) {
+      errors.youtube_url = 'Please enter a valid YouTube/video URL.';
+    }
+
+    if (formData.thumbnail && formData.thumbnail.trim() !== '' && !isValidUrl(formData.thumbnail)) {
+      errors.thumbnail = 'Please enter a valid thumbnail image URL.';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setModalErrors(errors);
+      setModalBannerError('Please resolve the highlighted validation errors.');
       return;
     }
 
     try {
       setIsSaving(true);
       if (editingTopic) {
-        const res = await updateSupportTopic(editingTopic.id, formData);
+        const res = await updateSupportTopic(editingTopic.id, { ...formData, title: formData.title.trim() });
         if (res && res.status === 'success') {
-          setToastMsg(`Support topic [${formData.title}] updated in database!`);
+          setToastMsg(`Support topic [${formData.title.trim()}] updated in database!`);
         }
       } else {
-        const res = await createSupportTopic(formData);
+        const res = await createSupportTopic({ ...formData, title: formData.title.trim() });
         if (res && res.status === 'success') {
           setToastMsg(`New support video & article published to database!`);
         }
@@ -128,7 +162,11 @@ function AdminContentSupportUploadsPage() {
       await fetchTopics();
     } catch (err) {
       console.error('Error saving support topic:', err);
-      alert('Failed to save support topic into database. Please check connection.');
+      const backendErrors = extractBackendErrors(err);
+      if (Object.keys(backendErrors).length > 0) {
+        setModalErrors(backendErrors);
+      }
+      setModalBannerError(err.response?.data?.message || 'Failed to save support topic into database. Please check connection.');
     } finally {
       setIsSaving(false);
       setTimeout(() => setToastMsg(''), 3500);
@@ -145,7 +183,7 @@ function AdminContentSupportUploadsPage() {
       }
     } catch (err) {
       console.error('Error updating status:', err);
-      alert('Failed to toggle status.');
+      setToastMsg('Failed to toggle status.');
     } finally {
       setTimeout(() => setToastMsg(''), 3500);
     }
@@ -162,7 +200,7 @@ function AdminContentSupportUploadsPage() {
         }
       } catch (err) {
         console.error('Error deleting topic:', err);
-        alert('Failed to delete topic from database.');
+        setToastMsg('Failed to delete topic from database.');
       } finally {
         setDeletingId(null);
         setTimeout(() => setToastMsg(''), 3500);
@@ -349,9 +387,26 @@ function AdminContentSupportUploadsPage() {
             </div>
 
             <form onSubmit={handleSaveTopic} style={{ padding: '1.5rem', maxHeight: '75vh', overflowY: 'auto' }}>
+              {modalBannerError && (
+                <div style={{ backgroundColor: '#fef2f2', color: '#991b1b', border: '1px solid #fecaca', padding: '0.65rem 0.85rem', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.82rem', fontWeight: 600 }}>
+                  ⚠️ {modalBannerError}
+                </div>
+              )}
               <div style={{ marginBottom: '1rem' }}>
                 <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', color: '#475569', marginBottom: '0.35rem' }}>Support Topic Title *</label>
-                <input type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required placeholder="e.g. How to Customise Marketing Assets" style={{ width: '100%', padding: '0.55rem', fontSize: '0.835rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }} />
+                <input
+                  type="text"
+                  value={formData.title}
+                  onChange={(e) => {
+                    setFormData({ ...formData, title: e.target.value });
+                    setModalErrors((prev) => ({ ...prev, title: undefined }));
+                    setModalBannerError('');
+                  }}
+                  required
+                  placeholder="e.g. How to Customise Marketing Assets"
+                  style={{ width: '100%', padding: '0.55rem', fontSize: '0.835rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none', ...getInputErrorStyle(modalErrors.title) }}
+                />
+                <FieldError error={modalErrors.title} />
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
@@ -376,12 +431,34 @@ function AdminContentSupportUploadsPage() {
 
               <div style={{ marginBottom: '1rem' }}>
                 <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', color: '#475569', marginBottom: '0.35rem' }}>YouTube Video URL / Embed Link</label>
-                <input type="url" value={formData.youtube_url} onChange={(e) => setFormData({ ...formData, youtube_url: e.target.value })} placeholder="https://www.youtube.com/watch?v=... or embed link" style={{ width: '100%', padding: '0.55rem', fontSize: '0.835rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }} />
+                <input
+                  type="url"
+                  value={formData.youtube_url}
+                  onChange={(e) => {
+                    setFormData({ ...formData, youtube_url: e.target.value });
+                    setModalErrors((prev) => ({ ...prev, youtube_url: undefined }));
+                    setModalBannerError('');
+                  }}
+                  placeholder="https://www.youtube.com/watch?v=... or embed link"
+                  style={{ width: '100%', padding: '0.55rem', fontSize: '0.835rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none', ...getInputErrorStyle(modalErrors.youtube_url) }}
+                />
+                <FieldError error={modalErrors.youtube_url} />
               </div>
 
               <div style={{ marginBottom: '1rem' }}>
                 <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', color: '#475569', marginBottom: '0.35rem' }}>Video Cover Thumbnail URL</label>
-                <input type="url" value={formData.thumbnail} onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })} placeholder="https://images.unsplash.com/..." style={{ width: '100%', padding: '0.55rem', fontSize: '0.835rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }} />
+                <input
+                  type="url"
+                  value={formData.thumbnail}
+                  onChange={(e) => {
+                    setFormData({ ...formData, thumbnail: e.target.value });
+                    setModalErrors((prev) => ({ ...prev, thumbnail: undefined }));
+                    setModalBannerError('');
+                  }}
+                  placeholder="https://images.unsplash.com/..."
+                  style={{ width: '100%', padding: '0.55rem', fontSize: '0.835rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none', ...getInputErrorStyle(modalErrors.thumbnail) }}
+                />
+                <FieldError error={modalErrors.thumbnail} />
               </div>
 
               <div style={{ marginBottom: '1rem' }}>

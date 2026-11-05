@@ -11,6 +11,9 @@ function AdminPackagesPage() {
   const [toastMessage, setToastMessage] = useState('');
   const [packages, setPackages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [modalErrors, setModalErrors] = useState({});
+  const [modalBannerError, setModalBannerError] = useState('');
 
   // Categories list
   const categoriesList = [
@@ -124,14 +127,42 @@ function AdminPackagesPage() {
 
   const handleAddSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.price || !formData.ownerName) {
-      alert('Please fill in all required fields');
+    setModalErrors({});
+    setModalBannerError('');
+
+    const errors = {};
+    if (!isRequired(formData.name)) {
+      errors.name = 'Package title is required.';
+    } else if (formData.name.trim().length < 2) {
+      errors.name = 'Package title must be at least 2 characters.';
+    }
+
+    if (!isRequired(formData.ownerName)) {
+      errors.ownerName = 'Please select a package owner.';
+    }
+
+    if (!isRequired(formData.price)) {
+      errors.price = 'Price is required.';
+    } else if (!isValidNumber(formData.price, { min: 1 })) {
+      errors.price = 'Price must be greater than ₹0.';
+    }
+
+    if (formData.adminCommissionPercent === '' || formData.adminCommissionPercent === undefined) {
+      errors.adminCommissionPercent = 'Admin commission percentage is required.';
+    } else if (!isValidPercentage(formData.adminCommissionPercent)) {
+      errors.adminCommissionPercent = 'Admin commission must be between 0% and 100%.';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setModalErrors(errors);
+      setModalBannerError('Please resolve the highlighted validation errors.');
       return;
     }
 
+    setSaving(true);
     try {
       const res = await api.post('/catalog/packages', {
-        name: formData.name,
+        name: formData.name.trim(),
         price: parseFloat(formData.price),
         commission_percent: Number(formData.adminCommissionPercent) || 18,
         description: `${formData.category} bundle package managed by ${formData.ownerName}.`,
@@ -152,9 +183,26 @@ function AdminPackagesPage() {
         setPackages([saved, ...packages]);
         showToast('✓ Package saved to MySQL database successfully!');
       }
+      setShowAddModal(false);
+      setFormData({
+        name: '',
+        category: categoriesList[0],
+        ownerType: 'business',
+        ownerName: registeredBusinesses[0],
+        price: '',
+        adminCommissionPercent: 18,
+        billingCycle: 'Monthly Recurring',
+        image: '',
+      });
     } catch (err) {
       console.error('Error creating package in database:', err);
-      showToast('Error saving package to database.');
+      const backendErrors = extractBackendErrors(err);
+      if (Object.keys(backendErrors).length > 0) {
+        setModalErrors(backendErrors);
+      }
+      setModalBannerError(err.response?.data?.message || 'Error saving package to database.');
+    } finally {
+      setSaving(false);
     }
 
     setShowAddModal(false);
@@ -476,6 +524,12 @@ function AdminPackagesPage() {
             </div>
 
             <form onSubmit={handleAddSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+              {modalBannerError && (
+                <div style={{ backgroundColor: '#fef2f2', color: '#991b1b', border: '1px solid #fecaca', padding: '0.65rem 0.85rem', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 600 }}>
+                  ⚠️ {modalBannerError}
+                </div>
+              )}
+
               <div className="pro-form-group">
                 <label className="pro-form-label">Package Title *</label>
                 <input
@@ -483,9 +537,15 @@ function AdminPackagesPage() {
                   className="pro-input"
                   placeholder="e.g. Digital Growth Accelerator Bundle"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, name: e.target.value });
+                    setModalErrors((prev) => ({ ...prev, name: undefined }));
+                    setModalBannerError('');
+                  }}
+                  style={getInputErrorStyle(modalErrors.name)}
                   required
                 />
+                <FieldError error={modalErrors.name} />
               </div>
 
               {/* Category Selector */}
@@ -539,7 +599,12 @@ function AdminPackagesPage() {
                 <select
                   className="pro-select-input"
                   value={formData.ownerName}
-                  onChange={(e) => setFormData({ ...formData, ownerName: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, ownerName: e.target.value });
+                    setModalErrors((prev) => ({ ...prev, ownerName: undefined }));
+                    setModalBannerError('');
+                  }}
+                  style={getInputErrorStyle(modalErrors.ownerName)}
                   required
                 >
                   {(formData.ownerType === 'business' ? registeredBusinesses : registeredFreelancers).length === 0 ? (
@@ -550,6 +615,7 @@ function AdminPackagesPage() {
                     ))
                   )}
                 </select>
+                <FieldError error={modalErrors.ownerName} />
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.85rem' }}>
@@ -560,9 +626,15 @@ function AdminPackagesPage() {
                     className="pro-input"
                     placeholder="e.g. 7999"
                     value={formData.price}
-                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, price: e.target.value });
+                      setModalErrors((prev) => ({ ...prev, price: undefined }));
+                      setModalBannerError('');
+                    }}
+                    style={getInputErrorStyle(modalErrors.price)}
                     required
                   />
+                  <FieldError error={modalErrors.price} />
                 </div>
 
                 <div className="pro-form-group">
@@ -572,11 +644,17 @@ function AdminPackagesPage() {
                     className="pro-input"
                     placeholder="e.g. 18"
                     value={formData.adminCommissionPercent}
-                    onChange={(e) => setFormData({ ...formData, adminCommissionPercent: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, adminCommissionPercent: e.target.value });
+                      setModalErrors((prev) => ({ ...prev, adminCommissionPercent: undefined }));
+                      setModalBannerError('');
+                    }}
                     min="0"
                     max="100"
+                    style={getInputErrorStyle(modalErrors.adminCommissionPercent)}
                     required
                   />
+                  <FieldError error={modalErrors.adminCommissionPercent} />
                 </div>
 
                 <div className="pro-form-group">
@@ -599,15 +677,17 @@ function AdminPackagesPage() {
                   className="btn-action-sm"
                   style={{ padding: '0.7rem 1.4rem' }}
                   onClick={() => setShowAddModal(false)}
+                  disabled={saving}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   className="pro-btn-create"
-                  style={{ padding: '0.7rem 1.4rem' }}
+                  style={{ padding: '0.7rem 1.4rem', opacity: saving ? 0.7 : 1 }}
+                  disabled={saving}
                 >
-                  Save Package
+                  {saving ? 'Saving...' : 'Save Package'}
                 </button>
               </div>
             </form>
