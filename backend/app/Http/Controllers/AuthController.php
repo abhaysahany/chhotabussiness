@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Services\GoogleAuthService;
+use App\Services\PasswordResetOtpService;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -296,12 +297,15 @@ class AuthController extends Controller
                 'id' => $user->id,
                 'user_code' => $user->user_code,
                 'sponsor_id' => $user->sponsor_id,
+                'sponsor_onboarding_status' => $user->sponsor_onboarding_status ?? 'completed',
+                'has_pending_sponsor_onboarding' => $user->hasPendingSponsorOnboarding(),
                 'name' => $user->name,
                 'email' => $user->email,
                 'created_at' => $user->created_at,
             ],
             'token' => $token,
             'token_type' => 'Bearer',
+            'requires_sponsor_onboarding' => $user->hasPendingSponsorOnboarding(),
         ], 200);
     }
 
@@ -395,6 +399,7 @@ class AuthController extends Controller
                     'email' => $email,
                     'password' => Hash::make($data['password']),
                     'sponsor_id' => $sponsor->user_code ?? $sponsor->id,
+                    'sponsor_onboarding_status' => 'completed',
                     'email_verified_at' => now(),
                 ]);
             });
@@ -421,12 +426,15 @@ class AuthController extends Controller
                 'id' => $user->id,
                 'user_code' => $user->user_code,
                 'sponsor_id' => $user->sponsor_id,
+                'sponsor_onboarding_status' => $user->sponsor_onboarding_status ?? 'completed',
+                'has_pending_sponsor_onboarding' => false,
                 'name' => $user->name,
                 'email' => $user->email,
                 'created_at' => $user->created_at,
             ],
             'token' => $token,
             'token_type' => 'Bearer',
+            'requires_sponsor_onboarding' => false,
         ], 201);
     }
 
@@ -564,10 +572,11 @@ class AuthController extends Controller
         // 3. Validate Inputs
         $validator = Validator::make($request->all(), [
             'code' => 'required|string',
-            'mode' => 'required|in:login,register',
-            'sponsor_id' => 'required_if:mode,register|string',
-            'terms_accepted' => 'required_if:mode,register|boolean',
+            'mode' => 'nullable|in:login,register,auto',
+            'sponsor_id' => 'nullable|string',
+            'terms_accepted' => 'nullable|boolean',
             'link_password' => 'nullable|string',
+            'auto_register' => 'nullable|boolean',
         ]);
 
         if ($validator->fails()) {
@@ -578,20 +587,20 @@ class AuthController extends Controller
             ], 422);
         }
 
-        $mode = $request->input('mode');
+        $mode = $request->input('mode', 'auto');
         $code = $request->input('code');
 
         // 4. Validate Sponsor & Terms in register mode
         $sponsor = null;
-        if ($mode === 'register') {
-            if (!$request->boolean('terms_accepted')) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'You must accept the Terms and Conditions and Privacy Policy to register.',
-                ], 422);
-            }
+        if ($mode === 'register' && $request->has('terms_accepted') && !$request->boolean('terms_accepted')) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'You must accept the Terms and Conditions and Privacy Policy to register.',
+            ], 422);
+        }
 
-            $sponsorId = $request->input('sponsor_id');
+        if (!empty($request->input('sponsor_id'))) {
+            $sponsorId = trim($request->input('sponsor_id'));
             $sponsor = User::whereRaw('LOWER(user_code) = ?', [strtolower($sponsorId)])
                 ->orWhere('email', $sponsorId)
                 ->orWhere('id', $sponsorId)
@@ -631,80 +640,93 @@ class AuthController extends Controller
         $name = $googleIdentity['name'] ?: explode('@', $email)[0];
         $avatar = $googleIdentity['avatar'];
 
-        // 6. Handle Login Mode
-        if ($mode === 'login') {
-            // Find existing user linked by provider_id
-            $user = User::where('provider', 'google')
-                ->where('provider_id', $sub)
-                ->first();
+        // 6. Check existing Google linked user
+        $user = User::where('provider', 'google')
+            ->where('provider_id', $sub)
+            ->first();
 
-            if ($user) {
-                if ($avatar && $user->avatar !== $avatar) {
-                    $user->update(['avatar' => $avatar]);
-                }
-
-                $token = $user->createToken('user_auth_token')->plainTextToken;
-
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'Login successful',
-                    'user' => [
-                        'id' => $user->id,
-                        'user_code' => $user->user_code,
-                        'sponsor_id' => $user->sponsor_id,
-                        'name' => $user->name,
-                        'email' => $user->email,
-                        'provider' => $user->provider,
-                        'avatar' => $user->avatar,
-                        'created_at' => $user->created_at,
-                    ],
-                    'token' => $token,
-                    'token_type' => 'Bearer',
-                ], 200);
+        if ($user) {
+            if ($avatar && $user->avatar !== $avatar) {
+                $user->update(['avatar' => $avatar]);
             }
 
-            // Not linked by subject - check if account exists with this email
-            $existingUser = User::where('email', $email)->first();
+            $token = $user->createToken('user_auth_token')->plainTextToken;
 
-            if ($existingUser) {
-                // Safe linking rule: Require password verification before linking
-                $linkPassword = $request->input('link_password');
-                if (!empty($linkPassword) && Hash::check($linkPassword, $existingUser->password)) {
-                    $existingUser->update([
-                        'provider' => 'google',
-                        'provider_id' => $sub,
-                        'avatar' => $avatar ?? $existingUser->avatar,
-                    ]);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Login successful',
+                'user' => [
+                    'id' => $user->id,
+                    'user_code' => $user->user_code,
+                    'sponsor_id' => $user->sponsor_id,
+                    'sponsor_onboarding_status' => $user->sponsor_onboarding_status ?? 'completed',
+                    'has_pending_sponsor_onboarding' => $user->hasPendingSponsorOnboarding(),
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'provider' => $user->provider,
+                    'avatar' => $user->avatar,
+                    'created_at' => $user->created_at,
+                ],
+                'token' => $token,
+                'token_type' => 'Bearer',
+                'requires_sponsor_onboarding' => $user->hasPendingSponsorOnboarding(),
+            ], 200);
+        }
 
-                    $token = $existingUser->createToken('user_auth_token')->plainTextToken;
+        // Not linked by subject - check if account exists with this email
+        $existingUser = User::where('email', $email)->first();
 
-                    return response()->json([
-                        'status' => 'success',
-                        'message' => 'Google account successfully linked and logged in',
-                        'user' => [
-                            'id' => $existingUser->id,
-                            'user_code' => $existingUser->user_code,
-                            'sponsor_id' => $existingUser->sponsor_id,
-                            'name' => $existingUser->name,
-                            'email' => $existingUser->email,
-                            'provider' => $existingUser->provider,
-                            'avatar' => $existingUser->avatar,
-                            'created_at' => $existingUser->created_at,
-                        ],
-                        'token' => $token,
-                        'token_type' => 'Bearer',
-                    ], 200);
-                }
-
+        if ($existingUser) {
+            if ($mode === 'register') {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'An account with this email already exists. Please log in with your password to link your Google account.',
-                    'requires_password_link' => true,
-                    'email' => $email,
+                    'message' => 'This email is already registered. Please log in instead.',
+                    'requires_login' => true,
                 ], 409);
             }
 
-            // Unregistered email in login mode
+            // Safe linking rule: Require password verification before linking
+            $linkPassword = $request->input('link_password');
+            if (!empty($linkPassword) && Hash::check($linkPassword, $existingUser->password)) {
+                $existingUser->update([
+                    'provider' => 'google',
+                    'provider_id' => $sub,
+                    'avatar' => $avatar ?? $existingUser->avatar,
+                ]);
+
+                $token = $existingUser->createToken('user_auth_token')->plainTextToken;
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Google account successfully linked and logged in',
+                    'user' => [
+                        'id' => $existingUser->id,
+                        'user_code' => $existingUser->user_code,
+                        'sponsor_id' => $existingUser->sponsor_id,
+                        'sponsor_onboarding_status' => $existingUser->sponsor_onboarding_status ?? 'completed',
+                        'has_pending_sponsor_onboarding' => $existingUser->hasPendingSponsorOnboarding(),
+                        'name' => $existingUser->name,
+                        'email' => $existingUser->email,
+                        'provider' => $existingUser->provider,
+                        'avatar' => $existingUser->avatar,
+                        'created_at' => $existingUser->created_at,
+                    ],
+                    'token' => $token,
+                    'token_type' => 'Bearer',
+                    'requires_sponsor_onboarding' => $existingUser->hasPendingSponsorOnboarding(),
+                ], 200);
+            }
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'An account with this email already exists. Please log in with your password to link your Google account.',
+                'requires_password_link' => true,
+                'email' => $email,
+            ], 409);
+        }
+
+        // Unregistered email in explicit login mode without auto_register
+        if ($mode === 'login' && !$request->boolean('auto_register')) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'This Google email is not registered yet. Please register first.',
@@ -713,16 +735,7 @@ class AuthController extends Controller
             ], 404);
         }
 
-        // 7. Handle Register Mode
-        // Check if email already registered
-        if (User::where('email', $email)->exists()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'This email is already registered. Please log in instead.',
-                'requires_login' => true,
-            ], 409);
-        }
-
+        // 7. Handle Registration (mode: register or auto)
         // Check if Google subject already registered under another account
         if (User::where('provider', 'google')->where('provider_id', $sub)->exists()) {
             return response()->json([
@@ -732,13 +745,17 @@ class AuthController extends Controller
             ], 409);
         }
 
+        $onboardingStatus = $sponsor ? 'completed' : 'pending';
+        $assignedSponsorId = $sponsor ? ($sponsor->user_code ?? (string) $sponsor->id) : null;
+
         try {
-            $newUser = DB::transaction(function () use ($name, $email, $sub, $avatar, $sponsor) {
+            $newUser = DB::transaction(function () use ($name, $email, $sub, $avatar, $assignedSponsorId, $onboardingStatus) {
                 return User::create([
                     'name' => $name,
                     'email' => $email,
                     'password' => Hash::make(Str::random(32)),
-                    'sponsor_id' => $sponsor->user_code,
+                    'sponsor_id' => $assignedSponsorId,
+                    'sponsor_onboarding_status' => $onboardingStatus,
                     'provider' => 'google',
                     'provider_id' => $sub,
                     'avatar' => $avatar,
@@ -766,6 +783,8 @@ class AuthController extends Controller
                 'id' => $newUser->id,
                 'user_code' => $newUser->user_code,
                 'sponsor_id' => $newUser->sponsor_id,
+                'sponsor_onboarding_status' => $newUser->sponsor_onboarding_status,
+                'has_pending_sponsor_onboarding' => $newUser->hasPendingSponsorOnboarding(),
                 'name' => $newUser->name,
                 'email' => $newUser->email,
                 'provider' => $newUser->provider,
@@ -774,7 +793,171 @@ class AuthController extends Controller
             ],
             'token' => $token,
             'token_type' => 'Bearer',
+            'requires_sponsor_onboarding' => $newUser->hasPendingSponsorOnboarding(),
         ], 201);
+    }
+
+    /**
+     * Complete Sponsor Onboarding by entering and validating a Sponsor ID.
+     */
+    public function completeSponsorOnboarding(Request $request)
+    {
+        $user = auth('sanctum')->user() ?: $request->user();
+
+        if (!$user && $request->bearerToken() && class_exists(\App\Models\PersonalAccessToken::class)) {
+            $token = \App\Models\PersonalAccessToken::findToken($request->bearerToken());
+            if ($token && $token->tokenable instanceof User) {
+                $user = $token->tokenable;
+            }
+        }
+
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthenticated. Please log in first.',
+            ], 401);
+        }
+
+        // Do not overwrite an existing sponsor relationship
+        if (!empty($user->sponsor_id)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'A sponsor relationship has already been established for this account and cannot be overwritten.',
+            ], 400);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'sponsor_id' => 'required|string',
+        ], [
+            'sponsor_id.required' => 'Please enter a valid Sponsor ID.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Please enter a valid Sponsor ID.',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $sponsorInput = trim($request->input('sponsor_id'));
+
+        // Prevent self-referral / assigning own account as sponsor
+        if (
+            strcasecmp($sponsorInput, (string) $user->user_code) === 0 ||
+            strcasecmp($sponsorInput, (string) $user->email) === 0 ||
+            $sponsorInput === (string) $user->id
+        ) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'You cannot enter your own Member ID or email as your Sponsor ID.',
+                'errors' => [
+                    'sponsor_id' => ['You cannot enter your own Member ID or email as your Sponsor ID.'],
+                ],
+            ], 422);
+        }
+
+        // Validate Sponsor ID against existing users database
+        $sponsor = User::whereRaw('LOWER(user_code) = ?', [strtolower($sponsorInput)])
+            ->orWhere('email', $sponsorInput)
+            ->orWhere('id', $sponsorInput)
+            ->first();
+
+        if (!$sponsor) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid Sponsor ID. Sponsor does not exist in our database.',
+                'errors' => [
+                    'sponsor_id' => ['Invalid Sponsor ID. Sponsor does not exist in our database.'],
+                ],
+            ], 422);
+        }
+
+        // Save sponsor relationship and mark onboarding completed
+        $user->sponsor_id = $sponsor->user_code ?? (string) $sponsor->id;
+        $user->sponsor_onboarding_status = 'completed';
+        $user->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Sponsor ID successfully linked to your account!',
+            'user' => [
+                'id' => $user->id,
+                'user_code' => $user->user_code,
+                'sponsor_id' => $user->sponsor_id,
+                'sponsor_onboarding_status' => $user->sponsor_onboarding_status,
+                'has_pending_sponsor_onboarding' => false,
+                'name' => $user->name,
+                'email' => $user->email,
+                'provider' => $user->provider,
+                'avatar' => $user->avatar,
+                'created_at' => $user->created_at,
+            ],
+            'sponsor' => [
+                'id' => $sponsor->id,
+                'user_code' => $sponsor->user_code,
+                'name' => $sponsor->name,
+                'email' => $sponsor->email,
+            ],
+            'requires_sponsor_onboarding' => false,
+        ], 200);
+    }
+
+    /**
+     * Skip Sponsor Onboarding without assigning a sponsor relationship.
+     */
+    public function skipSponsorOnboarding(Request $request)
+    {
+        $user = auth('sanctum')->user() ?: $request->user();
+
+        if (!$user && $request->bearerToken() && class_exists(\App\Models\PersonalAccessToken::class)) {
+            $token = \App\Models\PersonalAccessToken::findToken($request->bearerToken());
+            if ($token && $token->tokenable instanceof User) {
+                $user = $token->tokenable;
+            }
+        }
+
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthenticated. Please log in first.',
+            ], 401);
+        }
+
+        // Mark onboarding skipped without creating any fake sponsor relationship
+        $user->sponsor_onboarding_status = 'skipped';
+        $user->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Sponsor onboarding skipped successfully.',
+            'user' => [
+                'id' => $user->id,
+                'user_code' => $user->user_code,
+                'sponsor_id' => $user->sponsor_id,
+                'sponsor_onboarding_status' => $user->sponsor_onboarding_status,
+                'has_pending_sponsor_onboarding' => false,
+                'name' => $user->name,
+                'email' => $user->email,
+                'provider' => $user->provider,
+                'avatar' => $user->avatar,
+                'created_at' => $user->created_at,
+            ],
+            'requires_sponsor_onboarding' => false,
+        ], 200);
+    }
+
+    /**
+     * Unified handler for Sponsor Onboarding (submit or skip).
+     */
+    public function handleSponsorOnboarding(Request $request)
+    {
+        $action = $request->input('action');
+        if ($action === 'skip' || $request->boolean('skip')) {
+            return $this->skipSponsorOnboarding($request);
+        }
+
+        return $this->completeSponsorOnboarding($request);
     }
 
     /**
@@ -914,13 +1097,16 @@ class AuthController extends Controller
     public function forgotPassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required',
+            'email' => 'required|string',
+        ], [
+            'email.required' => 'Please provide your registered email address or user code.',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Registered email address or user code is required.',
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -936,16 +1122,29 @@ class AuthController extends Controller
             ], 404);
         }
 
-        $otp = (string) rand(100000, 999999);
-        Cache::put('user_reset_otp_' . $user->id, $otp, now()->addMinutes(15));
-        Cache::put('user_reset_email_' . $user->email, $otp, now()->addMinutes(15));
+        $result = PasswordResetOtpService::sendResetOtp(
+            accountType: 'user',
+            accountId: $user->id,
+            recipientEmail: $user->email,
+            recipientName: $user->name,
+            accountLabel: 'Member'
+        );
+
+        if (!$result['success']) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $result['message'],
+                'retry_after_seconds' => $result['retry_after_seconds'] ?? null,
+            ], $result['status_code']);
+        }
 
         return response()->json([
             'status' => 'success',
-            'message' => "Password reset OTP dispatched to {$user->email} successfully!",
+            'message' => $result['message'],
             'email' => $user->email,
+            'masked_email' => $result['masked_email'],
+            'expires_in_minutes' => $result['expires_in_minutes'],
             'user_name' => $user->name,
-            'otp' => $otp, // Returned for testing & mobile verification ease
         ], 200);
     }
 
@@ -955,19 +1154,28 @@ class AuthController extends Controller
     public function verifyResetOtp(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required',
+            'email' => 'required|string',
             'otp' => 'required|string|size:6',
+        ], [
+            'email.required' => 'Email address or user code is required.',
+            'otp.required' => '6-digit OTP code is required.',
+            'otp.size' => 'OTP code must be exactly 6 digits.',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Email and 6-digit OTP code are required.',
+                'message' => 'Email/User ID and 6-digit OTP code are required.',
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         $input = trim($request->input('email'));
-        $user = User::where('email', $input)->orWhere('user_code', $input)->first();
+        $otp = trim($request->input('otp'));
+
+        $user = User::where('email', $input)
+            ->orWhere('user_code', $input)
+            ->first();
 
         if (!$user) {
             return response()->json([
@@ -976,19 +1184,20 @@ class AuthController extends Controller
             ], 404);
         }
 
-        $cachedOtp = Cache::get('user_reset_otp_' . $user->id) ?: Cache::get('user_reset_email_' . $user->email);
+        $result = PasswordResetOtpService::verifyOtp('user', $user->id, $otp);
 
-        if (!$cachedOtp || $cachedOtp !== $request->input('otp')) {
+        if (!$result['valid']) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Invalid or expired OTP code. Please request a new code.',
-            ], 400);
+                'message' => $result['message'],
+                'remaining_attempts' => $result['remaining_attempts'] ?? null,
+            ], $result['status_code']);
         }
 
         return response()->json([
             'status' => 'success',
-            'message' => 'OTP verified successfully! You may now enter your new password.',
-            'verified' => true,
+            'success' => true,
+            'message' => $result['message'],
         ], 200);
     }
 
@@ -998,21 +1207,33 @@ class AuthController extends Controller
     public function resetPassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required',
+            'email' => 'required|string',
             'otp' => 'required|string|size:6',
-            'password' => 'required|string|min:6',
+            'password' => 'required|string|min:6|confirmed',
+        ], [
+            'email.required' => 'Email address or user code is required.',
+            'otp.required' => '6-digit OTP code is required.',
+            'otp.size' => 'OTP code must be exactly 6 digits.',
+            'password.required' => 'New password is required.',
+            'password.min' => 'Password must be at least 6 characters.',
+            'password.confirmed' => 'Password confirmation does not match.',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Valid email, 6-digit OTP, and new password (min 6 characters) are required.',
+                'message' => 'Validation failed. Password must be at least 6 characters and match confirmation.',
                 'errors' => $validator->errors(),
             ], 422);
         }
 
         $input = trim($request->input('email'));
-        $user = User::where('email', $input)->orWhere('user_code', $input)->first();
+        $otp = trim($request->input('otp'));
+        $newPassword = $request->input('password');
+
+        $user = User::where('email', $input)
+            ->orWhere('user_code', $input)
+            ->first();
 
         if (!$user) {
             return response()->json([
@@ -1021,20 +1242,17 @@ class AuthController extends Controller
             ], 404);
         }
 
-        $cachedOtp = Cache::get('user_reset_otp_' . $user->id) ?: Cache::get('user_reset_email_' . $user->email);
+        $consumed = PasswordResetOtpService::consumeOtp('user', $user->id, $otp);
 
-        if (!$cachedOtp || $cachedOtp !== $request->input('otp')) {
+        if (!$consumed) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Invalid or expired OTP code.',
+                'message' => 'Invalid or expired verification code. Please start the password reset process again.',
             ], 400);
         }
 
-        $user->password = Hash::make($request->input('password'));
+        $user->password = Hash::make($newPassword);
         $user->save();
-
-        Cache::forget('user_reset_otp_' . $user->id);
-        Cache::forget('user_reset_email_' . $user->email);
 
         return response()->json([
             'status' => 'success',

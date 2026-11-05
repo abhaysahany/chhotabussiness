@@ -68,14 +68,31 @@ function GenealogyTreePage({ user, onNavigate }) {
           )}
 
           <div className="node-avatar-container">
-            <img
-              src={node.avatar}
-              alt={node.name}
+            {node.avatar && node.avatar !== '/logo.png' ? (
+              <img
+                src={node.avatar}
+                alt={node.name}
+                className="node-avatar-img"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
+                }}
+              />
+            ) : null}
+            <div
               className="node-avatar-img"
-              onError={(e) => {
-                e.target.src = '/logo.png';
+              style={{
+                display: (node.avatar && node.avatar !== '/logo.png') ? 'none' : 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: '#0F4C81',
+                color: '#ffffff',
+                fontWeight: 700,
+                fontSize: '0.9rem',
               }}
-            />
+            >
+              {node.name ? node.name.charAt(0).toUpperCase() : 'U'}
+            </div>
             <span className={`status-dot ${node.status}`} title={`Status: ${node.status}`}></span>
           </div>
 

@@ -1,0 +1,1250 @@
+[
+  {
+    "verb": "GET",
+    "path": "/api/user/dashboard-stats",
+    "controller": "UserDashboardController",
+    "method": "getDashboardStats"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/user/dashboard/stats",
+    "controller": "UserDashboardController",
+    "method": "getDashboardStats"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/login",
+    "controller": "AdminAuthController",
+    "method": "login"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/forgot-password",
+    "controller": "AdminAuthController",
+    "method": "forgotPassword"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/verify-otp",
+    "controller": "AdminAuthController",
+    "method": "verifyOtp"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/reset-password",
+    "controller": "AdminAuthController",
+    "method": "resetPassword"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/support/tickets",
+    "controller": "AdminSupportController",
+    "method": "store"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/admin/support/tickets",
+    "controller": "AdminSupportController",
+    "method": "index"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/admin/support/tickets/{id}",
+    "controller": "AdminSupportController",
+    "method": "show"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/support/tickets/{id}/reply",
+    "controller": "AdminSupportController",
+    "method": "reply"
+  },
+  {
+    "verb": "PUT",
+    "path": "/api/admin/support/tickets/{id}/status",
+    "controller": "AdminSupportController",
+    "method": "updateStatus"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/entity-categories",
+    "controller": "EntityCategoryController",
+    "method": "index"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/entity-categories",
+    "controller": "EntityCategoryController",
+    "method": "store"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/entity-categories/{id}",
+    "controller": "EntityCategoryController",
+    "method": "show"
+  },
+  {
+    "verb": "PUT",
+    "path": "/api/entity-categories/{id}",
+    "controller": "EntityCategoryController",
+    "method": "update"
+  },
+  {
+    "verb": "DELETE",
+    "path": "/api/entity-categories/{id}",
+    "controller": "EntityCategoryController",
+    "method": "destroy"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/business-entities",
+    "controller": "BusinessEntityController",
+    "method": "index"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/business-entities",
+    "controller": "BusinessEntityController",
+    "method": "store"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/business-entities/{id}",
+    "controller": "BusinessEntityController",
+    "method": "show"
+  },
+  {
+    "verb": "PUT",
+    "path": "/api/business-entities/{id}",
+    "controller": "BusinessEntityController",
+    "method": "update"
+  },
+  {
+    "verb": "PUT",
+    "path": "/api/business-entities/{id}/status",
+    "controller": "BusinessEntityController",
+    "method": "updateStatus"
+  },
+  {
+    "verb": "DELETE",
+    "path": "/api/business-entities/{id}",
+    "controller": "BusinessEntityController",
+    "method": "destroy"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/freelancers",
+    "controller": "FreelancerEntityController",
+    "method": "index"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/freelancers",
+    "controller": "FreelancerEntityController",
+    "method": "store"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/freelancers/{id}",
+    "controller": "FreelancerEntityController",
+    "method": "show"
+  },
+  {
+    "verb": "PUT",
+    "path": "/api/freelancers/{id}",
+    "controller": "FreelancerEntityController",
+    "method": "update"
+  },
+  {
+    "verb": "PUT",
+    "path": "/api/freelancers/{id}/status",
+    "controller": "FreelancerEntityController",
+    "method": "updateStatus"
+  },
+  {
+    "verb": "DELETE",
+    "path": "/api/freelancers/{id}",
+    "controller": "FreelancerEntityController",
+    "method": "destroy"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/public/categories",
+    "controller": "EntityCategoryController",
+    "method": "index"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/public/businesses",
+    "controller": "BusinessEntityController",
+    "method": "index"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/public/freelancers",
+    "controller": "FreelancerEntityController",
+    "method": "index"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/content-assets",
+    "controller": "ContentAssetController",
+    "method": "index"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/public/content-assets",
+    "controller": "ContentAssetController",
+    "method": "index"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/admin/content-assets",
+    "controller": "ContentAssetController",
+    "method": "indexAdmin"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/content-assets",
+    "controller": "ContentAssetController",
+    "method": "store"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/content-assets",
+    "controller": "ContentAssetController",
+    "method": "store"
+  },
+  {
+    "verb": "PUT",
+    "path": "/api/admin/content-assets/{id}",
+    "controller": "ContentAssetController",
+    "method": "update"
+  },
+  {
+    "verb": "DELETE",
+    "path": "/api/admin/content-assets/{id}",
+    "controller": "ContentAssetController",
+    "method": "destroy"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/content-assets/{id}/download",
+    "controller": "ContentAssetController",
+    "method": "trackDownload"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/content-assets/{id}/download-file",
+    "controller": "ContentAssetController",
+    "method": "downloadFile"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/content-assets/{id}/share",
+    "controller": "ContentAssetController",
+    "method": "trackShare"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/support-topics",
+    "controller": "SupportTopicController",
+    "method": "index"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/public/support-topics",
+    "controller": "SupportTopicController",
+    "method": "index"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/public/support-topics/{id}/view",
+    "controller": "SupportTopicController",
+    "method": "incrementView"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/public/support-topics/{id}/helpful",
+    "controller": "SupportTopicController",
+    "method": "voteHelpful"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/admin/support-topics",
+    "controller": "SupportTopicController",
+    "method": "indexAdmin"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/support-topics",
+    "controller": "SupportTopicController",
+    "method": "store"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/admin/support-topics/{id}",
+    "controller": "SupportTopicController",
+    "method": "show"
+  },
+  {
+    "verb": "PUT",
+    "path": "/api/admin/support-topics/{id}",
+    "controller": "SupportTopicController",
+    "method": "update"
+  },
+  {
+    "verb": "PUT",
+    "path": "/api/admin/support-topics/{id}/status",
+    "controller": "SupportTopicController",
+    "method": "updateStatus"
+  },
+  {
+    "verb": "DELETE",
+    "path": "/api/admin/support-topics/{id}",
+    "controller": "SupportTopicController",
+    "method": "destroy"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/user/network/direct",
+    "controller": "NetworkController",
+    "method": "getDirectConnections"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/user/network/team",
+    "controller": "NetworkController",
+    "method": "getTeamConnections"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/user/network/genealogy",
+    "controller": "NetworkController",
+    "method": "getGenealogyTree"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/login",
+    "controller": "AuthController",
+    "method": "login"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/register",
+    "controller": "AuthController",
+    "method": "register"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/auth/google",
+    "controller": "AuthController",
+    "method": "googleAuth"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/auth/social-login",
+    "controller": "AuthController",
+    "method": "socialLogin"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/verify-sponsor",
+    "controller": "AuthController",
+    "method": "verifySponsor"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/send-otp",
+    "controller": "AuthController",
+    "method": "sendOtp"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/verify-otp",
+    "controller": "AuthController",
+    "method": "verifyOtp"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/forgot-password",
+    "controller": "AuthController",
+    "method": "forgotPassword"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/verify-reset-otp",
+    "controller": "AuthController",
+    "method": "verifyResetOtp"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/reset-password",
+    "controller": "AuthController",
+    "method": "resetPassword"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/entity/selectable-entities",
+    "controller": "EntityAuthController",
+    "method": "getSelectableEntities"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/entity/login",
+    "controller": "EntityAuthController",
+    "method": "login"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/entity/logout",
+    "controller": "EntityAuthController",
+    "method": "logout"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/entity/info",
+    "controller": "EntityAuthController",
+    "method": "info"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/entity/forgot-password",
+    "controller": "EntityAuthController",
+    "method": "forgotPassword"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/entity/verify-otp",
+    "controller": "EntityAuthController",
+    "method": "verifyOtp"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/entity/reset-password",
+    "controller": "EntityAuthController",
+    "method": "resetPassword"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/orders",
+    "controller": "OrderController",
+    "method": "index"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/orders",
+    "controller": "OrderController",
+    "method": "store"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/orders/{id}",
+    "controller": "OrderController",
+    "method": "show"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/orders/{id}/receive-balance",
+    "controller": "OrderController",
+    "method": "receiveBalance"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/orders/{id}/distribute",
+    "controller": "OrderController",
+    "method": "distribute"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/sales",
+    "controller": "OrderController",
+    "method": "index"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/sales",
+    "controller": "OrderController",
+    "method": "store"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/sales/{id}",
+    "controller": "OrderController",
+    "method": "show"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/sales/{id}/receive-balance",
+    "controller": "OrderController",
+    "method": "receiveBalance"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/sales/{id}/distribute",
+    "controller": "OrderController",
+    "method": "distribute"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/payments/history",
+    "controller": "OrderController",
+    "method": "paymentsHistory"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/payments/{id}/distribute",
+    "controller": "OrderController",
+    "method": "distributePaymentCommission"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/user/business-reports",
+    "controller": "OrderController",
+    "method": "userBusinessReports"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/user/income/direct",
+    "controller": "UserIncomeController",
+    "method": "getDirectIncome"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/user/income/levels",
+    "controller": "UserIncomeController",
+    "method": "getLevelIncome"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/user/income/summary",
+    "controller": "UserIncomeController",
+    "method": "getIncomeSummary"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/admin/payouts",
+    "controller": "UserPayoutController",
+    "method": "index"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/payouts/{id}/disburse",
+    "controller": "UserPayoutController",
+    "method": "disburse"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/payouts/{id}/reject",
+    "controller": "UserPayoutController",
+    "method": "reject"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/payouts/generate-weekly",
+    "controller": "UserPayoutController",
+    "method": "generateWeeklyBatch"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/admin/payouts/stats",
+    "controller": "UserPayoutController",
+    "method": "stats"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/user/payouts",
+    "controller": "UserPayoutController",
+    "method": "getUserPayouts"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/user/payouts/withdraw",
+    "controller": "UserPayoutController",
+    "method": "requestWithdrawal"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/admin/rewards",
+    "controller": "RewardController",
+    "method": "indexAdmin"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/rewards",
+    "controller": "RewardController",
+    "method": "storeReward"
+  },
+  {
+    "verb": "PUT",
+    "path": "/api/admin/rewards/{id}",
+    "controller": "RewardController",
+    "method": "updateReward"
+  },
+  {
+    "verb": "DELETE",
+    "path": "/api/admin/rewards/{id}",
+    "controller": "RewardController",
+    "method": "destroyReward"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/admin/reward-claims",
+    "controller": "RewardController",
+    "method": "indexClaimsAdmin"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/reward-claims/{id}/status",
+    "controller": "RewardController",
+    "method": "updateClaimStatus"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/user/rewards",
+    "controller": "RewardController",
+    "method": "indexUserRewards"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/user/reward-claims",
+    "controller": "RewardController",
+    "method": "indexUserClaims"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/user/rewards/claim",
+    "controller": "RewardController",
+    "method": "claimReward"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/admin/notifications",
+    "controller": "NotificationController",
+    "method": "indexAdmin"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/notifications/send",
+    "controller": "NotificationController",
+    "method": "sendNotification"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/user/notifications",
+    "controller": "NotificationController",
+    "method": "indexUser"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/user/notifications/{id}/read",
+    "controller": "NotificationController",
+    "method": "markAsRead"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/user/notifications/read-all",
+    "controller": "NotificationController",
+    "method": "markAllAsRead"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/admin/dashboard-stats",
+    "controller": "AdminDashboardController",
+    "method": "getDashboardStats"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/admin/users",
+    "controller": "AdminUserController",
+    "method": "index"
+  },
+  {
+    "verb": "PUT",
+    "path": "/api/admin/users/{id}",
+    "controller": "AdminUserController",
+    "method": "update"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/users/{id}/toggle-status",
+    "controller": "AdminUserController",
+    "method": "toggleStatus"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/admin/orders",
+    "controller": "OrderController",
+    "method": "index"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/orders",
+    "controller": "OrderController",
+    "method": "store"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/orders/{id}/confirm",
+    "controller": "OrderController",
+    "method": "confirmOrder"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/orders/{id}/cancel",
+    "controller": "OrderController",
+    "method": "cancelOrder"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/orders/{id}/distribute",
+    "controller": "OrderController",
+    "method": "distribute"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/admin/orders/{orderId}/income-allocation",
+    "controller": "IncomeAllocationController",
+    "method": "show"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/orders/{orderId}/income-allocation",
+    "controller": "IncomeAllocationController",
+    "method": "allocate"
+  },
+  {
+    "verb": "PUT",
+    "path": "/api/admin/orders/{orderId}/dump-amount",
+    "controller": "IncomeAllocationController",
+    "method": "updateDumpAmount"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/orders/{orderId}/dump-amount",
+    "controller": "IncomeAllocationController",
+    "method": "updateDumpAmount"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/admin/payments/{paymentId}/income-allocation",
+    "controller": "IncomeAllocationController",
+    "method": "showPayment"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/payments/{paymentId}/income-allocation",
+    "controller": "IncomeAllocationController",
+    "method": "allocatePayment"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/admin/sales",
+    "controller": "OrderController",
+    "method": "index"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/sales",
+    "controller": "OrderController",
+    "method": "store"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/sales/{id}/confirm",
+    "controller": "OrderController",
+    "method": "confirmOrder"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/sales/{id}/cancel",
+    "controller": "OrderController",
+    "method": "cancelOrder"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/sales/{id}/distribute",
+    "controller": "OrderController",
+    "method": "distribute"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/admin/sales/{orderId}/income-allocation",
+    "controller": "IncomeAllocationController",
+    "method": "show"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/sales/{orderId}/income-allocation",
+    "controller": "IncomeAllocationController",
+    "method": "allocate"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/admin/payments/history",
+    "controller": "OrderController",
+    "method": "paymentsHistory"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/admin/payments/distributed-history",
+    "controller": "OrderController",
+    "method": "paymentsHistory"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/payments/{id}/distribute",
+    "controller": "OrderController",
+    "method": "distributePaymentCommission"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/admin/dump-requests",
+    "controller": "DumpPaymentController",
+    "method": "getAdminDumpRequests"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/admin/dump-requests/{id}",
+    "controller": "DumpPaymentController",
+    "method": "getAdminDumpRequestDetails"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/dump-requests/{id}/approve",
+    "controller": "DumpPaymentController",
+    "method": "approveDump"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/dump-requests/{id}/reject",
+    "controller": "DumpPaymentController",
+    "method": "rejectDump"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/orders/{orderId}/report-dump",
+    "controller": "DumpPaymentController",
+    "method": "reportDump"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/sales/{orderId}/report-dump",
+    "controller": "DumpPaymentController",
+    "method": "reportDump"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/entity/orders/{orderId}/report-dump",
+    "controller": "DumpPaymentController",
+    "method": "reportDump"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/entity/sales/{orderId}/report-dump",
+    "controller": "DumpPaymentController",
+    "method": "reportDump"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/entity/dump-requests",
+    "controller": "DumpPaymentController",
+    "method": "getEntityDumpRequests"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/entity/orders/{orderId}/dump-requests",
+    "controller": "DumpPaymentController",
+    "method": "getEntityDumpRequests"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/entity/dashboard-stats",
+    "controller": "EntityDashboardController",
+    "method": "getDashboardStats"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/entity/orders",
+    "controller": "OrderController",
+    "method": "index"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/entity/orders",
+    "controller": "OrderController",
+    "method": "store"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/entity/orders/{id}/receive-balance",
+    "controller": "OrderController",
+    "method": "receiveBalance"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/entity/sales",
+    "controller": "OrderController",
+    "method": "index"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/entity/sales",
+    "controller": "OrderController",
+    "method": "store"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/entity/sales/{id}/receive-balance",
+    "controller": "OrderController",
+    "method": "receiveBalance"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/entity/payments/history",
+    "controller": "OrderController",
+    "method": "paymentsHistory"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/entity/payouts",
+    "controller": "EntityPayoutController",
+    "method": "index"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/entity/payouts/reports",
+    "controller": "EntityPayoutController",
+    "method": "reports"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/catalog/products",
+    "controller": "ProductCatalogController",
+    "method": "indexProducts"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/catalog/products",
+    "controller": "ProductCatalogController",
+    "method": "storeProduct"
+  },
+  {
+    "verb": "PUT",
+    "path": "/api/catalog/products/{id}",
+    "controller": "ProductCatalogController",
+    "method": "updateProduct"
+  },
+  {
+    "verb": "DELETE",
+    "path": "/api/catalog/products/{id}",
+    "controller": "ProductCatalogController",
+    "method": "destroyProduct"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/catalog/services",
+    "controller": "ProductCatalogController",
+    "method": "indexServices"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/catalog/services",
+    "controller": "ProductCatalogController",
+    "method": "storeService"
+  },
+  {
+    "verb": "PUT",
+    "path": "/api/catalog/services/{id}",
+    "controller": "ProductCatalogController",
+    "method": "updateService"
+  },
+  {
+    "verb": "DELETE",
+    "path": "/api/catalog/services/{id}",
+    "controller": "ProductCatalogController",
+    "method": "destroyService"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/catalog/categories",
+    "controller": "ProductCatalogController",
+    "method": "indexCategories"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/catalog/categories",
+    "controller": "ProductCatalogController",
+    "method": "storeCategory"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/catalog/packages",
+    "controller": "ProductCatalogController",
+    "method": "indexPackages"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/catalog/packages",
+    "controller": "ProductCatalogController",
+    "method": "storePackage"
+  },
+  {
+    "verb": "PUT",
+    "path": "/api/catalog/packages/{id}",
+    "controller": "ProductCatalogController",
+    "method": "updatePackage"
+  },
+  {
+    "verb": "DELETE",
+    "path": "/api/catalog/packages/{id}",
+    "controller": "ProductCatalogController",
+    "method": "destroyPackage"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/settings",
+    "controller": "SystemSettingController",
+    "method": "getSettings"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/settings",
+    "controller": "SystemSettingController",
+    "method": "saveSettings"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/settings/social-links",
+    "controller": "SystemSettingController",
+    "method": "getSocialLinks"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/settings/social-links",
+    "controller": "SystemSettingController",
+    "method": "saveSocialLinks"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/branding",
+    "controller": "SystemSettingController",
+    "method": "getBranding"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/user/kyc/submit",
+    "controller": "UserBankKycController",
+    "method": "submitKyc"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/user/update-kyc",
+    "controller": "UserBankKycController",
+    "method": "submitKyc"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/user/payout-accounts",
+    "controller": "UserBankKycController",
+    "method": "getBankAndUpiAccounts"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/user/send-bank-otp",
+    "controller": "UserBankKycController",
+    "method": "sendOtp"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/user/bank-accounts/add",
+    "controller": "UserBankKycController",
+    "method": "addBankAccount"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/user/bank-accounts/{id}/delete",
+    "controller": "UserBankKycController",
+    "method": "deleteBankAccount"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/user/bank-accounts/{id}/primary",
+    "controller": "UserBankKycController",
+    "method": "setPrimaryBankAccount"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/user/upi-accounts/add",
+    "controller": "UserBankKycController",
+    "method": "addUpiAccount"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/user/upi-accounts/{id}/delete",
+    "controller": "UserBankKycController",
+    "method": "deleteUpiAccount"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/user/upi-accounts/{id}/primary",
+    "controller": "UserBankKycController",
+    "method": "setPrimaryUpiAccount"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/admin/kyc-requests",
+    "controller": "UserBankKycController",
+    "method": "adminIndexKyc"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/kyc/{id}/approve",
+    "controller": "UserBankKycController",
+    "method": "adminApproveKyc"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/kyc/{id}/reject",
+    "controller": "UserBankKycController",
+    "method": "adminRejectKyc"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/user/support-tickets",
+    "controller": "SupportTicketController",
+    "method": "getUserTickets"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/user/support-tickets",
+    "controller": "SupportTicketController",
+    "method": "createTicket"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/user/support-tickets/{id}/reply",
+    "controller": "SupportTicketController",
+    "method": "replyTicket"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/user/support-tickets/{id}/status",
+    "controller": "SupportTicketController",
+    "method": "updateStatus"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/admin/support-tickets",
+    "controller": "SupportTicketController",
+    "method": "getAdminTickets"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/admin/support/tickets",
+    "controller": "SupportTicketController",
+    "method": "getAdminTickets"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/support-tickets/{id}/reply",
+    "controller": "SupportTicketController",
+    "method": "replyTicket"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/support/tickets/{id}/reply",
+    "controller": "SupportTicketController",
+    "method": "replyTicket"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/support-tickets/{id}/status",
+    "controller": "SupportTicketController",
+    "method": "updateStatus"
+  },
+  {
+    "verb": "PUT",
+    "path": "/api/admin/support/tickets/{id}/status",
+    "controller": "SupportTicketController",
+    "method": "updateStatus"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/me",
+    "controller": "AuthController",
+    "method": "me"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/logout",
+    "controller": "AuthController",
+    "method": "logout"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/user/update-password",
+    "controller": "AuthController",
+    "method": "updatePassword"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/entity/me",
+    "controller": "EntityAuthController",
+    "method": "me"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/admin/me",
+    "controller": "AdminAuthController",
+    "method": "me"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/logout",
+    "controller": "AdminAuthController",
+    "method": "logout"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/admin/entity-commission-settings",
+    "controller": "EntityCommissionSettingController",
+    "method": "index"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/admin/entity-commission-settings/{entity_type}/{entity_id}",
+    "controller": "EntityCommissionSettingController",
+    "method": "show"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/entity-commission-settings",
+    "controller": "EntityCommissionSettingController",
+    "method": "save"
+  },
+  {
+    "verb": "PUT",
+    "path": "/api/admin/entity-commission-settings",
+    "controller": "EntityCommissionSettingController",
+    "method": "save"
+  },
+  {
+    "verb": "GET",
+    "path": "/api/admin/settings/branding",
+    "controller": "SystemSettingController",
+    "method": "getBranding"
+  },
+  {
+    "verb": "POST",
+    "path": "/api/admin/settings/branding",
+    "controller": "SystemSettingController",
+    "method": "saveBranding"
+  },
+  {
+    "verb": "PUT",
+    "path": "/api/admin/settings/branding",
+    "controller": "SystemSettingController",
+    "method": "saveBranding"
+  }
+]

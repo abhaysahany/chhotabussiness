@@ -1,3 +1,4 @@
+import { useBranding } from '../../../utils/branding';
 import React from 'react';
 import {
   Check,
@@ -12,6 +13,7 @@ import {
 } from 'lucide-react';
 
 function PricingSection({ onSelectPlan }) {
+  const { appName } = useBranding();
   const plans = [
     {
       id: 'provider',
@@ -95,7 +97,7 @@ function PricingSection({ onSelectPlan }) {
             Simple, Performance-Driven Model
           </h2>
           <p className="cb-section-subtitle">
-            Joining AddNet is <strong>completely free of cost</strong> for Service Providers, Advertisers/Promoters, and End Customers. No hidden subscriptions or upfront fees.
+            Joining {appName || 'Vyapar AdNET'} is <strong>completely free of cost</strong> for Service Providers, Advertisers/Promoters, and End Customers. No hidden subscriptions or upfront fees.
           </p>
         </div>
 

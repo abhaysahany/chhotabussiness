@@ -3,11 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
 
-class FreelancerEntity extends Model
+class FreelancerEntity extends Authenticatable
 {
-    use HasFactory;
+    use HasApiTokens, HasFactory;
+
+    protected $table = 'freelancer_entities';
 
     protected $fillable = [
         'entity_category_id',

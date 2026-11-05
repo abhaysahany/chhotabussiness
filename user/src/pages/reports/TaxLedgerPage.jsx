@@ -4,13 +4,50 @@ import { getUserPayouts } from '../../api/userPayoutService';
 function TaxLedgerPage({ user }) {
   const [taxQuarter, setTaxQuarter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [taxLedger, setTaxLedger] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const taxLedger = [
-    { ref: 'TDS-2026-Q1-001', quarter: 'Q1 FY 2026-27', gross: 42500, tdsRate: '5%', tds: 2125, net: 40375, voucher: 'VCH-98210', status: 'Form 16A Issued' },
-    { ref: 'TDS-2026-Q1-002', quarter: 'Q1 FY 2026-27', gross: 31000, tdsRate: '5%', tds: 1550, net: 29450, voucher: 'VCH-98211', status: 'Form 16A Issued' },
-    { ref: 'TDS-2026-Q2-001', quarter: 'Q2 FY 2026-27', gross: 58000, tdsRate: '5%', tds: 2900, net: 55100, voucher: 'VCH-98212', status: 'Audited & Filed' },
-    { ref: 'TDS-2026-Q2-002', quarter: 'Q2 FY 2026-27', gross: 24500, tdsRate: '5%', tds: 1225, net: 23275, voucher: 'VCH-98213', status: 'Audited & Filed' },
-  ];
+  useEffect(() => {
+    const fetchTaxData = async () => {
+      setLoading(true);
+      try {
+        const res = await getUserPayouts();
+        const payouts = res?.payouts || res?.data || [];
+        const rows = payouts.map((p, idx) => {
+          const rawDate = p.requestDate || p.request_date || p.created_at;
+          const reqDate = rawDate ? new Date(rawDate) : new Date();
+          const year = reqDate.getFullYear();
+          const month = reqDate.getMonth() + 1;
+          const quarter = month <= 3
+            ? `Q4 FY ${year - 1}-${String(year).slice(-2)}`
+            : month <= 6
+            ? `Q1 FY ${year}-${String(year + 1).slice(-2)}`
+            : month <= 9
+            ? `Q2 FY ${year}-${String(year + 1).slice(-2)}`
+            : `Q3 FY ${year}-${String(year + 1).slice(-2)}`;
+          const gross = Number(p.requestedAmount ?? p.requested_amount) || 0;
+          const tds = Number(p.tdsDeduction ?? p.tds_deduction) || Math.round(gross * 0.05 * 100) / 100;
+          const net = Number(p.netPayableAmount ?? p.net_payable_amount) || (gross - tds);
+          return {
+            ref: p.payoutCode || p.payout_code || `TDS-${year}-00${idx + 1}`,
+            quarter,
+            gross,
+            tdsRate: '5%',
+            tds,
+            net,
+            voucher: p.utrNumber || p.utr_number || `VCH-${p.id || idx + 1}`,
+            status: p.status === 'completed' || p.status === 'approved' ? 'Audited & Filed' : (p.status ? p.status.toUpperCase() : 'PROCESSED'),
+          };
+        });
+        setTaxLedger(rows);
+      } catch (err) {
+        console.error('Error loading tax ledger payouts:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTaxData();
+  }, [user]);
 
   const filteredTax = taxLedger.filter((row) => {
     const matchesSearch = !searchTerm || row.ref.toLowerCase().includes(searchTerm.toLowerCase()) || row.voucher.toLowerCase().includes(searchTerm.toLowerCase());
@@ -90,7 +127,14 @@ function TaxLedgerPage({ user }) {
             </tr>
           </thead>
           <tbody>
-            {filteredTax.map((row, idx) => (
+            {filteredTax.length === 0 ? (
+              <tr>
+                <td colSpan="7" style={{ padding: '2.5rem 1rem', textAlign: 'center', color: '#64748b' }}>
+                  No tax ledger or TDS deductions recorded for the selected period.
+                </td>
+              </tr>
+            ) : (
+              filteredTax.map((row, idx) => (
               <tr key={idx} style={{ borderBottom: '1px solid #f1f5f9' }}>
                 <td style={{ padding: '0.85rem 1rem' }}><code style={{ background: '#f8fafc', padding: '0.2rem 0.5rem', borderRadius: '4px', border: '1px solid #cbd5e1', fontWeight: '700', color: '#059669' }}>{row.ref}</code></td>
                 <td style={{ padding: '0.85rem 1rem', fontWeight: '700', color: '#0f172a' }}>{row.quarter}</td>
@@ -104,7 +148,7 @@ function TaxLedgerPage({ user }) {
                   </span>
                 </td>
               </tr>
-            ))}
+            )))}
           </tbody>
         </table>
       </div>

@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
 
 function AdminContactInquiriesPage() {
-  const [callbacks, setCallbacks] = useState([
-    { id: 1, name: 'Rajesh Sharma', phone: '+91 98765 43210', topic: 'Franchise & Binary Commission Plan', time: '10 mins ago', status: 'Pending' },
-    { id: 2, name: 'Priya Patel', phone: '+91 91234 56789', topic: 'KYC Document Verification Delay', time: '45 mins ago', status: 'Contacted' },
-  ]);
+  const [callbacks, setCallbacks] = useState([]);
 
   const [toastMsg, setToastMsg] = useState('');
 
@@ -66,7 +63,12 @@ function AdminContactInquiriesPage() {
         </h3>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-          {callbacks.map((c) => (
+          {callbacks.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--text-muted)', fontSize: '0.875rem' }}>
+              No pending phone callback requests in queue.
+            </div>
+          ) : (
+            callbacks.map((c) => (
             <div
               key={c.id}
               style={{
@@ -114,7 +116,7 @@ function AdminContactInquiriesPage() {
                 )}
               </div>
             </div>
-          ))}
+          )))}
         </div>
       </div>
     </div>

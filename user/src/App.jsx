@@ -44,6 +44,7 @@ import LandingPage from './pages/landing/LandingPage';
 import DirectIncomePage from './pages/income/DirectIncomePage';
 import LevelIncomePage from './pages/income/LevelIncomePage';
 import MyIncomePage from './pages/income/MyIncomePage';
+import SponsorOnboardingPage from './pages/SponsorOnboardingPage';
 import {
   getSystemStatus,
   getUserInfo,
@@ -58,6 +59,8 @@ import { redirectToSocialProvider, handleSocialOAuthCallback } from './utils/soc
 // Canonical route mapping for legacy keys and aliases
 export const pageToRouteMap = {
   // Main
+  'onboarding/sponsor': '/onboarding/sponsor',
+  'sponsor-onboarding': '/onboarding/sponsor',
   dashboard: '/dashboard',
   sales: '/dashboard',
 
@@ -222,6 +225,10 @@ function ProtectedRoute({ user, loading, appName }) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
+  if (user.sponsor_onboarding_status === 'pending' || user.has_pending_sponsor_onboarding) {
+    return <Navigate to="/onboarding/sponsor" replace />;
+  }
+
   return <Outlet />;
 }
 
@@ -232,6 +239,9 @@ function PublicRoute({ user, loading, appName, redirectIfAuthenticated = true })
   }
 
   if (user && redirectIfAuthenticated) {
+    if (user.sponsor_onboarding_status === 'pending' || user.has_pending_sponsor_onboarding) {
+      return <Navigate to="/onboarding/sponsor" replace />;
+    }
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -358,12 +368,24 @@ function AppContent() {
     }
   };
 
+  const handleOnboardingComplete = (updatedUser) => {
+    setUser(updatedUser);
+    navigate('/dashboard', { replace: true });
+  };
+
   const handleGoogleAuthSuccess = (res) => {
     if (res?.token) {
       localStorage.setItem('user_token', res.token);
       setToken(res.token);
       setUser(res.user);
-      navigate('/dashboard', { replace: true });
+      const isPending = res.requires_sponsor_onboarding ||
+        res.user?.sponsor_onboarding_status === 'pending' ||
+        res.user?.has_pending_sponsor_onboarding;
+      if (isPending) {
+        navigate('/onboarding/sponsor', { replace: true });
+      } else {
+        navigate('/dashboard', { replace: true });
+      }
     }
   };
 
@@ -394,7 +416,11 @@ function AppContent() {
           path="/"
           element={
             user ? (
-              <Navigate to="/dashboard" replace />
+              user.sponsor_onboarding_status === 'pending' || user.has_pending_sponsor_onboarding ? (
+                <Navigate to="/onboarding/sponsor" replace />
+              ) : (
+                <Navigate to="/dashboard" replace />
+              )
             ) : (
               <LandingPage
                 onLoginClick={() => handleNavigate('/login')}
@@ -513,6 +539,26 @@ function AppContent() {
         />
       </Route>
 
+      {/* Standalone Sponsor ID Onboarding Route */}
+      <Route
+        path="/onboarding/sponsor"
+        element={
+          loading ? (
+            <LoadingScreen appName={appName} />
+          ) : !user ? (
+            <Navigate to="/login" replace />
+          ) : !(user.sponsor_onboarding_status === 'pending' || user.has_pending_sponsor_onboarding) ? (
+            <Navigate to="/dashboard" replace />
+          ) : (
+            <SponsorOnboardingPage
+              user={user}
+              onComplete={handleOnboardingComplete}
+              onLogout={handleLogout}
+            />
+          )
+        }
+      />
+
       {/* ============================================================== */}
       {/* PROTECTED ROUTES (Requires Active Member Authentication)      */}
       {/* ============================================================== */}
@@ -557,7 +603,7 @@ function AppContent() {
           <Route path="/connections-referral" element={<Navigate to="/network/referral" replace />} />
 
           {/* 4. Settings & Profile */}
-          <Route path="/profile" element={<PersonalProfile user={user} onNavigate={handleNavigate} />} />
+          <Route path="/profile" element={<PersonalProfile user={user} onNavigate={handleNavigate} onUpdateUser={setUser} />} />
           <Route path="/profile/security" element={<SecurityPassword user={user} onNavigate={handleNavigate} />} />
           <Route path="/security" element={<Navigate to="/profile/security" replace />} />
           <Route path="/security-password" element={<Navigate to="/profile/security" replace />} />

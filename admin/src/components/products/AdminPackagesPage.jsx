@@ -1,13 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import api from '../../api/axios';
-import {
-  isRequired,
-  isValidNumber,
-  isValidPercentage,
-  FieldError,
-  getInputErrorStyle,
-  extractBackendErrors,
-} from '../../utils/validation';
+import { getBusinessEntities, getFreelancers } from '../../api/adminEntityService';
 
 function AdminPackagesPage() {
   const [viewMode, setViewMode] = useState('table'); // 'table' | 'grid'
@@ -30,37 +23,39 @@ function AdminPackagesPage() {
     'Business Growth',
   ];
 
-  // Registered Businesses & Freelancers
-  const registeredBusinesses = [
-    'GrowthX Media Solutions',
-    'Skyline Technologies Pvt Ltd',
-    'AddNet Tax Advisory',
-  ];
-
-  const registeredFreelancers = [
-    'Priya Patel (UI/UX Designer)',
-    'Rohan Sharma (Full Stack Dev)',
-    'Amit Kumar (SEO Specialist)',
-  ];
+  // Registered Businesses & Freelancers from Database
+  const [registeredBusinesses, setRegisteredBusinesses] = useState([]);
+  const [registeredFreelancers, setRegisteredFreelancers] = useState([]);
 
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(''), 3000);
   };
 
-  // Fetch Packages from MySQL Database
+  // Fetch Packages and Entity Owners from MySQL Database
   const loadPackages = async () => {
     setLoading(true);
     try {
-      const res = await api.get('/catalog/packages');
-      if (res.data?.packages) {
-        setPackages(res.data.packages.map((k) => ({
+      const [pkgRes, bizRes, freeRes] = await Promise.allSettled([
+        api.get('/catalog/packages'),
+        getBusinessEntities(),
+        getFreelancers(),
+      ]);
+
+      if (bizRes.status === 'fulfilled' && bizRes.value?.businesses) {
+        setRegisteredBusinesses(bizRes.value.businesses.map((b) => b.name || b.business_name).filter(Boolean));
+      }
+      if (freeRes.status === 'fulfilled' && freeRes.value?.freelancers) {
+        setRegisteredFreelancers(freeRes.value.freelancers.map((f) => f.name || f.full_name).filter(Boolean));
+      }
+      if (pkgRes.status === 'fulfilled' && pkgRes.value?.data?.packages) {
+        setPackages(pkgRes.value.data.packages.map((k) => ({
           ...k,
           price: Number(k.price) || 0,
           adminCommissionPercent: Number(k.commission_percent ?? k.adminCommissionPercent) || 18,
           billingCycle: k.billingCycle || 'Monthly Recurring',
           ownerType: k.ownerType || 'business',
-          ownerName: k.ownerName || 'Skyline Technologies Pvt Ltd',
+          ownerName: k.ownerName || '',
           image: k.image || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400',
         })));
       }
@@ -80,7 +75,7 @@ function AdminPackagesPage() {
     name: '',
     category: categoriesList[0],
     ownerType: 'business',
-    ownerName: registeredBusinesses[0],
+    ownerName: registeredBusinesses[0] || '',
     price: '',
     adminCommissionPercent: 18,
     billingCycle: 'Monthly Recurring',
@@ -91,7 +86,7 @@ function AdminPackagesPage() {
     setFormData({
       ...formData,
       ownerType: type,
-      ownerName: type === 'business' ? registeredBusinesses[0] : registeredFreelancers[0],
+      ownerName: type === 'business' ? (registeredBusinesses[0] || '') : (registeredFreelancers[0] || ''),
     });
   };
 
@@ -209,6 +204,18 @@ function AdminPackagesPage() {
     } finally {
       setSaving(false);
     }
+
+    setShowAddModal(false);
+    setFormData({
+      name: '',
+      category: categoriesList[0],
+      ownerType: 'business',
+      ownerName: registeredBusinesses[0] || '',
+      price: '',
+      adminCommissionPercent: 18,
+      billingCycle: 'Monthly Recurring',
+      image: '',
+    });
   };
 
 
@@ -600,9 +607,13 @@ function AdminPackagesPage() {
                   style={getInputErrorStyle(modalErrors.ownerName)}
                   required
                 >
-                  {(formData.ownerType === 'business' ? registeredBusinesses : registeredFreelancers).map((name) => (
-                    <option key={name} value={name}>{name}</option>
-                  ))}
+                  {(formData.ownerType === 'business' ? registeredBusinesses : registeredFreelancers).length === 0 ? (
+                    <option value="">No registered {formData.ownerType === 'business' ? 'businesses' : 'freelancers'}</option>
+                  ) : (
+                    (formData.ownerType === 'business' ? registeredBusinesses : registeredFreelancers).map((name) => (
+                      <option key={name} value={name}>{name}</option>
+                    ))
+                  )}
                 </select>
                 <FieldError error={modalErrors.ownerName} />
               </div>

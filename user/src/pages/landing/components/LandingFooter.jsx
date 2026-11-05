@@ -1,3 +1,4 @@
+import { useBranding } from '../../../utils/branding';
 import React from 'react';
 import {
   Building2,
@@ -9,6 +10,7 @@ import {
 } from 'lucide-react';
 
 function LandingFooter({ onLoginClick, onRegisterClick, onNavigateLegal, onScrollToSection }) {
+  const { appName, logoUrl } = useBranding();
   return (
     <footer className="cb-footer">
       <div className="cb-container">
@@ -16,14 +18,14 @@ function LandingFooter({ onLoginClick, onRegisterClick, onNavigateLegal, onScrol
           {/* Column 1: Company Brand */}
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1rem' }}>
-              <img src="/logo.png" alt="Vyapar AdNET" style={{ width: "36px", height: "36px", borderRadius: "50%" }} />
+              <img src={logoUrl || "/logo.png"} alt={appName} style={{ width: "36px", height: "36px", borderRadius: "50%", objectFit: "contain" }} onError={(e) => { e.target.src = "/logo.png"; }} />
               <span style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0F4C81', letterSpacing: '-0.02em', fontFamily: 'Poppins, sans-serif' }}>
-                ADD<span style={{ color: "#FF7A00" }}>NET</span>
+                {appName || 'Vyapar AdNET'}
               </span>
             </div>
 
             <p style={{ fontSize: '0.85rem', color: '#64748b', lineHeight: 1.6, marginBottom: '1.25rem' }}>
-              AddNet is an advertising & promotional marketplace network empowering IT companies, developers, agencies, and service providers to get genuine customers.
+              {appName || 'Vyapar AdNET'} is an advertising & promotional marketplace network empowering IT companies, developers, agencies, and service providers to get genuine customers.
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.82rem', color: '#475569' }}>
@@ -59,7 +61,7 @@ function LandingFooter({ onLoginClick, onRegisterClick, onNavigateLegal, onScrol
               <li><a href="#how-it-works" onClick={() => onScrollToSection && onScrollToSection('how-it-works')}>How It Works (7 Steps)</a></li>
               <li><a href="#infographic" onClick={() => onScrollToSection && onScrollToSection('infographic')}>Business Flow Infographic</a></li>
               <li><a href="#benefits" onClick={() => onScrollToSection && onScrollToSection('benefits')}>Provider & Client Benefits</a></li>
-              <li><a href="#why-us" onClick={() => onScrollToSection && onScrollToSection('why-us')}>Why Choose AddNet</a></li>
+              <li><a href="#why-us" onClick={() => onScrollToSection && onScrollToSection('why-us')}>Why Choose {appName || 'Vyapar AdNET'}</a></li>
               <li><a href="#pricing" onClick={() => onScrollToSection && onScrollToSection('pricing')}>Pricing & Partner Plans</a></li>
               <li><a href="#faq" onClick={() => onScrollToSection && onScrollToSection('faq')}>Frequently Asked Questions</a></li>
             </ul>
@@ -117,7 +119,7 @@ function LandingFooter({ onLoginClick, onRegisterClick, onNavigateLegal, onScrol
         {/* Bottom Bar */}
         <div className="cb-footer-bottom">
           <div>
-            © {new Date().getFullYear()} <strong>AddNet Promoters Network Ltd</strong>. All rights reserved.
+            © {new Date().getFullYear()} <strong>{appName || 'Vyapar AdNET'} Promoters Network Ltd</strong>. All rights reserved.
           </div>
           <div style={{ display: 'flex', gap: '1.5rem', color: '#64748b' }}>
             <span>Made with precision for Indian Enterprises</span>

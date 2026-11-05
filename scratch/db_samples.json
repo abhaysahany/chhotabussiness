@@ -1,0 +1,143 @@
+{
+    "orders": [
+        {
+            "id": 702,
+            "created_at": "2026-11-03 12:01:56",
+            "updated_at": "2026-11-03 12:04:07"
+        },
+        {
+            "id": 554,
+            "created_at": "2026-11-03 10:30:50",
+            "updated_at": "2026-11-03 10:31:54"
+        },
+        {
+            "id": 378,
+            "created_at": "2026-11-03 09:50:31",
+            "updated_at": "2026-11-03 09:57:48"
+        }
+    ],
+    "sale_payments": [
+        {
+            "id": 809,
+            "payment_date": "2026-11-03 12:01:56",
+            "created_at": "2026-11-03 12:01:56",
+            "updated_at": "2026-11-03 12:04:07"
+        },
+        {
+            "id": 678,
+            "payment_date": "2026-11-03 10:30:50",
+            "created_at": "2026-11-03 10:30:50",
+            "updated_at": "2026-11-03 10:30:50"
+        },
+        {
+            "id": 524,
+            "payment_date": "2026-11-03 09:57:48",
+            "created_at": "2026-11-03 09:57:48",
+            "updated_at": "2026-11-03 09:57:48"
+        }
+    ],
+    "order_payment_dumps": [
+        {
+            "id": 103,
+            "order_id": 702,
+            "status": "approved",
+            "dump_amount": "1750.00",
+            "created_at": "2026-11-03 12:03:09",
+            "updated_at": "2026-11-03 12:03:53",
+            "approved_at": "2026-11-03 12:03:53",
+            "rejected_at": null
+        },
+        {
+            "id": 35,
+            "order_id": 554,
+            "status": "approved",
+            "dump_amount": "1750.00",
+            "created_at": "2026-11-03 10:31:38",
+            "updated_at": "2026-11-03 10:31:54",
+            "approved_at": "2026-11-03 10:31:54",
+            "rejected_at": null
+        }
+    ],
+    "users": [
+        {
+            "id": 1067,
+            "name": "ggdgdg",
+            "email": "t@gmail.com",
+            "created_at": "2026-11-04 07:17:58",
+            "updated_at": "2026-11-04 07:17:58",
+            "email_verified_at": "2026-11-04 07:17:58"
+        },
+        {
+            "id": 1066,
+            "name": "Battleground mobile India",
+            "email": "ps2469382@gmail.com",
+            "created_at": "2026-11-04 06:46:48",
+            "updated_at": "2026-11-04 06:46:48",
+            "email_verified_at": "2026-11-04 06:46:48"
+        },
+        {
+            "id": 75,
+            "name": "Tamish Pratap",
+            "email": "tamishpratap6260@gmail.com",
+            "created_at": "2026-11-02 09:34:31",
+            "updated_at": "2026-11-03 12:02:44",
+            "email_verified_at": "2026-11-02 09:34:31"
+        }
+    ],
+    "business_entities": [
+        {
+            "id": 11,
+            "created_at": "2026-08-18 12:45:25",
+            "updated_at": "2026-08-18 13:02:39"
+        },
+        {
+            "id": 3,
+            "created_at": "2026-08-17 06:41:24",
+            "updated_at": "2026-08-17 06:41:24"
+        },
+        {
+            "id": 2,
+            "created_at": "2026-08-17 06:41:24",
+            "updated_at": "2026-08-17 06:41:24"
+        }
+    ],
+    "direct_incomes": [
+        {
+            "id": 3,
+            "created_at": "2026-11-03 11:57:24",
+            "updated_at": "2026-11-03 11:57:24"
+        },
+        {
+            "id": 2,
+            "created_at": "2026-11-03 11:55:19",
+            "updated_at": "2026-11-03 11:55:19"
+        }
+    ],
+    "level_incomes": [
+        {
+            "id": 3,
+            "created_at": "2026-11-03 11:57:24",
+            "updated_at": "2026-11-03 11:57:24"
+        },
+        {
+            "id": 2,
+            "created_at": "2026-11-03 11:55:19",
+            "updated_at": "2026-11-03 11:55:19"
+        }
+    ],
+    "support_tickets": [
+        {
+            "id": 2,
+            "status": "Resolved",
+            "created_at": "2026-10-26 10:30:03",
+            "updated_at": "2026-10-26 10:30:03"
+        },
+        {
+            "id": 1,
+            "status": "In Progress",
+            "created_at": "2026-10-26 10:30:03",
+            "updated_at": "2026-10-26 10:30:03"
+        }
+    ],
+    "notifications": []
+}

@@ -1,3 +1,4 @@
+import { useBranding } from '../../../utils/branding';
 import React from 'react';
 import {
   Target,
@@ -11,6 +12,7 @@ import {
 } from 'lucide-react';
 
 function WhyChooseUsSection() {
+  const { appName } = useBranding();
   const features = [
     {
       title: 'Genuine Verified Leads',
@@ -60,7 +62,7 @@ function WhyChooseUsSection() {
             <span>Market Advantages</span>
           </div>
           <h2 className="cb-section-title">
-            Why Choose AddNet?
+            Why Choose {appName || 'Vyapar AdNET'}?
           </h2>
           <p className="cb-section-subtitle">
             We operate on a pure win-win promoter model designed to scale your client base with maximum efficiency.

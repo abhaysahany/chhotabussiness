@@ -1,0 +1,1566 @@
+{
+  "admin": [
+    {
+      "file": "admin/src/App.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 2
+    },
+    {
+      "file": "admin/src/main.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "admin/src/api/adminCatalogService.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "admin/src/api/adminContentService.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "admin/src/api/adminEntityService.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "admin/src/api/adminNotificationService.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "admin/src/api/adminOrdersService.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "admin/src/api/adminPayoutService.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 1
+    },
+    {
+      "file": "admin/src/api/adminRewardService.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "admin/src/api/adminSalesService.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 1
+    },
+    {
+      "file": "admin/src/api/adminService.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "admin/src/api/adminSupportTopicService.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "admin/src/api/axios.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 2
+    },
+    {
+      "file": "admin/src/components/AdminLoginForm.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [
+        "Demo",
+        "demo"
+      ],
+      "static_metric_occurrences": 70
+    },
+    {
+      "file": "admin/src/components/AdminSupportDesk.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 25
+    },
+    {
+      "file": "admin/src/components/auth/AdminProtectedRoute.jsx",
+      "has_api": false,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 1
+    },
+    {
+      "file": "admin/src/components/content/AdminContentLibraryPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 157
+    },
+    {
+      "file": "admin/src/components/content/AdminContentSupportUploadsPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 82
+    },
+    {
+      "file": "admin/src/components/dashboard/AdminDashboardOverview.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 18,
+      "mock_keywords": [],
+      "static_metric_occurrences": 307
+    },
+    {
+      "file": "admin/src/components/entities/AdminBusinessEntityPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 79
+    },
+    {
+      "file": "admin/src/components/entities/AdminBusinessPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 61
+    },
+    {
+      "file": "admin/src/components/entities/AdminCategoryPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 35
+    },
+    {
+      "file": "admin/src/components/entities/AdminEntityCommissionPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 124
+    },
+    {
+      "file": "admin/src/components/entities/AdminFreelancerPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 49
+    },
+    {
+      "file": "admin/src/components/layout/AdminFooter.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "admin/src/components/layout/AdminHeader.jsx",
+      "has_api": false,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 4
+    },
+    {
+      "file": "admin/src/components/layout/AdminLayout.jsx",
+      "has_api": false,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "admin/src/components/layout/AdminSidebar.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 19
+    },
+    {
+      "file": "admin/src/components/pages/AdminNotFoundPage.jsx",
+      "has_api": false,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 7
+    },
+    {
+      "file": "admin/src/components/pages/StarterPage.jsx",
+      "has_api": false,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 1
+    },
+    {
+      "file": "admin/src/components/products/AdminPackagesPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 19
+    },
+    {
+      "file": "admin/src/components/products/AdminProductsPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 8
+    },
+    {
+      "file": "admin/src/components/products/AdminProductsServicesPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [
+        "Sample"
+      ],
+      "static_metric_occurrences": 75
+    },
+    {
+      "file": "admin/src/components/products/AdminServicesPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 13
+    },
+    {
+      "file": "admin/src/components/sales/AdminCreateSalePage.jsx",
+      "has_api": false,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "admin/src/components/sales/AdminDumpRequestsPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 105
+    },
+    {
+      "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 353
+    },
+    {
+      "file": "admin/src/components/sales/AdminPaymentHistoryPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 157
+    },
+    {
+      "file": "admin/src/components/sales/AdminPaymentReportsPage.jsx",
+      "has_api": false,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 14
+    },
+    {
+      "file": "admin/src/components/sales/AdminPendingOrdersPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 206
+    },
+    {
+      "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+      "has_api": false,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 103
+    },
+    {
+      "file": "admin/src/components/sales/AdminSalesReportsPage.jsx",
+      "has_api": false,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "admin/src/components/settings/AdminSettingsPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [
+        "sample"
+      ],
+      "static_metric_occurrences": 168
+    },
+    {
+      "file": "admin/src/components/support/AdminContactInquiriesPage.jsx",
+      "has_api": false,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 19
+    },
+    {
+      "file": "admin/src/components/support/AdminKnowledgeBasePage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 13
+    },
+    {
+      "file": "admin/src/components/support/AdminLiveHelpdeskPage.jsx",
+      "has_api": false,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 15
+    },
+    {
+      "file": "admin/src/components/support/AdminSendNotificationPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 81
+    },
+    {
+      "file": "admin/src/components/support/AdminSupportTicketsPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 21
+    },
+    {
+      "file": "admin/src/components/users/AdminPayoutHistoryPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 68
+    },
+    {
+      "file": "admin/src/components/users/AdminPayoutReportsPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 61
+    },
+    {
+      "file": "admin/src/components/users/AdminPayoutRequestsPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 112
+    },
+    {
+      "file": "admin/src/components/users/AdminRewardsClaimPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 64
+    },
+    {
+      "file": "admin/src/components/users/AdminRewardsPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 94
+    },
+    {
+      "file": "admin/src/components/users/AdminUserDetailsPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 66
+    },
+    {
+      "file": "admin/src/components/users/AdminUserKycPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 72
+    },
+    {
+      "file": "admin/src/utils/branding.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    }
+  ],
+  "user": [
+    {
+      "file": "user/src/App.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 11
+    },
+    {
+      "file": "user/src/main.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "user/src/api/axios.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 2
+    },
+    {
+      "file": "user/src/api/publicEntityService.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "user/src/api/userBusinessReportsService.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "user/src/api/userCatalogService.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "user/src/api/userContentService.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "user/src/api/userIncomeService.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "user/src/api/userNetworkService.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "user/src/api/userNotificationService.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "user/src/api/userPayoutService.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "user/src/api/userRewardService.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "user/src/api/userService.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "user/src/api/userSupportService.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "user/src/api/userSupportTopicService.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "user/src/components/LoginForm.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 33
+    },
+    {
+      "file": "user/src/components/RegisterForm.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [
+        "Demo"
+      ],
+      "static_metric_occurrences": 37
+    },
+    {
+      "file": "user/src/components/SocialAuthModal.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [
+        "Demo"
+      ],
+      "static_metric_occurrences": 42
+    },
+    {
+      "file": "user/src/components/common/DataTable.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 6
+    },
+    {
+      "file": "user/src/components/dashboard/DashboardOverview.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 12,
+      "mock_keywords": [],
+      "static_metric_occurrences": 99
+    },
+    {
+      "file": "user/src/components/payments/BaseCommission.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 31
+    },
+    {
+      "file": "user/src/components/payments/MyAchievements.jsx",
+      "has_api": false,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 30
+    },
+    {
+      "file": "user/src/components/payments/PaymentTransactions.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 28
+    },
+    {
+      "file": "user/src/components/payments/RewardDetails.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 75
+    },
+    {
+      "file": "user/src/components/payments/RewardsClaimed.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 32
+    },
+    {
+      "file": "user/src/components/payments/TeamCommission.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 32
+    },
+    {
+      "file": "user/src/components/payouts/CurrentPayouts.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 99
+    },
+    {
+      "file": "user/src/components/payouts/PayoutHistory.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 78
+    },
+    {
+      "file": "user/src/components/payouts/RequestWithdrawal.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 95
+    },
+    {
+      "file": "user/src/components/payouts/TdsTaxSummary.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 36
+    },
+    {
+      "file": "user/src/components/settings/BankAccounts.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [
+        "demo"
+      ],
+      "static_metric_occurrences": 162
+    },
+    {
+      "file": "user/src/components/settings/KycVerification.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 110
+    },
+    {
+      "file": "user/src/components/settings/PersonalProfile.jsx",
+      "has_api": false,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 14
+    },
+    {
+      "file": "user/src/components/settings/SecurityPassword.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 15
+    },
+    {
+      "file": "user/src/components/support/ContactSupport.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 22
+    },
+    {
+      "file": "user/src/components/support/KnowledgeBase.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 9
+    },
+    {
+      "file": "user/src/components/support/LiveHelpdesk.jsx",
+      "has_api": false,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 10
+    },
+    {
+      "file": "user/src/components/support/SupportSystem.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [
+        "demo"
+      ],
+      "static_metric_occurrences": 28
+    },
+    {
+      "file": "user/src/components/support/SupportTickets.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 82
+    },
+    {
+      "file": "user/src/layout/Footer.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "user/src/layout/Header.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 8
+    },
+    {
+      "file": "user/src/layout/Layout.jsx",
+      "has_api": false,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "user/src/layout/Sidebar.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "user/src/pages/BusinessReportsPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 80
+    },
+    {
+      "file": "user/src/pages/BusinessSalesReportPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [
+        "Sample"
+      ],
+      "static_metric_occurrences": 154
+    },
+    {
+      "file": "user/src/pages/EmptyPage.jsx",
+      "has_api": false,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 1
+    },
+    {
+      "file": "user/src/pages/GenAiDashboard.jsx",
+      "has_api": false,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 61
+    },
+    {
+      "file": "user/src/pages/NetworkTreePage.jsx",
+      "has_api": false,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 5
+    },
+    {
+      "file": "user/src/pages/PrivacyPolicyPage.jsx",
+      "has_api": false,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 25
+    },
+    {
+      "file": "user/src/pages/SponsorOnboardingPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 35
+    },
+    {
+      "file": "user/src/pages/TermsAndConditionsPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [
+        "fake"
+      ],
+      "static_metric_occurrences": 26
+    },
+    {
+      "file": "user/src/pages/UserContentSupportPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 42
+    },
+    {
+      "file": "user/src/pages/UserMediaContentPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 42
+    },
+    {
+      "file": "user/src/pages/UserNotificationsPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 37
+    },
+    {
+      "file": "user/src/pages/UserProductsServicesPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 76
+    },
+    {
+      "file": "user/src/pages/UserSocialPlatformsPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [
+        "demo"
+      ],
+      "static_metric_occurrences": 50
+    },
+    {
+      "file": "user/src/pages/income/DirectIncomePage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 77
+    },
+    {
+      "file": "user/src/pages/income/LevelIncomePage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 101
+    },
+    {
+      "file": "user/src/pages/income/MyIncomePage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 119
+    },
+    {
+      "file": "user/src/pages/landing/LandingPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "user/src/pages/landing/components/AboutUsSection.jsx",
+      "has_api": false,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [
+        "demo"
+      ],
+      "static_metric_occurrences": 11
+    },
+    {
+      "file": "user/src/pages/landing/components/BenefitsSection.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 9
+    },
+    {
+      "file": "user/src/pages/landing/components/CategoriesSection.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 8
+    },
+    {
+      "file": "user/src/pages/landing/components/FaqSection.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 6
+    },
+    {
+      "file": "user/src/pages/landing/components/FinalCtaSection.jsx",
+      "has_api": false,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 13
+    },
+    {
+      "file": "user/src/pages/landing/components/HeroSection.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 33
+    },
+    {
+      "file": "user/src/pages/landing/components/HowItWorksSection.jsx",
+      "has_api": false,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 4
+    },
+    {
+      "file": "user/src/pages/landing/components/InfographicSection.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 21
+    },
+    {
+      "file": "user/src/pages/landing/components/LandingFooter.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 11
+    },
+    {
+      "file": "user/src/pages/landing/components/LandingNavbar.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 7
+    },
+    {
+      "file": "user/src/pages/landing/components/PricingSection.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 20
+    },
+    {
+      "file": "user/src/pages/landing/components/StatsSection.jsx",
+      "has_api": false,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 18
+    },
+    {
+      "file": "user/src/pages/landing/components/TestimonialsSection.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 13
+    },
+    {
+      "file": "user/src/pages/landing/components/WhyChooseUsSection.jsx",
+      "has_api": false,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [
+        "fake"
+      ],
+      "static_metric_occurrences": 3
+    },
+    {
+      "file": "user/src/pages/network/DirectConnectionsPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 5
+    },
+    {
+      "file": "user/src/pages/network/GenealogyTreePage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 9
+    },
+    {
+      "file": "user/src/pages/network/ReferralLinkPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 11
+    },
+    {
+      "file": "user/src/pages/network/TeamConnectionsPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 9
+    },
+    {
+      "file": "user/src/pages/reports/MlmEarningsPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 98
+    },
+    {
+      "file": "user/src/pages/reports/RevenueAnalyticsPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 28
+    },
+    {
+      "file": "user/src/pages/reports/SalesReportPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 49
+    },
+    {
+      "file": "user/src/pages/reports/TaxLedgerPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 59
+    },
+    {
+      "file": "user/src/utils/branding.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "user/src/utils/formatters.js",
+      "has_api": false,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 12
+    },
+    {
+      "file": "user/src/utils/googleOAuth.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "user/src/utils/imageCompressor.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 2
+    },
+    {
+      "file": "user/src/utils/qrCode.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 16
+    },
+    {
+      "file": "user/src/utils/socialOAuth.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    }
+  ],
+  "entity": [
+    {
+      "file": "entity/src/App.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "entity/src/main.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "entity/src/api/axios.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 2
+    },
+    {
+      "file": "entity/src/api/entityService.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 8
+    },
+    {
+      "file": "entity/src/components/EntityTermsModal.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 19
+    },
+    {
+      "file": "entity/src/components/layout/EntityFooter.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "entity/src/components/layout/EntityHeader.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 1
+    },
+    {
+      "file": "entity/src/components/layout/EntityLayout.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "entity/src/components/layout/EntitySidebar.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "entity/src/pages/EntityBankSettlementsPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 60
+    },
+    {
+      "file": "entity/src/pages/EntityCancelledOrders.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 116
+    },
+    {
+      "file": "entity/src/pages/EntityCreateOrder.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 126
+    },
+    {
+      "file": "entity/src/pages/EntityCreateSale.jsx",
+      "has_api": false,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "entity/src/pages/EntityDashboard.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 18,
+      "mock_keywords": [],
+      "static_metric_occurrences": 295
+    },
+    {
+      "file": "entity/src/pages/EntityHelp.jsx",
+      "has_api": false,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "entity/src/pages/EntityLogin.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [
+        "Demo",
+        "demo"
+      ],
+      "static_metric_occurrences": 57
+    },
+    {
+      "file": "entity/src/pages/EntityOrders.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 160
+    },
+    {
+      "file": "entity/src/pages/EntityPaymentReceiptsPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 74
+    },
+    {
+      "file": "entity/src/pages/EntityPayments.jsx",
+      "has_api": false,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "entity/src/pages/EntityPayoutReportsPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 189
+    },
+    {
+      "file": "entity/src/pages/EntityPayoutTransactionsPage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 153
+    },
+    {
+      "file": "entity/src/pages/EntityReceiveBalancePage.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 119
+    },
+    {
+      "file": "entity/src/pages/EntitySales.jsx",
+      "has_api": false,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    },
+    {
+      "file": "entity/src/pages/EntitySettings.jsx",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 1
+    },
+    {
+      "file": "entity/src/pages/EntitySupport.jsx",
+      "has_api": false,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 2
+    },
+    {
+      "file": "entity/src/utils/branding.js",
+      "has_api": true,
+      "hardcoded_array_count": 0,
+      "hardcoded_array_names": [],
+      "chart_references": 0,
+      "mock_keywords": [],
+      "static_metric_occurrences": 0
+    }
+  ]
+}

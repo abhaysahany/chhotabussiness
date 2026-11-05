@@ -84,7 +84,7 @@ class ProductCatalogController extends Controller
         }
 
         $ownerType = $request->input('owner_type') ?: 'business';
-        $ownerName = $request->input('owner_name') ?: 'Skyline Technologies Pvt Ltd';
+        $ownerName = $request->input('owner_name') ?: ($request->user()?->business_name ?? $request->user()?->name ?? null);
         $commissionConfig = EntityCommissionSetting::resolveForEntity($ownerType, $ownerName);
 
         $adminCommissionPercent = $commissionConfig['total_commission_percent'];

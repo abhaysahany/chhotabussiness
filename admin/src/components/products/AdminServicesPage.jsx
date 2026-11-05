@@ -115,9 +115,9 @@ function AdminServicesPage() {
   const handleOwnerTypeChange = (type) => {
     let defaultOwner = '';
     if (type === 'business') {
-      defaultOwner = businessesList.length > 0 ? businessesList[0].business_name : 'Skyline Technologies Pvt Ltd';
+      defaultOwner = businessesList.length > 0 ? (businessesList[0].business_name || businessesList[0].name || '') : '';
     } else {
-      defaultOwner = freelancersList.length > 0 ? freelancersList[0].full_name : 'Priya Patel (UI/UX Designer)';
+      defaultOwner = freelancersList.length > 0 ? (freelancersList[0].full_name || freelancersList[0].name || '') : '';
     }
 
     setFormData((prev) => ({
@@ -682,7 +682,7 @@ function AdminServicesPage() {
                           </option>
                         ))
                       ) : (
-                        <option value="Priya Patel">Priya Patel</option>
+                        <option value="">No freelancers registered</option>
                       )
                     )}
                   </select>

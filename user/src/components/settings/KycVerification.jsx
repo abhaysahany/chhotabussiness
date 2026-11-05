@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { submitPanAadhaarKyc } from '../../api/userPayoutService';
 import { getUserFreshProfile } from '../../api/userRewardService';
 import { compressImageFile } from '../../utils/imageCompressor';
@@ -15,15 +15,103 @@ function KycVerification({ user, onNavigate }) {
   const [aadhaarFrontPreview, setAadhaarFrontPreview] = useState(user?.aadhaar_front_image || '');
   const [aadhaarBackPreview, setAadhaarBackPreview] = useState(user?.aadhaar_back_image || '');
 
+  // File names for UI display
+  const [panFileName, setPanFileName] = useState('');
+  const [aadhaarFrontFileName, setAadhaarFrontFileName] = useState('');
+  const [aadhaarBackFileName, setAadhaarBackFileName] = useState('');
+
+  // Field validation and touched states
+  const [errors, setErrors] = useState({
+    pan_number: '',
+    aadhaar_number: '',
+    pan_card_image: '',
+    aadhaar_front_image: '',
+    aadhaar_back_image: '',
+  });
+
+  const [touched, setTouched] = useState({
+    pan_number: false,
+    aadhaar_number: false,
+    pan_card_image: false,
+    aadhaar_front_image: false,
+    aadhaar_back_image: false,
+  });
+
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [modalImage, setModalImage] = useState(null);
 
+  // Field DOM refs for scrolling and focus on validation error
+  const panInputRef = useRef(null);
+  const aadhaarInputRef = useRef(null);
+  const panDocRef = useRef(null);
+  const aadhaarFrontDocRef = useRef(null);
+  const aadhaarBackDocRef = useRef(null);
+
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(''), 4500);
+  };
+
+  // --- Strict Validation Rules ---
+  const validatePan = (val) => {
+    const trimmed = (val || '').trim().toUpperCase();
+    if (!trimmed) {
+      return 'PAN number is required.';
+    }
+    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]$/;
+    if (!panRegex.test(trimmed)) {
+      return 'Enter a valid 10-character PAN number (ABCDE1234F).';
+    }
+    return '';
+  };
+
+  const validateAadhaar = (val) => {
+    const raw = (val || '').trim();
+    if (!raw) {
+      return 'Aadhaar number is required.';
+    }
+    const digits = raw.replace(/\s+/g, '');
+    if (/\D/.test(digits)) {
+      return 'Aadhaar number must contain only numeric digits.';
+    }
+    if (digits.length !== 12) {
+      return 'Aadhaar number must contain exactly 12 digits.';
+    }
+    const aadhaarRegex = /^[0-9]{12}$/;
+    if (!aadhaarRegex.test(digits)) {
+      return 'Aadhaar number must contain exactly 12 digits.';
+    }
+    return '';
+  };
+
+  const validatePanDoc = (preview) => {
+    if (!preview) {
+      return 'Please upload a valid PAN Card document.';
+    }
+    return '';
+  };
+
+  const validateAadhaarFrontDoc = (front, back) => {
+    if (!front) {
+      return 'Please upload the Aadhaar Front Side document.';
+    }
+    if (back && front === back) {
+      return 'Front and Back side documents cannot be identical.';
+    }
+    return '';
+  };
+
+  const validateAadhaarBackDoc = (back, front) => {
+    if (!back) {
+      return 'Please upload the Aadhaar Back Side document.';
+    }
+    if (front && front === back) {
+      return 'Front and Back side documents cannot be identical.';
+    }
+    return '';
   };
 
   const fetchKycDetails = useCallback(async () => {
@@ -53,12 +141,90 @@ function KycVerification({ user, onNavigate }) {
   const isPending = kycStatus === 'pending' || kycStatus === 'under_process';
   const isVerified = kycStatus === 'verified' || kycStatus === 'approved';
   const isRejected = kycStatus === 'rejected';
-  const isUnsubmitted = !isPending && !isVerified && !isRejected;
 
-  // File upload handler with automatic client-side image compression
+  // --- Input Handlers with Real-Time Sanitization & Live Validation ---
+  const handlePanChange = (e) => {
+    // Convert to uppercase automatically, strip spaces & non-alphanumeric, max 10
+    const raw = e.target.value.toUpperCase();
+    const clean = raw.replace(/[^A-Z0-9]/g, '').slice(0, 10);
+    setPanNumber(clean);
+    if (touched.pan_number || errors.pan_number) {
+      setErrors((prev) => ({ ...prev, pan_number: validatePan(clean) }));
+    }
+  };
+
+  const handlePanBlur = () => {
+    setTouched((prev) => ({ ...prev, pan_number: true }));
+    setErrors((prev) => ({ ...prev, pan_number: validatePan(panNumber) }));
+  };
+
+  const handleAadhaarChange = (e) => {
+    // Only numeric digits (0-9), max 12 digits, preserve leading zeros
+    const clean = e.target.value.replace(/\D/g, '').slice(0, 12);
+    setAadhaarNumber(clean);
+    if (touched.aadhaar_number || errors.aadhaar_number) {
+      setErrors((prev) => ({ ...prev, aadhaar_number: validateAadhaar(clean) }));
+    }
+  };
+
+  const handleAadhaarPaste = (e) => {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData('text') || '';
+    const trimmed = pasted.trim();
+    // Normalize whitespace & hyphens
+    const cleaned = trimmed.replace(/[\s-]+/g, '');
+    if (/^\d{12}$/.test(cleaned)) {
+      setAadhaarNumber(cleaned);
+      setErrors((prev) => ({ ...prev, aadhaar_number: '' }));
+    } else {
+      // Do not silently truncate longer invalid values
+      const onlyDigits = cleaned.replace(/\D/g, '').slice(0, 12);
+      setAadhaarNumber(onlyDigits);
+      setTouched((prev) => ({ ...prev, aadhaar_number: true }));
+      setErrors((prev) => ({
+        ...prev,
+        aadhaar_number: 'Aadhaar number must contain exactly 12 digits.',
+      }));
+    }
+  };
+
+  const handleAadhaarBlur = () => {
+    setTouched((prev) => ({ ...prev, aadhaar_number: true }));
+    setErrors((prev) => ({ ...prev, aadhaar_number: validateAadhaar(aadhaarNumber) }));
+  };
+
+  // --- Document File Selection with Strict Format & Size Checks ---
   const handleFileChange = async (e, type) => {
     const file = e.target.files[0];
     if (!file) return;
+
+    const allowedMimes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+    const maxSizeBytes = 5 * 1024 * 1024; // 5MB
+
+    const fieldMap = {
+      pan: 'pan_card_image',
+      aadhaar_front: 'aadhaar_front_image',
+      aadhaar_back: 'aadhaar_back_image',
+    };
+    const errField = fieldMap[type];
+
+    // Validate MIME type
+    if (!allowedMimes.includes(file.type.toLowerCase())) {
+      const err = 'Invalid file format. Please upload a JPG, PNG, or WEBP image.';
+      setErrors((prev) => ({ ...prev, [errField]: err }));
+      showToast(`❌ ${err}`);
+      e.target.value = '';
+      return;
+    }
+
+    // Validate size limit (5MB)
+    if (file.size > maxSizeBytes) {
+      const err = 'File size exceeds 5MB limit. Please upload a smaller document.';
+      setErrors((prev) => ({ ...prev, [errField]: err }));
+      showToast(`❌ ${err}`);
+      e.target.value = '';
+      return;
+    }
 
     try {
       showToast('⏳ Compressing document image...');
@@ -66,11 +232,40 @@ function KycVerification({ user, onNavigate }) {
 
       if (type === 'pan') {
         setPanPreview(compressedDataUrl);
+        setPanFileName(`${file.name} (${(file.size / 1024).toFixed(0)} KB)`);
+        setErrors((prev) => ({ ...prev, pan_card_image: '' }));
       } else if (type === 'aadhaar_front') {
+        if (aadhaarBackPreview && compressedDataUrl === aadhaarBackPreview) {
+          const dupErr = 'Front and Back side documents cannot be identical.';
+          setErrors((prev) => ({ ...prev, aadhaar_front_image: dupErr }));
+          showToast(`❌ ${dupErr}`);
+          e.target.value = '';
+          return;
+        }
         setAadhaarFrontPreview(compressedDataUrl);
+        setAadhaarFrontFileName(`${file.name} (${(file.size / 1024).toFixed(0)} KB)`);
+        setErrors((prev) => ({
+          ...prev,
+          aadhaar_front_image: '',
+          aadhaar_back_image: aadhaarBackPreview && compressedDataUrl === aadhaarBackPreview ? 'Front and Back side documents cannot be identical.' : prev.aadhaar_back_image,
+        }));
       } else if (type === 'aadhaar_back') {
+        if (aadhaarFrontPreview && compressedDataUrl === aadhaarFrontPreview) {
+          const dupErr = 'Front and Back side documents cannot be identical.';
+          setErrors((prev) => ({ ...prev, aadhaar_back_image: dupErr }));
+          showToast(`❌ ${dupErr}`);
+          e.target.value = '';
+          return;
+        }
         setAadhaarBackPreview(compressedDataUrl);
+        setAadhaarBackFileName(`${file.name} (${(file.size / 1024).toFixed(0)} KB)`);
+        setErrors((prev) => ({
+          ...prev,
+          aadhaar_back_image: '',
+          aadhaar_front_image: aadhaarFrontPreview && compressedDataUrl === aadhaarFrontPreview ? 'Front and Back side documents cannot be identical.' : prev.aadhaar_front_image,
+        }));
       }
+
       showToast('✓ Document attached successfully!');
     } catch (err) {
       console.error('Image compression failed:', err);
@@ -78,24 +273,74 @@ function KycVerification({ user, onNavigate }) {
     }
   };
 
+  const handleRemoveDoc = (type) => {
+    if (type === 'pan') {
+      setPanPreview('');
+      setPanFileName('');
+      setErrors((prev) => ({ ...prev, pan_card_image: 'Please upload a valid PAN Card document.' }));
+    } else if (type === 'aadhaar_front') {
+      setAadhaarFrontPreview('');
+      setAadhaarFrontFileName('');
+      setErrors((prev) => ({ ...prev, aadhaar_front_image: 'Please upload the Aadhaar Front Side document.' }));
+    } else if (type === 'aadhaar_back') {
+      setAadhaarBackPreview('');
+      setAadhaarBackFileName('');
+      setErrors((prev) => ({ ...prev, aadhaar_back_image: 'Please upload the Aadhaar Back Side document.' }));
+    }
+  };
+
+  // --- Form Submission Handler with Full Pre-Flight Validation ---
   const handleKycSubmit = async (e) => {
     e.preventDefault();
 
-    const cleanPan = panNumber.trim().toUpperCase();
-    const cleanAadhaar = aadhaarNumber.replace(/\D/g, '');
+    const panErr = validatePan(panNumber);
+    const aadhaarErr = validateAadhaar(aadhaarNumber);
+    const panDocErr = validatePanDoc(panPreview);
+    const aadhaarFrontErr = validateAadhaarFrontDoc(aadhaarFrontPreview, aadhaarBackPreview);
+    const aadhaarBackErr = validateAadhaarBackDoc(aadhaarBackPreview, aadhaarFrontPreview);
 
-    if (cleanPan.length < 10) {
-      showToast('❌ Please enter a valid 10-character PAN Card number.');
-      return;
-    }
+    const validationErrors = {
+      pan_number: panErr,
+      aadhaar_number: aadhaarErr,
+      pan_card_image: panDocErr,
+      aadhaar_front_image: aadhaarFrontErr,
+      aadhaar_back_image: aadhaarBackErr,
+    };
 
-    if (cleanAadhaar.length < 12) {
-      showToast('❌ Please enter a valid 12-digit Aadhaar Card number.');
+    setErrors(validationErrors);
+    setTouched({
+      pan_number: true,
+      aadhaar_number: true,
+      pan_card_image: true,
+      aadhaar_front_image: true,
+      aadhaar_back_image: true,
+    });
+
+    if (panErr || aadhaarErr || panDocErr || aadhaarFrontErr || aadhaarBackErr) {
+      showToast('❌ Please resolve the highlighted validation errors.');
+
+      // Auto-focus and scroll to first invalid field
+      if (panErr && panInputRef.current) {
+        panInputRef.current.focus();
+        panInputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (aadhaarErr && aadhaarInputRef.current) {
+        aadhaarInputRef.current.focus();
+        aadhaarInputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (panDocErr && panDocRef.current) {
+        panDocRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (aadhaarFrontErr && aadhaarFrontDocRef.current) {
+        aadhaarFrontDocRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (aadhaarBackErr && aadhaarBackDocRef.current) {
+        aadhaarBackDocRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
       return;
     }
 
     setSubmitting(true);
     try {
+      const cleanPan = panNumber.trim().toUpperCase();
+      const cleanAadhaar = aadhaarNumber.replace(/\s+/g, '');
+
       const payload = {
         user_code: currentUser?.user_code || userCode,
         pan_number: cleanPan,
@@ -116,6 +361,17 @@ function KycVerification({ user, onNavigate }) {
         showToast(res.message || 'Failed to submit KYC.');
       }
     } catch (err) {
+      if (err.response?.status === 422 && err.response?.data?.errors) {
+        const backendErrs = err.response.data.errors;
+        setErrors((prev) => ({
+          ...prev,
+          pan_number: backendErrs.pan_number ? backendErrs.pan_number[0] : prev.pan_number,
+          aadhaar_number: backendErrs.aadhaar_number ? backendErrs.aadhaar_number[0] : prev.aadhaar_number,
+          pan_card_image: backendErrs.pan_card_image ? backendErrs.pan_card_image[0] : prev.pan_card_image,
+          aadhaar_front_image: backendErrs.aadhaar_front_image ? backendErrs.aadhaar_front_image[0] : prev.aadhaar_front_image,
+          aadhaar_back_image: backendErrs.aadhaar_back_image ? backendErrs.aadhaar_back_image[0] : prev.aadhaar_back_image,
+        }));
+      }
       const msg = err.response?.data?.message || 'Error submitting KYC to database.';
       showToast(`❌ ${msg}`);
     } finally {
@@ -123,10 +379,13 @@ function KycVerification({ user, onNavigate }) {
     }
   };
 
+  // Masked display for sensitive Aadhaar data
   const formatAadhaarDisplay = (val) => {
     const digits = (val || '').replace(/\D/g, '');
     if (!digits) return '•••• •••• ••••';
-    return digits.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+    if (digits.length <= 4) return `•••• •••• ${digits}`;
+    const last4 = digits.slice(-4);
+    return `•••• •••• ${last4}`;
   };
 
   return (
@@ -241,7 +500,7 @@ function KycVerification({ user, onNavigate }) {
                 </span>
               </div>
               <p style={{ color: '#b45309', fontSize: '0.875rem', margin: 0, maxWidth: '680px', lineHeight: 1.5 }}>
-                Your PAN and Aadhaar identity documents have been submitted to Admin. Once Admin completes the compliance verification, your status will change to <strong>Verified ✓</strong> and Bank/UPI payout accounts will be enabled.
+                Your PAN and Aadhaar identity documents have been submitted to Admin. Once Admin completes compliance verification, your status will change to <strong>Verified ✓</strong> and Bank/UPI payout accounts will be enabled.
               </p>
             </div>
           </div>
@@ -511,7 +770,7 @@ function KycVerification({ user, onNavigate }) {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                   <strong style={{ fontSize: '0.85rem', color: '#0f172a' }}>🪪 Aadhaar Back Side</strong>
                   <span style={{ fontSize: '0.7rem', color: aadhaarBackPreview ? '#16a34a' : '#94a3b8', fontWeight: 700 }}>
-                    {aadhaarBackPreview ? '✓ Attached' : 'Optional'}
+                    {aadhaarBackPreview ? '✓ Attached' : 'Not Attached'}
                   </span>
                 </div>
                 {aadhaarBackPreview ? (
@@ -556,7 +815,7 @@ function KycVerification({ user, onNavigate }) {
               )}
             </div>
 
-            <form onSubmit={handleKycSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.35rem' }}>
+            <form onSubmit={handleKycSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '1.35rem' }}>
               {/* Registered Full Name Banner */}
               <div style={{ background: '#f8fafc', padding: '0.85rem 1.15rem', borderRadius: '10px', border: '1px solid #e2e8f0', fontSize: '0.825rem' }}>
                 <span style={{ color: '#64748b' }}>Registered Full Name:</span>{' '}
@@ -567,118 +826,226 @@ function KycVerification({ user, onNavigate }) {
               </div>
 
               {/* Requirement 1: PAN Card */}
-              <div style={{ border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem', background: '#fafafa' }}>
+              <div
+                style={{
+                  border: errors.pan_number || errors.pan_card_image ? '1px solid #fca5a5' : '1px solid #e2e8f0',
+                  borderRadius: '12px',
+                  padding: '1.25rem',
+                  background: errors.pan_number || errors.pan_card_image ? '#fff5f5' : '#fafafa',
+                  transition: 'all 0.2s ease',
+                }}
+              >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
                   <span style={{ fontSize: '1.3rem' }}>📄</span>
                   <strong style={{ fontSize: '0.95rem', color: '#0f172a' }}>1. PAN Card (Section 194H TDS) *</strong>
                 </div>
 
+                {/* PAN Number Field */}
                 <div style={{ marginBottom: '0.85rem' }}>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
-                    10-Digit PAN Card Number *
+                  <label htmlFor="pan_number_input" style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+                    10-Character PAN Card Number *
                   </label>
                   <input
+                    id="pan_number_input"
+                    ref={panInputRef}
                     type="text"
-                    required
-                    maxLength="10"
+                    maxLength={10}
                     value={panNumber}
-                    onChange={(e) => setPanNumber(e.target.value.toUpperCase())}
+                    onChange={handlePanChange}
+                    onBlur={handlePanBlur}
                     placeholder="e.g. ABCDE1234F"
                     style={{
                       width: '100%',
                       padding: '0.65rem 0.85rem',
                       borderRadius: '8px',
-                      border: '1px solid #cbd5e1',
+                      border: errors.pan_number ? '1px solid #ef4444' : '1px solid #cbd5e1',
+                      background: errors.pan_number ? '#fef2f2' : '#ffffff',
                       fontSize: '1rem',
                       fontWeight: 700,
                       fontFamily: 'monospace',
                       textTransform: 'uppercase',
+                      outline: 'none',
                     }}
                   />
+                  {errors.pan_number && (
+                    <p style={{ color: '#dc2626', fontSize: '0.75rem', fontWeight: 600, marginTop: '0.35rem', marginBottom: 0, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                      <span>⚠️</span> {errors.pan_number}
+                    </p>
+                  )}
+                  <span style={{ fontSize: '0.7rem', color: '#94a3b8', display: 'block', marginTop: '0.25rem' }}>
+                    Rule: 5 letters, 4 numbers, 1 letter (e.g. ABCDE1234F)
+                  </span>
                 </div>
 
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#475569', marginBottom: '0.25rem' }}>
-                    Upload PAN Card Photo / Scan (Auto-Compressed)
+                {/* PAN Document Upload */}
+                <div ref={panDocRef}>
+                  <label htmlFor="pan_file_input" style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#475569', marginBottom: '0.25rem' }}>
+                    Upload PAN Card Photo / Scan * (JPG, PNG, WEBP - Max 5MB)
                   </label>
                   <input
+                    id="pan_file_input"
                     type="file"
-                    accept="image/*"
+                    accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
                     onChange={(e) => handleFileChange(e, 'pan')}
-                    style={{ fontSize: '0.78rem', color: '#64748b' }}
+                    style={{ fontSize: '0.78rem', color: '#64748b', width: '100%' }}
                   />
+                  {panFileName && (
+                    <div style={{ fontSize: '0.72rem', color: '#475569', marginTop: '0.25rem', fontWeight: 600 }}>
+                      Selected: {panFileName}
+                    </div>
+                  )}
+                  {errors.pan_card_image && (
+                    <p style={{ color: '#dc2626', fontSize: '0.75rem', fontWeight: 600, marginTop: '0.35rem', marginBottom: 0, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                      <span>⚠️</span> {errors.pan_card_image}
+                    </p>
+                  )}
                   {panPreview && (
-                    <div style={{ marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <img src={panPreview} alt="PAN Scan" style={{ width: '70px', height: '45px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #cbd5e1' }} />
-                      <span style={{ fontSize: '0.72rem', color: '#16a34a', fontWeight: 700 }}>✓ Attached</span>
+                    <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#ffffff', padding: '0.4rem 0.65rem', borderRadius: '6px', border: '1px solid #cbd5e1' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <img src={panPreview} alt="PAN Scan" style={{ width: '60px', height: '40px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #cbd5e1' }} />
+                        <span style={{ fontSize: '0.72rem', color: '#16a34a', fontWeight: 700 }}>✓ Attached</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveDoc('pan')}
+                        style={{ background: 'none', border: 'none', color: '#dc2626', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
+                      >
+                        ✕ Remove
+                      </button>
                     </div>
                   )}
                 </div>
               </div>
 
               {/* Requirement 2: Aadhaar Card */}
-              <div style={{ border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem', background: '#fafafa' }}>
+              <div
+                style={{
+                  border: errors.aadhaar_number || errors.aadhaar_front_image || errors.aadhaar_back_image ? '1px solid #fca5a5' : '1px solid #e2e8f0',
+                  borderRadius: '12px',
+                  padding: '1.25rem',
+                  background: errors.aadhaar_number || errors.aadhaar_front_image || errors.aadhaar_back_image ? '#fff5f5' : '#fafafa',
+                  transition: 'all 0.2s ease',
+                }}
+              >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
                   <span style={{ fontSize: '1.3rem' }}>🪪</span>
                   <strong style={{ fontSize: '0.95rem', color: '#0f172a' }}>2. Aadhaar Card (Identity Proof) *</strong>
                 </div>
 
+                {/* Aadhaar Number Field */}
                 <div style={{ marginBottom: '0.85rem' }}>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+                  <label htmlFor="aadhaar_number_input" style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
                     12-Digit Aadhaar Card Number *
                   </label>
                   <input
+                    id="aadhaar_number_input"
+                    ref={aadhaarInputRef}
                     type="text"
-                    required
-                    maxLength="14"
+                    inputMode="numeric"
+                    maxLength={12}
                     value={aadhaarNumber}
-                    onChange={(e) => setAadhaarNumber(e.target.value)}
-                    placeholder="e.g. 1234 5678 9012"
+                    onChange={handleAadhaarChange}
+                    onPaste={handleAadhaarPaste}
+                    onBlur={handleAadhaarBlur}
+                    placeholder="e.g. 123456789012"
                     style={{
                       width: '100%',
                       padding: '0.65rem 0.85rem',
                       borderRadius: '8px',
-                      border: '1px solid #cbd5e1',
+                      border: errors.aadhaar_number ? '1px solid #ef4444' : '1px solid #cbd5e1',
+                      background: errors.aadhaar_number ? '#fef2f2' : '#ffffff',
                       fontSize: '1rem',
                       fontWeight: 700,
                       fontFamily: 'monospace',
+                      outline: 'none',
                     }}
                   />
+                  {errors.aadhaar_number && (
+                    <p style={{ color: '#dc2626', fontSize: '0.75rem', fontWeight: 600, marginTop: '0.35rem', marginBottom: 0, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                      <span>⚠️</span> {errors.aadhaar_number}
+                    </p>
+                  )}
+                  <span style={{ fontSize: '0.7rem', color: '#94a3b8', display: 'block', marginTop: '0.25rem' }}>
+                    Rule: Exactly 12 numeric digits (0-9 only, leading zeros preserved)
+                  </span>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: '#475569', marginBottom: '0.25rem' }}>
-                      Front Side Photo
+                {/* Aadhaar Front & Back Uploads */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.85rem' }}>
+                  {/* Front Side */}
+                  <div ref={aadhaarFrontDocRef}>
+                    <label htmlFor="aadhaar_front_file" style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: '#475569', marginBottom: '0.25rem' }}>
+                      Front Side Photo *
                     </label>
                     <input
+                      id="aadhaar_front_file"
                       type="file"
-                      accept="image/*"
+                      accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
                       onChange={(e) => handleFileChange(e, 'aadhaar_front')}
-                      style={{ fontSize: '0.75rem', color: '#64748b' }}
+                      style={{ fontSize: '0.75rem', color: '#64748b', width: '100%' }}
                     />
+                    {aadhaarFrontFileName && (
+                      <div style={{ fontSize: '0.7rem', color: '#475569', marginTop: '0.2rem', fontWeight: 600 }}>
+                        {aadhaarFrontFileName}
+                      </div>
+                    )}
+                    {errors.aadhaar_front_image && (
+                      <p style={{ color: '#dc2626', fontSize: '0.72rem', fontWeight: 600, marginTop: '0.3rem', marginBottom: 0 }}>
+                        ⚠️ {errors.aadhaar_front_image}
+                      </p>
+                    )}
                     {aadhaarFrontPreview && (
-                      <div style={{ marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                        <img src={aadhaarFrontPreview} alt="Aadhaar Front" style={{ width: '60px', height: '40px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #cbd5e1' }} />
-                        <span style={{ fontSize: '0.68rem', color: '#16a34a', fontWeight: 700 }}>✓ Attached</span>
+                      <div style={{ marginTop: '0.4rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#ffffff', padding: '0.35rem 0.5rem', borderRadius: '6px', border: '1px solid #cbd5e1' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                          <img src={aadhaarFrontPreview} alt="Aadhaar Front" style={{ width: '50px', height: '35px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #cbd5e1' }} />
+                          <span style={{ fontSize: '0.68rem', color: '#16a34a', fontWeight: 700 }}>✓ Attached</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveDoc('aadhaar_front')}
+                          style={{ background: 'none', border: 'none', color: '#dc2626', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}
+                        >
+                          ✕
+                        </button>
                       </div>
                     )}
                   </div>
 
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: '#475569', marginBottom: '0.25rem' }}>
-                      Back Side Photo
+                  {/* Back Side */}
+                  <div ref={aadhaarBackDocRef}>
+                    <label htmlFor="aadhaar_back_file" style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: '#475569', marginBottom: '0.25rem' }}>
+                      Back Side Photo *
                     </label>
                     <input
+                      id="aadhaar_back_file"
                       type="file"
-                      accept="image/*"
+                      accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
                       onChange={(e) => handleFileChange(e, 'aadhaar_back')}
-                      style={{ fontSize: '0.75rem', color: '#64748b' }}
+                      style={{ fontSize: '0.75rem', color: '#64748b', width: '100%' }}
                     />
+                    {aadhaarBackFileName && (
+                      <div style={{ fontSize: '0.7rem', color: '#475569', marginTop: '0.2rem', fontWeight: 600 }}>
+                        {aadhaarBackFileName}
+                      </div>
+                    )}
+                    {errors.aadhaar_back_image && (
+                      <p style={{ color: '#dc2626', fontSize: '0.72rem', fontWeight: 600, marginTop: '0.3rem', marginBottom: 0 }}>
+                        ⚠️ {errors.aadhaar_back_image}
+                      </p>
+                    )}
                     {aadhaarBackPreview && (
-                      <div style={{ marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                        <img src={aadhaarBackPreview} alt="Aadhaar Back" style={{ width: '60px', height: '40px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #cbd5e1' }} />
-                        <span style={{ fontSize: '0.68rem', color: '#16a34a', fontWeight: 700 }}>✓ Attached</span>
+                      <div style={{ marginTop: '0.4rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#ffffff', padding: '0.35rem 0.5rem', borderRadius: '6px', border: '1px solid #cbd5e1' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                          <img src={aadhaarBackPreview} alt="Aadhaar Back" style={{ width: '50px', height: '35px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #cbd5e1' }} />
+                          <span style={{ fontSize: '0.68rem', color: '#16a34a', fontWeight: 700 }}>✓ Attached</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveDoc('aadhaar_back')}
+                          style={{ background: 'none', border: 'none', color: '#dc2626', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}
+                        >
+                          ✕
+                        </button>
                       </div>
                     )}
                   </div>
@@ -694,15 +1061,27 @@ function KycVerification({ user, onNavigate }) {
                   padding: '0.9rem',
                   borderRadius: '10px',
                   border: 'none',
-                  background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                  background: submitting ? '#94a3b8' : 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
                   color: '#ffffff',
                   fontWeight: 800,
                   fontSize: '0.95rem',
                   cursor: submitting ? 'not-allowed' : 'pointer',
-                  boxShadow: '0 4px 12px rgba(37, 99, 235, 0.25)',
+                  boxShadow: submitting ? 'none' : '0 4px 12px rgba(37, 99, 235, 0.25)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem',
+                  transition: 'all 0.2s ease',
                 }}
               >
-                {submitting ? 'Submitting to Database...' : '✓ Submit KYC for Admin Verification'}
+                {submitting ? (
+                  <>
+                    <span style={{ display: 'inline-block', width: '16px', height: '16px', border: '2px solid #ffffff', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                    Submitting to Database...
+                  </>
+                ) : (
+                  '✓ Submit KYC for Admin Verification'
+                )}
               </button>
             </form>
           </div>
@@ -718,14 +1097,14 @@ function KycVerification({ user, onNavigate }) {
                 <div style={{ padding: '0.75rem', background: '#eff6ff', borderRadius: '8px', borderLeft: '4px solid #2563eb' }}>
                   <strong style={{ color: '#1d4ed8', display: 'block', fontSize: '0.85rem' }}>1. Submit PAN & Aadhaar Only</strong>
                   <span style={{ color: '#3b82f6', fontSize: '0.78rem' }}>
-                    Provide 10-digit PAN and 12-digit Aadhaar UID.
+                    Provide valid 10-character PAN and 12-digit Aadhaar UID along with document scans.
                   </span>
                 </div>
 
                 <div style={{ padding: '0.75rem', background: '#fef3c7', borderRadius: '8px', borderLeft: '4px solid #f59e0b' }}>
                   <strong style={{ color: '#b45309', display: 'block', fontSize: '0.85rem' }}>2. Status: Under Process ⏳</strong>
                   <span style={{ color: '#92400e', fontSize: '0.78rem' }}>
-                    Your submission goes to Admin for review.
+                    Your submission goes to Admin for compliance verification.
                   </span>
                 </div>
 
@@ -736,6 +1115,19 @@ function KycVerification({ user, onNavigate }) {
                   </span>
                 </div>
               </div>
+            </div>
+
+            <div style={{ background: '#ffffff', borderRadius: '16px', padding: '1.5rem', border: '1px solid #e2e8f0', fontSize: '0.82rem', color: '#64748b', lineHeight: 1.6 }}>
+              <strong style={{ color: '#0f172a', display: 'block', marginBottom: '0.4rem', fontSize: '0.88rem' }}>
+                📌 Verification Checklist
+              </strong>
+              <ul style={{ margin: 0, paddingLeft: '1.2rem' }}>
+                <li>Name must match your registered account name.</li>
+                <li>PAN must follow standard format: <code>ABCDE1234F</code>.</li>
+                <li>Aadhaar number must contain exactly 12 numeric digits.</li>
+                <li>Upload clear photos of PAN card, Aadhaar Front & Back.</li>
+                <li>Supported document formats: JPG, PNG, WEBP (Max 5MB).</li>
+              </ul>
             </div>
           </div>
         </div>

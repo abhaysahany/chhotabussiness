@@ -1,0 +1,740 @@
+[
+    {
+        "TABLE_NAME": "admins",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "admins",
+        "COLUMN_NAME": "updated_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "business_entities",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "business_entities",
+        "COLUMN_NAME": "updated_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "categories",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "categories",
+        "COLUMN_NAME": "updated_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "content_assets",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "content_assets",
+        "COLUMN_NAME": "updated_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "direct_incomes",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "current_timestamp()",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "direct_incomes",
+        "COLUMN_NAME": "updated_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "current_timestamp()",
+        "EXTRA": "on update current_timestamp()"
+    },
+    {
+        "TABLE_NAME": "email_otps",
+        "COLUMN_NAME": "expires_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": "current_timestamp()",
+        "EXTRA": "on update current_timestamp()"
+    },
+    {
+        "TABLE_NAME": "email_otps",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "email_otps",
+        "COLUMN_NAME": "updated_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "entity_categories",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "entity_categories",
+        "COLUMN_NAME": "updated_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "entity_commission_settings",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "entity_commission_settings",
+        "COLUMN_NAME": "updated_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "failed_jobs",
+        "COLUMN_NAME": "failed_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": "current_timestamp()",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "freelancer_entities",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "freelancer_entities",
+        "COLUMN_NAME": "updated_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "level_incomes",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "current_timestamp()",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "level_incomes",
+        "COLUMN_NAME": "updated_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "current_timestamp()",
+        "EXTRA": "on update current_timestamp()"
+    },
+    {
+        "TABLE_NAME": "notifications",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "notifications",
+        "COLUMN_NAME": "updated_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "orders",
+        "COLUMN_NAME": "date",
+        "DATA_TYPE": "date",
+        "COLUMN_TYPE": "date",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "orders",
+        "COLUMN_NAME": "admin_confirmed_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "orders",
+        "COLUMN_NAME": "admin_cancelled_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "orders",
+        "COLUMN_NAME": "income_distributed_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "orders",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "orders",
+        "COLUMN_NAME": "updated_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "order_payment_dumps",
+        "COLUMN_NAME": "requested_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "order_payment_dumps",
+        "COLUMN_NAME": "approved_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "order_payment_dumps",
+        "COLUMN_NAME": "rejected_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "order_payment_dumps",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "order_payment_dumps",
+        "COLUMN_NAME": "updated_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "packages",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "packages",
+        "COLUMN_NAME": "updated_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "password_reset_tokens",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "personal_access_tokens",
+        "COLUMN_NAME": "last_used_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "personal_access_tokens",
+        "COLUMN_NAME": "expires_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "personal_access_tokens",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "personal_access_tokens",
+        "COLUMN_NAME": "updated_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "products",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "products",
+        "COLUMN_NAME": "updated_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "rewards",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "rewards",
+        "COLUMN_NAME": "updated_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "reward_claims",
+        "COLUMN_NAME": "claim_date",
+        "DATA_TYPE": "datetime",
+        "COLUMN_TYPE": "datetime",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "reward_claims",
+        "COLUMN_NAME": "processed_date",
+        "DATA_TYPE": "datetime",
+        "COLUMN_TYPE": "datetime",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "reward_claims",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "reward_claims",
+        "COLUMN_NAME": "updated_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "sale_payments",
+        "COLUMN_NAME": "income_distributed_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "sale_payments",
+        "COLUMN_NAME": "payment_date",
+        "DATA_TYPE": "datetime",
+        "COLUMN_TYPE": "datetime",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "sale_payments",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "sale_payments",
+        "COLUMN_NAME": "updated_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "services",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "services",
+        "COLUMN_NAME": "updated_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "support_messages",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "support_messages",
+        "COLUMN_NAME": "updated_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "support_tickets",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "support_tickets",
+        "COLUMN_NAME": "updated_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "support_topics",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "support_topics",
+        "COLUMN_NAME": "updated_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "system_settings",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "system_settings",
+        "COLUMN_NAME": "updated_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "users",
+        "COLUMN_NAME": "kyc_submitted_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "users",
+        "COLUMN_NAME": "kyc_verified_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "users",
+        "COLUMN_NAME": "email_verified_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "users",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "users",
+        "COLUMN_NAME": "updated_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "user_bank_accounts",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "user_bank_accounts",
+        "COLUMN_NAME": "updated_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "user_notification_reads",
+        "COLUMN_NAME": "read_at",
+        "DATA_TYPE": "datetime",
+        "COLUMN_TYPE": "datetime",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "user_notification_reads",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "user_notification_reads",
+        "COLUMN_NAME": "updated_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "user_payouts",
+        "COLUMN_NAME": "request_date",
+        "DATA_TYPE": "datetime",
+        "COLUMN_TYPE": "datetime",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "user_payouts",
+        "COLUMN_NAME": "processed_date",
+        "DATA_TYPE": "datetime",
+        "COLUMN_TYPE": "datetime",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "user_payouts",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "user_payouts",
+        "COLUMN_NAME": "updated_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "user_upi_accounts",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "user_upi_accounts",
+        "COLUMN_NAME": "updated_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "wallet_transfers",
+        "COLUMN_NAME": "created_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    },
+    {
+        "TABLE_NAME": "wallet_transfers",
+        "COLUMN_NAME": "updated_at",
+        "DATA_TYPE": "timestamp",
+        "COLUMN_TYPE": "timestamp",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": "NULL",
+        "EXTRA": ""
+    }
+]
