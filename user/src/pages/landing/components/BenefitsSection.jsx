@@ -1,3 +1,4 @@
+import { useBranding } from '../../../utils/branding';
 import React from 'react';
 import {
   TrendingUp,
@@ -15,6 +16,7 @@ import {
 } from 'lucide-react';
 
 function BenefitsSection() {
+  const { appName } = useBranding();
   const providerBenefits = [
     { title: 'Continuous Stream of Leads', desc: 'Get matched with high-intent corporate and retail clients without spending fortunes on ad agencies.', icon: <TrendingUp size={20} /> },
     { title: '100% Direct Customer Relationships', desc: 'Own your customer relationships completely. No intermediary locks you out of future repeats.', icon: <Users size={20} /> },
@@ -28,7 +30,7 @@ function BenefitsSection() {
     { title: 'Transparent Rate Comparison', desc: 'Compare portfolios, case studies, and transparent pricing packages easily.', icon: <Scale size={20} /> },
     { title: 'Direct Negotiation & Billing', desc: 'Communicate directly with founders and delivery heads without annoying middleman markups.', icon: <CheckCircle2 size={20} /> },
     { title: 'Safe & Direct Payments', desc: 'Pay directly via official invoice, NEFT, RTGS, or UPI with full GST tax input credit.', icon: <DollarSign size={20} /> },
-    { title: 'Dedicated Priority Support', desc: 'AddNet client relationship desk helps you quickly resolve any queries.', icon: <Clock size={20} /> },
+    { title: 'Dedicated Priority Support', desc: `${appName || 'Vyapar AdNET'} client relationship desk helps you quickly resolve any queries.`, icon: <Clock size={20} /> },
   ];
 
   return (

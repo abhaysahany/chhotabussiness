@@ -1,0 +1,143 @@
+=== ELOQUENT MODEL DATETIME AUDIT ===
+
+Model: App\Models\Admin (Table: `admins`)
+  - `created_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `updated_at` (timestamp): Cast: `NO CAST (raw string)`
+
+Model: App\Models\BusinessEntity (Table: `business_entities`)
+  - `created_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `updated_at` (timestamp): Cast: `NO CAST (raw string)`
+
+Model: App\Models\Category (Table: `categories`)
+  - `created_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `updated_at` (timestamp): Cast: `NO CAST (raw string)`
+
+Model: App\Models\ContentAsset (Table: `content_assets`)
+  - `created_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `updated_at` (timestamp): Cast: `NO CAST (raw string)`
+
+Model: App\Models\DirectIncome (Table: `direct_incomes`)
+  - `created_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `updated_at` (timestamp): Cast: `NO CAST (raw string)`
+
+Model: App\Models\EmailOtp (Table: `email_otps`)
+  - `expires_at` (timestamp): Cast: `datetime`
+  - `created_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `updated_at` (timestamp): Cast: `NO CAST (raw string)`
+
+Model: App\Models\EntityCategory (Table: `entity_categories`)
+  - `created_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `updated_at` (timestamp): Cast: `NO CAST (raw string)`
+
+Model: App\Models\EntityCommissionSetting (Table: `entity_commission_settings`)
+  - `created_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `updated_at` (timestamp): Cast: `NO CAST (raw string)`
+
+Model: App\Models\FreelancerEntity (Table: `freelancer_entities`)
+  - `created_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `updated_at` (timestamp): Cast: `NO CAST (raw string)`
+
+Model: App\Models\LevelIncome (Table: `level_incomes`)
+  - `created_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `updated_at` (timestamp): Cast: `NO CAST (raw string)`
+
+Model: App\Models\Notification (Table: `notifications`)
+  - `created_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `updated_at` (timestamp): Cast: `NO CAST (raw string)`
+
+Model: App\Models\Order (Table: `orders`)
+  - `date` (date): Cast: `NO CAST (raw string)`
+  - `admin_confirmed_at` (timestamp): OVERRIDDEN by accessor `getAdminConfirmedAtAttribute`, Cast: `datetime`
+  - `admin_cancelled_at` (timestamp): OVERRIDDEN by accessor `getAdminCancelledAtAttribute`, Cast: `datetime`
+  - `income_distributed_at` (timestamp): OVERRIDDEN by accessor `getIncomeDistributedAtAttribute`, Cast: `datetime`
+  - `created_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `updated_at` (timestamp): Cast: `NO CAST (raw string)`
+
+Model: App\Models\OrderPaymentDump (Table: `order_payment_dumps`)
+  - `requested_at` (timestamp): Cast: `datetime`
+  - `approved_at` (timestamp): Cast: `datetime`
+  - `rejected_at` (timestamp): Cast: `datetime`
+  - `created_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `updated_at` (timestamp): Cast: `NO CAST (raw string)`
+
+Model: App\Models\Product (Table: `products`)
+  - `created_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `updated_at` (timestamp): Cast: `NO CAST (raw string)`
+
+Model: App\Models\ProductPackage (Table: `packages`)
+  - `created_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `updated_at` (timestamp): Cast: `NO CAST (raw string)`
+
+Model: App\Models\Reward (Table: `rewards`)
+  - `created_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `updated_at` (timestamp): Cast: `NO CAST (raw string)`
+
+Model: App\Models\RewardClaim (Table: `reward_claims`)
+  - `claim_date` (datetime): Cast: `datetime`
+  - `processed_date` (datetime): Cast: `datetime`
+  - `created_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `updated_at` (timestamp): Cast: `NO CAST (raw string)`
+
+Model: App\Models\SalePayment (Table: `sale_payments`)
+  - `income_distributed_at` (timestamp): OVERRIDDEN by accessor `getIncomeDistributedAtAttribute`, Cast: `datetime`
+  - `payment_date` (datetime): OVERRIDDEN by accessor `getPaymentDateAttribute`, Cast: `datetime`
+  - `created_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `updated_at` (timestamp): Cast: `NO CAST (raw string)`
+
+Model: App\Models\SalesRecord (Table: `orders`)
+  - `date` (date): Cast: `NO CAST (raw string)`
+  - `admin_confirmed_at` (timestamp): OVERRIDDEN by accessor `getAdminConfirmedAtAttribute`, Cast: `datetime`
+  - `admin_cancelled_at` (timestamp): OVERRIDDEN by accessor `getAdminCancelledAtAttribute`, Cast: `datetime`
+  - `income_distributed_at` (timestamp): OVERRIDDEN by accessor `getIncomeDistributedAtAttribute`, Cast: `datetime`
+  - `created_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `updated_at` (timestamp): Cast: `NO CAST (raw string)`
+
+Model: App\Models\Service (Table: `services`)
+  - `created_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `updated_at` (timestamp): Cast: `NO CAST (raw string)`
+
+Model: App\Models\SupportMessage (Table: `support_messages`)
+  - `created_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `updated_at` (timestamp): Cast: `NO CAST (raw string)`
+
+Model: App\Models\SupportTicket (Table: `support_tickets`)
+  - `created_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `updated_at` (timestamp): Cast: `NO CAST (raw string)`
+
+Model: App\Models\SupportTopic (Table: `support_topics`)
+  - `created_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `updated_at` (timestamp): Cast: `NO CAST (raw string)`
+
+Model: App\Models\SystemSetting (Table: `system_settings`)
+  - `created_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `updated_at` (timestamp): Cast: `NO CAST (raw string)`
+
+Model: App\Models\User (Table: `users`)
+  - `kyc_submitted_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `kyc_verified_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `email_verified_at` (timestamp): Cast: `datetime`
+  - `created_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `updated_at` (timestamp): Cast: `NO CAST (raw string)`
+
+Model: App\Models\UserBankAccount (Table: `user_bank_accounts`)
+  - `created_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `updated_at` (timestamp): Cast: `NO CAST (raw string)`
+
+Model: App\Models\UserNotificationRead (Table: `user_notification_reads`)
+  - `read_at` (datetime): Cast: `datetime`
+  - `created_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `updated_at` (timestamp): Cast: `NO CAST (raw string)`
+
+Model: App\Models\UserPayout (Table: `user_payouts`)
+  - `request_date` (datetime): Cast: `datetime`
+  - `processed_date` (datetime): Cast: `datetime`
+  - `created_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `updated_at` (timestamp): Cast: `NO CAST (raw string)`
+
+Model: App\Models\UserUpiAccount (Table: `user_upi_accounts`)
+  - `created_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `updated_at` (timestamp): Cast: `NO CAST (raw string)`
+
+Model: App\Models\WalletTransfer (Table: `wallet_transfers`)
+  - `created_at` (timestamp): Cast: `NO CAST (raw string)`
+  - `updated_at` (timestamp): Cast: `NO CAST (raw string)`

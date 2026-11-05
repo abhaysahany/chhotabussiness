@@ -8,7 +8,7 @@ function EntityPayoutReportsPage() {
   const entityName =
     currentEntity?.entity_details?.business_name ||
     currentEntity?.name ||
-    'Skyline Technologies Pvt Ltd';
+    '';
 
   // State
   const [reportData, setReportData] = useState(null);
@@ -51,88 +51,23 @@ function EntityPayoutReportsPage() {
 
   // Summary Metrics
   const summary = reportData?.summary || {
-    total_paid: 385450.00,
-    balance: 48500.00,
-    dump_amount: 12450.00,
-    total_tds: 19272.50,
-    total_gross: 417172.50,
-    total_transactions: 35,
-    settlement_success_rate: 98.6,
+    total_paid: 0,
+    balance: 0,
+    dump_amount: 0,
+    total_tds: 0,
+    total_gross: 0,
+    total_transactions: 0,
+    settlement_success_rate: 0,
   };
 
-  const monthlyTrend = reportData?.monthly_trend || [
-    { month: 'Mar 2026', paid: 45000, dump: 3200, balance: 8500, count: 4 },
-    { month: 'Apr 2026', paid: 58200, dump: 4100, balance: 12400, count: 6 },
-    { month: 'May 2026', paid: 74500, dump: 2800, balance: 15600, count: 7 },
-    { month: 'Jun 2026', paid: 69000, dump: 5000, balance: 19800, count: 5 },
-    { month: 'Jul 2026', paid: 88400, dump: 3600, balance: 24500, count: 8 },
-    { month: 'Aug 2026', paid: 96350, dump: 6200, balance: 48500, count: 9 },
-  ];
+  const monthlyTrend = reportData?.monthly_trend || [];
 
-  const methodDistribution = reportData?.method_distribution || [
-    { method: 'Bank Transfer (NEFT/RTGS)', amount: 245000, percentage: 56.8, count: 18, color: '#10b981' },
-    { method: 'IMPS Instant Settlement', amount: 128500, percentage: 29.8, count: 12, color: '#3b82f6' },
-    { method: 'UPI Direct Transfer', amount: 57950, percentage: 13.4, count: 9, color: '#8b5cf6' },
-  ];
+  const methodDistribution = reportData?.method_distribution || [];
 
-  const statusDistribution = reportData?.status_distribution || [
-    { status: 'Paid / Settled', amount: summary.total_paid || 385450, percentage: 93.1, color: '#10b981' },
-    { status: 'Pending / Processing', amount: 28500, percentage: 6.9, color: '#f59e0b' },
-  ];
+  const statusDistribution = reportData?.status_distribution || [];
 
   const statementRows = useMemo(() => {
-    let rows = reportData?.statement_rows || [
-      {
-        period: '01 Aug 2026 - 21 Aug 2026',
-        grossVolume: 104200.00,
-        totalPaid: 96350.00,
-        balance: 48500.00,
-        dumpAmount: 6200.00,
-        tdsDeducted: 5210.00,
-        payoutCount: 9,
-        status: 'Active Cycle',
-      },
-      {
-        period: '01 Jul 2026 - 31 Jul 2026',
-        grossVolume: 95800.00,
-        totalPaid: 88400.00,
-        balance: 0.00,
-        dumpAmount: 3600.00,
-        tdsDeducted: 4790.00,
-        payoutCount: 8,
-        status: 'Fully Reconciled',
-      },
-      {
-        period: '01 Jun 2026 - 30 Jun 2026',
-        grossVolume: 75200.00,
-        totalPaid: 69000.00,
-        balance: 0.00,
-        dumpAmount: 5000.00,
-        tdsDeducted: 3760.00,
-        payoutCount: 5,
-        status: 'Fully Reconciled',
-      },
-      {
-        period: '01 May 2026 - 31 May 2026',
-        grossVolume: 81000.00,
-        totalPaid: 74500.00,
-        balance: 0.00,
-        dumpAmount: 2800.00,
-        tdsDeducted: 4050.00,
-        payoutCount: 7,
-        status: 'Fully Reconciled',
-      },
-      {
-        period: '01 Apr 2026 - 30 Apr 2026',
-        grossVolume: 63500.00,
-        totalPaid: 58200.00,
-        balance: 0.00,
-        dumpAmount: 4100.00,
-        tdsDeducted: 3175.00,
-        payoutCount: 6,
-        status: 'Fully Reconciled',
-      },
-    ];
+    let rows = reportData?.statement_rows || [];
 
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
@@ -436,7 +371,12 @@ function EntityPayoutReportsPage() {
 
           {/* Bar Chart Visualizer */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', flex: 1, justifyContent: 'center' }}>
-            {monthlyTrend.map((item, idx) => {
+            {monthlyTrend.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '2rem 1rem', color: '#64748b', fontSize: '0.85rem' }}>
+                No settlement trend data for this period.
+              </div>
+            ) : (
+              monthlyTrend.map((item, idx) => {
               const paidPercent = Math.min((item.paid / maxMonthlyPaid) * 100, 100);
               return (
                 <div key={idx}>
@@ -459,7 +399,7 @@ function EntityPayoutReportsPage() {
                   </div>
                 </div>
               );
-            })}
+            }))}
           </div>
         </div>
 
@@ -479,7 +419,12 @@ function EntityPayoutReportsPage() {
               Disbursal Method Breakdown
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {methodDistribution.map((m, idx) => (
+              {methodDistribution.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '1rem', color: '#64748b', fontSize: '0.82rem' }}>
+                  No payment method distribution data.
+                </div>
+              ) : (
+                methodDistribution.map((m, idx) => (
                 <div key={idx}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.76rem', marginBottom: '0.25rem' }}>
                     <span style={{ fontWeight: 700, color: '#334155' }}>{m.method}</span>
@@ -491,7 +436,7 @@ function EntityPayoutReportsPage() {
                     <div style={{ width: `${m.percentage}%`, background: m.color, height: '100%', borderRadius: '4px' }} />
                   </div>
                 </div>
-              ))}
+              )))}
             </div>
           </div>
 
@@ -509,7 +454,12 @@ function EntityPayoutReportsPage() {
               Settlement Health & Status
             </h3>
             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-              {statusDistribution.map((s, idx) => (
+              {statusDistribution.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '1rem', color: '#64748b', fontSize: '0.82rem', width: '100%' }}>
+                  No settlement status records available.
+                </div>
+              ) : (
+                statusDistribution.map((s, idx) => (
                 <div
                   key={idx}
                   style={{
@@ -528,7 +478,7 @@ function EntityPayoutReportsPage() {
                     ₹{s.amount.toLocaleString('en-IN')}
                   </div>
                 </div>
-              ))}
+              )))}
             </div>
           </div>
         </div>

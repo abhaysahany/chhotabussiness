@@ -81,14 +81,31 @@ function DirectConnectionsPage({ user, onNavigate }) {
       accessor: 'name',
       render: (val, row) => (
         <div className="user-profile-cell">
-          <img
-            src={row.avatar || '/logo.png'}
-            alt={val}
+          {row.avatar && row.avatar !== '/logo.png' ? (
+            <img
+              src={row.avatar}
+              alt={val}
+              className="cell-avatar"
+              onError={(e) => {
+                e.target.style.display = 'none';
+                if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
+              }}
+            />
+          ) : null}
+          <div
             className="cell-avatar"
-            onError={(e) => {
-              e.target.src = '/logo.png';
+            style={{
+              display: (row.avatar && row.avatar !== '/logo.png') ? 'none' : 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: '#0F4C81',
+              color: '#ffffff',
+              fontWeight: 700,
+              fontSize: '0.85rem',
             }}
-          />
+          >
+            {val ? val.charAt(0).toUpperCase() : 'U'}
+          </div>
           <div className="cell-user-meta">
             <strong className="user-fullname">{val}</strong>
             <span className="user-subcode">{row.id}</span>
@@ -312,11 +329,31 @@ function DirectConnectionsPage({ user, onNavigate }) {
             <div className="modal-body">
               {/* Profile Card Header */}
               <div className="modal-profile-header">
-                <img
-                  src={selectedMember.avatar || '/logo.png'}
-                  alt={selectedMember.name}
+                {selectedMember.avatar && selectedMember.avatar !== '/logo.png' ? (
+                  <img
+                    src={selectedMember.avatar}
+                    alt={selectedMember.name}
+                    className="modal-avatar-lg"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
+                    }}
+                  />
+                ) : null}
+                <div
                   className="modal-avatar-lg"
-                />
+                  style={{
+                    display: (selectedMember.avatar && selectedMember.avatar !== '/logo.png') ? 'none' : 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: '#0F4C81',
+                    color: '#ffffff',
+                    fontWeight: 800,
+                    fontSize: '1.4rem',
+                  }}
+                >
+                  {selectedMember.name ? selectedMember.name.charAt(0).toUpperCase() : 'U'}
+                </div>
                 <div className="modal-header-meta">
                   <h2>{selectedMember.name}</h2>
                   <span className="code-tag">{selectedMember.id}</span>

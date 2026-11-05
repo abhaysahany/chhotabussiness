@@ -1,0 +1,740 @@
+[
+  {
+    "table": "admins",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "admins",
+    "column": "updated_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "business_entities",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "business_entities",
+    "column": "updated_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "categories",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "categories",
+    "column": "updated_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "content_assets",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "content_assets",
+    "column": "updated_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "direct_incomes",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "current_timestamp()",
+    "written_by": "MySQL DEFAULT current_timestamp() & Eloquent",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "direct_incomes",
+    "column": "updated_at",
+    "data_type": "timestamp",
+    "default": "current_timestamp()",
+    "written_by": "MySQL DEFAULT current_timestamp() & Eloquent",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "email_otps",
+    "column": "expires_at",
+    "data_type": "timestamp",
+    "default": "current_timestamp()",
+    "written_by": "UserBankKycController / PersonalAccessToken (now()->addMinutes(...))",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Security token expiry, OTP verification"
+  },
+  {
+    "table": "email_otps",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "email_otps",
+    "column": "updated_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "entity_categories",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "entity_categories",
+    "column": "updated_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "entity_commission_settings",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "entity_commission_settings",
+    "column": "updated_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "failed_jobs",
+    "column": "failed_at",
+    "data_type": "timestamp",
+    "default": "current_timestamp()",
+    "written_by": "Laravel Queue worker on job failure",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Failed jobs monitoring"
+  },
+  {
+    "table": "freelancer_entities",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "freelancer_entities",
+    "column": "updated_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "level_incomes",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "current_timestamp()",
+    "written_by": "MySQL DEFAULT current_timestamp() & Eloquent",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "level_incomes",
+    "column": "updated_at",
+    "data_type": "timestamp",
+    "default": "current_timestamp()",
+    "written_by": "MySQL DEFAULT current_timestamp() & Eloquent",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "notifications",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "notifications",
+    "column": "updated_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "orders",
+    "column": "date",
+    "data_type": "date",
+    "default": "NULL",
+    "written_by": "OrderController::store ($request->input('date') ?? date('Y-m-d'))",
+    "storage_behavior": "DATE (literal YYYY-MM-DD, no timezone conversion)",
+    "used_by": "Admin Orders, Entity Orders, Daily performance reports"
+  },
+  {
+    "table": "orders",
+    "column": "admin_confirmed_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "OrderController::confirmOrder (now())",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Admin Orders, Entity Orders (confirmation badge & date)"
+  },
+  {
+    "table": "orders",
+    "column": "admin_cancelled_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "OrderController::cancelOrder (now())",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Admin Orders, Entity Cancelled Orders (cancelled at display)"
+  },
+  {
+    "table": "orders",
+    "column": "income_distributed_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "AdminIncomeAllocationService (now())",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Admin Payment History, Admin Orders, Allocation audit trail"
+  },
+  {
+    "table": "orders",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "orders",
+    "column": "updated_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "order_payment_dumps",
+    "column": "requested_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "DumpPaymentController (now())",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Admin Dump Requests, Entity Dump statement, Order ledger"
+  },
+  {
+    "table": "order_payment_dumps",
+    "column": "approved_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "DumpPaymentController (now())",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Admin Dump Requests, Entity Dump statement, Order ledger"
+  },
+  {
+    "table": "order_payment_dumps",
+    "column": "rejected_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "DumpPaymentController (now())",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Admin Dump Requests, Entity Dump statement, Order ledger"
+  },
+  {
+    "table": "order_payment_dumps",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "order_payment_dumps",
+    "column": "updated_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "packages",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "packages",
+    "column": "updated_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "password_reset_tokens",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "personal_access_tokens",
+    "column": "last_used_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Laravel Sanctum auth middleware",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "API token auditing"
+  },
+  {
+    "table": "personal_access_tokens",
+    "column": "expires_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "UserBankKycController / PersonalAccessToken (now()->addMinutes(...))",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Security token expiry, OTP verification"
+  },
+  {
+    "table": "personal_access_tokens",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "personal_access_tokens",
+    "column": "updated_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "products",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "products",
+    "column": "updated_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "rewards",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "rewards",
+    "column": "updated_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "reward_claims",
+    "column": "claim_date",
+    "data_type": "datetime",
+    "default": "NULL",
+    "written_by": "RewardController::claimReward (now())",
+    "storage_behavior": "DATETIME (literal YYYY-MM-DD HH:MM:SS, no timezone conversion)",
+    "used_by": "Admin Rewards Claim, User Rewards Claimed"
+  },
+  {
+    "table": "reward_claims",
+    "column": "processed_date",
+    "data_type": "datetime",
+    "default": "NULL",
+    "written_by": "RewardController::updateClaimStatus (now()) & UserPayoutController",
+    "storage_behavior": "DATETIME (literal YYYY-MM-DD HH:MM:SS, no timezone conversion)",
+    "used_by": "Admin Rewards Claim, Admin Payout History"
+  },
+  {
+    "table": "reward_claims",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "reward_claims",
+    "column": "updated_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "sale_payments",
+    "column": "income_distributed_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "AdminIncomeAllocationService (now())",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Admin Payment History, Admin Orders, Allocation audit trail"
+  },
+  {
+    "table": "sale_payments",
+    "column": "payment_date",
+    "data_type": "datetime",
+    "default": "NULL",
+    "written_by": "OrderController::store & receiveBalancePayment (now())",
+    "storage_behavior": "DATETIME (literal YYYY-MM-DD HH:MM:SS, no timezone conversion)",
+    "used_by": "Admin Payment Receipts, Entity Payment Receipts, Order payments"
+  },
+  {
+    "table": "sale_payments",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "sale_payments",
+    "column": "updated_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "services",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "services",
+    "column": "updated_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "support_messages",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "support_messages",
+    "column": "updated_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "support_tickets",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "support_tickets",
+    "column": "updated_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "support_topics",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "support_topics",
+    "column": "updated_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "system_settings",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "system_settings",
+    "column": "updated_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "users",
+    "column": "kyc_submitted_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "UserBankKycController (now())",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Admin User Details, User KYC Verification"
+  },
+  {
+    "table": "users",
+    "column": "kyc_verified_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "UserBankKycController (now())",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Admin User Details, User KYC Verification"
+  },
+  {
+    "table": "users",
+    "column": "email_verified_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "AuthController::verifyEmailOtp & Google Auth (now())",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Auth checks, User profile"
+  },
+  {
+    "table": "users",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "users",
+    "column": "updated_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "user_bank_accounts",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "user_bank_accounts",
+    "column": "updated_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "user_notification_reads",
+    "column": "read_at",
+    "data_type": "datetime",
+    "default": "NULL",
+    "written_by": "NotificationController::markAsRead (now())",
+    "storage_behavior": "DATETIME (literal YYYY-MM-DD HH:MM:SS, no timezone conversion)",
+    "used_by": "User Notifications, Admin Notifications"
+  },
+  {
+    "table": "user_notification_reads",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "user_notification_reads",
+    "column": "updated_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "user_payouts",
+    "column": "request_date",
+    "data_type": "datetime",
+    "default": "NULL",
+    "written_by": "UserPayoutController::requestPayout & generateWeeklyBatch (now())",
+    "storage_behavior": "DATETIME (literal YYYY-MM-DD HH:MM:SS, no timezone conversion)",
+    "used_by": "Admin Payout Requests, User Payout History, Current Payouts"
+  },
+  {
+    "table": "user_payouts",
+    "column": "processed_date",
+    "data_type": "datetime",
+    "default": "NULL",
+    "written_by": "RewardController::updateClaimStatus (now()) & UserPayoutController",
+    "storage_behavior": "DATETIME (literal YYYY-MM-DD HH:MM:SS, no timezone conversion)",
+    "used_by": "Admin Rewards Claim, Admin Payout History"
+  },
+  {
+    "table": "user_payouts",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "user_payouts",
+    "column": "updated_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "user_upi_accounts",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "user_upi_accounts",
+    "column": "updated_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "wallet_transfers",
+    "column": "created_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  },
+  {
+    "table": "wallet_transfers",
+    "column": "updated_at",
+    "data_type": "timestamp",
+    "default": "NULL",
+    "written_by": "Eloquent automated timestamps ($timestamps = true)",
+    "storage_behavior": "MySQL TIMESTAMP (session tz converted to UTC in storage)",
+    "used_by": "Internal system / Admin"
+  }
+]

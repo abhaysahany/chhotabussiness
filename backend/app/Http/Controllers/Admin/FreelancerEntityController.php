@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\FreelancerEntity;
 use App\Models\EntityCategory;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -77,15 +76,6 @@ class FreelancerEntityController extends Controller
 
         $passwordRaw = !empty($request->password) ? $request->password : 'password123';
         $hashedPassword = Hash::make($passwordRaw);
-
-        // Sync or Create standard user account for Entity Portal login
-        User::updateOrCreate(
-            ['email' => $request->email],
-            [
-                'name' => $request->name,
-                'password' => $hashedPassword,
-            ]
-        );
 
         // Documents array is strictly optional (empty array if not provided)
         $documents = $request->has('documents') ? $request->documents : [];
@@ -183,14 +173,6 @@ class FreelancerEntityController extends Controller
         if (!empty($request->password)) {
             $hashed = Hash::make($request->password);
             $updateData['password'] = $hashed;
-
-            User::updateOrCreate(
-                ['email' => $request->email],
-                [
-                    'name' => $request->name,
-                    'password' => $hashed,
-                ]
-            );
         }
 
         $freelancer->update($updateData);

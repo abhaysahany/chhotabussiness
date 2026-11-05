@@ -96,12 +96,12 @@ function EntityDashboard() {
   const kpis = useMemo(() => {
     const raw = data?.kpis || {};
     return {
-      totalGrossSales: Number(raw.totalGrossSales) || 1845000.00,
-      totalNetEarnings: Number(raw.totalNetEarnings) || 1512900.00,
-      totalBalanceDue: Number(raw.totalBalanceDue) || 124500.00,
-      totalPlatformFeePaid: Number(raw.totalPlatformFeePaid) || 332100.00,
-      totalInvoicesCount: Number(raw.totalInvoicesCount) || 128,
-      totalCatalogOfferings: Number(raw.totalCatalogOfferings) || 48,
+      totalGrossSales: Number(raw.totalGrossSales) || 0,
+      totalNetEarnings: Number(raw.totalNetEarnings) || 0,
+      totalBalanceDue: Number(raw.totalBalanceDue) || 0,
+      totalPlatformFeePaid: Number(raw.totalPlatformFeePaid) || 0,
+      totalInvoicesCount: Number(raw.totalInvoicesCount) || 0,
+      totalCatalogOfferings: Number(raw.totalCatalogOfferings) || 0,
     };
   }, [data]);
 
@@ -180,33 +180,12 @@ function EntityDashboard() {
   }, [timeRange, data]);
 
   const mixedComboSeries = useMemo(() => {
-    if (data?.charts?.grossSeries) {
-      return [
-        { name: 'Gross Billed (Column)', type: 'column', data: data.charts.grossSeries },
-        { name: 'Net Bank Disbursed (Line)', type: 'line', data: data.charts.netSeries },
-        { name: 'Balance Receivables (Dashed)', type: 'line', data: data.charts.balanceSeries },
-      ];
-    }
-    if (timeRange === '6m') {
-      return [
-        { name: 'Gross Billed (Column)', type: 'column', data: [240000, 310000, 385000, 460000, 520000, 610000] },
-        { name: 'Net Bank Disbursed (Line)', type: 'line', data: [196800, 254200, 315700, 377200, 426400, 500200] },
-        { name: 'Balance Receivables (Dashed)', type: 'line', data: [18000, 22000, 28000, 34000, 38000, 42000] },
-      ];
-    }
-    if (timeRange === '30d') {
-      return [
-        { name: 'Gross Billed (Column)', type: 'column', data: [115000, 142000, 168000, 195000, 230000] },
-        { name: 'Net Bank Disbursed (Line)', type: 'line', data: [94300, 116440, 137760, 159900, 188600] },
-        { name: 'Balance Receivables (Dashed)', type: 'line', data: [9000, 11000, 14000, 16000, 21000] },
-      ];
-    }
     return [
-      { name: 'Gross Billed (Column)', type: 'column', data: [28000, 35000, 42000, 58000, 51000, 74000, 89000] },
-      { name: 'Net Bank Disbursed (Line)', type: 'line', data: [22960, 28700, 34440, 47560, 41820, 60680, 72980] },
-      { name: 'Balance Receivables (Dashed)', type: 'line', data: [2500, 3200, 4100, 5800, 4600, 6800, 8400] },
+      { name: 'Gross Billed (Column)', type: 'column', data: data?.charts?.grossSeries || [] },
+      { name: 'Net Bank Disbursed (Line)', type: 'line', data: data?.charts?.netSeries || [] },
+      { name: 'Balance Receivables (Dashed)', type: 'line', data: data?.charts?.balanceSeries || [] },
     ];
-  }, [timeRange, data]);
+  }, [data]);
 
   // 2. Radial Target Completion Gauge Chart
   const targetGaugeOptions = useMemo(() => ({
@@ -260,7 +239,7 @@ function EntityDashboard() {
     labels: ['Monthly Target Progress'],
   }), []);
 
-  const targetGaugeSeries = [73.8]; // 73.8% of ₹25L Goal achieved
+  const targetGaugeSeries = [Number(data?.kpis?.targetProgress) || 0];
 
   // 3. Horizontal Deliverables Bar Chart
   const horizontalBarOptions = useMemo(() => ({
@@ -286,7 +265,7 @@ function EntityDashboard() {
       offsetX: 0,
     },
     xaxis: {
-      categories: ['Cloud Retainers', 'Web & App Dev', 'POS Hardware', 'Annual AMC'],
+      categories: data?.charts?.revenueMix?.labels || ['Products', 'Services', 'Packages', 'General'],
       labels: {
         formatter: (val) => `₹${((Number(val) || 0) / 1000).toFixed(0)}k`,
         style: { colors: '#64748b', fontSize: '11px', fontWeight: 700 },
@@ -303,9 +282,11 @@ function EntityDashboard() {
     },
   }), []);
 
-  const horizontalBarSeries = [
-    { name: 'Revenue Generated', data: [889290, 452025, 300735, 202950] },
-  ];
+  const horizontalBarSeries = useMemo(() => {
+    return [
+      { name: 'Revenue Generated', data: data?.charts?.revenueMix?.amounts || [0, 0, 0, 0] },
+    ];
+  }, [data]);
 
   // 4. Stacked Invoicing Velocity Column Chart
   const stackedVelocityOptions = useMemo(() => ({
@@ -324,7 +305,7 @@ function EntityDashboard() {
     },
     colors: ['#059669', '#d97706'],
     xaxis: {
-      categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      categories: data?.charts?.velocityBar?.categories || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
       labels: { style: { colors: '#64748b', fontSize: '11px', fontWeight: 700 } },
       axisBorder: { show: false },
     },
@@ -339,19 +320,16 @@ function EntityDashboard() {
     },
   }), []);
 
-  const stackedVelocitySeries = [
-    { name: 'Full Paid Invoices', data: [12, 16, 19, 24, 21, 32, 38] },
-    { name: 'Advance / Partial Invoices', data: [4, 6, 5, 8, 7, 11, 14] },
-  ];
+  const stackedVelocitySeries = useMemo(() => {
+    return data?.charts?.velocityBar?.series || [
+      { name: 'Full Paid Invoices', data: [] },
+      { name: 'Advance / Partial Invoices', data: [] },
+    ];
+  }, [data]);
 
   // Normalized Invoices
   const recentInvoices = useMemo(() => {
-    return (data?.recentInvoices || [
-      { id: 'INV-2026-881', customer: 'Apex Global Logistics Ltd', item: 'Fleet Tracking Software Suite', gross: 85000.00, adminCut: 15300.00, netPayout: 69700.00, advance: 60000.00, balanceDue: 25000.00, date: 'Today, 11:45 AM', status: 'completed', paymentMethod: 'Bank Transfer / IMPS' },
-      { id: 'INV-2026-882', customer: 'Dr. Meera Nambiar (MedTech)', item: 'Clinic Management Portal & App', gross: 24500.00, adminCut: 4410.00, netPayout: 20090.00, advance: 24500.00, balanceDue: 0.00, date: 'Today, 09:20 AM', status: 'completed', paymentMethod: 'UPI Gateway' },
-      { id: 'INV-2026-883', customer: 'Zenith Hospitality Hub', item: 'Hotel POS Billing Integration', gross: 45000.00, adminCut: 9000.00, netPayout: 36000.00, advance: 25000.00, balanceDue: 20000.00, date: 'Yesterday, 04:30 PM', status: 'partial', paymentMethod: 'Razorpay NetBanking' },
-      { id: 'INV-2026-884', customer: 'Kaveri Organic Foods', item: 'E-Commerce Marketplace Web App', gross: 18500.00, adminCut: 2775.00, netPayout: 15725.00, advance: 18500.00, balanceDue: 0.00, date: '19 Aug 2026', status: 'completed', paymentMethod: 'UPI Instant' },
-    ]).map((t) => ({
+    return (data?.recentInvoices || []).map((t) => ({
       ...t,
       gross: Number(t.gross) || 0,
       adminCut: Number(t.adminCut) || 0,
@@ -361,12 +339,7 @@ function EntityDashboard() {
     }));
   }, [data]);
 
-  const activityFeed = data?.activityFeed || [
-    { id: 1, title: 'Invoice Payment Settled', desc: '₹69,700 net proceeds deposited to Primary Bank Account (HDFC Bank ending in 4109).', time: '15 mins ago' },
-    { id: 2, title: 'New Customer Invoice Created', desc: 'INV-2026-881 generated for Apex Global Logistics Ltd (₹85,000 GMV).', time: '35 mins ago' },
-    { id: 3, title: 'Balance Due Reminder Dispatched', desc: 'Automated SMS/Email notification sent to Zenith Hospitality for ₹20,000 balance.', time: '2 hours ago' },
-    { id: 4, title: 'GST & TDS Invoice Compliance Cleared', desc: 'Tax invoice signed and dispatched with verified E-Way QR code.', time: '5 hours ago' },
-  ];
+  const activityFeed = data?.activityFeed || [];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', width: '100%', boxSizing: 'border-box' }}>
@@ -447,10 +420,10 @@ function EntityDashboard() {
                 </span>
               </div>
               <h2 style={{ fontSize: '1.45rem', fontWeight: 800, margin: '0.3rem 0 0.1rem 0', color: '#ffffff', letterSpacing: '-0.02em' }}>
-                {entityDetails?.business_name || storedUser?.name || 'Skyline Technologies Pvt Ltd'}
+                {entityDetails?.business_name || entityDetails?.name || storedUser?.business_name || storedUser?.name || 'Merchant Entity'}
               </h2>
               <p style={{ margin: 0, fontSize: '0.8rem', color: '#cbd5e1' }}>
-                {storedUser?.email} • GST/PAN: <strong style={{ color: '#ffffff' }}>{entityDetails?.registration_no || '27AAECP1829K1Z4'}</strong> • Account ID: <strong style={{ color: '#848f3e' }}>ENT-8842</strong>
+                {storedUser?.email} • {entityDetails?.registration_no ? <span>GST/PAN: <strong style={{ color: '#ffffff' }}>{entityDetails.registration_no}</strong> • </span> : null}Account ID: <strong style={{ color: '#848f3e' }}>{storedUser?.user_code || `ENT-${storedUser?.id || ''}`}</strong>
               </p>
             </div>
           </div>
@@ -765,8 +738,8 @@ function EntityDashboard() {
           </div>
 
           <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Achieved: <strong>₹18,45,000</strong></span>
-            <span style={{ fontSize: '0.75rem', color: '#059669', fontWeight: 800 }}>Remaining: ₹6,55,000</span>
+            <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Achieved: <strong>₹{kpis.totalGrossSales.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</strong></span>
+            <span style={{ fontSize: '0.75rem', color: '#059669', fontWeight: 800 }}>Remaining: ₹{Math.max(0, 2500000 - kpis.totalGrossSales).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
           </div>
         </div>
       </div>
@@ -994,7 +967,14 @@ function EntityDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {recentInvoices.map((txn, idx) => (
+                {recentInvoices.length === 0 ? (
+                  <tr>
+                    <td colSpan="6" style={{ padding: '2rem 1rem', textAlign: 'center', color: '#64748b' }}>
+                      No recent customer invoices found.
+                    </td>
+                  </tr>
+                ) : (
+                  recentInvoices.map((txn, idx) => (
                   <tr key={txn.id || idx} style={{ borderBottom: '1px solid #f1f5f9' }}>
                     <td style={{ padding: '0.75rem 1rem' }}>
                       <div style={{ fontWeight: 800, color: '#0f172a' }}>{txn.customer}</div>
@@ -1050,7 +1030,7 @@ function EntityDashboard() {
                       </button>
                     </td>
                   </tr>
-                ))}
+                )))}
               </tbody>
             </table>
           </div>
@@ -1077,7 +1057,12 @@ function EntityDashboard() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {activityFeed.map((act) => (
+            {activityFeed.length === 0 ? (
+              <div style={{ padding: '1.5rem', textAlign: 'center', color: '#64748b', fontSize: '0.82rem' }}>
+                No recent activity recorded for this entity.
+              </div>
+            ) : (
+              activityFeed.map((act) => (
               <div key={act.id} style={{ display: 'flex', gap: '0.75rem', position: 'relative' }}>
                 <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#636B2F', marginTop: '4px', flexShrink: 0 }} />
                 <div style={{ flex: 1 }}>
@@ -1086,7 +1071,7 @@ function EntityDashboard() {
                   <div style={{ fontSize: '0.68rem', color: '#94a3b8', marginTop: '0.2rem' }}>🕒 {act.time}</div>
                 </div>
               </div>
-            ))}
+            )))}
           </div>
 
           <div style={{ marginTop: '1.25rem', borderTop: '1px solid #f1f5f9', paddingTop: '0.75rem' }}>

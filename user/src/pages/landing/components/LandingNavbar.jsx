@@ -1,3 +1,4 @@
+import { useBranding } from '../../../utils/branding';
 import React, { useState } from 'react';
 import {
   Building2,
@@ -11,6 +12,7 @@ import {
 } from 'lucide-react';
 
 function LandingNavbar({ onLoginClick, onRegisterClick, onNavigateSection }) {
+  const { appName, logoUrl } = useBranding();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
@@ -40,11 +42,11 @@ function LandingNavbar({ onLoginClick, onRegisterClick, onNavigateSection }) {
       <div className="cb-container cb-nav-inner">
         {/* Brand Logo */}
         <div className="cb-nav-logo" onClick={() => handleScrollTo('hero')}>
-          <img src="/logo.png" alt="Vyapar AdNET" style={{ width: "40px", height: "40px", borderRadius: "50%" }} />
+          <img src={logoUrl || "/logo.png"} alt={appName} style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "contain" }} onError={(e) => { e.target.src = "/logo.png"; }} />
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
               <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0F4C81', letterSpacing: '-0.03em', fontFamily: 'Poppins, sans-serif' }}>
-                ADD<span style={{ color: "#FF7A00" }}>NET</span>
+                {appName || 'Vyapar AdNET'}
               </span>
             </div>
             <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#64748B', letterSpacing: '0.5px', textTransform: 'uppercase', display: 'block', marginTop: '-2px' }}>

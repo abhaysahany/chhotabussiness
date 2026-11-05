@@ -1,38 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
 function AdminLiveHelpdeskPage({ currentAdmin }) {
-  const [activeSessions, setActiveSessions] = useState([
-    {
-      id: 'sess-101',
-      userName: 'Tom Phillip',
-      userEmail: 'tom@addnet.com',
-      status: 'Live Agent Requested',
-      lastMsg: 'I want to speak with a human support agent.',
-      time: '1 min ago',
-      agent: 'Unassigned',
-      messages: [
-        { sender: 'bot', name: 'AI Concierge', text: 'Welcome to AddNet Live Support! How can I assist?' },
-        { sender: 'user', name: 'Tom Phillip', text: 'I want to speak with a human support agent.' },
-        { sender: 'bot', name: 'AI Concierge', text: 'Queuing your chat for senior support specialist...' },
-      ],
-    },
-    {
-      id: 'sess-102',
-      userName: 'Sara Jenkins',
-      userEmail: 'sara@addnet.com',
-      status: 'AI Active',
-      lastMsg: 'Explain how binary level matching commission is calculated.',
-      time: '3 mins ago',
-      agent: 'AI Concierge',
-      messages: [
-        { sender: 'bot', name: 'AI Concierge', text: 'Hello Sara! How can I assist your business today?' },
-        { sender: 'user', name: 'Sara Jenkins', text: 'Explain how binary level matching commission is calculated.' },
-        { sender: 'bot', name: 'AI Concierge', text: 'Binary matching is calculated at 10% on balanced BV between left and right leg.' },
-      ],
-    },
-  ]);
-
-  const [selectedSessId, setSelectedSessId] = useState('sess-101');
+  const [activeSessions, setActiveSessions] = useState([]);
+  const [selectedSessId, setSelectedSessId] = useState('');
   const [replyText, setReplyText] = useState('');
   const [toastMsg, setToastMsg] = useState('');
 
@@ -136,7 +106,12 @@ function AdminLiveHelpdeskPage({ currentAdmin }) {
             Online Chat Queue ({activeSessions.length})
           </h3>
           <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-            {activeSessions.map((s) => {
+            {activeSessions.length === 0 ? (
+              <div style={{ padding: '2rem 1rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                No live support sessions currently active.
+              </div>
+            ) : (
+              activeSessions.map((s) => {
               const isSelected = selectedSessId === s.id;
               return (
                 <div
@@ -163,7 +138,7 @@ function AdminLiveHelpdeskPage({ currentAdmin }) {
                   </div>
                 </div>
               );
-            })}
+            }))}
           </div>
         </div>
 

@@ -108,9 +108,9 @@ function AdminProductsPage() {
   const handleOwnerTypeChange = (type) => {
     let defaultOwner = '';
     if (type === 'business') {
-      defaultOwner = businessesList.length > 0 ? (businessesList[0].name || businessesList[0].business_name || 'Skyline Technologies Pvt Ltd') : 'Skyline Technologies Pvt Ltd';
+      defaultOwner = businessesList.length > 0 ? (businessesList[0].name || businessesList[0].business_name || '') : '';
     } else {
-      defaultOwner = freelancersList.length > 0 ? (freelancersList[0].name || freelancersList[0].full_name || 'Priya Patel (UI/UX Designer)') : 'Priya Patel (UI/UX Designer)';
+      defaultOwner = freelancersList.length > 0 ? (freelancersList[0].name || freelancersList[0].full_name || '') : '';
     }
 
     setFormData((prev) => ({
@@ -135,7 +135,7 @@ function AdminProductsPage() {
   const openAddModal = () => {
     setEditingProduct(null);
     const defaultCat = categoriesList[0] || 'Software & IT';
-    const defaultBiz = businessesList.length > 0 ? (businessesList[0].name || businessesList[0].business_name || 'Skyline Technologies Pvt Ltd') : 'Skyline Technologies Pvt Ltd';
+    const defaultBiz = businessesList.length > 0 ? (businessesList[0].name || businessesList[0].business_name || '') : '';
 
     setFormData({
       name: '',
@@ -608,7 +608,7 @@ function AdminProductsPage() {
                           </option>
                         ))
                       ) : (
-                        <option value="Skyline Technologies Pvt Ltd">Skyline Technologies Pvt Ltd</option>
+                        <option value="">No businesses registered</option>
                       )
                     ) : (
                       freelancersList.length > 0 ? (
@@ -618,7 +618,7 @@ function AdminProductsPage() {
                           </option>
                         ))
                       ) : (
-                        <option value="Priya Patel (UI/UX Designer)">Priya Patel (UI/UX Designer)</option>
+                        <option value="">No freelancers registered</option>
                       )
                     )}
                   </select>

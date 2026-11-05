@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBranding } from '../utils/branding';
 import {
@@ -10,7 +10,7 @@ import {
 
 function AdminLoginForm({ onLoginSuccess }) {
   const navigate = useNavigate();
-  const { appName } = useBranding();
+  const { appName, logoUrl } = useBranding();
   const [login, setLogin] = useState('admin');
   const [password, setPassword] = useState('123456');
   const [rememberMe, setRememberMe] = useState(false);
@@ -30,6 +30,18 @@ function AdminLoginForm({ onLoginSuccess }) {
   const [forgotLoading, setForgotLoading] = useState(false);
   const [forgotError, setForgotError] = useState(null);
   const [demoOtpHint, setDemoOtpHint] = useState(null);
+  const [maskedEmail, setMaskedEmail] = useState('');
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  useEffect(() => {
+    let timer;
+    if (resendCooldown > 0) {
+      timer = setInterval(() => {
+        setResendCooldown((prev) => (prev > 0 ? prev - 1 : 0));
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [resendCooldown]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -79,12 +91,14 @@ function AdminLoginForm({ onLoginSuccess }) {
     setForgotStep(1);
     setForgotError(null);
     setDemoOtpHint(null);
+    setMaskedEmail('');
+    setResendCooldown(0);
     setShowForgotModal(true);
   };
 
   // Step 1: Send OTP to Admin Email
   const handleSendOtp = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     if (!resetLogin) {
       setForgotError('Please enter your admin username or email address.');
       return;
@@ -96,15 +110,25 @@ function AdminLoginForm({ onLoginSuccess }) {
     try {
       const res = await adminForgotPassword({ login: resetLogin });
       if (res.status === 'success' || res.success) {
+        if (res.masked_email) {
+          setMaskedEmail(res.masked_email);
+        }
         if (res.otp) {
           setDemoOtpHint(res.otp);
+        } else {
+          setDemoOtpHint(null);
         }
+        setResendCooldown(60);
         setForgotStep(2);
       } else {
-        setForgotError(res.message || 'Failed to generate reset OTP.');
+        setForgotError(res.message || 'Failed to dispatch verification code.');
       }
     } catch (err) {
       console.error('Admin forgot password error:', err);
+      const remainingSeconds = err.response?.data?.retry_after_seconds;
+      if (remainingSeconds) {
+        setResendCooldown(remainingSeconds);
+      }
       setForgotError(
         err.response?.data?.message || 'No administrator account found with that email or username.'
       );
@@ -188,37 +212,46 @@ function AdminLoginForm({ onLoginSuccess }) {
       {/* Brand Header */}
       <div className="auth-header">
         <div className="brand-logo">
-          <svg
-            width="32"
-            height="32"
-            viewBox="0 0 32 32"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <rect width="32" height="32" rx="8" fill="url(#logo-grad)" />
-            <path
-              d="M10 10H16C18.2091 10 20 11.7909 20 14V14C20 16.2091 18.2091 18 16 18H10V10Z"
-              fill="white"
+          {logoUrl ? (
+            <img
+              src={logoUrl}
+              alt={appName}
+              style={{ width: '32px', height: '32px', borderRadius: '8px', objectFit: 'contain' }}
+              onError={(e) => { e.target.style.display = 'none'; }}
             />
-            <path
-              d="M16 18H22V22H16C13.7909 22 12 20.2091 12 18V18"
-              stroke="white"
-              strokeWidth="3"
-            />
-            <defs>
-              <linearGradient
-                id="logo-grad"
-                x1="0"
-                y1="0"
-                x2="32"
-                y2="32"
-                gradientUnits="userSpaceOnUse"
-              >
-                <stop stopColor="#3569a7" />
-                <stop offset="1" stopColor="#264e7e" />
-              </linearGradient>
-            </defs>
-          </svg>
+          ) : (
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 32 32"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect width="32" height="32" rx="8" fill="url(#logo-grad)" />
+              <path
+                d="M10 10H16C18.2091 10 20 11.7909 20 14V14C20 16.2091 18.2091 18 16 18H10V10Z"
+                fill="white"
+              />
+              <path
+                d="M16 18H22V22H16C13.7909 22 12 20.2091 12 18V18"
+                stroke="white"
+                strokeWidth="3"
+              />
+              <defs>
+                <linearGradient
+                  id="logo-grad"
+                  x1="0"
+                  y1="0"
+                  x2="32"
+                  y2="32"
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop stopColor="#3569a7" />
+                  <stop offset="1" stopColor="#264e7e" />
+                </linearGradient>
+              </defs>
+            </svg>
+          )}
           <span className="brand-name">{appName}</span>
           <span className="brand-badge">ADMIN</span>
         </div>
@@ -484,7 +517,7 @@ function AdminLoginForm({ onLoginSuccess }) {
             {forgotStep === 2 && (
               <form onSubmit={handleVerifyOtp}>
                 <p style={{ color: '#64748b', fontSize: '0.85rem', marginBottom: '0.5rem' }}>
-                  Enter the 6-digit OTP code sent for administrator <strong style={{ color: '#0f172a' }}>{resetLogin}</strong>.
+                  Enter the 6-digit verification code sent to {maskedEmail ? <strong style={{ color: '#0f172a' }}>{maskedEmail}</strong> : `administrator ${resetLogin}`}.
                 </p>
 
                 {demoOtpHint && (
@@ -529,10 +562,10 @@ function AdminLoginForm({ onLoginSuccess }) {
                     <button
                       type="button"
                       onClick={handleSendOtp}
-                      disabled={forgotLoading}
-                      style={{ padding: '0.55rem 0.85rem', background: '#f1f5f9', color: '#475569', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '0.8rem', cursor: 'pointer' }}
+                      disabled={forgotLoading || resendCooldown > 0}
+                      style={{ padding: '0.55rem 0.85rem', background: '#f1f5f9', color: resendCooldown > 0 ? '#94a3b8' : '#475569', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '0.8rem', cursor: resendCooldown > 0 ? 'not-allowed' : 'pointer' }}
                     >
-                      Resend
+                      {resendCooldown > 0 ? `Resend (${resendCooldown}s)` : 'Resend Code'}
                     </button>
                     <button
                       type="submit"

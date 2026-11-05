@@ -31,7 +31,7 @@ function DashboardOverview({ user, onNavigate }) {
   const fetchStats = async () => {
     setLoading(true);
     try {
-      const res = await getDashboardStats();
+      const res = await getDashboardStats(chartPeriod);
       if (res && res.status === 'success') {
         setData(res);
       }
@@ -44,19 +44,20 @@ function DashboardOverview({ user, onNavigate }) {
 
   useEffect(() => {
     fetchStats();
-  }, [user]);
+  }, [user, chartPeriod]);
 
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(''), 3000);
   };
 
-  const userCode = data?.user?.userCode || user?.user_code || user?.sponsor_id || 'CB100001';
+  const userCode = data?.user?.userCode || user?.user_code || user?.sponsor_id || '';
   const userName = data?.user?.name || user?.name || 'Partner Account';
   const userEmail = data?.user?.email || user?.email || `${userCode}@addnet.com`;
   const userRank = data?.user?.rank || user?.rank || 'Partner Member';
   const kycStatus = data?.user?.kycStatus || user?.kyc_status || 'verified';
   const userInitial = userName.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase() || 'U';
+  const userAvatarUrl = user?.avatar_url || user?.avatar || null;
 
   const baseUrl = window.location.origin || 'https://addnet.com';
   const referralUrl = `${baseUrl}/register?ref=${userCode}`;
@@ -91,12 +92,13 @@ function DashboardOverview({ user, onNavigate }) {
 
   // ApexCharts: Revenue Growth Options & Series
   const revenueChartOptions = useMemo(() => {
-    const isMonthly = chartPeriod === '6m';
-    const categories = isMonthly
-      ? ['Month 1', 'Month 2', 'Month 3', 'Month 4', 'Month 5', 'Month 6']
-      : chartPeriod === '30d'
-      ? ['Week 1', 'Week 2', 'Week 3', 'Week 4']
-      : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const categories = data?.charts?.revenue?.categories || (
+      chartPeriod === '6m'
+        ? ['Month 1', 'Month 2', 'Month 3', 'Month 4', 'Month 5', 'Month 6']
+        : chartPeriod === '30d'
+        ? ['Week 1', 'Week 2', 'Week 3', 'Week 4']
+        : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    );
 
     return {
       chart: {
@@ -143,23 +145,8 @@ function DashboardOverview({ user, onNavigate }) {
   }, [chartPeriod]);
 
   const revenueChartSeries = useMemo(() => {
-    if (chartPeriod === '6m') {
-      return [
-        { name: 'Direct Referral Bonus', data: [12000, 18500, 24000, 31000, 38000, 45000] },
-        { name: 'Binary Team Commissions', data: [8000, 14000, 19500, 26000, 32000, 41000] },
-      ];
-    }
-    if (chartPeriod === '30d') {
-      return [
-        { name: 'Direct Referral Bonus', data: [4500, 8200, 11400, 16800] },
-        { name: 'Binary Team Commissions', data: [3100, 6400, 9100, 13500] },
-      ];
-    }
-    return [
-      { name: 'Direct Referral Bonus', data: [800, 1200, 950, 1600, 2100, 1800, 2400] },
-      { name: 'Binary Team Commissions', data: [400, 750, 600, 1100, 1400, 1300, 1900] },
-    ];
-  }, [chartPeriod]);
+    return data?.charts?.revenue?.series || [];
+  }, [data]);
 
   // ApexCharts: Commission Breakdown Donut
   const donutChartOptions = useMemo(() => ({
@@ -170,7 +157,7 @@ function DashboardOverview({ user, onNavigate }) {
       background: 'transparent',
     },
     colors: ['#0B192C', '#1E40AF', '#0284C7', '#D97706'],
-    labels: ['Direct Bonus', 'Team Match', 'Leadership Bonus', 'Rewards'],
+    labels: data?.charts?.distribution?.labels || ['Direct Bonus', 'Team Match', 'Leadership Bonus', 'Rewards'],
     legend: {
       position: 'bottom',
       fontSize: '11px',
@@ -210,7 +197,7 @@ function DashboardOverview({ user, onNavigate }) {
     },
   }), []);
 
-  const donutChartSeries = [45, 30, 15, 10];
+  const donutChartSeries = data?.charts?.distribution?.series || [0, 0, 0, 0];
 
   // Normalized safe list of transactions
   const recentTransactions = useMemo(() => {
@@ -301,8 +288,17 @@ function DashboardOverview({ user, onNavigate }) {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem' }}>
           {/* User Profile Info */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div className="van-avatar" style={{ width: '56px', height: '56px', fontSize: '1.25rem' }}>
-              {userInitial}
+            <div className="van-avatar" style={{ width: '56px', height: '56px', fontSize: '1.25rem', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {userAvatarUrl ? (
+                <img
+                  src={userAvatarUrl}
+                  alt={userName}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={(e) => { e.target.style.display = 'none'; }}
+                />
+              ) : (
+                userInitial
+              )}
             </div>
 
             <div>

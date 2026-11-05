@@ -1083,9 +1083,9 @@ function AdminContentLibraryPage() {
                       const nextType = e.target.value;
                       let defaultName = 'AddNet System Entity';
                       if (nextType === 'business' && businesses.length > 0) defaultName = businesses[0].business_name;
-                      else if (nextType === 'business') defaultName = 'Skyline Technologies Pvt Ltd';
+                      else if (nextType === 'business') defaultName = '';
                       if (nextType === 'freelance' && freelancers.length > 0) defaultName = freelancers[0].full_name;
-                      else if (nextType === 'freelance') defaultName = 'Priya Patel UI/UX Freelance';
+                      else if (nextType === 'freelance') defaultName = '';
                       setFormData({ ...formData, entity_type: nextType, entity_name: defaultName });
                     }}
                     style={{ width: '100%', padding: '0.6rem 0.8rem', fontSize: '0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none', background: '#fff' }}

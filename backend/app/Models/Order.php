@@ -81,6 +81,7 @@ class Order extends Model
         'level_income_amount' => 'float',
         'reward_income_amount' => 'float',
         'distributed_admin_cut_amount' => 'float',
+        'date' => 'date:Y-m-d',
         'income_distributed_at' => 'datetime',
         'admin_confirmed_by' => 'integer',
         'admin_confirmed_at' => 'datetime',
@@ -349,7 +350,8 @@ class Order extends Model
 
     public function getIncomeDistributedAtAttribute()
     {
-        return $this->attributes['income_distributed_at'] ?? null;
+        $val = $this->attributes['income_distributed_at'] ?? null;
+        return $val ? $this->asDateTime($val) : null;
     }
 
     public function getDumpAmountAttribute()
@@ -485,7 +487,8 @@ class Order extends Model
 
     public function getAdminConfirmedAtAttribute()
     {
-        return $this->attributes['admin_confirmed_at'] ?? null;
+        $val = $this->attributes['admin_confirmed_at'] ?? null;
+        return $val ? $this->asDateTime($val) : null;
     }
 
     public function getAdminCancelledByAttribute()
@@ -495,7 +498,8 @@ class Order extends Model
 
     public function getAdminCancelledAtAttribute()
     {
-        return $this->attributes['admin_cancelled_at'] ?? null;
+        $val = $this->attributes['admin_cancelled_at'] ?? null;
+        return $val ? $this->asDateTime($val) : null;
     }
 
     public function getCancellationReasonAttribute()

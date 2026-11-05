@@ -127,6 +127,7 @@ class IncomeAllocationController extends Controller
                 'message' => $e->getMessage(),
             ], 422);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('allocatePayment error: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed to process payment income allocation: ' . $e->getMessage(),

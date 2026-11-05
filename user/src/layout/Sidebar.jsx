@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useBranding } from '../utils/branding';
 
 function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
+  const { appName, logoUrl } = useBranding();
   const location = useLocation();
   const navigate = useNavigate();
   const currentPath = location.pathname;
@@ -94,8 +96,13 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
     <aside className={`pro-sidebar ${collapsed ? 'collapsed' : ''}`}>
       {/* Brand & System Logo Header */}
       <div className="van-sidebar-header">
-        <div className="van-sidebar-brand" onClick={() => handleNav('/dashboard')} title="Vyapar AdNET Dashboard" style={{ cursor: 'pointer' }}>
-          <img src="/logo.png" alt="Vyapar AdNET Logo" className="van-sidebar-logo-img" />
+        <div className="van-sidebar-brand" onClick={() => handleNav('/dashboard')} title={`${appName} Dashboard`} style={{ cursor: 'pointer' }}>
+          <img
+            src={logoUrl || '/logo.png'}
+            alt={`${appName} Logo`}
+            className="van-sidebar-logo-img"
+            onError={(e) => { e.target.src = '/logo.png'; }}
+          />
         </div>
       </div>
 

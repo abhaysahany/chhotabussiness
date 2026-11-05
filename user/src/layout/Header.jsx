@@ -84,6 +84,7 @@ function Header({ onToggleSidebar, user, onLogout, onNavigate }) {
   };
 
   const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
+  const userAvatarUrl = user?.avatar_url || user?.avatar || null;
 
   return (
     <header className="pro-header">
@@ -250,8 +251,17 @@ function Header({ onToggleSidebar, user, onLogout, onNavigate }) {
               setShowNotificationMenu(false);
             }}
           >
-            <div className="van-avatar">
-              {userInitial}
+            <div className="van-avatar" style={{ overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {userAvatarUrl ? (
+                <img
+                  src={userAvatarUrl}
+                  alt={user?.name || 'User'}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={(e) => { e.target.style.display = 'none'; }}
+                />
+              ) : (
+                userInitial
+              )}
             </div>
             <div className="user-details-text">
               <span className="user-name" style={{ fontSize: '0.825rem', fontWeight: 700, color: 'var(--van-text-primary)' }}>
@@ -266,8 +276,17 @@ function Header({ onToggleSidebar, user, onLogout, onNavigate }) {
           {showProfileMenu && (
             <div className="profile-dropdown-menu">
               <div className="profile-dropdown-header-user">
-                <div className="van-avatar" style={{ width: '38px', height: '38px', fontSize: '0.95rem' }}>
-                  {userInitial}
+                <div className="van-avatar" style={{ width: '38px', height: '38px', fontSize: '0.95rem', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {userAvatarUrl ? (
+                    <img
+                      src={userAvatarUrl}
+                      alt={user?.name || 'User'}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      onError={(e) => { e.target.style.display = 'none'; }}
+                    />
+                  ) : (
+                    userInitial
+                  )}
                 </div>
                 <div className="dropdown-user-info">
                   <span className="dropdown-user-name">{user?.name || 'Partner Account'}</span>

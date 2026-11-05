@@ -19,15 +19,40 @@ class EntityDashboardController extends Controller
      */
     public function getDashboardStats(Request $request)
     {
-        // Filter by entity if provided
-        $entityCode = $request->input('entity_code') ?? $request->query('entity_code');
-        $salesQuery = SalesRecord::query();
-        if ($entityCode && $entityCode !== 'all' && $entityCode !== 'undefined') {
-            $salesQuery->where(function ($q) use ($entityCode) {
-                if (is_numeric($entityCode)) {
-                    $q->where('entity_id', $entityCode);
+        // Resolve authenticated entity
+        $entity = auth('sanctum')->user() ?: $request->user();
+        if (!$entity && $request->bearerToken()) {
+            if (class_exists(\Laravel\Sanctum\PersonalAccessToken::class)) {
+                $token = \Laravel\Sanctum\PersonalAccessToken::findToken($request->bearerToken());
+                if ($token) {
+                    $entity = $token->tokenable;
                 }
-                $q->orWhere('entity_name', $entityCode);
+            }
+        }
+
+        $entityName = null;
+        $entityId = null;
+        if ($entity) {
+            $entityName = $entity->business_name ?? $entity->name ?? null;
+            $entityId = $entity->id ?? null;
+        } elseif ($request->filled('entity_code')) {
+            $code = $request->input('entity_code');
+            if (is_numeric($code)) {
+                $entityId = (int) $code;
+            } else {
+                $entityName = $code;
+            }
+        }
+
+        $salesQuery = SalesRecord::query();
+        if ($entityId || $entityName) {
+            $salesQuery->where(function ($q) use ($entityId, $entityName) {
+                if ($entityId) {
+                    $q->where('entity_id', $entityId);
+                }
+                if ($entityName) {
+                    $q->orWhere('entity_name', $entityName);
+                }
             });
         }
 
@@ -38,10 +63,21 @@ class EntityDashboardController extends Controller
         $totalPlatformFeePaid = (float) (clone $salesQuery)->sum('admin_commission_cut');
         $totalInvoicesCount = (clone $salesQuery)->count();
 
-        $totalProducts = Product::count();
-        $totalServices = Service::count();
-        $totalPackages = ProductPackage::count();
+        $productsQuery = Product::query();
+        $servicesQuery = Service::query();
+        $packagesQuery = ProductPackage::query();
+        if ($entityName) {
+            $productsQuery->where('owner_name', $entityName);
+            $servicesQuery->where('owner_name', $entityName);
+        }
+        $totalProducts = $productsQuery->count();
+        $totalServices = $servicesQuery->count();
+        $totalPackages = $packagesQuery->count();
         $totalCatalogOfferings = $totalProducts + $totalServices + $totalPackages;
+
+        $monthlyGross = (float) (clone $salesQuery)->where('created_at', '>=', Carbon::now()->startOfMonth())->sum('gross_amount');
+        $monthlyTarget = 1000000.00;
+        $targetProgress = $monthlyTarget > 0 ? min(100.0, round(($monthlyGross / $monthlyTarget) * 100, 1)) : 0;
 
         // 2. Timeline period filter (7d | 30d | 6m) strictly aggregated from database
         $period = $request->query('period', '7d');
@@ -179,6 +215,7 @@ class EntityDashboardController extends Controller
                 'totalPlatformFeePaid' => $totalPlatformFeePaid,
                 'totalInvoicesCount' => $totalInvoicesCount,
                 'totalCatalogOfferings' => $totalCatalogOfferings,
+                'targetProgress' => $targetProgress,
             ],
             'charts' => [
                 'categories' => $categories,

@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useBranding } from '../../utils/branding';
 
 function EntitySidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogout }) {
-  const { appName } = useBranding();
+  const { appName, logoUrl } = useBranding();
   const [salesOpen, setSalesOpen] = useState(true);
   const [paymentsOpen, setPaymentsOpen] = useState(true);
   const [payoutsOpen, setPayoutsOpen] = useState(true);
@@ -27,11 +27,20 @@ function EntitySidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLog
       <div className="sidebar-header">
         <div className="sidebar-brand" onClick={() => handleNav('dashboard', '/entity/dashboard')} style={{ cursor: 'pointer' }}>
           <div className="entity-brand-icon-box">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2L2 7l10 5 10-5-10-5z" />
-              <path d="M2 17l10 5 10-5" />
-              <path d="M2 12l10 5 10-5" />
-            </svg>
+            {logoUrl ? (
+              <img
+                src={logoUrl}
+                alt={appName}
+                style={{ width: '24px', height: '24px', objectFit: 'contain' }}
+                onError={(e) => { e.target.style.display = 'none'; }}
+              />
+            ) : (
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                <path d="M2 17l10 5 10-5" />
+                <path d="M2 12l10 5 10-5" />
+              </svg>
+            )}
           </div>
           {!collapsed && (
             <div className="entity-brand-text-col">

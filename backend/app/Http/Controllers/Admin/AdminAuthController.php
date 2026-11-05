@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
+use App\Services\PasswordResetOtpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Cache;
@@ -130,7 +131,7 @@ class AdminAuthController extends Controller
             ], 422);
         }
 
-        $loginInput = $request->login;
+        $loginInput = trim($request->login);
 
         $admin = Admin::where('email', $loginInput)
             ->orWhere('username', $loginInput)
@@ -143,21 +144,30 @@ class AdminAuthController extends Controller
             ], 404);
         }
 
-        // Generate 6-digit OTP
-        $otp = (string) rand(100000, 999999);
+        // Dispatch real email OTP synchronously via PasswordResetOtpService
+        $result = PasswordResetOtpService::sendResetOtp(
+            accountType: 'admin',
+            accountId: $admin->id,
+            recipientEmail: $admin->email,
+            recipientName: $admin->username,
+            accountLabel: 'Administrator'
+        );
 
-        // Store OTP in Cache keyed by admin ID & username/email for 15 mins
-        Cache::put('admin_reset_otp_' . $admin->id, $otp, now()->addMinutes(15));
-        Cache::put('admin_reset_key_' . md5(strtolower($loginInput)), $admin->id, now()->addMinutes(15));
+        if (!$result['success']) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $result['message'],
+                'retry_after_seconds' => $result['retry_after_seconds'] ?? null,
+            ], $result['status_code']);
+        }
 
         return response()->json([
             'status' => 'success',
             'success' => true,
-            'message' => "Password reset OTP generated for administrator '{$admin->username}'!",
+            'message' => "Password reset verification code dispatched to {$result['masked_email']}!",
             'admin_username' => $admin->username,
-            'admin_email' => $admin->email,
-            'otp' => $otp, // Included for testing and demonstration ease
-            'expires_in_minutes' => 15,
+            'masked_email' => $result['masked_email'],
+            'expires_in_minutes' => $result['expires_in_minutes'],
         ], 200);
     }
 
@@ -179,8 +189,8 @@ class AdminAuthController extends Controller
             ], 422);
         }
 
-        $loginInput = $request->login;
-        $otp = $request->otp;
+        $loginInput = trim($request->login);
+        $otp = trim($request->otp);
 
         $admin = Admin::where('email', $loginInput)
             ->orWhere('username', $loginInput)
@@ -193,19 +203,20 @@ class AdminAuthController extends Controller
             ], 404);
         }
 
-        $cachedOtp = Cache::get('admin_reset_otp_' . $admin->id);
+        $result = PasswordResetOtpService::verifyOtp('admin', $admin->id, $otp);
 
-        if (!$cachedOtp || $cachedOtp !== $otp) {
+        if (!$result['valid']) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Invalid or expired OTP code. Please request a new code.',
-            ], 400);
+                'message' => $result['message'],
+                'remaining_attempts' => $result['remaining_attempts'] ?? null,
+            ], $result['status_code']);
         }
 
         return response()->json([
             'status' => 'success',
             'success' => true,
-            'message' => 'OTP verified successfully! You may now set your new admin password.',
+            'message' => $result['message'],
         ], 200);
     }
 
@@ -228,8 +239,8 @@ class AdminAuthController extends Controller
             ], 422);
         }
 
-        $loginInput = $request->login;
-        $otp = $request->otp;
+        $loginInput = trim($request->login);
+        $otp = trim($request->otp);
         $newPassword = $request->password;
 
         $admin = Admin::where('email', $loginInput)
@@ -243,26 +254,23 @@ class AdminAuthController extends Controller
             ], 404);
         }
 
-        $cachedOtp = Cache::get('admin_reset_otp_' . $admin->id);
+        // Consume OTP (verifies hash and evicts from cache)
+        $consumed = PasswordResetOtpService::consumeOtp('admin', $admin->id, $otp);
 
-        if (!$cachedOtp || $cachedOtp !== $otp) {
+        if (!$consumed) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Invalid or expired OTP. Please start the password reset process again.',
+                'message' => 'Invalid or expired verification code. Please start the password reset process again.',
             ], 400);
         }
 
         $admin->password = Hash::make($newPassword);
         $admin->save();
 
-        // Clear used OTP from cache
-        Cache::forget('admin_reset_otp_' . $admin->id);
-        Cache::forget('admin_reset_key_' . md5(strtolower($loginInput)));
-
         return response()->json([
             'status' => 'success',
             'success' => true,
-            'message' => 'Admin password has been reset successfully! You can now log in.',
+            'message' => 'Admin password has been reset successfully! You can now log in with your new password.',
         ], 200);
     }
 }

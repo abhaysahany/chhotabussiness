@@ -1,3 +1,4 @@
+import { useBranding } from '../../../utils/branding';
 import React from 'react';
 import {
   ArrowRight,
@@ -8,6 +9,7 @@ import {
 } from 'lucide-react';
 
 function FinalCtaSection({ onRegisterClick, onContactClick }) {
+  const { appName } = useBranding();
   return (
     <section style={{ padding: '5.5rem 0', background: '#F8FAFC' }}>
       <div className="cb-container">
@@ -34,7 +36,7 @@ function FinalCtaSection({ onRegisterClick, onContactClick }) {
           </h2>
 
           <p>
-            Join over 1,000+ verified software developers, IT companies, digital agencies, and consultants scaling their turnover with AddNet.
+            Join over 1,000+ verified software developers, IT companies, digital agencies, and consultants scaling their turnover with {appName || 'Vyapar AdNET'}.
           </p>
 
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>

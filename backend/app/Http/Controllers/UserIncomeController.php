@@ -64,7 +64,7 @@ class UserIncomeController extends Controller
         $balanceAmount = max(0.0, round($totalAmount - $paidAmount, 2));
 
         $todayAmount = (float) $directIncomes->filter(function ($rec) {
-            return $rec->created_at && Carbon::parse($rec->created_at)->isToday();
+            return $rec->created_at && Carbon::parse($rec->created_at)->setTimezone('Asia/Kolkata')->isToday();
         })->sum('total_amount');
 
         $latestRecord = $directIncomes->first();
@@ -164,7 +164,7 @@ class UserIncomeController extends Controller
         $dumpAmount = (float) $records->sum('dump_amount');
 
         $todayAmount = (float) $records->filter(function ($rec) {
-            return $rec->created_at && Carbon::parse($rec->created_at)->isToday();
+            return $rec->created_at && Carbon::parse($rec->created_at)->setTimezone('Asia/Kolkata')->isToday();
         })->sum('total_amount');
 
         $recordsByLevel = $records->groupBy('level');
@@ -299,7 +299,7 @@ class UserIncomeController extends Controller
         $directBalance = max(0.0, round($directTotal - $directPaid, 2));
         $directDump = (float) $directIncomes->sum('dump_amount');
         $todayDirect = (float) $directIncomes->filter(function ($rec) {
-            return $rec->created_at && Carbon::parse($rec->created_at)->isToday();
+            return $rec->created_at && Carbon::parse($rec->created_at)->setTimezone('Asia/Kolkata')->isToday();
         })->sum('total_amount');
 
         $levelTotal = (float) $levelIncomes->sum('total_amount');
@@ -307,7 +307,7 @@ class UserIncomeController extends Controller
         $levelBalance = max(0.0, round($levelTotal - $levelPaid, 2));
         $levelDump = (float) $levelIncomes->sum('dump_amount');
         $todayLevel = (float) $levelIncomes->filter(function ($rec) {
-            return $rec->created_at && Carbon::parse($rec->created_at)->isToday();
+            return $rec->created_at && Carbon::parse($rec->created_at)->setTimezone('Asia/Kolkata')->isToday();
         })->sum('total_amount');
 
         $totalIncome = round($directTotal + $levelTotal, 2);

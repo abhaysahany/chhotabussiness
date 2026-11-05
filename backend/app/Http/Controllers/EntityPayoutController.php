@@ -16,7 +16,14 @@ class EntityPayoutController extends Controller
      */
     public function index(Request $request)
     {
-        $entityName = $request->query('entity', 'Skyline Technologies Pvt Ltd');
+        $entity = auth('sanctum')->user() ?: $request->user();
+        if (!$entity && $request->bearerToken() && class_exists(\Laravel\Sanctum\PersonalAccessToken::class)) {
+            $token = \Laravel\Sanctum\PersonalAccessToken::findToken($request->bearerToken());
+            if ($token) {
+                $entity = $token->tokenable;
+            }
+        }
+        $entityName = $entity ? ($entity->business_name ?? $entity->name ?? null) : $request->query('entity');
         $status = $request->query('status', 'all');
         $method = $request->query('payment_method', 'all');
         $search = $request->query('search', '');
@@ -135,7 +142,14 @@ class EntityPayoutController extends Controller
      */
     public function reports(Request $request)
     {
-        $entityName = $request->query('entity', 'Skyline Technologies Pvt Ltd');
+        $entity = auth('sanctum')->user() ?: $request->user();
+        if (!$entity && $request->bearerToken() && class_exists(\Laravel\Sanctum\PersonalAccessToken::class)) {
+            $token = \Laravel\Sanctum\PersonalAccessToken::findToken($request->bearerToken());
+            if ($token) {
+                $entity = $token->tokenable;
+            }
+        }
+        $entityName = $entity ? ($entity->business_name ?? $entity->name ?? null) : $request->query('entity');
         $period = $request->query('period', 'monthly'); // monthly, quarterly, yearly
 
         $payoutsResponse = $this->index($request);

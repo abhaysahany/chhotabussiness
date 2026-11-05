@@ -27,6 +27,7 @@ class User extends Authenticatable
         'password',
         'user_code',
         'sponsor_id',
+        'sponsor_onboarding_status',
         'commission_balance',
         'bp_balance',
         'kyc_status',
@@ -45,6 +46,14 @@ class User extends Authenticatable
         'provider',
         'provider_id',
         'avatar',
+        'dob',
+        'gender',
+        'address',
+        'city',
+        'state',
+        'country',
+        'zip_code',
+        'bio',
         'rank',
         'status',
         'location',
@@ -123,6 +132,8 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'kyc_submitted_at' => 'datetime',
+            'kyc_verified_at' => 'datetime',
             'password' => 'hashed',
             'team_biz' => 'float',
             'commission_balance' => 'float',
@@ -134,10 +145,37 @@ class User extends Authenticatable
 
     protected $appends = [
         'teamBiz',
+        'has_pending_sponsor_onboarding',
+        'avatar_url',
     ];
+
+    public function getAvatarUrlAttribute(): ?string
+    {
+        $avatar = $this->attributes['avatar'] ?? null;
+        if (empty($avatar)) {
+            return null;
+        }
+        if (str_starts_with($avatar, 'http://') || str_starts_with($avatar, 'https://')) {
+            return $avatar;
+        }
+        return url($avatar);
+    }
 
     public function getTeamBizAttribute(): float
     {
         return (float) ($this->attributes['team_biz'] ?? 0);
+    }
+
+    public function getHasPendingSponsorOnboardingAttribute(): bool
+    {
+        return ($this->attributes['sponsor_onboarding_status'] ?? 'completed') === 'pending';
+    }
+
+    /**
+     * Check if user is a new Google/social user who has not completed or skipped sponsor onboarding.
+     */
+    public function hasPendingSponsorOnboarding(): bool
+    {
+        return ($this->sponsor_onboarding_status ?? 'completed') === 'pending';
     }
 }
