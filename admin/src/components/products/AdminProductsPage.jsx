@@ -510,7 +510,7 @@ function AdminProductsPage() {
                       </div>
                     </td>
                     <td>
-                      <span className={getCategoryBadgeClass(p.category)}>{p.category}</span>
+                      <span className={getCategoryBadgeClass(p.category)}>{typeof p.category === 'object' && p.category !== null ? (p.category.name || 'Product') : String(p.category || 'Product')}</span>
                     </td>
                     <td>
                       <div className="owner-cell">
@@ -567,8 +567,8 @@ function AdminProductsPage() {
               <div key={p.id} className="product-grid-card">
                 <div className="grid-card-media">
                   <img src={p.image} alt={p.name} />
-                  <span className={`grid-status-pill ${p.status}`}>{p.status}</span>
-                  <span className="grid-category-pill">{p.category}</span>
+                  <span className={`grid-status-pill ${typeof p.status === "object" ? "active" : p.status}`}>{typeof p.status === "object" && p.status !== null ? (p.status.status || p.status.name || "active") : String(p.status || "active")}</span>
+                  <span className="grid-category-pill">{typeof p.category === "object" && p.category !== null ? (p.category.name || "Product") : String(p.category || "Product")}</span>
                 </div>
                 <div className="grid-card-body">
                   <span className="grid-sku">{p.sku || `SKU-${p.id}`}</span>

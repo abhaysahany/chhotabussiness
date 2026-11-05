@@ -407,7 +407,7 @@ function AdminPackagesPage() {
                       </div>
                     </td>
                     <td>
-                      <span className={getCategoryBadgeClass(pkg.category)}>{pkg.category}</span>
+                      <span className={getCategoryBadgeClass(pkg.category)}>{typeof pkg.category === 'object' && pkg.category !== null ? (pkg.category.name || 'Package') : String(pkg.category || 'Package')}</span>
                     </td>
                     <td>
                       <div>
@@ -466,7 +466,7 @@ function AdminPackagesPage() {
               <div className="pro-card-img-wrapper">
                 <img src={pkg.image} alt={pkg.name} />
                 <div className="pro-card-badge-top">
-                  <span className={getCategoryBadgeClass(pkg.category)}>{pkg.category}</span>
+                  <span className={getCategoryBadgeClass(pkg.category)}>{typeof pkg.category === 'object' && pkg.category !== null ? (pkg.category.name || 'Package') : String(pkg.category || 'Package')}</span>
                   <span className={`status-pill ${pkg.status}`}>
                     {pkg.status === 'active' ? '● Active' : '○ Inactive'}
                   </span>

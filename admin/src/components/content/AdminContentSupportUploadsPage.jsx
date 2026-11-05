@@ -499,7 +499,7 @@ function AdminContentSupportUploadsPage() {
           <div style={{ background: '#fff', borderRadius: '16px', width: '100%', maxWidth: '680px', overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }}>
             <div style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', padding: '1.25rem 1.5rem', color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <span style={{ fontSize: '0.75rem', color: '#818cf8', fontWeight: '800', textTransform: 'uppercase' }}>{inspectingTopic.category}</span>
+                <span style={{ fontSize: '0.75rem', color: '#818cf8', fontWeight: '800', textTransform: 'uppercase' }}>{typeof inspectingTopic.category === 'object' && inspectingTopic.category !== null ? (inspectingTopic.category.name || 'General') : String(inspectingTopic.category || 'General')}</span>
                 <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: '0.2rem 0 0 0', color: '#fff' }}>{inspectingTopic.title}</h3>
               </div>
               <button onClick={() => setInspectingTopic(null)} style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '1.5rem', cursor: 'pointer' }}>×</button>

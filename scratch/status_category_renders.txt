@@ -1,0 +1,23 @@
+components\AdminSupportDesk.jsx:312 -> t.category
+components\content\AdminContentLibraryPage.jsx:874 -> asset.category
+components\content\AdminContentLibraryPage.jsx:939 -> asset.category
+components\content\AdminContentSupportUploadsPage.jsx:502 -> inspectingTopic.category
+components\entities\AdminBusinessPage.jsx:756 -> businesses.filter(b => b.verification_status === 'verified').length
+components\entities\AdminBusinessPage.jsx:765 -> businesses.filter(b => b.verification_status === 'pending').length
+components\entities\AdminCategoryPage.jsx:204 -> categories.filter(c => c.status === 'active').length
+components\entities\AdminEntityCommissionPage.jsx:1185 -> modalEntity.category_name
+components\entities\AdminFreelancerPage.jsx:764 -> freelancers.filter(f => f.verification_status === 'verified').length
+components\entities\AdminFreelancerPage.jsx:773 -> freelancers.filter(f => f.verification_status === 'pending').length
+components\products\AdminPackagesPage.jsx:410 -> pkg.category
+components\products\AdminPackagesPage.jsx:469 -> pkg.category
+components\products\AdminProductsPage.jsx:513 -> p.category
+components\products\AdminProductsPage.jsx:570 -> p.status
+components\products\AdminProductsPage.jsx:571 -> p.category
+components\products\AdminServicesPage.jsx:509 -> s.category
+components\products\AdminServicesPage.jsx:564 -> s.status
+components\products\AdminServicesPage.jsx:565 -> s.category
+components\sales\AdminDumpRequestsPage.jsx:888 -> selectedDumpForDetails.status
+components\sales\AdminOrdersPage.jsx:1902 -> selectedDumpDetails.status === 'approved' ? '🛡️' : '❌'
+components\sales\AdminOrdersPage.jsx:1905 -> selectedDumpDetails.status.toUpperCase()
+components\support\AdminLiveHelpdeskPage.jsx:167 -> currentSess.status
+components\support\AdminSupportTicketsPage.jsx:278 -> t.category

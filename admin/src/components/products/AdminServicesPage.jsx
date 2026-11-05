@@ -506,7 +506,7 @@ function AdminServicesPage() {
                       </div>
                     </td>
                     <td>
-                      <span className={getCategoryBadgeClass(s.category)}>{s.category}</span>
+                      <span className={getCategoryBadgeClass(s.category)}>{typeof s.category === 'object' && s.category !== null ? (s.category.name || 'Service') : String(s.category || 'Service')}</span>
                     </td>
                     <td>
                       <div className="owner-cell">
@@ -561,8 +561,8 @@ function AdminServicesPage() {
               <div key={s.id} className="product-grid-card">
                 <div className="grid-card-media">
                   <img src={s.image} alt={s.name} />
-                  <span className={`grid-status-pill ${s.status}`}>{s.status}</span>
-                  <span className="grid-category-pill">{s.category}</span>
+                  <span className={`grid-status-pill ${typeof s.status === "object" ? "active" : s.status}`}>{typeof s.status === "object" && s.status !== null ? (s.status.status || s.status.name || "active") : String(s.status || "active")}</span>
+                  <span className="grid-category-pill">{typeof s.category === "object" && s.category !== null ? (s.category.name || "Service") : String(s.category || "Service")}</span>
                 </div>
                 <div className="grid-card-body">
                   <span className="grid-sku">SRV-{s.id}</span>
