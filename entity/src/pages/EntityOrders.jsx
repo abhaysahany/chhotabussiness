@@ -53,8 +53,8 @@ function EntityOrders() {
       setDumpError(`Dump amount cannot exceed remaining collectible balance of ₹${balance.toLocaleString('en-IN')}.`);
       return;
     }
-    if (!dumpReason.trim() || dumpReason.trim().length < 3) {
-      setDumpError('Please provide a reason (minimum 3 characters) explaining why this payment has become dump.');
+    if (!dumpReason.trim() || dumpReason.trim().length < 5) {
+      setDumpError('Please provide a detailed reason (minimum 5 characters) explaining why this payment has become dump.');
       return;
     }
 
