@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { submitPanAadhaarKyc } from '../../api/userPayoutService';
 import { getUserFreshProfile } from '../../api/userRewardService';
 import { compressImageFile } from '../../utils/imageCompressor';
+import { formatDateTime } from '../../utils/timezone';
 
 function KycVerification({ user, onNavigate }) {
   const [currentUser, setCurrentUser] = useState(user || null);
@@ -676,7 +677,7 @@ function KycVerification({ user, onNavigate }) {
               <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px dashed #e2e8f0' }}>
                 <span style={{ color: '#64748b' }}>Submission Date:</span>
                 <span style={{ color: '#334155', fontWeight: 600 }}>
-                  {currentUser?.kyc_submitted_at ? new Date(currentUser.kyc_submitted_at).toLocaleString('en-IN') : 'Saved in Database'}
+                  {currentUser?.kyc_submitted_at ? formatDateTime(currentUser.kyc_submitted_at) : 'Saved in Database'}
                 </span>
               </div>
             </div>

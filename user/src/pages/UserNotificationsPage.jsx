@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { formatDateTime } from '../utils/timezone';
 import {
   getUserNotifications,
   markNotificationRead,
@@ -341,7 +342,7 @@ function UserNotificationsPage({ user, onNavigate }) {
                   </div>
 
                   <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 600 }}>
-                    {n.time_ago || (n.created_at ? new Date(n.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '')}
+                    {n.time_ago || (n.created_at ? formatDateTime(n.created_at) : '')}
                   </span>
                 </div>
 

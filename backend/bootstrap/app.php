@@ -16,6 +16,14 @@ return Application::configure(basePath: dirname(__DIR__))
             'entity/*',
             'api/*',
         ]);
+
+        $middleware->api(prepend: [
+            \App\Http\Middleware\EnforceSessionExpiry::class,
+        ]);
+
+        $middleware->alias([
+            'session.expiry' => \App\Http\Middleware\EnforceSessionExpiry::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

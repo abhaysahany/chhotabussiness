@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { getTodayIndianDateString } from '../utils/timezone';
 import { useNavigate } from 'react-router-dom';
 import { getEntityPayoutReports } from '../api/entityService';
 
@@ -108,7 +109,7 @@ function EntityPayoutReportsPage() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `Entity_Payout_Report_Statement_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', `Entity_Payout_Report_Statement_${getTodayIndianDateString()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

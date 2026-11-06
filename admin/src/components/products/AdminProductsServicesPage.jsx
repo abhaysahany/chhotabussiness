@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { getTodayIndianDateString } from '../../utils/timezone';
 
 function AdminProductsServicesPage({ initialTab = 'products-catalog', onNavigate }) {
   const [activeTab, setActiveTab] = useState(initialTab); // 'products-catalog' | 'services-listings' | 'products-packages'
@@ -165,7 +166,7 @@ function AdminProductsServicesPage({ initialTab = 'products-catalog', onNavigate
       status: 'active',
       salesCount: 0,
       image: formData.image || 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=200',
-      created_at: new Date().toISOString().split('T')[0],
+      created_at: getTodayIndianDateString(),
     };
 
     setItems([newItem, ...items]);

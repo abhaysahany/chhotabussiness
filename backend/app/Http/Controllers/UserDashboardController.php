@@ -71,12 +71,12 @@ class UserDashboardController extends Controller
         if ($user && !empty($userCode)) {
             $directIncomeTotal = (float) DirectIncome::where('user_code', $userCode)->sum('total_amount');
             $todayDirectIncome = (float) DirectIncome::where('user_code', $userCode)
-                ->whereDate('created_at', Carbon::today())
+                ->whereDate('created_at', Carbon::today('Asia/Kolkata'))
                 ->sum('total_amount');
 
             $levelIncomeTotal = (float) LevelIncome::where('user_code', $userCode)->sum('total_amount');
             $todayLevelIncome = (float) LevelIncome::where('user_code', $userCode)
-                ->whereDate('created_at', Carbon::today())
+                ->whereDate('created_at', Carbon::today('Asia/Kolkata'))
                 ->sum('total_amount');
         }
 

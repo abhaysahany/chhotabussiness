@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { handleSessionExpired, TOKEN_KEY } from '../utils/sessionManager';
 
 // Detect production domain fallback dynamically so localhost is not hardcoded on production
 const getApiBaseUrl = () => {
@@ -24,7 +25,7 @@ const api = axios.create({
 // Interceptor to attach Bearer token to requests
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('admin_token');
+    const token = localStorage.getItem(TOKEN_KEY);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -47,16 +48,8 @@ api.interceptors.response.use(
         url.includes('/admin/reset-password');
 
       if (!isAuthEndpoint) {
-        // Clear token
-        localStorage.removeItem('admin_token');
-        // Redirect to /admin/login if not already on the login page, avoiding redirect loops
-        if (
-          typeof window !== 'undefined' &&
-          !window.location.pathname.endsWith('/admin/login') &&
-          !window.location.pathname.endsWith('/login')
-        ) {
-          window.location.href = '/admin/login';
-        }
+        const expiryType = error.response.data?.expiry_type || 'idle';
+        handleSessionExpired(expiryType, true);
       }
     }
     return Promise.reject(error);

@@ -55,6 +55,14 @@ import {
   socialLoginUser,
 } from './api/userService';
 import { redirectToSocialProvider, handleSocialOAuthCallback } from './utils/socialOAuth';
+import sessionManager, {
+  isSessionExpired,
+  handleSessionExpired,
+  clearSession,
+  startSessionWatchdog,
+  initSession,
+  TOKEN_KEY,
+} from './utils/sessionManager';
 
 // Canonical route mapping for legacy keys and aliases
 export const pageToRouteMap = {
@@ -300,14 +308,30 @@ function AppContent() {
         console.error('OAuth Callback error:', oauthErr);
       }
 
-      const storedToken = localStorage.getItem('user_token');
+      const storedToken = localStorage.getItem(TOKEN_KEY);
       if (storedToken) {
+        // 1. Authoritative local idle and absolute expiry check
+        const { expired, reason } = isSessionExpired();
+        if (expired) {
+          handleSessionExpired(reason, false);
+          setUser(null);
+          setToken(null);
+          setLoading(false);
+          return;
+        }
+
         try {
           const res = await getCurrentUser();
           setUser(res.user);
+          startSessionWatchdog(() => {
+            setUser(null);
+            setToken(null);
+          });
         } catch (err) {
-          console.error('Session expired:', err);
-          handleLogout();
+          console.error('Session verification error:', err);
+          clearSession('invalid_session', false);
+          setUser(null);
+          setToken(null);
         }
       }
       setLoading(false);
@@ -340,7 +364,7 @@ function AppContent() {
   const handleLogin = async (credentials) => {
     const res = await loginUser(credentials);
     if (res.token) {
-      localStorage.setItem('user_token', res.token);
+      initSession(res.token, { rememberMe: credentials?.rememberMe });
       setToken(res.token);
       setUser(res.user);
       const from = location.state?.from?.pathname || '/dashboard';
@@ -351,7 +375,7 @@ function AppContent() {
   const handleRegister = async (userData) => {
     const res = await registerUser(userData);
     if (res.token) {
-      localStorage.setItem('user_token', res.token);
+      initSession(res.token, { rememberMe: false });
       setToken(res.token);
       setUser(res.user);
       navigate('/dashboard', { replace: true });
@@ -361,7 +385,7 @@ function AppContent() {
   const handleSocialLogin = async (socialData) => {
     const res = await socialLoginUser(socialData);
     if (res.token) {
-      localStorage.setItem('user_token', res.token);
+      initSession(res.token, { rememberMe: false });
       setToken(res.token);
       setUser(res.user);
       navigate('/dashboard', { replace: true });
@@ -375,7 +399,7 @@ function AppContent() {
 
   const handleGoogleAuthSuccess = (res) => {
     if (res?.token) {
-      localStorage.setItem('user_token', res.token);
+      initSession(res.token, { rememberMe: false });
       setToken(res.token);
       setUser(res.user);
       const isPending = res.requires_sponsor_onboarding ||
@@ -397,8 +421,7 @@ function AppContent() {
     } catch (err) {
       console.error('Logout error:', err);
     } finally {
-      localStorage.removeItem('user_token');
-      localStorage.removeItem('chhota_user_active_page');
+      clearSession('manual', false);
       setToken(null);
       setUser(null);
       navigate('/login', { replace: true });

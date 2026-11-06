@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { formatDateTime, formatTime } from '../../utils/timezone';
 import {
   getUserSupportTickets,
   createSupportTicket,
@@ -482,7 +483,7 @@ function SupportTickets({ user }) {
                       {selectedTicket.subject}
                     </h2>
                     <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
-                      Category: <strong style={{ color: '#334155' }}>{selectedTicket.category}</strong> • Priority: <strong style={{ color: '#334155' }}>{selectedTicket.priority}</strong> • Created: <strong style={{ color: '#334155' }}>{new Date(selectedTicket.created_at).toLocaleString('en-IN')}</strong>
+                      Category: <strong style={{ color: '#334155' }}>{selectedTicket.category}</strong> • Priority: <strong style={{ color: '#334155' }}>{selectedTicket.priority}</strong> • Created: <strong style={{ color: '#334155' }}>{formatDateTime(selectedTicket.created_at)}</strong>
                     </div>
                   </div>
 
@@ -528,7 +529,7 @@ function SupportTickets({ user }) {
                             {isMe ? `${m.sender_name} (You)` : `🛡️ ${m.sender_name}`}
                           </strong>
                           <span style={{ color: '#94a3b8', fontSize: '0.68rem' }}>
-                            {new Date(m.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                            {formatTime(m.created_at)}
                           </span>
                         </div>
 

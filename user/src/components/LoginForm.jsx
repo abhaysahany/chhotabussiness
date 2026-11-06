@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import './auth.css';
 import { initiateGoogleCodePopup } from '../utils/googleOAuth';
+import { getExpiredNotice } from '../utils/sessionManager';
 import {
   authenticateWithGoogle,
   forgotPasswordUser,
@@ -35,11 +36,18 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
   const { appName, logoUrl } = useBranding();
   const [email, setEmail] = useState('user@addnet.com');
   const [password, setPassword] = useState('password123');
-  const [rememberMe, setRememberMe] = useState(true);
+  const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [fieldErrors, setFieldErrors] = useState({});
+  const [sessionExpiredNotice, setSessionExpiredNotice] = useState(null);
+
+  useEffect(() => {
+    const notice = getExpiredNotice();
+    if (notice) {
+      setSessionExpiredNotice(notice);
+    }
+  }, []);
 
   // Google SSO state
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -457,6 +465,30 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
                 Enter your credentials to access your business dashboard.
               </p>
             </div>
+
+            {/* Session Expired Notice */}
+            {sessionExpiredNotice && (
+              <div
+                className="cb-alert-error"
+                style={{
+                  background: '#fffbeb',
+                  border: '1px solid #fde68a',
+                  color: '#92400e',
+                  marginBottom: '1rem',
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '0.6rem',
+                  padding: '0.75rem 1rem',
+                  borderRadius: '10px',
+                }}
+              >
+                <AlertCircle size={18} style={{ flexShrink: 0, marginTop: '2px', color: '#d97706' }} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', width: '100%' }}>
+                  <strong style={{ fontSize: '0.875rem', color: '#92400e' }}>Session Expired</strong>
+                  <span style={{ fontSize: '0.8125rem', color: '#78350f', lineHeight: 1.4 }}>{sessionExpiredNotice}</span>
+                </div>
+              </div>
+            )}
 
             {/* Error Message */}
             {errorMessage && (
