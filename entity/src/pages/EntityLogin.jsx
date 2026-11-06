@@ -21,6 +21,8 @@ function EntityLogin({ onLoginSuccess }) {
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [forgotFieldErrors, setForgotFieldErrors] = useState({});
   const [successMsg, setSuccessMsg] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [sessionExpiredNotice, setSessionExpiredNotice] = useState(null);
@@ -94,12 +96,36 @@ function EntityLogin({ onLoginSuccess }) {
     e.preventDefault();
     setError(null);
     setSuccessMsg(null);
+    const newErrors = {};
 
     if (!selectedEntityKey || !selectedEntity) {
-      setError('Please select your registered entity from the dropdown to proceed.');
+      newErrors.entity = 'Please select your registered entity from the dropdown to proceed.';
+    }
+
+    const trimmedEmail = (email || '').trim();
+    if (!trimmedEmail) {
+      newErrors.email = 'Entity login ID or registered email is required.';
+    } else if (trimmedEmail.includes('@')) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(trimmedEmail)) {
+        newErrors.email = 'Please enter a valid email address format.';
+      }
+    }
+
+    const trimmedPassword = (password || '').trim();
+    if (!trimmedPassword) {
+      newErrors.password = 'Password is required.';
+    } else if (trimmedPassword.length < 4) {
+      newErrors.password = 'Password must be at least 4 characters.';
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setFieldErrors(newErrors);
+      setError('Please resolve the highlighted validation errors.');
       return;
     }
 
+    setFieldErrors({});
     setLoading(true);
 
     try {
@@ -158,13 +184,22 @@ function EntityLogin({ onLoginSuccess }) {
   // Step 1: Send OTP to Email
   const handleSendOtp = async (e) => {
     if (e) e.preventDefault();
-    if (!resetEmail) {
+    setForgotError(null);
+    setForgotFieldErrors({});
+    const trimmed = (resetEmail || '').trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!trimmed) {
       setForgotError('Please enter your registered email address.');
+      setForgotFieldErrors({ email: 'Registered email address is required.' });
+      return;
+    }
+    if (!emailRegex.test(trimmed)) {
+      setForgotError('Please enter a valid email address (e.g. contact@business.com).');
+      setForgotFieldErrors({ email: 'Invalid email address format.' });
       return;
     }
 
     setForgotLoading(true);
-    setForgotError(null);
 
     try {
       const res = await forgotPasswordEntity({
@@ -205,13 +240,16 @@ function EntityLogin({ onLoginSuccess }) {
   // Step 2: Verify OTP
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
-    if (!resetOtp || resetOtp.length !== 6) {
-      setForgotError('Please enter a valid 6-digit OTP code.');
+    setForgotError(null);
+    setForgotFieldErrors({});
+    const cleanOtp = (resetOtp || '').trim();
+    if (!cleanOtp || !/^\d{6}$/.test(cleanOtp)) {
+      setForgotError('Please enter a valid 6-digit numeric OTP code.');
+      setForgotFieldErrors({ otp: 'Valid 6-digit numeric OTP required.' });
       return;
     }
 
     setForgotLoading(true);
-    setForgotError(null);
 
     try {
       const res = await verifyResetOtpEntity({
@@ -235,17 +273,24 @@ function EntityLogin({ onLoginSuccess }) {
   // Step 3: Reset Password
   const handleResetPassword = async (e) => {
     e.preventDefault();
-    if (newPassword.length < 6) {
-      setForgotError('New password must be at least 6 characters long.');
-      return;
+    setForgotError(null);
+    setForgotFieldErrors({});
+    const pwErrors = {};
+    if (!newPassword || newPassword.length < 6) {
+      pwErrors.newPassword = 'New password must be at least 6 characters long.';
     }
-    if (newPassword !== confirmPassword) {
-      setForgotError('Password confirmation does not match.');
+    if (!confirmPassword) {
+      pwErrors.confirmPassword = 'Confirm password is required.';
+    } else if (newPassword !== confirmPassword) {
+      pwErrors.confirmPassword = 'Password confirmation does not match.';
+    }
+    if (Object.keys(pwErrors).length > 0) {
+      setForgotFieldErrors(pwErrors);
+      setForgotError(Object.values(pwErrors)[0]);
       return;
     }
 
     setForgotLoading(true);
-    setForgotError(null);
 
     try {
       const res = await resetPasswordEntity({
@@ -401,7 +446,7 @@ function EntityLogin({ onLoginSuccess }) {
                 id="entitySelect"
                 className="form-input"
                 value={selectedEntityKey}
-                onChange={(e) => handleEntitySelect(e.target.value)}
+                onChange={(e) => { handleEntitySelect(e.target.value); setFieldErrors(prev => ({ ...prev, entity: null })); }}
                 required
                 disabled={loadingEntities}
                 style={{
@@ -436,6 +481,7 @@ function EntityLogin({ onLoginSuccess }) {
                 ▼
               </div>
             </div>
+            {fieldErrors.entity && (<span style={{ color: "#ef4444", fontSize: "0.78rem", marginTop: "0.25rem", display: "block", fontWeight: 600 }}>⚠️ {fieldErrors.entity}</span>)}
             {selectedEntity ? (
               <div style={{ marginTop: '0.4rem', fontSize: '0.78rem', color: '#047857', display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
                 <span style={{ fontWeight: 600 }}>✓ Selected Entity:</span>
@@ -464,10 +510,11 @@ function EntityLogin({ onLoginSuccess }) {
               className="form-input"
               placeholder="e.g. contact@yourbusiness.com, phone, or registration ID"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => { setEmail(e.target.value); setFieldErrors(prev => ({ ...prev, email: null })); }}
               required
               autoComplete="username email"
             />
+            {fieldErrors.email && (<span style={{ color: "#ef4444", fontSize: "0.78rem", marginTop: "0.25rem", display: "block", fontWeight: 600 }}>⚠️ {fieldErrors.email}</span>)}
           </div>
 
           <div className="form-group">
@@ -481,7 +528,7 @@ function EntityLogin({ onLoginSuccess }) {
                 className="form-input"
                 placeholder="Enter your password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => { setPassword(e.target.value); setFieldErrors(prev => ({ ...prev, password: null })); }}
                 required
                 autoComplete="current-password"
               />
@@ -504,6 +551,7 @@ function EntityLogin({ onLoginSuccess }) {
                 )}
               </button>
             </div>
+            {fieldErrors.password && (<span style={{ color: "#ef4444", fontSize: "0.78rem", marginTop: "0.25rem", display: "block", fontWeight: 600 }}>⚠️ {fieldErrors.password}</span>)}
           </div>
 
           <div className="form-options-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -704,9 +752,10 @@ function EntityLogin({ onLoginSuccess }) {
                     className="form-input"
                     placeholder={resetEntityType === 'freelancer' ? 'e.g. freelancer@example.com' : 'e.g. contact@yourbusiness.com'}
                     value={resetEmail}
-                    onChange={(e) => setResetEmail(e.target.value)}
+                    onChange={(e) => { setResetEmail(e.target.value); setForgotFieldErrors(prev => ({ ...prev, email: null })); }}
                     style={{ width: '100%' }}
                   />
+                  {forgotFieldErrors.email && (<span style={{ color: "#ef4444", fontSize: "0.75rem", marginTop: "0.25rem", display: "block", fontWeight: 600 }}>⚠️ {forgotFieldErrors.email}</span>)}
                 </div>
 
                 <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
@@ -759,9 +808,10 @@ function EntityLogin({ onLoginSuccess }) {
                     className="form-input"
                     placeholder="123456"
                     value={resetOtp}
-                    onChange={(e) => setResetOtp(e.target.value.replace(/\D/g, ''))}
+                    onChange={(e) => { setResetOtp(e.target.value.replace(/\D/g, '')); setForgotFieldErrors(prev => ({ ...prev, otp: null })); }}
                     style={{ width: '100%', letterSpacing: '4px', fontSize: '1.25rem', textAlign: 'center', fontWeight: '700' }}
                   />
+                  {forgotFieldErrors.otp && (<span style={{ color: "#ef4444", fontSize: "0.75rem", marginTop: "0.25rem", display: "block", textAlign: "center", fontWeight: 600 }}>⚠️ {forgotFieldErrors.otp}</span>)}
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

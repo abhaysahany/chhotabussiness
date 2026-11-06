@@ -31,6 +31,8 @@ function BankAccounts({ user, onNavigate }) {
   // Modals
   const [showAddBankModal, setShowAddBankModal] = useState(false);
   const [showAddUpiModal, setShowAddUpiModal] = useState(false);
+  const [bankFieldErrors, setBankFieldErrors] = useState({});
+  const [upiFieldErrors, setUpiFieldErrors] = useState({});
   const [showQrPreviewModal, setShowQrPreviewModal] = useState(null);
 
   // OTP Verification Modal State
@@ -141,15 +143,44 @@ function BankAccounts({ user, onNavigate }) {
   // Submit Add Bank (Step 1: Validate -> Send OTP)
   const handleInitiateAddBank = (e) => {
     e.preventDefault();
-    if (!newBank.bankName.trim() || !newBank.accountNumber.trim() || !newBank.ifscCode.trim()) {
-      showToast('❌ Please fill in all required bank fields.');
-      return;
+    const errors = {};
+
+    const trimmedBank = (newBank.bankName || '').trim();
+    if (!trimmedBank) {
+      errors.bankName = 'Bank name is required.';
+    } else if (trimmedBank.length < 2) {
+      errors.bankName = 'Bank name must be at least 2 characters.';
     }
-    if (newBank.accountNumber !== newBank.confirmAccountNumber) {
-      showToast('❌ Account number and confirmation number do not match.');
+
+    const trimmedIfsc = (newBank.ifscCode || '').trim().toUpperCase();
+    const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
+    if (!trimmedIfsc) {
+      errors.ifscCode = 'IFSC code is required.';
+    } else if (!ifscRegex.test(trimmedIfsc)) {
+      errors.ifscCode = 'Invalid IFSC code format (e.g. HDFC0001234, 11 alphanumeric characters).';
+    }
+
+    const trimmedAcc = (newBank.accountNumber || '').trim();
+    if (!trimmedAcc) {
+      errors.accountNumber = 'Account number is required.';
+    } else if (!/^\d{9,18}$/.test(trimmedAcc)) {
+      errors.accountNumber = 'Account number must be 9 to 18 numeric digits.';
+    }
+
+    const trimmedConfirmAcc = (newBank.confirmAccountNumber || '').trim();
+    if (!trimmedConfirmAcc) {
+      errors.confirmAccountNumber = 'Please confirm the account number.';
+    } else if (trimmedAcc !== trimmedConfirmAcc) {
+      errors.confirmAccountNumber = 'Account number and confirmation number do not match.';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setBankFieldErrors(errors);
+      showToast('❌ Please fix the highlighted bank validation errors.');
       return;
     }
 
+    setBankFieldErrors({});
     // Trigger OTP with payload
     triggerOtpForAction('add_bank', null, {
       user_code: userCode,
@@ -164,11 +195,23 @@ function BankAccounts({ user, onNavigate }) {
   // Submit Add UPI (Step 1: Validate -> Send OTP)
   const handleInitiateAddUpi = (e) => {
     e.preventDefault();
-    if (!newUpi.upiId.trim()) {
-      showToast('❌ Please enter a valid UPI ID (e.g. name@okhdfcbank).');
+    const errors = {};
+    const trimmedUpi = (newUpi.upiId || '').trim();
+    const upiRegex = /^[\w.-]+@[\w.-]+$/;
+
+    if (!trimmedUpi) {
+      errors.upiId = 'UPI ID (VPA) is required.';
+    } else if (!upiRegex.test(trimmedUpi)) {
+      errors.upiId = 'Invalid UPI ID format (e.g. username@okhdfcbank or 9876543210@paytm).';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setUpiFieldErrors(errors);
+      showToast('❌ Please enter a valid UPI ID.');
       return;
     }
 
+    setUpiFieldErrors({});
     triggerOtpForAction('add_upi', null, {
       user_code: userCode,
       upi_id: newUpi.upiId.trim(),
@@ -678,8 +721,13 @@ function BankAccounts({ user, onNavigate }) {
                     value={newBank.bankName}
                     onChange={(e) => setNewBank({ ...newBank, bankName: e.target.value })}
                     placeholder="e.g. HDFC Bank / SBI"
-                    style={{ width: '100%', padding: '0.6rem 0.75rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                    style={{ width: '100%', padding: '0.6rem 0.75rem', borderRadius: '6px', border: bankFieldErrors.bankName ? '2px solid #ef4444' : '1px solid #cbd5e1', fontSize: '0.85rem' }}
                   />
+                  {bankFieldErrors.bankName && (
+                    <span style={{ color: '#ef4444', fontSize: '0.72rem', marginTop: '0.2rem', display: 'block', fontWeight: 600 }}>
+                      ⚠️ {bankFieldErrors.bankName}
+                    </span>
+                  )}
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#475569', marginBottom: '0.25rem' }}>IFSC Code *</label>
@@ -689,8 +737,13 @@ function BankAccounts({ user, onNavigate }) {
                     value={newBank.ifscCode}
                     onChange={(e) => setNewBank({ ...newBank, ifscCode: e.target.value.toUpperCase() })}
                     placeholder="e.g. HDFC0001234"
-                    style={{ width: '100%', padding: '0.6rem 0.75rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                    style={{ width: '100%', padding: '0.6rem 0.75rem', borderRadius: '6px', border: bankFieldErrors.ifscCode ? '2px solid #ef4444' : '1px solid #cbd5e1', fontSize: '0.85rem' }}
                   />
+                  {bankFieldErrors.ifscCode && (
+                    <span style={{ color: '#ef4444', fontSize: '0.72rem', marginTop: '0.2rem', display: 'block', fontWeight: 600 }}>
+                      ⚠️ {bankFieldErrors.ifscCode}
+                    </span>
+                  )}
                 </div>
               </div>
 
@@ -703,8 +756,13 @@ function BankAccounts({ user, onNavigate }) {
                     value={newBank.accountNumber}
                     onChange={(e) => setNewBank({ ...newBank, accountNumber: e.target.value })}
                     placeholder="Bank account number"
-                    style={{ width: '100%', padding: '0.6rem 0.75rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                    style={{ width: '100%', padding: '0.6rem 0.75rem', borderRadius: '6px', border: bankFieldErrors.accountNumber ? '2px solid #ef4444' : '1px solid #cbd5e1', fontSize: '0.85rem' }}
                   />
+                  {bankFieldErrors.accountNumber && (
+                    <span style={{ color: '#ef4444', fontSize: '0.72rem', marginTop: '0.2rem', display: 'block', fontWeight: 600 }}>
+                      ⚠️ {bankFieldErrors.accountNumber}
+                    </span>
+                  )}
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#475569', marginBottom: '0.25rem' }}>Confirm Account Number *</label>
@@ -714,8 +772,13 @@ function BankAccounts({ user, onNavigate }) {
                     value={newBank.confirmAccountNumber}
                     onChange={(e) => setNewBank({ ...newBank, confirmAccountNumber: e.target.value })}
                     placeholder="Re-enter account number"
-                    style={{ width: '100%', padding: '0.6rem 0.75rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                    style={{ width: '100%', padding: '0.6rem 0.75rem', borderRadius: '6px', border: bankFieldErrors.confirmAccountNumber ? '2px solid #ef4444' : '1px solid #cbd5e1', fontSize: '0.85rem' }}
                   />
+                  {bankFieldErrors.confirmAccountNumber && (
+                    <span style={{ color: '#ef4444', fontSize: '0.72rem', marginTop: '0.2rem', display: 'block', fontWeight: 600 }}>
+                      ⚠️ {bankFieldErrors.confirmAccountNumber}
+                    </span>
+                  )}
                 </div>
               </div>
 

@@ -131,10 +131,15 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
 
     if (!trimmedName) {
       localErrors.name = ['Full Name / Business Name is required.'];
+    } else if (trimmedName.length < 2) {
+      localErrors.name = ['Full Name must be at least 2 characters long.'];
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!trimmedEmail) {
       localErrors.email = ['Email address is required.'];
+    } else if (!emailRegex.test(trimmedEmail)) {
+      localErrors.email = ['Please enter a valid email address format.'];
     }
 
     if (!password || password.length < 6) {

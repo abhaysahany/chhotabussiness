@@ -510,6 +510,14 @@ class UserBankKycController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Bank Name, Account Number, and IFSC Code are required.'], 422);
         }
 
+        if (!preg_match('/^[0-9]{9,18}$/', $accNumber)) {
+            return response()->json(['status' => 'error', 'message' => 'Account Number must contain between 9 and 18 numeric digits.'], 422);
+        }
+
+        if (!preg_match('/^[A-Z]{4}0[A-Z0-9]{6}$/', $ifsc)) {
+            return response()->json(['status' => 'error', 'message' => 'Invalid IFSC Code format. Must be 11 alphanumeric characters (e.g. HDFC0001234).'], 422);
+        }
+
         // 3. Name must match registered name at the time of registration
         $accountHolderName = $user->name;
 
@@ -676,6 +684,10 @@ class UserBankKycController extends Controller
         $upiId = strtolower(trim($request->input('upi_id') ?: ''));
         if (empty($upiId)) {
             return response()->json(['status' => 'error', 'message' => 'Valid UPI ID (e.g. mobile@upi) is required.'], 422);
+        }
+
+        if (!preg_match('/^[\w.-]+@[\w.-]+$/i', $upiId)) {
+            return response()->json(['status' => 'error', 'message' => 'Invalid UPI ID format (e.g. username@okhdfcbank or 9876543210@paytm).'], 422);
         }
 
         $qrCode = $request->input('qr_code_image');

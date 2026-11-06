@@ -121,6 +121,7 @@ function EntityCreateOrder() {
   const [advancePayment, setAdvancePayment] = useState(2999);
   const [referenceNo, setReferenceNo] = useState(`UTR-${Math.floor(100000 + Math.random() * 900000)}`);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
 
   // Financial Calculations (GST Hidden / Deferred)
   const grossSubtotal = customPrice * quantity;
@@ -171,24 +172,62 @@ function EntityCreateOrder() {
     e.preventDefault();
     if (isSubmitting) return;
 
+    const newErrors = {};
+
     if (!customerUserCode.trim()) {
-      setToastMessage('Please enter a Member ID (e.g. CB100001).');
-      setTimeout(() => setToastMessage(''), 3500);
+      newErrors.customerUserCode = 'Member ID is required (e.g. CB100001).';
+    } else if (!memberVerified) {
+      newErrors.customerUserCode = memberLookupError || 'Please enter a valid, database-verified Member ID.';
+    }
+
+    if (!customerName.trim()) {
+      newErrors.customerName = 'Customer Name is required.';
+    }
+
+    if (customerEmail.trim()) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(customerEmail.trim())) {
+        newErrors.customerEmail = 'Please enter a valid email address.';
+      }
+    }
+
+    if (customerPhone.trim()) {
+      const cleanPhone = customerPhone.replace(/[\s-+]/g, '');
+      if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
+        newErrors.customerPhone = 'Phone number must be a valid 10-digit mobile number.';
+      }
+    }
+
+    if (!customItemName.trim()) {
+      newErrors.customItemName = 'Item description / title is required.';
+    }
+
+    if (!customPrice || Number(customPrice) <= 0 || isNaN(Number(customPrice))) {
+      newErrors.customPrice = 'Price must be greater than ₹0.';
+    }
+
+    if (!quantity || Number(quantity) < 1 || isNaN(Number(quantity))) {
+      newErrors.quantity = 'Quantity must be at least 1.';
+    }
+
+    if (Number(discountPercent) < 0 || Number(discountPercent) > 100) {
+      newErrors.discountPercent = 'Discount must be between 0% and 100%.';
+    }
+
+    if (Number(advancePayment) < 0 || isNaN(Number(advancePayment))) {
+      newErrors.advancePayment = 'Advance payment must be a valid positive amount.';
+    } else if (Number(advancePayment) > grandTotal) {
+      newErrors.advancePayment = `Advance payment cannot exceed Grand Total (₹${grandTotal.toLocaleString()}).`;
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setFormErrors(newErrors);
+      setToastMessage('❌ Please resolve the highlighted form validation errors.');
+      setTimeout(() => setToastMessage(''), 4000);
       return;
     }
 
-    if (!memberVerified) {
-      setToastMessage(memberLookupError || 'Please enter a valid registered Member ID from the database.');
-      setTimeout(() => setToastMessage(''), 3500);
-      return;
-    }
-
-    if (!customerName) {
-      setToastMessage('Customer Name is required.');
-      setTimeout(() => setToastMessage(''), 3500);
-      return;
-    }
-
+    setFormErrors({});
     setIsSubmitting(true);
 
     const cleanUserCode = customerUserCode.trim().toUpperCase();
@@ -382,10 +421,15 @@ function EntityCreateOrder() {
                   <input
                     type="text"
                     value={customItemName}
-                    onChange={(e) => setCustomItemName(e.target.value)}
-                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                    onChange={(e) => { setCustomItemName(e.target.value); setFormErrors(prev => ({ ...prev, customItemName: null })); }}
+                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: formErrors.customItemName ? '2px solid #ef4444' : '1px solid #cbd5e1', fontSize: '0.85rem' }}
                     required
                   />
+                  {formErrors.customItemName && (
+                    <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block', fontWeight: 600 }}>
+                      ⚠️ {formErrors.customItemName}
+                    </span>
+                  )}
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem' }}>
@@ -396,11 +440,16 @@ function EntityCreateOrder() {
                     <input
                       type="number"
                       value={customPrice}
-                      onChange={(e) => setCustomPrice(Number(e.target.value))}
-                      style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                      onChange={(e) => { setCustomPrice(Number(e.target.value)); setFormErrors(prev => ({ ...prev, customPrice: null })); }}
+                      style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: formErrors.customPrice ? '2px solid #ef4444' : '1px solid #cbd5e1', fontSize: '0.85rem' }}
                       min="1"
                       required
                     />
+                    {formErrors.customPrice && (
+                      <span style={{ color: '#ef4444', fontSize: '0.72rem', marginTop: '0.25rem', display: 'block', fontWeight: 600 }}>
+                        ⚠️ {formErrors.customPrice}
+                      </span>
+                    )}
                   </div>
 
                   <div>
@@ -476,8 +525,14 @@ function EntityCreateOrder() {
                   )}
                 </div>
 
+                {formErrors.customerUserCode && (
+                  <div style={{ marginTop: '0.5rem', padding: '0.65rem 0.85rem', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '8px', color: '#dc2626', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span>❌</span>
+                    <span>{formErrors.customerUserCode}</span>
+                  </div>
+                )}
                 {/* Error Message when Member ID not found in database */}
-                {memberLookupError && (
+                {!formErrors.customerUserCode && memberLookupError && (
                   <div style={{ marginTop: '0.5rem', padding: '0.65rem 0.85rem', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '8px', color: '#dc2626', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <span>❌</span>
                     <span>{memberLookupError}</span>
@@ -507,11 +562,16 @@ function EntityCreateOrder() {
                   <input
                     type="text"
                     value={customerName}
-                    onChange={(e) => setCustomerName(e.target.value)}
+                    onChange={(e) => { setCustomerName(e.target.value); setFormErrors(prev => ({ ...prev, customerName: null })); }}
                     placeholder="Auto-filled on valid Member ID"
-                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', background: memberVerified ? '#f8fafc' : '#ffffff' }}
+                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: formErrors.customerName ? '2px solid #ef4444' : '1px solid #cbd5e1', fontSize: '0.85rem', background: memberVerified ? '#f8fafc' : '#ffffff' }}
                     required
                   />
+                  {formErrors.customerName && (
+                    <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block', fontWeight: 600 }}>
+                      ⚠️ {formErrors.customerName}
+                    </span>
+                  )}
                 </div>
 
                 <div>
@@ -521,11 +581,16 @@ function EntityCreateOrder() {
                   <input
                     type="email"
                     value={customerEmail}
-                    onChange={(e) => setCustomerEmail(e.target.value)}
+                    onChange={(e) => { setCustomerEmail(e.target.value); setFormErrors(prev => ({ ...prev, customerEmail: null })); }}
                     placeholder="Auto-filled on valid Member ID"
-                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', background: memberVerified ? '#f8fafc' : '#ffffff' }}
+                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: formErrors.customerEmail ? '2px solid #ef4444' : '1px solid #cbd5e1', fontSize: '0.85rem', background: memberVerified ? '#f8fafc' : '#ffffff' }}
                     required
                   />
+                  {formErrors.customerEmail && (
+                    <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block', fontWeight: 600 }}>
+                      ⚠️ {formErrors.customerEmail}
+                    </span>
+                  )}
                 </div>
 
                 <div>
@@ -535,10 +600,15 @@ function EntityCreateOrder() {
                   <input
                     type="text"
                     value={customerPhone}
-                    onChange={(e) => setCustomerPhone(e.target.value)}
+                    onChange={(e) => { setCustomerPhone(e.target.value); setFormErrors(prev => ({ ...prev, customerPhone: null })); }}
                     placeholder="+91 98765 43210"
-                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: formErrors.customerPhone ? '2px solid #ef4444' : '1px solid #cbd5e1', fontSize: '0.85rem' }}
                   />
+                  {formErrors.customerPhone && (
+                    <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block', fontWeight: 600 }}>
+                      ⚠️ {formErrors.customerPhone}
+                    </span>
+                  )}
                 </div>
 
                 <div>

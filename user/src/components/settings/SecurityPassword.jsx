@@ -15,23 +15,38 @@ function SecurityPassword({ user }) {
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const [toastMessage, setToastMessage] = useState('');
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
 
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage('');
+    const newErrors = {};
 
-    if (passwordData.newPassword.length < 6) {
-      setErrorMessage('New password must be at least 6 characters long.');
+    if (!isSocialUser && !passwordData.currentPassword.trim()) {
+      newErrors.currentPassword = 'Current password is required.';
+    }
+
+    if (!passwordData.newPassword.trim()) {
+      newErrors.newPassword = 'New password is required.';
+    } else if (passwordData.newPassword.length < 6) {
+      newErrors.newPassword = 'New password must be at least 6 characters long.';
+    }
+
+    if (!passwordData.confirmPassword.trim()) {
+      newErrors.confirmPassword = 'Please re-enter your new password.';
+    } else if (passwordData.newPassword !== passwordData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match. Please verify.';
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setFieldErrors(newErrors);
+      setErrorMessage('Please fix the highlighted validation errors.');
       return;
     }
 
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setErrorMessage('New password and confirm password do not match!');
-      return;
-    }
-
+    setFieldErrors({});
     setLoading(true);
 
     try {
@@ -111,8 +126,9 @@ function SecurityPassword({ user }) {
                       required={!isSocialUser}
                       className="form-input"
                       value={passwordData.currentPassword}
-                      onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+                      onChange={(e) => { setPasswordData({ ...passwordData, currentPassword: e.target.value }); setFieldErrors(prev => ({ ...prev, currentPassword: null })); }}
                       placeholder="Enter current password"
+                      style={{ border: fieldErrors.currentPassword ? '2px solid #ef4444' : undefined }}
                     />
                     <button
                       type="button"
@@ -122,6 +138,11 @@ function SecurityPassword({ user }) {
                       {showCurrent ? '🙈' : '👁️'}
                     </button>
                   </div>
+                  {fieldErrors.currentPassword && (
+                    <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block', fontWeight: 600 }}>
+                      ⚠️ {fieldErrors.currentPassword}
+                    </span>
+                  )}
                 </div>
               )}
 

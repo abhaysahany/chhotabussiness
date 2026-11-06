@@ -176,6 +176,11 @@ function EntityReceiveBalancePage() {
       return;
     }
 
+    if (paymentMethod !== 'Cash' && (!referenceNo || !referenceNo.trim())) {
+      showToast('Please enter the transaction reference number / UTR for non-cash payment.');
+      return;
+    }
+
     setIsProcessing(true);
     try {
       await receiveBalancePayment(saleId, {

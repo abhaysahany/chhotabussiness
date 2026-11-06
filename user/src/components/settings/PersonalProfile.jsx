@@ -33,6 +33,7 @@ function PersonalProfile({ user, onNavigate, onUpdateUser }) {
 
   const [savedData, setSavedData] = useState({ ...formData });
   const [saveLoading, setSaveLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [toastMessageText, setToastMessageText] = useState('Personal profile details updated successfully!');
   const [copiedCode, setCopiedCode] = useState(false);
@@ -122,6 +123,7 @@ function PersonalProfile({ user, onNavigate, onUpdateUser }) {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setFieldErrors((prev) => ({ ...prev, [name]: null }));
   };
 
   // Profile Image File Selection Handler
@@ -197,6 +199,53 @@ function PersonalProfile({ user, onNavigate, onUpdateUser }) {
   // Full Profile Form Save Handler
   const handleSaveProfile = async (e) => {
     e.preventDefault();
+    const newErrors = {};
+
+    const trimmedName = (formData.name || '').trim();
+    if (!trimmedName) {
+      newErrors.name = 'Full name is required.';
+    } else if (trimmedName.length < 2) {
+      newErrors.name = 'Full name must be at least 2 characters long.';
+    }
+
+    const trimmedEmail = (formData.email || '').trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!trimmedEmail) {
+      newErrors.email = 'Email address is required.';
+    } else if (!emailRegex.test(trimmedEmail)) {
+      newErrors.email = 'Please enter a valid email address.';
+    }
+
+    if (formData.phone) {
+      const cleanPhone = formData.phone.replace(/[\s-+]/g, '');
+      if (cleanPhone && !/^[6-9]\d{9}$/.test(cleanPhone)) {
+        newErrors.phone = 'Phone number must be a valid 10-digit mobile number.';
+      }
+    }
+
+    if (formData.dob) {
+      const dobDate = new Date(formData.dob);
+      if (isNaN(dobDate.getTime()) || dobDate > new Date()) {
+        newErrors.dob = 'Date of birth cannot be in the future.';
+      }
+    }
+
+    if (formData.zipCode) {
+      const cleanZip = formData.zipCode.trim();
+      if (cleanZip && !/^\d{6}$/.test(cleanZip)) {
+        newErrors.zipCode = 'Postal / Zip code must be 6 numeric digits.';
+      }
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setFieldErrors(newErrors);
+      setToastMessageText('❌ Please fix the highlighted validation errors.');
+      setShowSuccessToast(true);
+      setTimeout(() => setShowSuccessToast(false), 3500);
+      return;
+    }
+
+    setFieldErrors({});
     setSaveLoading(true);
 
     try {
@@ -809,7 +858,13 @@ function PersonalProfile({ user, onNavigate, onUpdateUser }) {
                         className="form-input"
                         value={formData.name}
                         onChange={handleInputChange}
+                        style={{ border: fieldErrors.name ? '2px solid #ef4444' : undefined }}
                       />
+                      {fieldErrors.name && (
+                        <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block', fontWeight: 600 }}>
+                          ⚠️ {fieldErrors.name}
+                        </span>
+                      )}
                     </div>
 
                     <div className="form-group">
@@ -821,7 +876,13 @@ function PersonalProfile({ user, onNavigate, onUpdateUser }) {
                         className="form-input"
                         value={formData.email}
                         onChange={handleInputChange}
+                        style={{ border: fieldErrors.email ? '2px solid #ef4444' : undefined }}
                       />
+                      {fieldErrors.email && (
+                        <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block', fontWeight: 600 }}>
+                          ⚠️ {fieldErrors.email}
+                        </span>
+                      )}
                     </div>
 
                     <div className="form-group">
@@ -833,7 +894,13 @@ function PersonalProfile({ user, onNavigate, onUpdateUser }) {
                         className="form-input"
                         value={formData.phone}
                         onChange={handleInputChange}
+                        style={{ border: fieldErrors.phone ? '2px solid #ef4444' : undefined }}
                       />
+                      {fieldErrors.phone && (
+                        <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block', fontWeight: 600 }}>
+                          ⚠️ {fieldErrors.phone}
+                        </span>
+                      )}
                     </div>
 
                     <div className="form-group">
@@ -844,7 +911,13 @@ function PersonalProfile({ user, onNavigate, onUpdateUser }) {
                         className="form-input"
                         value={formData.dob}
                         onChange={handleInputChange}
+                        style={{ border: fieldErrors.dob ? '2px solid #ef4444' : undefined }}
                       />
+                      {fieldErrors.dob && (
+                        <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block', fontWeight: 600 }}>
+                          ⚠️ {fieldErrors.dob}
+                        </span>
+                      )}
                     </div>
 
                     <div className="form-group">
@@ -932,7 +1005,15 @@ function PersonalProfile({ user, onNavigate, onUpdateUser }) {
                         className="form-input"
                         value={formData.zipCode}
                         onChange={handleInputChange}
+                        placeholder="e.g. 110001"
+                        maxLength="6"
+                        style={{ border: fieldErrors.zipCode ? '2px solid #ef4444' : undefined }}
                       />
+                      {fieldErrors.zipCode && (
+                        <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block', fontWeight: 600 }}>
+                          ⚠️ {fieldErrors.zipCode}
+                        </span>
+                      )}
                     </div>
 
                     <div className="form-group">

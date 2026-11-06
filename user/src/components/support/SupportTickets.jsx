@@ -37,6 +37,7 @@ function SupportTickets({ user }) {
   // Modals & Forms
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [createErrors, setCreateErrors] = useState({});
   const [replyText, setReplyText] = useState('');
 
   // New Ticket State
@@ -90,17 +91,42 @@ function SupportTickets({ user }) {
   // Handle create ticket submission to database
   const handleCreateTicketSubmit = async (e) => {
     e.preventDefault();
+    const errors = {};
 
-    if (!newTicket.subject.trim() || !newTicket.description.trim()) {
-      showToast('❌ Please fill in the ticket subject and description.');
+    const trimmedSubject = (newTicket.subject || '').trim();
+    if (!trimmedSubject) {
+      errors.subject = 'Subject summary is required.';
+    } else if (trimmedSubject.length < 5) {
+      errors.subject = 'Subject must be at least 5 characters long.';
+    } else if (trimmedSubject.length > 200) {
+      errors.subject = 'Subject cannot exceed 200 characters.';
+    }
+
+    if (newTicket.category === 'Others') {
+      const trimmedCustom = (newTicket.customCategory || '').trim();
+      if (!trimmedCustom) {
+        errors.customCategory = 'Please specify your topic for "Others".';
+      } else if (trimmedCustom.length < 3) {
+        errors.customCategory = 'Topic must be at least 3 characters.';
+      }
+    }
+
+    const trimmedDesc = (newTicket.description || '').trim();
+    if (!trimmedDesc) {
+      errors.description = 'Detailed description is required.';
+    } else if (trimmedDesc.length < 10) {
+      errors.description = 'Description must be at least 10 characters long.';
+    } else if (trimmedDesc.length > 3000) {
+      errors.description = 'Description cannot exceed 3000 characters.';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setCreateErrors(errors);
+      showToast('❌ Please resolve the highlighted ticket errors.');
       return;
     }
 
-    if (newTicket.category === 'Others' && !newTicket.customCategory.trim()) {
-      showToast('❌ Please specify your topic for category "Others".');
-      return;
-    }
-
+    setCreateErrors({});
     setCreating(true);
     try {
       const payload = {
@@ -631,9 +657,14 @@ function SupportTickets({ user }) {
                     required
                     placeholder="e.g. Form 16A Certificate, Event RSVP, Special Settlement..."
                     value={newTicket.customCategory}
-                    onChange={(e) => setNewTicket({ ...newTicket, customCategory: e.target.value })}
-                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '6px', border: '1px solid #38bdf8', fontSize: '0.85rem', background: '#ffffff' }}
+                    onChange={(e) => { setNewTicket({ ...newTicket, customCategory: e.target.value }); setCreateErrors(prev => ({ ...prev, customCategory: null })); }}
+                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '6px', border: createErrors.customCategory ? '2px solid #ef4444' : '1px solid #38bdf8', fontSize: '0.85rem', background: '#ffffff' }}
                   />
+                  {createErrors.customCategory && (
+                    <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block', fontWeight: 600 }}>
+                      ⚠️ {createErrors.customCategory}
+                    </span>
+                  )}
                 </div>
               )}
 
@@ -664,9 +695,14 @@ function SupportTickets({ user }) {
                   required
                   placeholder="e.g. Need assistance with TDS certificate for payout PAY-2026-102"
                   value={newTicket.subject}
-                  onChange={(e) => setNewTicket({ ...newTicket, subject: e.target.value })}
-                  style={{ width: '100%', padding: '0.7rem 0.85rem', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.9rem' }}
+                  onChange={(e) => { setNewTicket({ ...newTicket, subject: e.target.value }); setCreateErrors(prev => ({ ...prev, subject: null })); }}
+                  style={{ width: '100%', padding: '0.7rem 0.85rem', borderRadius: '8px', border: createErrors.subject ? '2px solid #ef4444' : '1.5px solid #cbd5e1', fontSize: '0.9rem' }}
                 />
+                {createErrors.subject && (
+                  <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block', fontWeight: 600 }}>
+                    ⚠️ {createErrors.subject}
+                  </span>
+                )}
               </div>
 
               {/* Description */}
@@ -679,9 +715,14 @@ function SupportTickets({ user }) {
                   required
                   placeholder="Please provide full details, reference numbers, or context..."
                   value={newTicket.description}
-                  onChange={(e) => setNewTicket({ ...newTicket, description: e.target.value })}
-                  style={{ width: '100%', padding: '0.75rem 0.85rem', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', resize: 'vertical' }}
+                  onChange={(e) => { setNewTicket({ ...newTicket, description: e.target.value }); setCreateErrors(prev => ({ ...prev, description: null })); }}
+                  style={{ width: '100%', padding: '0.75rem 0.85rem', borderRadius: '8px', border: createErrors.description ? '2px solid #ef4444' : '1.5px solid #cbd5e1', fontSize: '0.85rem', resize: 'vertical' }}
                 ></textarea>
+                {createErrors.description && (
+                  <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block', fontWeight: 600 }}>
+                    ⚠️ {createErrors.description}
+                  </span>
+                )}
               </div>
 
               {/* Modal Actions */}

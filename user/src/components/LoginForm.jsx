@@ -132,8 +132,9 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
 
   const handleVerifyOtp = async (e) => {
     if (e) e.preventDefault();
-    if (forgotOtp.length !== 6) {
-      setForgotError('Please enter the 6-digit verification code.');
+    const cleanOtp = (forgotOtp || '').trim();
+    if (!cleanOtp || cleanOtp.length !== 6 || !/^\d{6}$/.test(cleanOtp)) {
+      setForgotError('Please enter the valid 6-digit numeric verification code.');
       return;
     }
 
@@ -201,10 +202,35 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
     e.preventDefault();
     setErrorMessage('');
     setShowRegisterPrompt(false);
+
+    const newErrors = {};
+    const trimmedEmail = (email || '').trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!trimmedEmail) {
+      newErrors.email = 'Email address is required.';
+    } else if (!emailRegex.test(trimmedEmail)) {
+      newErrors.email = 'Please enter a valid email address format.';
+    }
+
+    const trimmedPassword = (password || '').trim();
+    if (!trimmedPassword) {
+      newErrors.password = 'Password is required.';
+    } else if (trimmedPassword.length < 4) {
+      newErrors.password = 'Password must be at least 4 characters.';
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setFieldErrors(newErrors);
+      setErrorMessage('Please resolve the highlighted validation errors.');
+      return;
+    }
+
+    setFieldErrors({});
     setLoading(true);
 
     try {
-      await onLoginSuccess({ email, password, rememberMe });
+      await onLoginSuccess({ email: trimmedEmail, password: trimmedPassword, rememberMe });
     } catch (err) {
       console.error('Login error:', err);
       const networkMsg = typeof window !== 'undefined' && window.location.origin.includes('vyaparadnet.com')
@@ -500,12 +526,17 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
                     type="email"
                     className="cb-input-field"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => { setEmail(e.target.value); setFieldErrors(prev => ({ ...prev, email: null })); }}
                     placeholder="partner@addnet.com"
                     autoComplete="email"
                     required
                   />
                 </div>
+                {fieldErrors.email && (
+                  <span style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '0.35rem', display: 'block', fontWeight: 600 }}>
+                    ⚠️ {fieldErrors.email}
+                  </span>
+                )}
               </div>
 
               {/* Password Field */}
@@ -522,7 +553,7 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
                     type={showPassword ? 'text' : 'password'}
                     className="cb-input-field"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => { setPassword(e.target.value); setFieldErrors(prev => ({ ...prev, password: null })); }}
                     placeholder="Enter your password"
                     autoComplete="current-password"
                     required
@@ -536,6 +567,11 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
+                {fieldErrors.password && (
+                  <span style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '0.35rem', display: 'block', fontWeight: 600 }}>
+                    ⚠️ {fieldErrors.password}
+                  </span>
+                )}
               </div>
 
               {/* Options: Remember Me & Forgot Password */}
