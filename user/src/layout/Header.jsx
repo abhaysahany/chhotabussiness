@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { formatDate } from '../utils/timezone';
 import {
   getUserNotifications,
   markNotificationRead,
@@ -212,7 +213,7 @@ function Header({ onToggleSidebar, user, onLogout, onNavigate }) {
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <span className="notification-item-time" style={{ fontSize: '0.7rem', color: 'var(--van-text-muted)' }}>
-                            {n.time_ago || (n.created_at ? new Date(n.created_at).toLocaleDateString() : '')}
+                            {n.time_ago || (n.created_at ? formatDate(n.created_at) : '')}
                           </span>
                           {!n.is_read && (
                             <span style={{ fontSize: '0.68rem', color: 'var(--van-brand-blue)', fontWeight: 700 }}>
@@ -414,7 +415,7 @@ function Header({ onToggleSidebar, user, onLogout, onNavigate }) {
                         <strong style={{ fontSize: '0.88rem', color: 'var(--van-text-primary)' }}>{n.title}</strong>
                       </div>
                       <span style={{ fontSize: '0.72rem', color: 'var(--van-text-muted)' }}>
-                        {n.time_ago || (n.created_at ? new Date(n.created_at).toLocaleDateString() : '')}
+                        {n.time_ago || (n.created_at ? formatDate(n.created_at) : '')}
                       </span>
                     </div>
                     <p style={{ margin: '0 0 0.45rem 0', fontSize: '0.8rem', color: 'var(--van-text-secondary)', lineHeight: 1.4 }}>

@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { getTodayIndianDateString, formatDateTime } from '../../utils/timezone';
 import {
   isRequired,
   isValidNumber,
@@ -213,7 +214,7 @@ function AdminReceivePaymentPage() {
 
     const newPaymentRecord = {
       id: `PAY-2026-${Math.floor(100 + Math.random() * 900)}`,
-      date: new Date().toISOString().replace('T', ' ').substring(0, 16),
+      date: formatDateTime(new Date()),
       payerName: activeSale.customer,
       sponsor: activeSale.sponsor,
       invoiceId: activeSale.id,
@@ -271,7 +272,7 @@ function AdminReceivePaymentPage() {
       advancePaid: activeSale.advancePaid,
       lostBalance: activeSale.balanceDue,
       reason: dumpReason.trim(),
-      dumped_at: new Date().toISOString().split('T')[0],
+      dumped_at: getTodayIndianDateString(),
     };
 
     setDumpedProjects([dumpedRecord, ...dumpedProjects]);

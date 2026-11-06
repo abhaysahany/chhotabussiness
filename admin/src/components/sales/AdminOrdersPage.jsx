@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { getTodayIndianDateString, formatDate, formatDateTime } from '../../utils/timezone';
 import {
   getAdminOrders,
   getOrderIncomeAllocation,
@@ -281,7 +282,7 @@ function AdminOrdersPage() {
       const matchStatus = statusFilter === 'all' || s.status === statusFilter;
 
       if (dateRange === 'today') {
-        const todayStr = new Date().toISOString().split('T')[0];
+        const todayStr = getTodayIndianDateString();
         return matchSearch && matchItemType && matchEntityType && matchStatus && s.date === todayStr;
       }
       return matchSearch && matchItemType && matchEntityType && matchStatus;
@@ -1365,7 +1366,7 @@ function AdminOrdersPage() {
                                   </span>
                                 </td>
                                 <td style={{ padding: '0.65rem 0.75rem', color: '#64748b', whiteSpace: 'nowrap' }}>
-                                  {entry.date ? new Date(entry.date).toLocaleDateString('en-IN') : 'N/A'}
+                                  {entry.date ? formatDate(entry.date) : 'N/A'}
                                 </td>
                                 <td style={{ padding: '0.65rem 0.75rem', fontWeight: 700, color: '#2563eb' }}>
                                   ₹{entry.amount.toLocaleString()}
@@ -2140,7 +2141,7 @@ function AdminOrdersPage() {
 
                 {!paymentAllocationData.can_allocate && (
                   <div style={{ padding: '0.75rem', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '8px', color: '#92400e', fontSize: '0.8rem', fontWeight: 600, marginBottom: '1.25rem' }}>
-                    ⚠️ This payment receipt has already been allocated (Status: {paymentAllocationData.income_distribution_status}). Distributed at: {paymentAllocationData.income_distributed_at ? new Date(paymentAllocationData.income_distributed_at).toLocaleString() : 'N/A'}.
+                    ⚠️ This payment receipt has already been allocated (Status: {paymentAllocationData.income_distribution_status}). Distributed at: {paymentAllocationData.income_distributed_at ? formatDateTime(paymentAllocationData.income_distributed_at) : 'N/A'}.
                   </div>
                 )}
               </div>

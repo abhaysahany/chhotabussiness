@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { getUserPayouts } from '../../api/userPayoutService';
 import { getUserFreshProfile } from '../../api/userRewardService';
 import { formatINR } from '../../utils/formatters';
+import { formatDate, formatDateTime, getTodayIndianDateString } from '../../utils/timezone';
 import DataTable from '../common/DataTable';
 
 function PayoutHistory({ user }) {
@@ -98,7 +99,7 @@ function PayoutHistory({ user }) {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `Payout_History_${userCode || 'member'}_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute('download', `Payout_History_${userCode || 'member'}_${getTodayIndianDateString()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -115,7 +116,7 @@ function PayoutHistory({ user }) {
         <div>
           <strong style={{ color: '#0f172a', display: 'block', fontSize: '0.88rem' }}>{val}</strong>
           <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
-            {row.request_date ? new Date(row.request_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
+            {formatDate(row.request_date)}
           </span>
         </div>
       ),
@@ -509,7 +510,7 @@ function PayoutHistory({ user }) {
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0', borderBottom: '1px dashed #e2e8f0' }}>
                 <span style={{ color: '#64748b' }}>Request Date:</span>
-                <span>{selectedReceipt.request_date ? new Date(selectedReceipt.request_date).toLocaleString('en-IN') : 'N/A'}</span>
+                <span>{selectedReceipt.request_date ? formatDateTime(selectedReceipt.request_date) : 'N/A'}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0', borderBottom: '1px dashed #e2e8f0' }}>
                 <span style={{ color: '#64748b' }}>Gross Requested:</span>

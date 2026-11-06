@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { getTodayIndianDateString, formatDate } from '../utils/timezone';
 import { useNavigate } from 'react-router-dom';
 import { getEntityOrders, reportOrderDump } from '../api/entityService';
 
@@ -126,7 +127,7 @@ function EntityOrders() {
       const matchStatus = statusFilter === 'all' || s.status === statusFilter;
 
       if (dateFilter === 'today') {
-        const todayStr = new Date().toISOString().split('T')[0];
+        const todayStr = getTodayIndianDateString();
         return matchSearch && matchStatus && (s.date === todayStr || (s.created_at && s.created_at.startsWith(todayStr)));
       }
       return matchSearch && matchStatus;
@@ -482,7 +483,7 @@ function EntityOrders() {
                         <div style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 500 }}>ID: #{sale.id}</div>
                       </td>
                       <td style={{ padding: '0.85rem 1rem', color: '#64748b', fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
-                        {sale.date || (sale.created_at ? new Date(sale.created_at).toLocaleDateString('en-IN') : 'N/A')}
+                        {formatDate(sale.date || sale.created_at)}
                       </td>
                       <td style={{ padding: '0.85rem 1rem' }}>
                         <div style={{ fontWeight: 600, color: '#0f172a' }}>{sale.customerName || sale.customer_name || sale.customer}</div>
@@ -1023,7 +1024,7 @@ function EntityOrders() {
                 </div>
                 {selectedInvoice.admin_confirmed_at && (
                   <span style={{ fontSize: '0.72rem', color: '#166534' }}>
-                    Confirmed {new Date(selectedInvoice.admin_confirmed_at).toLocaleDateString('en-IN')}
+                    Confirmed {formatDate(selectedInvoice.admin_confirmed_at)}
                   </span>
                 )}
               </div>

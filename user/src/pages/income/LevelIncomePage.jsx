@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getUserLevelIncome } from '../../api/userIncomeService';
 import { formatINR } from '../../utils/formatters';
+import { formatDateTime } from '../../utils/timezone';
 
 function LevelIncomePage({ user, onNavigate }) {
   const [data, setData] = useState(null);
@@ -45,20 +46,7 @@ function LevelIncomePage({ user, onNavigate }) {
   const records = data?.records || [];
 
   const formatDate = (dateStr) => {
-    if (!dateStr) return '—';
-    try {
-      const d = new Date(dateStr);
-      if (isNaN(d.getTime())) return dateStr;
-      return d.toLocaleDateString('en-IN', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-    } catch {
-      return dateStr;
-    }
+    return formatDateTime(dateStr);
   };
 
   const getLevelBadgeStyle = (level) => {

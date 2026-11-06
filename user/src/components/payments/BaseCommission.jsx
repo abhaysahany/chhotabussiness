@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { getDirectConnections } from '../../api/userNetworkService';
 import { formatINR, formatNumberIN } from '../../utils/formatters';
+import { formatDate, formatIndianDateISO } from '../../utils/timezone';
 import DataTable from '../common/DataTable';
 
 function BaseCommission({ user }) {
@@ -38,15 +39,15 @@ function BaseCommission({ user }) {
       setStartDate('');
       setEndDate('');
     } else if (preset === 'This Month') {
-      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
-      const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().slice(0, 10);
-      setStartDate(firstDay);
-      setEndDate(lastDay);
+      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1, 12, 0, 0);
+      const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0, 12, 0, 0);
+      setStartDate(formatIndianDateISO(firstDay));
+      setEndDate(formatIndianDateISO(lastDay));
     } else if (preset === 'Last Month') {
-      const firstDay = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString().slice(0, 10);
-      const lastDay = new Date(now.getFullYear(), now.getMonth(), 0).toISOString().slice(0, 10);
-      setStartDate(firstDay);
-      setEndDate(lastDay);
+      const firstDay = new Date(now.getFullYear(), now.getMonth() - 1, 1, 12, 0, 0);
+      const lastDay = new Date(now.getFullYear(), now.getMonth(), 0, 12, 0, 0);
+      setStartDate(formatIndianDateISO(firstDay));
+      setEndDate(formatIndianDateISO(lastDay));
     }
   };
 
@@ -66,7 +67,7 @@ function BaseCommission({ user }) {
         amount: earned,
         volume: vol,
         date: member.joiningDate || '2026-08-10',
-        dateDisplay: member.joiningDate || '10 Aug 2026',
+        dateDisplay: member.joiningDate ? formatDate(member.joiningDate) : '10 Aug 2026',
         status: member.status === 'active' ? 'Credited to Wallet' : 'Pending Verification',
       };
     });

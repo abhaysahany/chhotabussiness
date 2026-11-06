@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import sessionManager, {
+  isSessionExpired,
+  handleSessionExpired,
+  clearSession,
+  startSessionWatchdog,
+  TOKEN_KEY,
+} from './utils/sessionManager';
 import {
   getAdminProfile,
   adminLogout,
@@ -51,11 +58,22 @@ function App() {
   const [currentAdmin, setCurrentAdmin] = useState(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
 
-  // Check existing token on app load and verify via backend /api/admin/me
+  // Check existing token on app load, enforce session expiry, and verify via backend /api/admin/me
   useEffect(() => {
+    let cleanupWatchdog = null;
+
     const verifyAuth = async () => {
-      const token = localStorage.getItem('admin_token');
+      const token = localStorage.getItem(TOKEN_KEY);
       if (!token) {
+        setCheckingAuth(false);
+        return;
+      }
+
+      // Check local inactivity or absolute session expiration first
+      const { expired, reason } = isSessionExpired();
+      if (expired) {
+        handleSessionExpired(reason, false);
+        setCurrentAdmin(null);
         setCheckingAuth(false);
         return;
       }
@@ -64,13 +82,16 @@ function App() {
         const response = await getAdminProfile();
         if (response.status === 'success' && response.admin) {
           setCurrentAdmin(response.admin);
+          cleanupWatchdog = startSessionWatchdog((expiryReason) => {
+            setCurrentAdmin(null);
+          });
         } else {
-          localStorage.removeItem('admin_token');
+          clearSession('invalid_profile', false);
           setCurrentAdmin(null);
         }
       } catch (err) {
         console.error('Session verification error:', err);
-        localStorage.removeItem('admin_token');
+        clearSession('verification_error', false);
         setCurrentAdmin(null);
       } finally {
         setCheckingAuth(false);
@@ -78,6 +99,12 @@ function App() {
     };
 
     verifyAuth();
+
+    return () => {
+      if (typeof cleanupWatchdog === 'function') {
+        cleanupWatchdog();
+      }
+    };
   }, []);
 
   const handleLogout = async () => {
@@ -86,7 +113,7 @@ function App() {
     } catch (err) {
       console.error('Logout error:', err);
     } finally {
-      localStorage.removeItem('admin_token');
+      clearSession('manual', false);
       setCurrentAdmin(null);
       navigate('/login', { replace: true });
     }

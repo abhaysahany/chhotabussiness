@@ -287,6 +287,11 @@ class EntityAuthController extends Controller
                 'message' => 'Login successful! Welcome to the Entity Portal.',
                 'user' => $userPayload,
                 'token' => $token,
+                'session' => [
+                    'idle_timeout_minutes' => (int) config('session_timeout.idle_timeout_minutes', 30),
+                    'absolute_timeout_hours' => (int) config('session_timeout.absolute_timeout_hours', 12),
+                    'session_start' => now()->toIso8601String(),
+                ],
             ], 200);
         }
 
@@ -428,6 +433,10 @@ class EntityAuthController extends Controller
 
         if ($request->user()) {
             $request->user()->currentAccessToken()?->delete();
+        }
+
+        if ($request->bearerToken()) {
+            \App\Models\PersonalAccessToken::findToken($request->bearerToken())?->delete();
         }
 
         if ($request->hasSession()) {
