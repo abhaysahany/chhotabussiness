@@ -306,6 +306,11 @@ class AuthController extends Controller
             'token' => $token,
             'token_type' => 'Bearer',
             'requires_sponsor_onboarding' => $user->hasPendingSponsorOnboarding(),
+            'session' => [
+                'idle_timeout_minutes' => (int) config('session_timeout.idle_timeout_minutes', 30),
+                'absolute_timeout_hours' => (int) config('session_timeout.absolute_timeout_hours', 12),
+                'session_start' => now()->toIso8601String(),
+            ],
         ], 200);
     }
 
@@ -1083,6 +1088,9 @@ class AuthController extends Controller
         $user = auth('sanctum')->user() ?: $request->user();
         if ($user && method_exists($user, 'currentAccessToken') && $user->currentAccessToken()) {
             $user->currentAccessToken()->delete();
+        }
+        if ($request->bearerToken()) {
+            \App\Models\PersonalAccessToken::findToken($request->bearerToken())?->delete();
         }
 
         return response()->json([

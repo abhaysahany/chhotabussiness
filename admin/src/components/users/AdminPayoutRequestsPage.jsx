@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { getTodayIndianDateString } from '../../utils/timezone';
 import { getAllPayouts, approveAndDisbursePayout, rejectPayout, generateWeeklyPayoutBatch } from '../../api/adminPayoutService';
 import { isRequired, extractBackendErrors, FieldError, getInputErrorStyle } from '../../utils/validation';
 
@@ -73,7 +74,7 @@ function AdminPayoutRequestsPage() {
       if (p.requestDate) {
         const reqDate = new Date(p.requestDate);
         const reqDateStr = p.requestDate.slice(0, 10);
-        const todayStr = new Date().toISOString().slice(0, 10);
+        const todayStr = getTodayIndianDateString();
 
         if (datePreset === 'today') {
           matchDate = reqDateStr === todayStr;

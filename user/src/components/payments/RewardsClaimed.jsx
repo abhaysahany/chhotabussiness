@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { getUserClaims, getUserFreshProfile } from '../../api/userRewardService';
+import { formatDate } from '../../utils/timezone';
 import DataTable from '../common/DataTable';
 
 function RewardsClaimed({ user }) {
@@ -90,7 +91,7 @@ function RewardsClaimed({ user }) {
       accessor: 'claim_date',
       render: (val) => (
         <span style={{ fontSize: '0.82rem', color: '#475569' }}>
-          {val ? new Date(val).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
+          {formatDate(val)}
         </span>
       ),
     },

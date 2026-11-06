@@ -5,6 +5,7 @@ import EntityHeader from './EntityHeader';
 import EntityFooter from './EntityFooter';
 import EntityTermsModal from '../EntityTermsModal';
 import { logoutEntity } from '../../api/entityService';
+import { clearSession } from '../../utils/sessionManager';
 
 function EntityLayout({ children, activeTab, setActiveTab }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -17,9 +18,7 @@ function EntityLayout({ children, activeTab, setActiveTab }) {
     } catch (err) {
       console.warn('Logout API error:', err);
     } finally {
-      localStorage.removeItem('entity_token');
-      localStorage.removeItem('entity_user');
-      localStorage.removeItem('entity_remember');
+      clearSession('manual', false);
       navigate('/');
     }
   };

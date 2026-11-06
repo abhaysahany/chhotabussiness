@@ -412,34 +412,34 @@ class UserPayoutController extends Controller
             $query->where('status', strtolower($request->input('status')));
         }
 
-        // Date Presets & Custom Date Range Filters (Indian calendar dates mapped to UTC storage)
+        // Date Presets & Custom Date Range Filters (Indian calendar dates)
         if ($request->filled('date_preset')) {
             $preset = $request->input('date_preset');
             if ($preset === 'today') {
-                $start = Carbon::now('Asia/Kolkata')->startOfDay()->setTimezone('UTC');
-                $end = Carbon::now('Asia/Kolkata')->endOfDay()->setTimezone('UTC');
+                $start = Carbon::now('Asia/Kolkata')->startOfDay();
+                $end = Carbon::now('Asia/Kolkata')->endOfDay();
                 $query->whereBetween('request_date', [$start, $end]);
             } elseif ($preset === 'week') {
-                $start = Carbon::now('Asia/Kolkata')->startOfWeek()->setTimezone('UTC');
-                $end = Carbon::now('Asia/Kolkata')->endOfWeek()->setTimezone('UTC');
+                $start = Carbon::now('Asia/Kolkata')->startOfWeek();
+                $end = Carbon::now('Asia/Kolkata')->endOfWeek();
                 $query->whereBetween('request_date', [$start, $end]);
             } elseif ($preset === 'month') {
-                $start = Carbon::now('Asia/Kolkata')->startOfMonth()->setTimezone('UTC');
-                $end = Carbon::now('Asia/Kolkata')->endOfMonth()->setTimezone('UTC');
+                $start = Carbon::now('Asia/Kolkata')->startOfMonth();
+                $end = Carbon::now('Asia/Kolkata')->endOfMonth();
                 $query->whereBetween('request_date', [$start, $end]);
             } elseif ($preset === 'last_month') {
-                $start = Carbon::now('Asia/Kolkata')->subMonth()->startOfMonth()->setTimezone('UTC');
-                $end = Carbon::now('Asia/Kolkata')->subMonth()->endOfMonth()->setTimezone('UTC');
+                $start = Carbon::now('Asia/Kolkata')->subMonth()->startOfMonth();
+                $end = Carbon::now('Asia/Kolkata')->subMonth()->endOfMonth();
                 $query->whereBetween('request_date', [$start, $end]);
             }
         }
 
         if ($request->filled('start_date')) {
-            $start = Carbon::parse($request->input('start_date'), 'Asia/Kolkata')->startOfDay()->setTimezone('UTC');
+            $start = Carbon::parse($request->input('start_date'), 'Asia/Kolkata')->startOfDay();
             $query->where('request_date', '>=', $start);
         }
         if ($request->filled('end_date')) {
-            $end = Carbon::parse($request->input('end_date'), 'Asia/Kolkata')->endOfDay()->setTimezone('UTC');
+            $end = Carbon::parse($request->input('end_date'), 'Asia/Kolkata')->endOfDay();
             $query->where('request_date', '<=', $end);
         }
 

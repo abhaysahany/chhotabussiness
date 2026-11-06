@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBranding } from '../utils/branding';
+import { initSession, getExpiredNotice } from '../utils/sessionManager';
 import {
   loginEntity,
   getSelectableEntities,
@@ -9,7 +10,7 @@ import {
   resetPasswordEntity,
 } from '../api/entityService';
 
-function EntityLogin() {
+function EntityLogin({ onLoginSuccess }) {
   const { appName, logoUrl } = useBranding();
   const [entities, setEntities] = useState([]);
   const [loadingEntities, setLoadingEntities] = useState(true);
@@ -22,6 +23,14 @@ function EntityLogin() {
   const [error, setError] = useState(null);
   const [successMsg, setSuccessMsg] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [sessionExpiredNotice, setSessionExpiredNotice] = useState(null);
+
+  useEffect(() => {
+    const notice = getExpiredNotice();
+    if (notice) {
+      setSessionExpiredNotice(notice);
+    }
+  }, []);
   const navigate = useNavigate();
 
   // Load registered entities dynamically from the database on mount
@@ -105,13 +114,10 @@ function EntityLogin() {
 
       if (response.success || response.status === 'success') {
         if (response.token) {
-          localStorage.setItem('entity_token', response.token);
+          initSession(response.token, { rememberMe, user: response.user });
         }
-        if (response.user) {
-          localStorage.setItem('entity_user', JSON.stringify(response.user));
-        }
-        if (rememberMe) {
-          localStorage.setItem('entity_remember', 'true');
+        if (typeof onLoginSuccess === 'function') {
+          onLoginSuccess(response);
         }
         navigate('/entity/dashboard');
       } else {
@@ -334,6 +340,35 @@ function EntityLogin() {
               <polyline points="22 4 12 14.01 9 11.01" />
             </svg>
             <span>{successMsg}</span>
+          </div>
+        )}
+
+        {sessionExpiredNotice && (
+          <div
+            className="alert"
+            style={{
+              backgroundColor: '#fffbeb',
+              color: '#92400e',
+              border: '1px solid #fde68a',
+              padding: '0.75rem 1rem',
+              borderRadius: '8px',
+              marginBottom: '1rem',
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '0.6rem',
+              fontSize: '0.85rem',
+              lineHeight: '1.4',
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2" style={{ flexShrink: 0, marginTop: '2px' }}>
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <div>
+              <strong style={{ display: 'block', marginBottom: '0.15rem' }}>Session Expired</strong>
+              <span>{sessionExpiredNotice}</span>
+            </div>
           </div>
         )}
 

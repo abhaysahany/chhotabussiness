@@ -3,12 +3,17 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\SessionController;
 
 /*
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
 */
+
+// Central Session Expiry & Activity Management
+Route::post('/session/ping', [SessionController::class, 'ping']);
+Route::get('/session/config', [SessionController::class, 'config']);
 
 // Health & Database Connection Status Check
 Route::get('/status', function () {

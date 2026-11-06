@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { handleSessionExpired, TOKEN_KEY } from '../utils/sessionManager';
 
 // Detect production domain fallback dynamically so localhost is not hardcoded on production
 const getApiBaseUrl = () => {
@@ -24,7 +25,7 @@ const api = axios.create({
 // Add a request interceptor to attach Bearer token automatically
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('entity_token');
+    const token = localStorage.getItem(TOKEN_KEY);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -44,9 +45,8 @@ api.interceptors.response.use(
     const isAuthPage = currentPath === '/' || currentPath === '/login' || currentPath === '/entity/login' || currentPath === '/entity-login';
 
     if (error.response?.status === 401 && !isAuthRequest && !isAuthPage) {
-      localStorage.removeItem('entity_token');
-      localStorage.removeItem('entity_user');
-      window.location.href = '/entity/login';
+      const expiryType = error.response.data?.expiry_type || 'idle';
+      handleSessionExpired(expiryType, true);
     }
     return Promise.reject(error);
   }

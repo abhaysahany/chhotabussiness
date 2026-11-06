@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { formatDateTime } from '../../utils/timezone';
 import {
   getAdminDumpRequests,
   approveDumpRequest,
@@ -891,7 +892,7 @@ function AdminDumpRequestsPage({ onNavigate }) {
                 <div><strong style={{ color: '#6B7280' }}>Dump Amount:</strong> <div style={{ color: '#DC2626', fontWeight: '700' }}>{formatCurrency(selectedDumpForDetails.dump_amount)}</div></div>
                 <div><strong style={{ color: '#6B7280' }}>Commission Rate:</strong> <div>{selectedDumpForDetails.admin_commission_percent}%</div></div>
                 <div><strong style={{ color: '#6B7280' }}>Dump Admin Cut:</strong> <div style={{ color: '#1E40AF', fontWeight: '700' }}>{formatCurrency(selectedDumpForDetails.admin_commission_cut)}</div></div>
-                <div><strong style={{ color: '#6B7280' }}>Requested At:</strong> <div>{selectedDumpForDetails.requested_at ? new Date(selectedDumpForDetails.requested_at).toLocaleString('en-IN') : '—'}</div></div>
+                <div><strong style={{ color: '#6B7280' }}>Requested At:</strong> <div>{formatDateTime(selectedDumpForDetails.requested_at)}</div></div>
               </div>
 
               {selectedDumpForDetails.status === 'approved' && (
@@ -912,7 +913,7 @@ function AdminDumpRequestsPage({ onNavigate }) {
                     </div>
                   </div>
                   <div style={{ fontSize: '11px', color: '#166534', marginTop: '8px' }}>
-                    Approved by Admin #{selectedDumpForDetails.approved_by} on {selectedDumpForDetails.approved_at ? new Date(selectedDumpForDetails.approved_at).toLocaleString('en-IN') : '—'}
+                    Approved by Admin #{selectedDumpForDetails.approved_by} on {formatDateTime(selectedDumpForDetails.approved_at)}
                   </div>
                 </div>
               )}
@@ -922,7 +923,7 @@ function AdminDumpRequestsPage({ onNavigate }) {
                   <div style={{ fontWeight: '700', color: '#991B1B', marginBottom: '6px' }}>Admin Rejection Reason</div>
                   <div style={{ color: '#7F1D1D' }}>{selectedDumpForDetails.admin_rejection_reason || '—'}</div>
                   <div style={{ fontSize: '11px', color: '#991B1B', marginTop: '6px' }}>
-                    Rejected by Admin #{selectedDumpForDetails.rejected_by} on {selectedDumpForDetails.rejected_at ? new Date(selectedDumpForDetails.rejected_at).toLocaleString('en-IN') : '—'}
+                    Rejected by Admin #{selectedDumpForDetails.rejected_by} on {formatDateTime(selectedDumpForDetails.rejected_at)}
                   </div>
                 </div>
               )}

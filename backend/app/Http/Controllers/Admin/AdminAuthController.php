@@ -51,8 +51,10 @@ class AdminAuthController extends Controller
             ], 403);
         }
 
-        // Issue Sanctum token for Admin
-        $token = $admin->createToken('admin_auth_token', ['admin'])->plainTextToken;
+        // Issue Sanctum token for Admin with initialized session activity
+        $newAccessToken = $admin->createToken('admin_auth_token', ['admin']);
+        $newAccessToken->accessToken->forceFill(['last_activity_at' => now()])->save();
+        $token = $newAccessToken->plainTextToken;
 
         return response()->json([
             'status' => 'success',
@@ -68,6 +70,11 @@ class AdminAuthController extends Controller
             ],
             'token' => $token,
             'token_type' => 'Bearer',
+            'session' => [
+                'idle_timeout_minutes' => (int) config('session_timeout.idle_timeout_minutes', 30),
+                'absolute_timeout_hours' => (int) config('session_timeout.absolute_timeout_hours', 12),
+                'session_start' => now()->toIso8601String(),
+            ],
         ], 200);
     }
 
@@ -105,7 +112,11 @@ class AdminAuthController extends Controller
     public function logout(Request $request)
     {
         if ($request->user()) {
-            $request->user()->currentAccessToken()->delete();
+            $request->user()->currentAccessToken()?->delete();
+        }
+
+        if ($request->bearerToken()) {
+            \App\Models\PersonalAccessToken::findToken($request->bearerToken())?->delete();
         }
 
         return response()->json([

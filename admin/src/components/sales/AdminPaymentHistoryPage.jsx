@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { getAdminPaymentLedger } from '../../api/adminSalesService';
+import { formatDate, formatDateTime } from '../../utils/timezone';
 
 function AdminPaymentHistoryPage() {
   const [payments, setPayments] = useState([]);
@@ -343,7 +344,7 @@ function AdminPaymentHistoryPage() {
                   const receiptId = `RCPT-${p.id}`;
                   const invoiceNo = p.invoice_number || p.invoiceNumber || (p.order ? p.order.invoice_number : '—');
                   const paymentDate = p.payment_date || p.paymentDate || p.created_at;
-                  const formattedDate = paymentDate ? new Date(paymentDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+                  const formattedDate = formatDate(paymentDate);
                   const entityName = p.entity_name || p.entityName || (p.order ? p.order.entity_name : '—');
                   const customerName = p.customer_name || p.customerName || (p.order ? p.order.customer_name : '—');
                   const customerUserCode = p.customer_user_code || p.customerUserCode || (p.order ? p.order.customer_user_code : '—');
@@ -360,7 +361,7 @@ function AdminPaymentHistoryPage() {
                   const rewardIncome = Number(p.reward_income_amount ?? p.rewardIncomeAmount ?? 0);
                   const distributedCut = Number(p.distributed_admin_cut_amount ?? p.distributedAdminCutAmount ?? adminCut);
                   const distributedAt = p.income_distributed_at || p.incomeDistributedAt;
-                  const formattedDistributedAt = distributedAt ? new Date(distributedAt).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Completed';
+                  const formattedDistributedAt = distributedAt ? formatDateTime(distributedAt) : 'Completed';
 
                   return (
                     <tr key={p.id} style={{ borderBottom: '1px solid #f1f5f9', whiteSpace: 'nowrap' }}>

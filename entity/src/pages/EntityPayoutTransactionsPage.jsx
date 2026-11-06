@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { getTodayIndianDateString, formatDate as formatDateIST } from '../utils/timezone';
 import { useNavigate } from 'react-router-dom';
 import { getEntityPayouts } from '../api/entityService';
 
@@ -76,7 +77,7 @@ function EntityPayoutTransactionsPage() {
   const handleDatePresetChange = (preset) => {
     setDatePreset(preset);
     const now = new Date();
-    const formatDate = (d) => d.toISOString().split('T')[0];
+    const formatDate = (d) => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit' }).format(d);
 
     if (preset === 'all') {
       setStartDate('');
@@ -267,7 +268,7 @@ function EntityPayoutTransactionsPage() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `Entity_Payout_Transactions_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', `Entity_Payout_Transactions_${getTodayIndianDateString()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
