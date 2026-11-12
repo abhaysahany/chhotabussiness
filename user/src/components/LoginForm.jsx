@@ -40,6 +40,7 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const [sessionExpiredNotice, setSessionExpiredNotice] = useState(null);
 
   useEffect(() => {
