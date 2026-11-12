@@ -27,10 +27,10 @@ import AdminSendNotificationPage from './components/support/AdminSendNotificatio
 import AdminCategoryPage from './components/entities/AdminCategoryPage';
 import AdminBusinessPage from './components/entities/AdminBusinessPage';
 import AdminFreelancerPage from './components/entities/AdminFreelancerPage';
-import AdminEntityCommissionPage from './components/entities/AdminEntityCommissionPage';
 import AdminProductsPage from './components/products/AdminProductsPage';
 import AdminServicesPage from './components/products/AdminServicesPage';
 import AdminPackagesPage from './components/products/AdminPackagesPage';
+import AdminCommissionSettingsPage from './components/products/AdminCommissionSettingsPage';
 
 // Import Orders & Payments Suite Pages
 import AdminOrdersPage from './components/sales/AdminOrdersPage';
@@ -128,8 +128,8 @@ function App() {
       businesses: '/entities/businesses',
       'entities-freelancers': '/entities/freelancers',
       freelancers: '/entities/freelancers',
-      'entities-commissions': '/entities/commissions',
-      'products-commissions': '/entities/commissions',
+      'products-commissions': '/products/commission-settings',
+      'commission-settings': '/products/commission-settings',
       'products-catalog': '/products/catalog',
       'services-listings': '/products/services',
       'products-packages': '/products/packages',
@@ -231,10 +231,6 @@ function App() {
         path="/entities/freelancers"
         element={wrapProtected(<AdminFreelancerPage onNavigate={handleNavigate} />)}
       />
-      <Route
-        path="/entities/commissions"
-        element={wrapProtected(<AdminEntityCommissionPage onNavigate={handleNavigate} />)}
-      />
 
       {/* Products & Services Suite */}
       <Route
@@ -248,6 +244,10 @@ function App() {
       <Route
         path="/products/packages"
         element={wrapProtected(<AdminPackagesPage />)}
+      />
+      <Route
+        path="/products/commission-settings"
+        element={wrapProtected(<AdminCommissionSettingsPage />)}
       />
 
       {/* Orders & Payments Suite */}

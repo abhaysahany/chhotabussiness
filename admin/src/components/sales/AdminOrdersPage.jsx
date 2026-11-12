@@ -2093,7 +2093,7 @@ function AdminOrdersPage() {
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem', marginBottom: '0.75rem' }}>
                     <div>
                       <label style={{ display: 'block', fontSize: '0.73rem', fontWeight: 600, color: '#475569', marginBottom: '0.3rem' }}>
-                        Direct Income Amount (40%)
+                        Direct Income Amount ({paymentAllocationData.rates?.direct_percent ?? 40}%)
                       </label>
                       <input
                         type="text"
@@ -2105,7 +2105,7 @@ function AdminOrdersPage() {
 
                     <div>
                       <label style={{ display: 'block', fontSize: '0.73rem', fontWeight: 600, color: '#475569', marginBottom: '0.3rem' }}>
-                        Level Income Amount (40%)
+                        Level Income Amount ({paymentAllocationData.rates?.level_total_percent ?? 40}%)
                       </label>
                       <input
                         type="text"
@@ -2117,7 +2117,7 @@ function AdminOrdersPage() {
 
                     <div>
                       <label style={{ display: 'block', fontSize: '0.73rem', fontWeight: 600, color: '#475569', marginBottom: '0.3rem' }}>
-                        Reward Income Amount (20%)
+                        Reward Income Amount ({paymentAllocationData.rates?.reward_percent ?? 20}%)
                       </label>
                       <input
                         type="text"
@@ -2319,7 +2319,7 @@ function AdminOrdersPage() {
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem', marginBottom: '0.75rem' }}>
                     <div>
                       <label style={{ display: 'block', fontSize: '0.73rem', fontWeight: 600, color: '#475569', marginBottom: '0.3rem' }}>
-                        Direct Income Amount (40%)
+                        Direct Income Amount ({allocationData.rates?.direct_percent ?? 40}%)
                       </label>
                       <input
                         type="text"
@@ -2331,7 +2331,7 @@ function AdminOrdersPage() {
 
                     <div>
                       <label style={{ display: 'block', fontSize: '0.73rem', fontWeight: 600, color: '#475569', marginBottom: '0.3rem' }}>
-                        Level Income Amount (40%)
+                        Level Income Amount ({allocationData.rates?.level_total_percent ?? 40}%)
                       </label>
                       <input
                         type="text"
@@ -2343,7 +2343,7 @@ function AdminOrdersPage() {
 
                     <div>
                       <label style={{ display: 'block', fontSize: '0.73rem', fontWeight: 600, color: '#475569', marginBottom: '0.3rem' }}>
-                        Reward Income Amount (20%)
+                        Reward Income Amount ({allocationData.rates?.reward_percent ?? 20}%)
                       </label>
                       <input
                         type="text"

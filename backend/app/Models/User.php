@@ -97,8 +97,18 @@ class User extends Authenticatable
         return $this->hasMany(LevelIncome::class, 'user_code', 'user_code');
     }
 
+    public function diamondWallet()
+    {
+        return $this->hasOne(DiamondWallet::class, 'user_id');
+    }
+
+    public function diamondTransactions()
+    {
+        return $this->hasMany(DiamondTransaction::class, 'user_id');
+    }
+
     /**
-     * Auto generate unique MLM user_code on creation
+     * Auto generate unique random MLM user_code on creation
      */
     protected static function boot()
     {
@@ -106,9 +116,7 @@ class User extends Authenticatable
 
         static::creating(function ($user) {
             if (empty($user->user_code)) {
-                $latest = User::latest('id')->first();
-                $nextId = $latest ? ($latest->id + 100001) : 100001;
-                $user->user_code = 'CB' . $nextId;
+                $user->user_code = app(\App\Services\MemberIdGeneratorService::class)->generateUniqueCode();
             }
         });
     }

@@ -84,7 +84,7 @@ use App\Http\Controllers\Admin\AdminSupportController;
 use App\Http\Controllers\Admin\EntityCategoryController;
 use App\Http\Controllers\Admin\BusinessEntityController;
 use App\Http\Controllers\Admin\FreelancerEntityController;
-use App\Http\Controllers\Admin\EntityCommissionSettingController;
+use App\Http\Controllers\Admin\CommissionSettingController;
 
 // Admin Auth Routes
 Route::post('/admin/login', [AdminAuthController::class, 'login']);
@@ -217,6 +217,7 @@ Route::get('/user/business-reports', [OrderController::class, 'userBusinessRepor
 
 // User Income Summary Endpoints (Direct Income & Level Income)
 use App\Http\Controllers\UserIncomeController;
+use App\Http\Controllers\DiamondRewardController;
 
 Route::get('/user/income/direct', [UserIncomeController::class, 'getDirectIncome']);
 Route::get('/user/income/levels', [UserIncomeController::class, 'getLevelIncome']);
@@ -401,6 +402,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/user/update-password', [AuthController::class, 'updatePassword']);
 
+    // User Diamond Rewards Wallet & Ledger
+    Route::get('/user/diamonds', [DiamondRewardController::class, 'index']);
+    Route::get('/user/rewards/diamonds', [DiamondRewardController::class, 'index']);
+
     // User Sponsor ID Onboarding Routes
     Route::post('/user/sponsor-onboarding', [AuthController::class, 'handleSponsorOnboarding']);
     Route::post('/user/complete-sponsor-onboarding', [AuthController::class, 'completeSponsorOnboarding']);
@@ -422,11 +427,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/admin/me', [AdminAuthController::class, 'me']);
     Route::post('/admin/logout', [AdminAuthController::class, 'logout']);
 
-    // Admin Entity Commission & Reward Settings
-    Route::get('/admin/entity-commission-settings', [EntityCommissionSettingController::class, 'index']);
-    Route::get('/admin/entity-commission-settings/{entity_type}/{entity_id}', [EntityCommissionSettingController::class, 'show']);
-    Route::post('/admin/entity-commission-settings', [EntityCommissionSettingController::class, 'save']);
-    Route::put('/admin/entity-commission-settings', [EntityCommissionSettingController::class, 'save']);
+    // Global MLM Income Commission Settings
+    Route::get('/admin/commission-settings', [CommissionSettingController::class, 'index']);
+    Route::post('/admin/commission-settings', [CommissionSettingController::class, 'save']);
+    Route::put('/admin/commission-settings', [CommissionSettingController::class, 'save']);
 
     // Admin Application Branding Settings
     Route::get('/admin/branding', [SystemSettingController::class, 'getBranding']);

@@ -127,12 +127,16 @@ class Order extends Model
         'expected_admin_cut',
         'adminCommissionCollected',
         'admin_commission_collected',
+        'netEntityRealized',
+        'net_entity_realized',
         'remainingAdminCommission',
         'remaining_admin_commission',
         'totalPaymentReceived',
         'total_payment_received',
         'remainingProjectBalance',
         'remaining_project_balance',
+        'invoiceSummary',
+        'invoice_summary',
         'approval_status',
         'approvalStatus',
         'admin_confirmed_by',
@@ -398,6 +402,32 @@ class Order extends Model
         return 0.0;
     }
 
+    /**
+     * Resolve all eligible (actual received, non-pending/non-failed) payment rows for this order.
+     */
+    protected function getAllOrderPayments()
+    {
+        if ($this->relationLoaded('payments')) {
+            return $this->getRelation('payments');
+        }
+        if ($this->exists) {
+            return $this->payments()->get();
+        }
+        return collect();
+    }
+
+    /**
+     * Filter out any pending, failed, cancelled, or rejected payment attempts.
+     */
+    protected function getEligibleReceivedPayments()
+    {
+        $excludedStatuses = ['pending', 'failed', 'cancelled', 'rejected'];
+        return $this->getAllOrderPayments()->filter(function ($payment) use ($excludedStatuses) {
+            $status = strtolower(trim((string) ($payment->status ?? '')));
+            return $status === '' || !in_array($status, $excludedStatuses, true);
+        });
+    }
+
     public function getExpectedAdminCutAttribute(): float
     {
         $rate = (float) ($this->attributes['admin_commission_percent'] ?? 15);
@@ -407,11 +437,11 @@ class Order extends Model
 
     public function getTotalPaymentReceivedAttribute(): float
     {
-        if ($this->relationLoaded('payments')) {
-            $sum = (float) $this->payments->sum('amount');
-            return $sum > 0 ? $sum : (float) ($this->attributes['advance_payment'] ?? 0);
+        $allPayments = $this->getAllOrderPayments();
+        if ($allPayments->isNotEmpty()) {
+            return (float) round($this->getEligibleReceivedPayments()->sum('amount'), 2);
         }
-        return (float) ($this->attributes['advance_payment'] ?? 0);
+        return (float) round((float) ($this->attributes['advance_payment'] ?? 0), 2);
     }
 
     public function getRemainingProjectBalanceAttribute(): float
@@ -424,10 +454,64 @@ class Order extends Model
 
     public function getAdminCommissionCollectedAttribute(): float
     {
-        if ($this->relationLoaded('payments')) {
-            return (float) round($this->payments->sum('admin_commission_cut'), 2);
+        $allPayments = $this->getAllOrderPayments();
+        if ($allPayments->isNotEmpty()) {
+            $rate = (float) ($this->attributes['admin_commission_percent'] ?? 15);
+            $sum = $this->getEligibleReceivedPayments()->sum(function ($payment) use ($rate) {
+                if (isset($payment->admin_commission_cut) && $payment->admin_commission_cut !== null) {
+                    return (float) $payment->admin_commission_cut;
+                }
+                $pRate = (float) ($payment->admin_commission_percent ?? $rate);
+                return round(((float) $payment->amount * $pRate) / 100, 2);
+            });
+            return (float) round($sum, 2);
         }
-        return (float) round($this->payments()->sum('admin_commission_cut'), 2);
+
+        $received = (float) ($this->attributes['advance_payment'] ?? 0);
+        if ($received <= 0) {
+            return 0.0;
+        }
+        $rate = (float) ($this->attributes['admin_commission_percent'] ?? 15);
+        return (float) round(($received * $rate) / 100, 2);
+    }
+
+    public function getNetEntityRealizedAttribute(): float
+    {
+        $allPayments = $this->getAllOrderPayments();
+        if ($allPayments->isNotEmpty()) {
+            $rate = (float) ($this->attributes['admin_commission_percent'] ?? 15);
+            $sum = $this->getEligibleReceivedPayments()->sum(function ($payment) use ($rate) {
+                if (isset($payment->net_entity_amount) && $payment->net_entity_amount !== null) {
+                    return (float) $payment->net_entity_amount;
+                }
+                $pRate = (float) ($payment->admin_commission_percent ?? $rate);
+                $cut = round(((float) $payment->amount * $pRate) / 100, 2);
+                return round((float) $payment->amount - $cut, 2);
+            });
+            return max(0.0, (float) round($sum, 2));
+        }
+
+        $received = $this->total_payment_received;
+        $collectedCut = $this->admin_commission_collected;
+        return max(0.0, round($received - $collectedCut, 2));
+    }
+
+    public function getInvoiceSummaryAttribute(): array
+    {
+        $eligiblePayments = $this->getEligibleReceivedPayments();
+
+        return [
+            'mode' => 'order_summary',
+            'total_order_cost' => round((float) ($this->attributes['gross_amount'] ?? 0), 2),
+            'amount_collected_to_date' => $this->total_payment_received,
+            'approved_dump_amount' => $this->approved_dump_amount,
+            'admin_commission_percent' => round((float) ($this->attributes['admin_commission_percent'] ?? 15), 2),
+            'admin_commission_cut_on_received' => $this->admin_commission_collected,
+            'expected_full_order_commission' => $this->expected_admin_cut,
+            'net_entity_realized' => $this->net_entity_realized,
+            'remaining_order_balance' => $this->remaining_project_balance,
+            'payment_count' => $eligiblePayments->count(),
+        ];
     }
 
     public function getRemainingAdminCommissionAttribute(): float

@@ -4,6 +4,7 @@ namespace App\Services;
 
 require_once app_path('Helpers/admin_function.php');
 
+use App\Models\CommissionSetting;
 use App\Models\Order;
 use App\Models\SalePayment;
 use Illuminate\Support\Facades\DB;
@@ -12,12 +13,19 @@ use InvalidArgumentException;
 class AdminIncomeAllocationService
 {
     /**
-     * Fixed distribution percentages for Admin Income Allocation.
-     * Direct Income: 40%, Level Income: 40%, Reward Income: 20%. Total = 100%.
+     * Legacy fallback constants retained only for informational completed-payment metadata;
+     * live calculations always load validated percentages from CommissionSetting.
      */
     public const DIRECT_PERCENT = 40.0;
     public const LEVEL_PERCENT = 40.0;
     public const REWARD_PERCENT = 20.0;
+
+    protected DiamondRewardService $diamondRewardService;
+
+    public function __construct(?DiamondRewardService $diamondRewardService = null)
+    {
+        $this->diamondRewardService = $diamondRewardService ?? new DiamondRewardService();
+    }
 
     /**
      * Calculate and return income allocation details for a specific payment receipt without persisting.
@@ -44,12 +52,31 @@ class AdminIncomeAllocationService
 
         // 3. Eligible Admin Cut for THIS payment
         $status = $payment->income_distribution_status ?? 'pending';
-        $eligibleAdminCut = in_array($status, ['completed', 'legacy_completed'])
+        $isCompleted = in_array($status, ['completed', 'legacy_completed']);
+        $eligibleAdminCut = $isCompleted
             ? 0.0
             : max(0.0, round($paymentAdminCut - $previouslyAllocated, 2));
 
-        // 4. Calculate live 40/40/20 preview using integer paise arithmetic
-        $allocationBreakdown = $this->calculateSplit($eligibleAdminCut > 0 ? $eligibleAdminCut : $paymentAdminCut);
+        // 4. For pending payments, strictly load validated Global Commission Settings snapshot;
+        //    for historical completed payments, preserve stored immutable amounts.
+        $configSnapshot = null;
+        $allocationBreakdown = [
+            'direct_amount' => (float) ($payment->direct_income_amount ?? 0),
+            'level_amount' => (float) ($payment->level_income_amount ?? 0),
+            'reward_amount' => (float) ($payment->reward_income_amount ?? 0),
+            'total_amount' => (float) ($payment->distributed_admin_cut_amount ?? 0),
+        ];
+
+        if (!$isCompleted) {
+            $configSnapshot = CommissionSetting::getValidatedGlobalSnapshot();
+            $allocationBreakdown = $this->calculateSplit($eligibleAdminCut, $configSnapshot);
+        } else {
+            try {
+                $configSnapshot = CommissionSetting::getValidatedGlobalSnapshot();
+            } catch (InvalidArgumentException $e) {
+                $configSnapshot = null;
+            }
+        }
 
         // 5. Order cumulative totals
         $orderGross = (float) ($order?->gross_amount ?? 0);
@@ -85,6 +112,10 @@ class AdminIncomeAllocationService
             'reward_income_amount' => in_array($status, ['completed', 'legacy_completed'])
                 ? (float) ($payment->reward_income_amount ?? $allocationBreakdown['reward_amount'])
                 : $allocationBreakdown['reward_amount'],
+            'reward_level_1_amount' => !$isCompleted ? ($allocationBreakdown['reward_level_1_amount'] ?? 0.0) : null,
+            'reward_level_2_amount' => !$isCompleted ? ($allocationBreakdown['reward_level_2_amount'] ?? 0.0) : null,
+            'reward_level_1_diamonds' => !$isCompleted ? ($allocationBreakdown['reward_level_1_diamonds'] ?? 0.0) : null,
+            'reward_level_2_diamonds' => !$isCompleted ? ($allocationBreakdown['reward_level_2_diamonds'] ?? 0.0) : null,
             'total_allocation' => in_array($status, ['completed', 'legacy_completed'])
                 ? (float) ($payment->distributed_admin_cut_amount ?? $allocationBreakdown['total_amount'])
                 : $allocationBreakdown['total_amount'],
@@ -94,6 +125,16 @@ class AdminIncomeAllocationService
                 : ($payment->income_distributed_at ? (string) $payment->income_distributed_at : null),
             'income_distributed_by' => $payment->income_distributed_by,
             'can_allocate' => ($status === 'pending' && $eligibleAdminCut > 0),
+            'rates' => $configSnapshot ? [
+                'direct_percent' => $configSnapshot['direct_percent'],
+                'level_total_percent' => $configSnapshot['level_total_percent'],
+                'reward_level_1_percent' => $configSnapshot['reward_level_1_percent'],
+                'reward_level_2_percent' => $configSnapshot['reward_level_2_percent'],
+                'reward_total_percent' => $configSnapshot['reward_total_percent'],
+                'reward_percent' => $configSnapshot['reward_percent'],
+                'diamond_conversion_rate' => $configSnapshot['diamond_conversion_rate'],
+                'levels' => $configSnapshot['levels'],
+            ] : null,
             'order' => $order ? [
                 'id' => $order->id,
                 'invoice_number' => $order->invoice_number,
@@ -166,10 +207,13 @@ class AdminIncomeAllocationService
                 );
             }
 
-            // 4. Calculate decimal-safe split using integer paise
-            $split = $this->calculateSplit($paymentAdminCut);
+            // 4. Load ONE consistent Global Commission Settings snapshot for the entire transaction
+            $configSnapshot = CommissionSetting::getValidatedGlobalSnapshot(true);
 
-            // 5. Update the payment receipt row with its allocation amounts and completed status
+            // 5. Calculate decimal-safe split using integer paise arithmetic
+            $split = $this->calculateSplit($paymentAdminCut, $configSnapshot);
+
+            // 6. Update the payment receipt row with its allocation amounts and completed status
             $payment->update([
                 'direct_income_amount' => $split['direct_amount'],
                 'level_income_amount' => $split['level_amount'],
@@ -180,7 +224,7 @@ class AdminIncomeAllocationService
                 'income_distributed_by' => $adminId,
             ]);
 
-            // 6. Atomically accumulate on parent order cumulative totals
+            // 7. Atomically accumulate on parent order cumulative totals
             $newOrderDirect = round((float) ($order->direct_income_amount ?? 0) + $split['direct_amount'], 2);
             $newOrderLevel = round((float) ($order->level_income_amount ?? 0) + $split['level_amount'], 2);
             $newOrderReward = round((float) ($order->reward_income_amount ?? 0) + $split['reward_amount'], 2);
@@ -194,10 +238,10 @@ class AdminIncomeAllocationService
                 'income_distributed_at' => now(),
             ]);
 
-            // 7. Recompute parent order's aggregate distribution status
+            // 8. Recompute parent order's aggregate distribution status
             $this->syncOrderIncomeDistributionStatus($order);
 
-            // 8. Distribute Direct Income using helper (Direct Income only to customer's upline sponsor)
+            // 9. Distribute Direct Income using helper (Direct Income only to customer's upline sponsor)
             if ($split['direct_amount'] > 0) {
                 $customer = $order->customer_user_code ? \App\Models\User::where('user_code', $order->customer_user_code)->first() : null;
                 $sponsorCode = $customer ? $customer->sponsor_id : $order->sponsor;
@@ -212,14 +256,23 @@ class AdminIncomeAllocationService
                 }
             }
 
-            // 9. Distribute Level Income using helper (Levels 2-5 across upline hierarchy)
+            // 10. Distribute Level Income using dynamic per-level amounts from the same snapshot
             if ($split['level_amount'] > 0 && !empty($order->customer_user_code)) {
                 \levelIncome(
                     $order->customer_user_code,
                     $split['level_amount'],
-                    0.00 // Bug 2 Fix: Never propagate order dump_amount to level income
+                    0.00, // Bug 2 Fix: Never propagate order dump_amount to level income
+                    $split['level_breakdown']
                 );
             }
+
+            // 11. Distribute Two-Level Diamond Rewards (Reward Level 1 -> Direct Sponsor, Level 2 -> Sponsor's Sponsor)
+            $diamondRewards = $this->diamondRewardService->distributePaymentRewards(
+                $order,
+                $payment,
+                $split['reward_level_1_amount'],
+                $split['reward_level_2_amount']
+            );
 
             return [
                 'payment' => $payment->fresh(),
@@ -229,8 +282,15 @@ class AdminIncomeAllocationService
                     'eligible_admin_cut' => $paymentAdminCut,
                     'direct_income_amount' => $split['direct_amount'],
                     'level_income_amount' => $split['level_amount'],
+                    'level_breakdown' => $split['level_breakdown'],
                     'reward_income_amount' => $split['reward_amount'],
+                    'reward_level_1_amount' => $split['reward_level_1_amount'],
+                    'reward_level_2_amount' => $split['reward_level_2_amount'],
+                    'reward_level_1_diamonds' => $split['reward_level_1_diamonds'],
+                    'reward_level_2_diamonds' => $split['reward_level_2_diamonds'],
+                    'diamond_rewards' => $diamondRewards,
                     'total_allocated' => $split['total_amount'],
+                    'rates' => $split['rates'],
                 ],
                 'order_cumulative' => [
                     'direct_income_amount' => (float) $order->direct_income_amount,
@@ -304,7 +364,8 @@ class AdminIncomeAllocationService
         $orderDumpCut = (float) ($order->approved_dump_admin_cut ?? round(($orderDump * ($order->admin_commission_percent ?: 15)) / 100, 2));
         $remainingAdminCommission = max(0.0, round($expectedTotalCut - $paymentsSum - $orderDumpCut, 2));
 
-        $allocationBreakdown = $this->calculateSplit($eligibleAdminCut);
+        $configSnapshot = CommissionSetting::getValidatedGlobalSnapshot();
+        $allocationBreakdown = $this->calculateSplit($eligibleAdminCut, $configSnapshot);
         $status = $this->syncOrderIncomeDistributionStatus($order);
 
         return [
@@ -331,8 +392,23 @@ class AdminIncomeAllocationService
             'eligible_admin_cut' => $eligibleAdminCut,
             'direct_income_amount' => $allocationBreakdown['direct_amount'],
             'level_income_amount' => $allocationBreakdown['level_amount'],
+            'level_breakdown' => $allocationBreakdown['level_breakdown'],
             'reward_income_amount' => $allocationBreakdown['reward_amount'],
+            'reward_level_1_amount' => $allocationBreakdown['reward_level_1_amount'],
+            'reward_level_2_amount' => $allocationBreakdown['reward_level_2_amount'],
+            'reward_level_1_diamonds' => $allocationBreakdown['reward_level_1_diamonds'],
+            'reward_level_2_diamonds' => $allocationBreakdown['reward_level_2_diamonds'],
             'total_allocation' => $allocationBreakdown['total_amount'],
+            'rates' => [
+                'direct_percent' => $configSnapshot['direct_percent'],
+                'level_total_percent' => $configSnapshot['level_total_percent'],
+                'reward_level_1_percent' => $configSnapshot['reward_level_1_percent'],
+                'reward_level_2_percent' => $configSnapshot['reward_level_2_percent'],
+                'reward_total_percent' => $configSnapshot['reward_total_percent'],
+                'reward_percent' => $configSnapshot['reward_percent'],
+                'diamond_conversion_rate' => $configSnapshot['diamond_conversion_rate'],
+                'levels' => $configSnapshot['levels'],
+            ],
             'distribution_status' => $status,
             'income_distributed_at' => $order->income_distributed_at instanceof \DateTimeInterface
                 ? $order->income_distributed_at->toIso8601String()
@@ -349,34 +425,109 @@ class AdminIncomeAllocationService
     }
 
     /**
-     * Compute decimal-safe 40/40/20 split using integer paise arithmetic.
-     * Guarantees that direct_amount + level_amount + reward_amount === eligible_admin_cut down to the paisa.
-     * The reward allocation absorbs any odd-paisa remainder deterministically.
+     * Compute decimal-safe split using the active Global Commission Settings snapshot
+     * and integer paise arithmetic. Guarantees exact reconciliation down to the paisa.
      *
      * @param float $eligibleAdminCut
+     * @param array|null $configSnapshot
      * @return array
      */
-    public function calculateSplit(float $eligibleAdminCut): array
+    public function calculateSplit(float $eligibleAdminCut, ?array $configSnapshot = null): array
     {
+        $config = $configSnapshot ?? CommissionSetting::getValidatedGlobalSnapshot();
+        $zeroLevels = [];
+        foreach ($config['levels'] as $lvl) {
+            $zeroLevels[(int) $lvl['level']] = 0.0;
+        }
+
+        $ratesMeta = [
+            'direct_percent' => $config['direct_percent'],
+            'level_total_percent' => $config['level_total_percent'],
+            'reward_level_1_percent' => $config['reward_level_1_percent'],
+            'reward_level_2_percent' => $config['reward_level_2_percent'],
+            'reward_total_percent' => $config['reward_total_percent'],
+            'reward_percent' => $config['reward_percent'],
+            'diamond_conversion_rate' => $config['diamond_conversion_rate'],
+            'levels' => $config['levels'],
+        ];
+
         if ($eligibleAdminCut <= 0) {
             return [
                 'direct_amount' => 0.0,
                 'level_amount' => 0.0,
+                'level_breakdown' => $zeroLevels,
+                'reward_level_1_amount' => 0.0,
+                'reward_level_2_amount' => 0.0,
+                'reward_level_1_diamonds' => 0.0,
+                'reward_level_2_diamonds' => 0.0,
                 'reward_amount' => 0.0,
                 'total_amount' => 0.0,
+                'rates' => $ratesMeta,
             ];
         }
 
         $totalPaise = (int) round($eligibleAdminCut * 100);
-        $directPaise = (int) round($totalPaise * 0.40);
-        $levelPaise = (int) round($totalPaise * 0.40);
-        $rewardPaise = $totalPaise - $directPaise - $levelPaise;
+        $directPercent = (float) $config['direct_percent'];
+        $rewardL1Percent = (float) ($config['reward_level_1_percent'] ?? 0.0);
+        $rewardL2Percent = (float) ($config['reward_level_2_percent'] ?? 0.0);
+
+        $directPaise = (int) round(($totalPaise * $directPercent) / 100);
+        $levelPaiseMap = [];
+        foreach ($config['levels'] as $lvl) {
+            $lvlNum = (int) $lvl['level'];
+            $lvlPct = (float) $lvl['percent'];
+            $levelPaiseMap[$lvlNum] = (int) round(($totalPaise * $lvlPct) / 100);
+        }
+
+        $levelTotalPaise = array_sum($levelPaiseMap);
+        $rewardL1Paise = (int) round(($totalPaise * $rewardL1Percent) / 100);
+        $rewardL2Paise = (int) round(($totalPaise * $rewardL2Percent) / 100);
+
+        $diff = $totalPaise - $directPaise - $levelTotalPaise - $rewardL1Paise - $rewardL2Paise;
+        if ($diff !== 0) {
+            // Absorb odd-paisa rounding residual deterministically onto a positive active percentage bucket
+            if ($rewardL2Percent > 0 && ($rewardL2Percent >= $rewardL1Percent || $rewardL1Percent <= 0) && $rewardL2Paise + $diff >= 0) {
+                $rewardL2Paise += $diff;
+            } elseif ($rewardL1Percent > 0 && $rewardL1Paise + $diff >= 0) {
+                $rewardL1Paise += $diff;
+            } else {
+                $bestLevel = null;
+                $bestVal = -1;
+                foreach ($levelPaiseMap as $lvlNum => $val) {
+                    if ($val > $bestVal && $val + $diff >= 0) {
+                        $bestVal = $val;
+                        $bestLevel = $lvlNum;
+                    }
+                }
+                if ($directPercent > 0 && ($directPaise >= $bestVal || $bestLevel === null) && $directPaise + $diff >= 0) {
+                    $directPaise += $diff;
+                } elseif ($bestLevel !== null) {
+                    $levelPaiseMap[$bestLevel] += $diff;
+                    $levelTotalPaise = array_sum($levelPaiseMap);
+                }
+            }
+        }
+
+        $rewardPaise = $rewardL1Paise + $rewardL2Paise;
+        $rewardL1Amount = round($rewardL1Paise / 100, 2);
+        $rewardL2Amount = round($rewardL2Paise / 100, 2);
+
+        $levelBreakdown = [];
+        foreach ($levelPaiseMap as $lvlNum => $paise) {
+            $levelBreakdown[$lvlNum] = round($paise / 100, 2);
+        }
 
         return [
             'direct_amount' => round($directPaise / 100, 2),
-            'level_amount' => round($levelPaise / 100, 2),
+            'level_amount' => round($levelTotalPaise / 100, 2),
+            'level_breakdown' => $levelBreakdown,
+            'reward_level_1_amount' => $rewardL1Amount,
+            'reward_level_2_amount' => $rewardL2Amount,
+            'reward_level_1_diamonds' => (float) $this->diamondRewardService->convertInrToDiamonds($rewardL1Amount),
+            'reward_level_2_diamonds' => (float) $this->diamondRewardService->convertInrToDiamonds($rewardL2Amount),
             'reward_amount' => round($rewardPaise / 100, 2),
-            'total_amount' => round(($directPaise + $levelPaise + $rewardPaise) / 100, 2),
+            'total_amount' => round(($directPaise + $levelTotalPaise + $rewardPaise) / 100, 2),
+            'rates' => $ratesMeta,
         ];
     }
 }

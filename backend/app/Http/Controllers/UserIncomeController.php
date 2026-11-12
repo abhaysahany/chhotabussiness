@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CommissionSetting;
 use App\Models\DirectIncome;
 use App\Models\LevelIncome;
 use App\Models\User;
@@ -169,9 +170,25 @@ class UserIncomeController extends Controller
 
         $recordsByLevel = $records->groupBy('level');
 
-        // Build Level 2, 3, 4, 5 structure
+        // Determine active level numbers dynamically (including Level 1 when configured > 0 or earned)
+        $globalSetting = CommissionSetting::getGlobalRecord();
+        $levelColumns = CommissionSetting::getLevelColumns();
+        $levelNumbers = [];
+        foreach ($levelColumns as $col) {
+            $lvlNum = (int) $col['level'];
+            $lvlPct = (float) ($globalSetting?->{$col['key']} ?? 0);
+            if ($lvlNum === 1 && $lvlPct <= 0 && !$recordsByLevel->has(1)) {
+                continue;
+            }
+            $levelNumbers[] = $lvlNum;
+        }
+        if (empty($levelNumbers)) {
+            $levelNumbers = [2, 3, 4, 5];
+        }
+
+        // Build per-level breakdown dynamically
         $levelsBreakdown = [];
-        foreach ([2, 3, 4, 5] as $levelNum) {
+        foreach ($levelNumbers as $levelNum) {
             $levelGroup = $recordsByLevel->get($levelNum, collect([]));
             $lvlTotal = (float) $levelGroup->sum('total_amount');
             $lvlPaid = (float) $levelGroup->sum('paid_amount');

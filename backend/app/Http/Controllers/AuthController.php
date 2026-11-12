@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Services\GoogleAuthService;
+use App\Services\MemberIdGeneratorService;
 use App\Services\PasswordResetOtpService;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use RuntimeException;
 
 class AuthController extends Controller
 {
@@ -396,31 +398,20 @@ class AuthController extends Controller
         Cache::forget('otp_' . $email);
         Cache::forget('otp_cooldown_' . $email);
 
-        // 3. Create MLM Member Account in Transaction
-        try {
-            $user = DB::transaction(function () use ($data, $sponsor, $email) {
-                return User::create([
-                    'name' => $data['name'],
-                    'email' => $email,
-                    'password' => Hash::make($data['password']),
-                    'sponsor_id' => $sponsor->user_code ?? $sponsor->id,
-                    'sponsor_onboarding_status' => 'completed',
-                    'email_verified_at' => now(),
-                ]);
-            });
-        } catch (QueryException $e) {
-            if ($e->errorInfo[1] == 1062 || str_contains($e->getMessage(), 'Duplicate entry')) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'This email address is already registered. Please login instead.',
-                    'errors' => [
-                        'email' => ['This email address is already registered. Please login instead.'],
-                    ],
-                    'requires_login' => true,
-                ], 409);
-            }
-            throw $e;
+        // 3. Create MLM Member Account in Transaction with unique random Member ID
+        $userOrResponse = $this->persistNewMember([
+            'name' => $data['name'],
+            'email' => $email,
+            'password' => Hash::make($data['password']),
+            'sponsor_id' => $sponsor->user_code ?? $sponsor->id,
+            'sponsor_onboarding_status' => 'completed',
+            'email_verified_at' => now(),
+        ], true);
+
+        if ($userOrResponse instanceof \Illuminate\Http\JsonResponse) {
+            return $userOrResponse;
         }
+        $user = $userOrResponse;
 
         $token = $user->createToken('user_auth_token')->plainTextToken;
 
@@ -510,7 +501,7 @@ class AuthController extends Controller
             }
 
             // Create new social user (Google/Facebook emails are pre-verified)
-            $user = User::create([
+            $userOrResponse = $this->persistNewMember([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make(uniqid('social_' . $request->provider . '_')),
@@ -520,6 +511,11 @@ class AuthController extends Controller
                 'avatar' => $request->avatar,
                 'email_verified_at' => now(),
             ]);
+
+            if ($userOrResponse instanceof \Illuminate\Http\JsonResponse) {
+                return $userOrResponse;
+            }
+            $user = $userOrResponse;
         }
 
         // Generate Sanctum API token
@@ -753,31 +749,22 @@ class AuthController extends Controller
         $onboardingStatus = $sponsor ? 'completed' : 'pending';
         $assignedSponsorId = $sponsor ? ($sponsor->user_code ?? (string) $sponsor->id) : null;
 
-        try {
-            $newUser = DB::transaction(function () use ($name, $email, $sub, $avatar, $assignedSponsorId, $onboardingStatus) {
-                return User::create([
-                    'name' => $name,
-                    'email' => $email,
-                    'password' => Hash::make(Str::random(32)),
-                    'sponsor_id' => $assignedSponsorId,
-                    'sponsor_onboarding_status' => $onboardingStatus,
-                    'provider' => 'google',
-                    'provider_id' => $sub,
-                    'avatar' => $avatar,
-                    'email_verified_at' => now(),
-                ]);
-            });
-        } catch (QueryException $e) {
-            // Concurrent duplicate insertion safety
-            if ($e->getCode() == 23000 || str_contains($e->getMessage(), 'Duplicate entry')) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'This email is already registered. Please log in instead.',
-                    'requires_login' => true,
-                ], 409);
-            }
-            throw $e;
+        $userOrResponse = $this->persistNewMember([
+            'name' => $name,
+            'email' => $email,
+            'password' => Hash::make(Str::random(32)),
+            'sponsor_id' => $assignedSponsorId,
+            'sponsor_onboarding_status' => $onboardingStatus,
+            'provider' => 'google',
+            'provider_id' => $sub,
+            'avatar' => $avatar,
+            'email_verified_at' => now(),
+        ]);
+
+        if ($userOrResponse instanceof \Illuminate\Http\JsonResponse) {
+            return $userOrResponse;
         }
+        $newUser = $userOrResponse;
 
         $token = $newUser->createToken('user_auth_token')->plainTextToken;
 
@@ -1266,5 +1253,38 @@ class AuthController extends Controller
             'status' => 'success',
             'message' => 'Password reset successfully! You can now log in with your new password.',
         ], 200);
+    }
+
+    /**
+     * Create a new MLM member via centralized MemberIdGeneratorService,
+     * returning a controlled JSON error response on duplicate email or exhausted ID retries.
+     *
+     * @return User|\Illuminate\Http\JsonResponse
+     */
+    private function persistNewMember(array $attributes, bool $includeEmailFieldError = false)
+    {
+        try {
+            return app(MemberIdGeneratorService::class)->createMemberWithUniqueId($attributes);
+        } catch (QueryException $e) {
+            if (($e->errorInfo[1] ?? null) == 1062 || str_contains($e->getMessage(), 'Duplicate entry')) {
+                $payload = [
+                    'status' => 'error',
+                    'message' => 'This email address is already registered. Please login instead.',
+                    'requires_login' => true,
+                ];
+                if ($includeEmailFieldError) {
+                    $payload['errors'] = [
+                        'email' => ['This email address is already registered. Please login instead.'],
+                    ];
+                }
+                return response()->json($payload, 409);
+            }
+            throw $e;
+        } catch (RuntimeException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unable to generate a unique Member ID right now. Please try again.',
+            ], 503);
+        }
     }
 }
