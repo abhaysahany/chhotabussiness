@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { getUserRewards, claimReward, getUserFreshProfile } from '../../api/userRewardService';
+import { getUserRewards, claimReward, getUserFreshProfile, getUserDiamondRewards } from '../../api/userRewardService';
+import { formatDateTime } from '../../utils/timezone';
+
+const formatDiamonds = (val) => {
+  const num = Number(val);
+  if (!Number.isFinite(num) || num === 0) return '0';
+  return Number(num.toFixed(4)).toString();
+};
 
 function RewardDetails({ user }) {
   const [currentUser, setCurrentUser] = useState(user || null);
@@ -7,6 +14,13 @@ function RewardDetails({ user }) {
   const [userBp, setUserBp] = useState(Number(user?.bp_balance) || 0);
 
   const [rewards, setRewards] = useState([]);
+  const [diamondWallet, setDiamondWallet] = useState({
+    diamond_balance: 0,
+    level_1_diamonds: 0,
+    level_2_diamonds: 0,
+    conversion_rate_inr: 100,
+  });
+  const [diamondTransactions, setDiamondTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedReward, setSelectedReward] = useState(null);
   const [toastMessage, setToastMessage] = useState('');
@@ -32,12 +46,17 @@ function RewardDetails({ user }) {
       if (showToastNotice) setRefreshing(true);
       else setLoading(true);
 
-      const [rewardsData, freshUser] = await Promise.all([
+      const [rewardsData, freshUser, diamondData] = await Promise.all([
         getUserRewards(),
         getUserFreshProfile(),
+        getUserDiamondRewards(),
       ]);
 
       setRewards(rewardsData || []);
+      if (diamondData?.wallet) {
+        setDiamondWallet(diamondData.wallet);
+      }
+      setDiamondTransactions(diamondData?.transactions || []);
 
       if (freshUser) {
         setCurrentUser(freshUser);
@@ -188,6 +207,148 @@ function RewardDetails({ user }) {
           </div>
         </div>
       </div>
+
+      {/* My Diamond Rewards Section (Two-Level Sponsor Reward System) */}
+      <section
+        aria-label="My Diamond Rewards"
+        style={{
+          background: '#ffffff',
+          border: '1px solid #cbd5e1',
+          borderRadius: '16px',
+          padding: '1.5rem',
+          marginBottom: '2rem',
+          boxShadow: '0 4px 15px rgba(15, 23, 42, 0.04)',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.25rem' }}>
+          <div>
+            <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0f172a', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span>💎</span> My Diamond Rewards
+            </h2>
+            <p style={{ fontSize: '0.84rem', color: '#64748b', margin: '0.25rem 0 0 0' }}>
+              Non-cash sponsor reward Diamonds earned from Level 1 (Direct Sponsor) and Level 2 (Sponsor's Sponsor) reward allocations. Separate from cash wallet and payouts.
+            </p>
+          </div>
+          <span
+            style={{
+              background: '#ecfeff',
+              border: '1px solid #a5f3fc',
+              color: '#0e7490',
+              padding: '0.35rem 0.85rem',
+              borderRadius: '999px',
+              fontSize: '0.76rem',
+              fontWeight: 700,
+            }}
+          >
+            Conversion Rate: ₹{Number(diamondWallet.conversion_rate_inr || 100)} = 1 Diamond
+          </span>
+        </div>
+
+        {/* Diamond Summary Cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.35rem' }}>
+          <div style={{ background: 'linear-gradient(135deg, #ecfeff 0%, #cffafe 100%)', border: '1px solid #67e8f9', borderRadius: '12px', padding: '1rem 1.25rem' }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0e7490', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              Total Diamond Balance
+            </div>
+            <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#155e75', marginTop: '0.25rem' }}>
+              💎 {formatDiamonds(diamondWallet.diamond_balance)}
+            </div>
+            <div style={{ fontSize: '0.74rem', color: '#0e7490', marginTop: '0.15rem' }}>
+              Non-cash reward balance
+            </div>
+          </div>
+
+          <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem 1.25rem' }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              Reward Level 1 Diamonds
+            </div>
+            <div style={{ fontSize: '1.65rem', fontWeight: 800, color: '#1d4ed8', marginTop: '0.25rem' }}>
+              {formatDiamonds(diamondWallet.level_1_diamonds)} 💎
+            </div>
+            <div style={{ fontSize: '0.74rem', color: '#64748b', marginTop: '0.15rem' }}>
+              Earned as Direct Sponsor
+            </div>
+          </div>
+
+          <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem 1.25rem' }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              Reward Level 2 Diamonds
+            </div>
+            <div style={{ fontSize: '1.65rem', fontWeight: 800, color: '#7c3aed', marginTop: '0.25rem' }}>
+              {formatDiamonds(diamondWallet.level_2_diamonds)} 💎
+            </div>
+            <div style={{ fontSize: '0.74rem', color: '#64748b', marginTop: '0.15rem' }}>
+              Earned as Sponsor's Sponsor
+            </div>
+          </div>
+        </div>
+
+        {/* Recent Diamond Transactions */}
+        <div>
+          <h3 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0f172a', margin: '0 0 0.75rem 0' }}>
+            Recent Diamond Transactions
+          </h3>
+          {diamondTransactions.length === 0 ? (
+            <div style={{ padding: '1.25rem', textAlign: 'center', background: '#f8fafc', border: '1px dashed #cbd5e1', borderRadius: '10px', color: '#64748b', fontSize: '0.86rem' }}>
+              No Diamond reward transactions credited to your account yet.
+            </div>
+          ) : (
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.86rem' }}>
+                <thead>
+                  <tr style={{ background: '#f1f5f9', borderBottom: '2px solid #cbd5e1', textAlign: 'left' }}>
+                    <th style={{ padding: '0.75rem 0.9rem', fontWeight: 700, color: '#334155' }}>Source</th>
+                    <th style={{ padding: '0.75rem 0.9rem', fontWeight: 700, color: '#334155' }}>Reward Level</th>
+                    <th style={{ padding: '0.75rem 0.9rem', fontWeight: 700, color: '#334155', textAlign: 'right' }}>Reward Amount</th>
+                    <th style={{ padding: '0.75rem 0.9rem', fontWeight: 700, color: '#334155', textAlign: 'right' }}>Diamonds</th>
+                    <th style={{ padding: '0.75rem 0.9rem', fontWeight: 700, color: '#334155' }}>Credit Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {diamondTransactions.map((tx) => {
+                    const isReversal = tx.transaction_type === 'reversal' || Number(tx.diamond_quantity) < 0;
+                    return (
+                      <tr key={tx.id} style={{ borderBottom: '1px solid #e2e8f0' }}>
+                        <td style={{ padding: '0.75rem 0.9rem', fontWeight: 700, color: '#0f172a' }}>
+                          <div>{tx.source || tx.source_reference}</div>
+                          {tx.source_member_code && (
+                            <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 500 }}>
+                              Member: {tx.source_member_code}
+                            </div>
+                          )}
+                        </td>
+                        <td style={{ padding: '0.75rem 0.9rem' }}>
+                          <span
+                            style={{
+                              padding: '0.2rem 0.6rem',
+                              borderRadius: '999px',
+                              fontSize: '0.75rem',
+                              fontWeight: 700,
+                              background: Number(tx.reward_level) === 1 ? '#dbeafe' : '#f3e8ff',
+                              color: Number(tx.reward_level) === 1 ? '#1d4ed8' : '#7c3aed',
+                            }}
+                          >
+                            Level {tx.reward_level}
+                          </span>
+                        </td>
+                        <td style={{ padding: '0.75rem 0.9rem', textAlign: 'right', fontWeight: 700, color: isReversal ? '#dc2626' : '#0f172a' }}>
+                          ₹{Math.abs(Number(tx.allocated_amount || 0)).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+                        </td>
+                        <td style={{ padding: '0.75rem 0.9rem', textAlign: 'right', fontWeight: 800, color: isReversal ? '#dc2626' : '#0891b2' }}>
+                          {isReversal ? '-' : '+'}{formatDiamonds(Math.abs(Number(tx.diamond_quantity || 0)))} 💎
+                        </td>
+                        <td style={{ padding: '0.75rem 0.9rem', color: '#64748b', fontSize: '0.8rem' }}>
+                          {formatDateTime(tx.created_at)}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* Rewards Grid */}
       <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

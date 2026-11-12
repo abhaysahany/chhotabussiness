@@ -48,6 +48,32 @@ export const claimReward = async (payload) => {
 };
 
 /**
+ * Fetch authenticated user's Diamond Wallet balance & immutable ledger transactions
+ * GET /api/user/diamonds
+ */
+export const getUserDiamondRewards = async () => {
+  try {
+    const res = await api.get('/user/diamonds');
+    if (res.data?.status === 'success') {
+      return {
+        wallet: res.data.wallet || { diamond_balance: 0, level_1_diamonds: 0, level_2_diamonds: 0, conversion_rate_inr: 100 },
+        transactions: res.data.transactions || [],
+      };
+    }
+    return {
+      wallet: { diamond_balance: 0, level_1_diamonds: 0, level_2_diamonds: 0, conversion_rate_inr: 100 },
+      transactions: [],
+    };
+  } catch (err) {
+    console.error('Error fetching user diamond rewards:', err);
+    return {
+      wallet: { diamond_balance: 0, level_1_diamonds: 0, level_2_diamonds: 0, conversion_rate_inr: 100 },
+      transactions: [],
+    };
+  }
+};
+
+/**
  * Fetch fresh user profile / wallet balance directly from database
  */
 export const getUserFreshProfile = async () => {

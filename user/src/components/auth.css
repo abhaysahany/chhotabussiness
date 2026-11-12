@@ -891,3 +891,227 @@
     padding: 0.8rem 0.65rem;
   }
 }
+
+/* ==========================================================================
+   SPONSOR ONBOARDING PAGE STYLES (MATCHES LOGIN / REGISTER THEME)
+   ========================================================================== */
+@keyframes cbSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.cb-spin {
+  animation: cbSpin 1s linear infinite;
+}
+
+.cb-auth-login-nav-btn {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.cb-auth-login-nav-btn:hover {
+  transform: translateY(-1px);
+}
+
+.cb-topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.cb-topbar-brand-logo {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.cb-topbar-brand-badge {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #0F4C81 0%, #1e3a5f 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(15, 76, 129, 0.2);
+  flex-shrink: 0;
+}
+
+.cb-topbar-brand-name {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.18rem;
+  font-weight: 900;
+  color: var(--cb-primary, #0F4C81);
+  letter-spacing: -0.03em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cb-onboarding-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--cb-primary, #0F4C81);
+  background: var(--cb-primary-light, #e8f1f8);
+  border: 1px solid #BFDBFE;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.9rem;
+  width: fit-content;
+}
+
+.cb-google-account-card {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: #F8FAFC;
+  border: 1.5px solid var(--cb-border, #E2E8F0);
+  margin-bottom: 1.5rem;
+}
+
+.cb-google-avatar-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(15, 76, 129, 0.12);
+}
+
+.cb-google-avatar-fallback {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0F4C81 0%, #1e3a5f 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.cb-google-account-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.cb-google-account-top {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.cb-google-account-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--cb-text-dark, #1E293B);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.cb-google-verified-pill {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #065F46;
+  background: #DCFCE7;
+  border: 1px solid #86EFAC;
+  padding: 0.12rem 0.45rem;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.cb-google-account-email {
+  font-size: 0.8rem;
+  color: var(--cb-text-muted, #64748B);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cb-input-field.has-status-icon {
+  padding-right: 2.75rem;
+}
+
+.cb-input-field.has-success {
+  border-color: #10B981 !important;
+  background-color: #F0FDF4 !important;
+}
+
+.cb-input-field.has-success:focus {
+  border-color: #059669 !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15) !important;
+}
+
+.cb-input-status-icon {
+  position: absolute;
+  right: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.cb-onboarding-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.cb-onboarding-actions .cb-btn-ghost {
+  width: 100%;
+}
+
+.cb-onboarding-security {
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--cb-border-subtle, #F1F5F9);
+  text-align: center;
+  font-size: 0.78rem;
+  color: #94A3B8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+@media (max-width: 480px) {
+  .cb-topbar-brand-name {
+    font-size: 1rem;
+  }
+
+  .cb-google-account-card {
+    padding: 0.75rem 0.85rem;
+    gap: 0.7rem;
+  }
+
+  .cb-google-avatar-img,
+  .cb-google-avatar-fallback {
+    width: 36px;
+    height: 36px;
+  }
+}

@@ -1547,3 +1547,324 @@ body {
     transform: translateX(0);
   }
 }
+
+/* ==========================================================================
+   Dedicated Full-Page A4 Portrait Entity Invoice Print Layout
+   ========================================================================== */
+
+.entity-invoice-print-sheet {
+  display: none;
+}
+
+@page {
+  size: A4 portrait;
+  margin: 12mm 14mm;
+}
+
+@media print {
+  html,
+  body {
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body.has-entity-invoice-open #root {
+    display: none !important;
+  }
+
+  body.has-entity-invoice-open .entity-invoice-print-sheet {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    border: none !important;
+    overflow: visible !important;
+    transform: none !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+    font-size: 11pt !important;
+    line-height: 1.45 !important;
+    color: #0f172a !important;
+  }
+
+  .eip-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+    padding-bottom: 14px !important;
+    margin-bottom: 16px !important;
+    border-bottom: 2px solid #0f172a !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .eip-brand-block {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+  }
+
+  .eip-brand-logo {
+    width: 48px !important;
+    height: 48px !important;
+    object-fit: contain !important;
+    border-radius: 8px !important;
+    border: 1px solid #e2e8f0 !important;
+    padding: 2px !important;
+    background: #ffffff !important;
+  }
+
+  .eip-company-name {
+    font-size: 17pt !important;
+    font-weight: 800 !important;
+    color: #0f172a !important;
+    letter-spacing: -0.02em !important;
+    line-height: 1.15 !important;
+  }
+
+  .eip-company-sub {
+    font-size: 9pt !important;
+    color: #475569 !important;
+    margin-top: 2px !important;
+  }
+
+  .eip-doc-meta {
+    text-align: right !important;
+    font-size: 9.5pt !important;
+    line-height: 1.45 !important;
+  }
+
+  .eip-doc-title {
+    font-size: 12pt !important;
+    font-weight: 800 !important;
+    color: #0f172a !important;
+    letter-spacing: 0.03em !important;
+    margin-bottom: 4px !important;
+  }
+
+  .eip-meta-row {
+    color: #334155 !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+    gap: 6px !important;
+  }
+
+  .eip-status-pill {
+    display: inline-block !important;
+    margin-top: 6px !important;
+    padding: 3px 10px !important;
+    border-radius: 4px !important;
+    border: 1px solid !important;
+    font-size: 8.5pt !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.04em !important;
+  }
+
+  .eip-parties-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 14px !important;
+    margin-bottom: 16px !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .eip-party-card {
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    padding: 10px 12px !important;
+    background: #f8fafc !important;
+  }
+
+  .eip-section-label {
+    font-size: 8pt !important;
+    font-weight: 800 !important;
+    color: #475569 !important;
+    letter-spacing: 0.05em !important;
+    margin-bottom: 4px !important;
+  }
+
+  .eip-party-name {
+    font-size: 11pt !important;
+    font-weight: 800 !important;
+    color: #0f172a !important;
+    margin-bottom: 2px !important;
+  }
+
+  .eip-party-detail {
+    font-size: 9.5pt !important;
+    color: #334155 !important;
+    word-break: break-word !important;
+  }
+
+  .eip-mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  }
+
+  .eip-section {
+    margin-bottom: 16px !important;
+  }
+
+  .eip-breakdown-section {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .eip-section-heading {
+    font-size: 9pt !important;
+    font-weight: 800 !important;
+    color: #0f172a !important;
+    letter-spacing: 0.04em !important;
+    padding-bottom: 5px !important;
+    margin-bottom: 8px !important;
+    border-bottom: 1px solid #cbd5e1 !important;
+  }
+
+  .eip-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 9.5pt !important;
+  }
+
+  .eip-table thead {
+    display: table-header-group !important;
+  }
+
+  .eip-table th {
+    background: #f1f5f9 !important;
+    color: #334155 !important;
+    font-size: 8.5pt !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    padding: 7px 8px !important;
+    border-top: 1px solid #cbd5e1 !important;
+    border-bottom: 1px solid #94a3b8 !important;
+  }
+
+  .eip-table td {
+    padding: 7px 8px !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    vertical-align: top !important;
+  }
+
+  .eip-table tr {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .eip-table tfoot td {
+    background: #f8fafc !important;
+    border-top: 1.5px solid #94a3b8 !important;
+    border-bottom: 1.5px solid #94a3b8 !important;
+    padding: 8px !important;
+  }
+
+  .eip-receipt-meta-bar {
+    display: flex !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    flex-wrap: wrap !important;
+    margin-top: 8px !important;
+    padding: 8px 10px !important;
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 6px !important;
+    font-size: 9pt !important;
+  }
+
+  .eip-summary-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    border: 1px solid #cbd5e1 !important;
+    font-size: 10pt !important;
+  }
+
+  .eip-summary-table td {
+    padding: 8px 12px !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+  }
+
+  .eip-summary-label {
+    color: #1e293b !important;
+    font-weight: 600 !important;
+  }
+
+  .eip-summary-value {
+    text-align: right !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+    white-space: nowrap !important;
+  }
+
+  .eip-row-highlight-green {
+    background: #f0fdf4 !important;
+  }
+
+  .eip-row-deduction {
+    background: #fef2f2 !important;
+  }
+
+  .eip-row-total {
+    background: #ecfdf5 !important;
+    border-top: 1.5px solid #16a34a !important;
+    border-bottom: 1.5px solid #16a34a !important;
+    font-size: 11pt !important;
+  }
+
+  .eip-row-total .eip-summary-label,
+  .eip-row-total .eip-summary-value {
+    font-weight: 800 !important;
+    font-size: 11pt !important;
+  }
+
+  .eip-row-balance {
+    background: #fffbeb !important;
+  }
+
+  .eip-order-ref-box {
+    margin-top: 10px !important;
+    padding: 9px 12px !important;
+    border: 1px dashed #94a3b8 !important;
+    border-radius: 6px !important;
+    background: #f8fafc !important;
+    font-size: 9pt !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .eip-order-ref-title {
+    font-weight: 800 !important;
+    color: #334155 !important;
+    margin-bottom: 5px !important;
+  }
+
+  .eip-order-ref-grid {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 10px 24px !important;
+    color: #475569 !important;
+  }
+
+  .eip-footer {
+    margin-top: 18px !important;
+    padding-top: 10px !important;
+    border-top: 1px solid #cbd5e1 !important;
+    text-align: center !important;
+    font-size: 8.5pt !important;
+    color: #64748b !important;
+    line-height: 1.45 !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+}

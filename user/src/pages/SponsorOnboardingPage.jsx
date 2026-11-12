@@ -6,9 +6,11 @@ import {
   AlertCircle,
   Loader2,
   ArrowRight,
-  LogOut,
-  HelpCircle,
+  LogIn,
   Shield,
+  ShieldCheck,
+  Briefcase,
+  Star,
   Sparkles,
 } from 'lucide-react';
 import { useBranding } from '../utils/branding';
@@ -129,387 +131,299 @@ export default function SponsorOnboardingPage({ user, onComplete, onLogout }) {
     }
   };
 
+  const handleGoToLogin = () => {
+    if (onLogout) {
+      onLogout();
+    } else if (typeof window !== 'undefined') {
+      window.location.assign('/login');
+    }
+  };
+
   return (
-    <div className="cb-auth-page" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {/* Top Navbar */}
+    <div className="cb-auth-page">
+      {/* 1. Top Navigation Bar (Matches Login Page Topbar) */}
       <header className="cb-auth-topbar">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <div className="cb-topbar-brand">
           {logoUrl ? (
             <img
               src={logoUrl}
               alt={appName}
-              style={{ width: '40px', height: '40px', borderRadius: '12px', objectFit: 'contain' }}
+              className="cb-topbar-brand-logo"
               onError={(e) => { e.target.style.display = 'none'; }}
             />
           ) : (
-            <div
-              style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '12px',
-                background: 'linear-gradient(135deg, #0F4C81 0%, #1e3a5f 100%)',
-                color: '#ffffff',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 4px 12px rgba(15, 76, 129, 0.2)',
-              }}
-            >
-              <Building2 size={22} />
+            <div className="cb-topbar-brand-badge">
+              <Building2 size={20} />
             </div>
           )}
-          <span style={{ fontFamily: 'Poppins, sans-serif', fontSize: '1.25rem', fontWeight: 900, color: '#0F4C81', letterSpacing: '-0.03em' }}>
+          <span className="cb-topbar-brand-name">
             {appName}
           </span>
         </div>
 
-        {onLogout && (
-          <button
-            type="button"
-            onClick={onLogout}
-            className="cb-auth-back-btn"
-            title="Log out and sign in with a different account"
-          >
-            <LogOut size={16} />
-            <span>Switch Account</span>
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={handleGoToLogin}
+          className="cb-auth-back-btn cb-auth-login-nav-btn"
+          title="Go to Partner Login Page"
+        >
+          <LogIn size={16} />
+          <span>Go to Login</span>
+        </button>
       </header>
 
-      {/* Main Centered Onboarding Card */}
-      <main className="cb-auth-main" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem 1rem' }}>
-        <div
-          className="cb-auth-container"
-          style={{
-            maxWidth: '480px',
-            width: '100%',
-            background: '#ffffff',
-            borderRadius: '24px',
-            padding: '2.5rem 2rem',
-            boxShadow: '0 20px 45px -10px rgba(15, 76, 129, 0.1)',
-            border: '1px solid #E2E8F0',
-          }}
-        >
-          {/* Progress / Step Badge */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                fontSize: '0.75rem',
-                fontWeight: 700,
-                color: '#0F4C81',
-                background: '#e8f1f8',
-                padding: '0.35rem 0.85rem',
-                borderRadius: '999px',
-                textTransform: 'uppercase',
-                letterSpacing: '0.04em',
-              }}
-            >
-              <Sparkles size={13} style={{ color: '#FF7A00' }} />
-              Account Setup
-            </span>
+      {/* 2. Main Auth Container (Matches Login Page Split Showcase & Form Panel) */}
+      <main className="cb-auth-main">
+        <div className="cb-auth-container">
+
+          {/* Left Column: Corporate Showcase (Desktop >= 1025px) */}
+          <div className="cb-auth-showcase">
+            <div>
+              <div className="cb-showcase-badge">
+                <Sparkles size={13} />
+                <span>Google Account Connected • Final Step</span>
+              </div>
+
+              <h2 className="cb-showcase-title">
+                Complete Your <span className="text-orange">Partner Setup</span>
+              </h2>
+
+              <p className="cb-showcase-desc">
+                Connect with your referrer to unlock network mentorship and team placement, or skip this step to access your business dashboard immediately.
+              </p>
+
+              <div className="cb-showcase-features">
+                <div className="cb-showcase-feature-item">
+                  <div className="cb-showcase-feature-icon">
+                    <Briefcase size={18} />
+                  </div>
+                  <div className="cb-showcase-feature-text">
+                    <h4>Instant Partner Activation</h4>
+                    <p>Your partner portal, referral code, and income tracking activate as soon as you proceed.</p>
+                  </div>
+                </div>
+
+                <div className="cb-showcase-feature-item">
+                  <div className="cb-showcase-feature-icon">
+                    <Users size={18} />
+                  </div>
+                  <div className="cb-showcase-feature-text">
+                    <h4>Verified Sponsor Connection</h4>
+                    <p>Enter a valid Sponsor ID to link your account directly under your upline team leader.</p>
+                  </div>
+                </div>
+
+                <div className="cb-showcase-feature-item">
+                  <div className="cb-showcase-feature-icon">
+                    <ShieldCheck size={18} />
+                  </div>
+                  <div className="cb-showcase-feature-text">
+                    <h4>Flexible Onboarding</h4>
+                    <p>Don&apos;t have a Sponsor ID right now? Click &quot;Skip for now&quot; anytime to continue safely.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="cb-showcase-testimonial">
+              <div className="cb-testimonial-stars">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} size={14} fill="#FF7A00" color="#FF7A00" />
+                ))}
+              </div>
+              <p className="cb-testimonial-quote">
+                &quot;{appName} made our partner onboarding effortless with instant Google setup and transparent network tracking.&quot;
+              </p>
+              <div className="cb-testimonial-author">
+                <div className="cb-author-avatar">R</div>
+                <div className="cb-author-info">
+                  <span className="cb-author-name">Rajesh Sharma</span>
+                  <span className="cb-author-role">Enterprise IT Solutions Partner</span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Heading & Subtitle */}
-          <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
-            <h1
-              style={{
-                fontSize: '1.65rem',
-                fontWeight: 800,
-                color: '#0F4C81',
-                margin: '0 0 0.5rem 0',
-                letterSpacing: '-0.02em',
-              }}
-            >
-              Complete Your Registration
-            </h1>
-            <p
-              style={{
-                fontSize: '0.92rem',
-                color: '#64748B',
-                margin: 0,
-                lineHeight: 1.5,
-              }}
-            >
-              Enter your Sponsor ID to continue. You can also skip this step.
-            </p>
-          </div>
+          {/* Right Column: Onboarding Form Panel */}
+          <div className="cb-auth-form-panel">
 
-          {/* Signed-in Google User Banner */}
-          {user?.email && (
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.75rem',
-                padding: '0.75rem 1rem',
-                borderRadius: '12px',
-                background: '#F8FAFC',
-                border: '1px solid #E2E8F0',
-                marginBottom: '1.75rem',
-              }}
-            >
-              {(user.avatar_url || user.avatar) ? (
+            {/* Brand Logo Header (Identical to LoginForm) */}
+            <div className="cb-auth-brand-header">
+              <div className="cb-auth-logo-badge" style={{ background: 'transparent', padding: 0 }}>
                 <img
-                  src={user.avatar_url || user.avatar}
-                  alt={user.name || 'User'}
-                  style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }}
+                  src={logoUrl || '/logo.png'}
+                  alt={appName}
+                  style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'contain' }}
+                  onError={(e) => { e.target.src = '/logo.png'; }}
                 />
-              ) : (
-                <div
-                  style={{
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '50%',
-                    background: '#0F4C81',
-                    color: '#ffffff',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '0.85rem',
-                    fontWeight: 700,
-                  }}
-                >
-                  {(user.name || user.email || 'U').charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <div className="cb-auth-logo-text-title">
+                  {appName}
                 </div>
-              )}
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#1E293B', truncate: true }}>
-                  {user.name || 'Google Partner'}
-                </div>
-                <div style={{ fontSize: '0.78rem', color: '#64748B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {user.email}
-                </div>
+                <span className="cb-auth-logo-text-sub">
+                  Business Promoter Network
+                </span>
               </div>
             </div>
-          )}
 
-          {/* Form */}
-          <form onSubmit={handleNext}>
-            <div style={{ marginBottom: '1.25rem' }}>
-              <label
-                htmlFor="sponsorIdInput"
-                style={{
-                  display: 'block',
-                  fontSize: '0.86rem',
-                  fontWeight: 700,
-                  color: '#1E293B',
-                  marginBottom: '0.45rem',
-                }}
-              >
-                Sponsor ID
-              </label>
+            {/* Step Badge */}
+            <div className="cb-onboarding-badge">
+              <Sparkles size={13} style={{ color: '#FF7A00' }} />
+              <span>Account Setup</span>
+            </div>
 
-              <div style={{ position: 'relative' }}>
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: '14px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    color: '#94A3B8',
-                    display: 'flex',
-                    alignItems: 'center',
-                    pointerEvents: 'none',
-                  }}
-                >
-                  <Users size={18} />
-                </div>
+            {/* Heading & Subtitle */}
+            <div className="cb-form-header">
+              <h1 className="cb-form-title">Complete Your Registration</h1>
+              <p className="cb-form-subtitle">
+                Enter your Sponsor ID to continue. You can also skip this step.
+              </p>
+            </div>
 
-                <input
-                  id="sponsorIdInput"
-                  type="text"
-                  value={sponsorId}
-                  onChange={(e) => {
-                    setSponsorId(e.target.value.toUpperCase());
-                    setErrorMessage('');
-                  }}
-                  placeholder="e.g. CB100001"
-                  autoFocus
-                  disabled={submittingNext || submittingSkip}
-                  style={{
-                    width: '100%',
-                    boxSizing: 'border-box',
-                    padding: '0.85rem 2.8rem 0.85rem 2.75rem',
-                    borderRadius: '12px',
-                    border: errorMessage ? '1.5px solid #EF4444' : sponsorStatus ? '1.5px solid #10B981' : '1px solid #CBD5E1',
-                    fontSize: '0.95rem',
-                    fontWeight: 600,
-                    letterSpacing: '0.04em',
-                    outline: 'none',
-                    transition: 'border-color 0.2s',
-                    background: '#ffffff',
-                  }}
-                />
-
-                <div
-                  style={{
-                    position: 'absolute',
-                    right: '12px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    display: 'flex',
-                    alignItems: 'center',
-                  }}
-                >
-                  {verifyingSponsor && <Loader2 size={18} className="cb-spin" style={{ color: '#0F4C81' }} />}
-                  {!verifyingSponsor && sponsorStatus && <CheckCircle2 size={18} style={{ color: '#10B981' }} />}
+            {/* Separate Google Authenticated Account Banner */}
+            {user?.email && (
+              <div className="cb-google-account-card">
+                {(user.avatar_url || user.avatar) ? (
+                  <img
+                    src={user.avatar_url || user.avatar}
+                    alt={user.name || 'User'}
+                    className="cb-google-avatar-img"
+                  />
+                ) : (
+                  <div className="cb-google-avatar-fallback">
+                    {(user.name || user.email || 'U').charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <div className="cb-google-account-meta">
+                  <div className="cb-google-account-top">
+                    <span className="cb-google-account-name">
+                      {user.name || 'Google Partner'}
+                    </span>
+                    <span className="cb-google-verified-pill">
+                      Google Verified
+                    </span>
+                  </div>
+                  <div className="cb-google-account-email" title={user.email}>
+                    {user.email}
+                  </div>
                 </div>
               </div>
+            )}
 
-              {/* Verified Sponsor Name Badge */}
-              {sponsorStatus && (
-                <div
-                  style={{
-                    marginTop: '0.5rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.4rem',
-                    padding: '0.45rem 0.75rem',
-                    borderRadius: '8px',
-                    background: '#ECFDF5',
-                    border: '1px solid #A7F3D0',
-                    fontSize: '0.82rem',
-                    color: '#065F46',
-                    fontWeight: 600,
-                  }}
-                >
-                  <CheckCircle2 size={15} style={{ color: '#059669', flexShrink: 0 }} />
-                  <span>
-                    Verified Sponsor: <strong>{sponsorStatus.name}</strong> ({sponsorStatus.user_code})
+            {/* Sponsor ID Form */}
+            <form onSubmit={handleNext} noValidate>
+              <div className="cb-form-group">
+                <label htmlFor="sponsorIdInput" className="cb-input-label">
+                  <span>Sponsor ID</span>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748B' }}>
+                    {verifyingSponsor ? 'Verifying...' : 'Optional'}
                   </span>
-                </div>
-              )}
+                </label>
 
-              {/* Inline Validation Error Message */}
-              {errorMessage && (
-                <div
-                  style={{
-                    marginTop: '0.5rem',
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    gap: '0.4rem',
-                    padding: '0.55rem 0.75rem',
-                    borderRadius: '8px',
-                    background: '#FEF2F2',
-                    border: '1px solid #FECACA',
-                    fontSize: '0.82rem',
-                    color: '#B91C1C',
-                    fontWeight: 600,
-                    lineHeight: 1.4,
-                  }}
+                <div className="cb-input-wrapper">
+                  <span className="cb-input-icon">
+                    <Users size={18} />
+                  </span>
+
+                  <input
+                    id="sponsorIdInput"
+                    type="text"
+                    value={sponsorId}
+                    onChange={(e) => {
+                      setSponsorId(e.target.value.toUpperCase());
+                      setErrorMessage('');
+                    }}
+                    placeholder="e.g. CB100001"
+                    autoFocus
+                    autoComplete="off"
+                    disabled={submittingNext || submittingSkip}
+                    className={`cb-input-field has-status-icon ${
+                      errorMessage ? 'has-error' : sponsorStatus ? 'has-success' : ''
+                    }`}
+                    style={{ fontWeight: 600, letterSpacing: '0.03em' }}
+                  />
+
+                  <div className="cb-input-status-icon">
+                    {verifyingSponsor && (
+                      <Loader2 size={18} className="cb-spin" style={{ color: '#0F4C81' }} />
+                    )}
+                    {!verifyingSponsor && sponsorStatus && (
+                      <CheckCircle2 size={18} style={{ color: '#10B981' }} />
+                    )}
+                  </div>
+                </div>
+
+                {/* Verified Sponsor Confirmation Badge */}
+                {sponsorStatus && (
+                  <div className="cb-sponsor-badge-success">
+                    <CheckCircle2 size={16} style={{ color: '#059669', flexShrink: 0 }} />
+                    <span>
+                      Verified Sponsor: <strong>{sponsorStatus.name}</strong> ({sponsorStatus.user_code})
+                    </span>
+                  </div>
+                )}
+
+                {/* Inline Validation Error Message */}
+                {errorMessage && (
+                  <div className="cb-sponsor-badge-error">
+                    <AlertCircle size={16} style={{ color: '#DC2626', flexShrink: 0 }} />
+                    <span>{errorMessage}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="cb-onboarding-actions">
+                <button
+                  type="submit"
+                  className="cb-submit-btn"
+                  disabled={submittingNext || submittingSkip}
                 >
-                  <AlertCircle size={16} style={{ color: '#DC2626', flexShrink: 0, marginTop: '2px' }} />
-                  <span>{errorMessage}</span>
-                </div>
-              )}
+                  {submittingNext ? (
+                    <>
+                      <Loader2 size={18} className="cb-spin" />
+                      <span>Verifying Sponsor...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Next</span>
+                      <ArrowRight size={18} />
+                    </>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleSkip}
+                  className="cb-btn-ghost"
+                  disabled={submittingNext || submittingSkip}
+                >
+                  {submittingSkip ? (
+                    <>
+                      <Loader2 size={16} className="cb-spin" />
+                      <span>Skipping...</span>
+                    </>
+                  ) : (
+                    <span>Skip for now</span>
+                  )}
+                </button>
+              </div>
+            </form>
+
+            {/* Security Note */}
+            <div className="cb-onboarding-security">
+              <Shield size={14} style={{ color: '#0F4C81', flexShrink: 0 }} />
+              <span>Secure 256-bit encrypted partner registration</span>
             </div>
-
-            {/* Action Buttons */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '1.75rem' }}>
-              {/* Primary: Next */}
-              <button
-                type="submit"
-                disabled={submittingNext || submittingSkip}
-                style={{
-                  width: '100%',
-                  padding: '0.9rem',
-                  borderRadius: '12px',
-                  border: 'none',
-                  background: 'linear-gradient(135deg, #0F4C81 0%, #1e3a5f 100%)',
-                  color: '#ffffff',
-                  fontSize: '0.98rem',
-                  fontWeight: 700,
-                  cursor: submittingNext || submittingSkip ? 'not-allowed' : 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.5rem',
-                  boxShadow: '0 4px 14px rgba(15, 76, 129, 0.25)',
-                  opacity: submittingNext || submittingSkip ? 0.7 : 1,
-                  transition: 'transform 0.15s ease, box-shadow 0.15s ease',
-                }}
-              >
-                {submittingNext ? (
-                  <>
-                    <Loader2 size={18} className="cb-spin" />
-                    <span>Verifying Sponsor...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Next</span>
-                    <ArrowRight size={18} />
-                  </>
-                )}
-              </button>
-
-              {/* Secondary: Skip for now */}
-              <button
-                type="button"
-                onClick={handleSkip}
-                disabled={submittingNext || submittingSkip}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  borderRadius: '12px',
-                  border: '1px solid #CBD5E1',
-                  background: '#F8FAFC',
-                  color: '#475569',
-                  fontSize: '0.9rem',
-                  fontWeight: 600,
-                  cursor: submittingNext || submittingSkip ? 'not-allowed' : 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'background 0.15s ease, border-color 0.15s ease',
-                }}
-                onMouseOver={(e) => {
-                  if (!submittingNext && !submittingSkip) {
-                    e.currentTarget.style.background = '#E2E8F0';
-                    e.currentTarget.style.borderColor = '#94A3B8';
-                  }
-                }}
-                onMouseOut={(e) => {
-                  if (!submittingNext && !submittingSkip) {
-                    e.currentTarget.style.background = '#F8FAFC';
-                    e.currentTarget.style.borderColor = '#CBD5E1';
-                  }
-                }}
-              >
-                {submittingSkip ? (
-                  <>
-                    <Loader2 size={16} className="cb-spin" style={{ marginRight: '0.4rem' }} />
-                    <span>Skipping...</span>
-                  </>
-                ) : (
-                  <span>Skip for now</span>
-                )}
-              </button>
-            </div>
-          </form>
-
-          {/* Footer note */}
-          <div
-            style={{
-              marginTop: '1.75rem',
-              paddingTop: '1.25rem',
-              borderTop: '1px solid #F1F5F9',
-              textAlign: 'center',
-              fontSize: '0.78rem',
-              color: '#94A3B8',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.4rem',
-            }}
-          >
-            <Shield size={14} style={{ color: '#0F4C81' }} />
-            <span>Secure 256-bit encrypted partner registration</span>
           </div>
         </div>
       </main>
+
+      {/* 3. Bottom Legal Footer (Matches Login Page Footer) */}
+      <footer className="cb-auth-bottom-footer">
+        <span>© {new Date().getFullYear()} {appName} Pvt. Ltd. All rights reserved.</span>
+      </footer>
     </div>
   );
 }

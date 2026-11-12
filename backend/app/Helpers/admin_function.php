@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\CommissionSetting;
 use App\Models\DirectIncome;
 use App\Models\LevelIncome;
 use App\Models\User;
@@ -63,7 +64,7 @@ function directIncome($sponsorid, $memberid, $amount, $dumpAmount = 0)
     return $direct;
 }
 
-function levelIncome($buyerUserCode, $levelIncomePool, $dumpAmount = 0)
+function levelIncome($buyerUserCode, $levelIncomePool, $dumpAmount = 0, ?array $perLevelAmounts = null)
 {
     $levelIncomePool = round((float) $levelIncomePool, 2);
     if ($levelIncomePool <= 0 || empty($buyerUserCode)) {
@@ -79,21 +80,36 @@ function levelIncome($buyerUserCode, $levelIncomePool, $dumpAmount = 0)
         return [];
     }
 
-    // 2. Level percentages: Level 2 = 40%, Level 3 = 30%, Level 4 = 20%, Level 5 = 10%
-    $percentages = [
-        2 => 0.40,
-        3 => 0.30,
-        4 => 0.20,
-        5 => 0.10,
-    ];
+    // 2. Resolve per-level payout amounts dynamically from the active Global Commission Settings snapshot
+    if ($perLevelAmounts === null) {
+        $configSnapshot = CommissionSetting::getValidatedGlobalSnapshot();
+        $totalLevelPercent = (float) $configSnapshot['level_total_percent'];
+        if ($totalLevelPercent <= 0) {
+            return [];
+        }
+
+        $perLevelAmounts = [];
+        foreach ($configSnapshot['levels'] as $lvl) {
+            $lvlNum = (int) $lvl['level'];
+            $lvlPct = (float) $lvl['percent'];
+            $perLevelAmounts[$lvlNum] = $lvlPct > 0
+                ? round($levelIncomePool * ($lvlPct / $totalLevelPercent), 2)
+                : 0.0;
+        }
+    }
+
+    $maxLevel = !empty($perLevelAmounts) ? (int) max(array_keys($perLevelAmounts)) : 0;
+    if ($maxLevel <= 0) {
+        return [];
+    }
 
     $distributed = [];
     $currSponsorCode = $buyer->sponsor_id;
 
-    // 3. For loop through upline levels 1 to 5
-    for ($level = 1; $level <= 5; $level++) {
+    // 3. Walk dynamically across all configured upline levels (1..N)
+    for ($level = 1; $level <= $maxLevel; $level++) {
         // Stop if sponsor is Root, empty, or null
-        if (empty($currSponsorCode) || strtolower(trim((string) $currSponsorCode)) === 'Root') {
+        if (empty($currSponsorCode) || strtolower(trim((string) $currSponsorCode)) === 'root') {
             break;
         }
 
@@ -106,41 +122,37 @@ function levelIncome($buyerUserCode, $levelIncomePool, $dumpAmount = 0)
             break;
         }
 
-        // Level 1 receives Direct Income, NOT Level Income (Level 1 skipped)
-        if ($level >= 2 && $level <= 5) {
-            $rate = $percentages[$level];
-            $incomeAmount = round($levelIncomePool * $rate, 2);
+        $incomeAmount = round((float) ($perLevelAmounts[$level] ?? 0.0), 2);
 
-            if ($incomeAmount > 0) {
-                // Save record in level_incomes table
-                $record = new LevelIncome();
-                $record->user_code = $upline->user_code;
-                $record->level_id = $buyer->user_code ?: (string) $buyerUserCode;
-                $record->level = $level;
-                $record->total_amount = $incomeAmount;
-                $record->paid_amount = $incomeAmount;
-                $record->balance_amount = 0.00;
-                $record->dump_amount = 0.00; // Bug 2 Fix: Level incomes must not replicate order dump amount
-                $record->save();
+        if ($incomeAmount > 0) {
+            // Save record in level_incomes table
+            $record = new LevelIncome();
+            $record->user_code = $upline->user_code;
+            $record->level_id = $buyer->user_code ?: (string) $buyerUserCode;
+            $record->level = $level;
+            $record->total_amount = $incomeAmount;
+            $record->paid_amount = $incomeAmount;
+            $record->balance_amount = 0.00;
+            $record->dump_amount = 0.00; // Bug 2 Fix: Level incomes must not replicate order dump amount
+            $record->save();
 
-                // Update recipient wallet balance
-                $oldWallet = (float) $upline->commission_balance;
-                $newWallet = round($oldWallet + $incomeAmount, 2);
-                $upline->commission_balance = $newWallet;
-                $upline->save();
+            // Update recipient wallet balance
+            $oldWallet = (float) $upline->commission_balance;
+            $newWallet = round($oldWallet + $incomeAmount, 2);
+            $upline->commission_balance = $newWallet;
+            $upline->save();
 
-                // Record in wallet_transfers
-                walletTransfer(
-                    $upline->user_code,
-                    $incomeAmount,
-                    'credit',
-                    $newWallet,
-                    'Level Income',
-                    "Level {$level} Income credited from member {$buyer->user_code}. Record #{$record->id}"
-                );
+            // Record in wallet_transfers
+            walletTransfer(
+                $upline->user_code,
+                $incomeAmount,
+                'credit',
+                $newWallet,
+                'Level Income',
+                "Level {$level} Income credited from member {$buyer->user_code}. Record #{$record->id}"
+            );
 
-                $distributed[] = $record;
-            }
+            $distributed[] = $record;
         }
 
         // Move to next sponsor in upline

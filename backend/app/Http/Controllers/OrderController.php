@@ -9,8 +9,8 @@ use App\Models\Admin;
 use App\Models\Product;
 use App\Models\Service;
 use App\Models\BusinessEntity;
+use App\Models\CommissionSetting;
 use App\Models\FreelancerEntity;
-use App\Models\EntityCommissionSetting;
 use Laravel\Sanctum\PersonalAccessToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -404,17 +404,7 @@ class OrderController extends Controller
             ], 200);
         }
 
-        $commissionConfig = EntityCommissionSetting::resolveForEntity(
-            $finalEntityType,
-            $finalEntityName,
-            $finalEntityId ? (int) $finalEntityId : null
-        );
-
-        $directPercent = (float) $commissionConfig['direct_percent'];
-        $levelsTotalPercent = (float) $commissionConfig['network_levels_total'];
-        $totalCommissionPercent = (float) $commissionConfig['total_commission_percent'];
-
-        $adminCommissionPercent = (float) ($catalogItem?->admin_commission_percent ?? $request->input('admin_commission_percent') ?? $request->input('adminCommissionPercent') ?? $totalCommissionPercent);
+        $adminCommissionPercent = (float) ($catalogItem?->admin_commission_percent ?? $request->input('admin_commission_percent') ?? $request->input('adminCommissionPercent') ?? 15.0);
         if ($adminCommissionPercent <= 0) {
             $adminCommissionPercent = 15.0;
         }
@@ -425,7 +415,7 @@ class OrderController extends Controller
                 'message' => "Advance payment (₹" . number_format($advancePayment, 2) . ") cannot exceed total project amount of ₹" . number_format($grossAmount, 2) . ".",
             ], 422);
         }
-        
+
         // 1. Overall Order-Level Expected Admin Commission (Order Gross Amount * Commission % / 100)
         $expectedOrderAdminCommission = round(($grossAmount * $adminCommissionPercent) / 100, 2);
 
@@ -433,8 +423,16 @@ class OrderController extends Controller
         $advanceAdminCommissionCut = round(($advancePayment * $adminCommissionPercent) / 100, 2);
         $netEntityPayout = round($advancePayment - $advanceAdminCommissionCut, 2);
 
-        $directCommission = round(($advancePayment * $directPercent) / 100, 2);
-        $levelCommissionsTotal = round(($advancePayment * $levelsTotalPercent) / 100, 2);
+        // Estimate Direct/Level shares from active Global Commission Settings without entity scoping
+        $directCommission = 0.0;
+        $levelCommissionsTotal = 0.0;
+        try {
+            $globalConfig = CommissionSetting::getValidatedGlobalSnapshot();
+            $directCommission = round(($advanceAdminCommissionCut * $globalConfig['direct_percent']) / 100, 2);
+            $levelCommissionsTotal = round(($advanceAdminCommissionCut * $globalConfig['level_total_percent']) / 100, 2);
+        } catch (\Throwable $e) {
+            // Defer cleanly; authoritative income allocation reads validated global config
+        }
 
         $invoiceNumber = $request->input('invoice_number') ?? $request->input('invoiceNumber') ?? ('INV-' . date('Y') . '-' . rand(10000, 99999));
 
@@ -634,17 +632,6 @@ class OrderController extends Controller
         }
         $adminCommissionCut = round(($amount * $adminCommissionPercent) / 100, 2);
         $netEntityAmount = round($amount - $adminCommissionCut, 2);
-
-        $commissionConfig = EntityCommissionSetting::resolveForEntity(
-            $order->entity_type,
-            $order->entity_name,
-            $order->entity_id ? (int) $order->entity_id : null
-        );
-
-        $directPercent = (float) $commissionConfig['direct_percent'];
-        $levelsTotalPercent = (float) $commissionConfig['network_levels_total'];
-        $directCommission = round(($amount * $directPercent) / 100, 2);
-        $levelCommissionsTotal = round(($amount * $levelsTotalPercent) / 100, 2);
 
         $paymentMethod = $request->input('payment_method') ?? $request->input('paymentMethod') ?? 'UPI / PhonePe';
         $referenceNo = $request->input('reference_no') ?? $request->input('referenceNo') ?? ('UTR-' . rand(100000, 999990));

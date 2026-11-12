@@ -145,13 +145,6 @@ function AdminSidebar({ collapsed, setCollapsed, onLogout, currentAdmin }) {
               >
                 Register Freelance
               </NavLink>
-              <NavLink
-                to="/entities/commissions"
-                className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
-                style={{ textDecoration: 'none' }}
-              >
-                Entity Commissions
-              </NavLink>
             </div>
           )}
 
@@ -202,6 +195,13 @@ function AdminSidebar({ collapsed, setCollapsed, onLogout, currentAdmin }) {
                 style={{ textDecoration: 'none' }}
               >
                 Pricing Packages
+              </NavLink>
+              <NavLink
+                to="/products/commission-settings"
+                className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
+                style={{ textDecoration: 'none' }}
+              >
+                Commission Settings
               </NavLink>
             </div>
           )}

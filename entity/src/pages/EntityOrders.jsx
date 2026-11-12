@@ -1,10 +1,14 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { getTodayIndianDateString, formatDate } from '../utils/timezone';
+import { getTodayIndianDateString, formatDate, formatDateTime } from '../utils/timezone';
 import { useNavigate } from 'react-router-dom';
 import { getEntityOrders, reportOrderDump } from '../api/entityService';
+import { useBranding } from '../utils/branding';
+import { computeInvoiceFinancials } from '../utils/invoiceCalculations';
+import EntityInvoicePrintView from '../components/EntityInvoicePrintView';
 
 function EntityOrders() {
   const navigate = useNavigate();
+  const { appName, logoUrl } = useBranding();
   const currentEntity = JSON.parse(localStorage.getItem('entity_user') || 'null');
   const entityName =
     currentEntity?.entity_details?.business_name ||
@@ -22,6 +26,41 @@ function EntityOrders() {
   const [approvalFilter, setApprovalFilter] = useState('all'); // 'all' | 'pending' | 'confirmed'
   const [dateFilter, setDateFilter] = useState('all'); // 'all' | 'today'
   const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [selectedReceiptPaymentId, setSelectedReceiptPaymentId] = useState(null);
+
+  useEffect(() => {
+    if (selectedInvoice) {
+      document.body.classList.add('has-entity-invoice-open');
+    } else {
+      document.body.classList.remove('has-entity-invoice-open');
+      setSelectedReceiptPaymentId(null);
+    }
+    return () => {
+      document.body.classList.remove('has-entity-invoice-open');
+    };
+  }, [selectedInvoice]);
+
+  const handlePrintInvoice = () => {
+    if (!selectedInvoice) return;
+    requestAnimationFrame(() => {
+      const printImages = Array.from(document.querySelectorAll('.entity-invoice-print-sheet img'));
+      const pendingImages = printImages.filter((img) => !img.complete);
+      if (pendingImages.length === 0) {
+        window.print();
+        return;
+      }
+      Promise.all(
+        pendingImages.map(
+          (img) =>
+            new Promise((resolve) => {
+              img.addEventListener('load', resolve, { once: true });
+              img.addEventListener('error', resolve, { once: true });
+              setTimeout(resolve, 1200);
+            })
+        )
+      ).then(() => window.print());
+    });
+  };
 
   // Dump Payment Request State
   const [selectedOrderForDump, setSelectedOrderForDump] = useState(null);
@@ -152,11 +191,17 @@ function EntityOrders() {
   }, [activeOrders]);
 
   const totalAdminCommission = useMemo(() => {
-    return activeOrders.reduce((acc, curr) => acc + (Number(curr.adminCommissionCut ?? curr.admin_commission_cut) || 0), 0);
+    return activeOrders.reduce((acc, curr) => {
+      const fin = computeInvoiceFinancials(curr);
+      return acc + (fin ? fin.adminCommissionCut : 0);
+    }, 0);
   }, [activeOrders]);
 
   const totalNetEarnings = useMemo(() => {
-    return activeOrders.reduce((acc, curr) => acc + (Number(curr.netEntityPayout ?? curr.net_entity_payout) || 0), 0);
+    return activeOrders.reduce((acc, curr) => {
+      const fin = computeInvoiceFinancials(curr);
+      return acc + (fin ? fin.netEntityRealized : 0);
+    }, 0);
   }, [activeOrders]);
 
   const pendingCount = useMemo(() => {
@@ -581,7 +626,10 @@ function EntityOrders() {
                         <div style={{ display: 'inline-flex', gap: '0.4rem', alignItems: 'center' }}>
                           <button
                             type="button"
-                            onClick={() => setSelectedInvoice(sale)}
+                            onClick={() => {
+                              setSelectedReceiptPaymentId(null);
+                              setSelectedInvoice(sale);
+                            }}
                             style={{
                               padding: '0.35rem 0.65rem',
                               background: '#f1f5f9',
@@ -896,201 +944,368 @@ function EntityOrders() {
       })()}
 
       {/* Invoice Viewer Modal */}
-      {selectedInvoice && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(15, 23, 42, 0.75)',
-            backdropFilter: 'blur(5px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 99999,
-            padding: '1rem',
-          }}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              setSelectedInvoice(null);
-            }
-          }}
-        >
-          <div
-            style={{
-              background: '#ffffff',
-              borderRadius: '16px',
-              width: '100%',
-              maxWidth: '620px',
-              maxHeight: '90vh',
-              overflowY: 'auto',
-              padding: '1.75rem',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '2px solid #e2e8f0', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
-              <div>
-                <h3 style={{ margin: '0 0 0.25rem 0', fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>
-                  ORDER DETAILS & TAX INVOICE
-                </h3>
-                <span style={{ fontSize: '0.8rem', color: '#64748b' }}>
-                  Invoice: <strong>{selectedInvoice.invoiceNumber || selectedInvoice.invoice_number || selectedInvoice.id}</strong> | Date: <strong>{selectedInvoice.date || 'N/A'}</strong>
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setSelectedInvoice(null)}
-                style={{ background: 'none', border: 'none', fontSize: '1.25rem', color: '#64748b', cursor: 'pointer' }}
-              >
-                ✕
-              </button>
-            </div>
+      {selectedInvoice && (() => {
+        const invoiceFin = computeInvoiceFinancials(selectedInvoice, selectedReceiptPaymentId);
+        const isReceiptMode = invoiceFin?.mode === 'payment_receipt' && invoiceFin?.selectedPayment;
+        const activeReceipt = invoiceFin?.selectedPayment;
+        const sortedPayments = [...(invoiceFin?.eligiblePayments || [])].sort((a, b) => Number(a.id) - Number(b.id));
+        const approvalStatusVal = (selectedInvoice.approval_status ?? selectedInvoice.approvalStatus ?? 'confirmed').toLowerCase();
 
-            {/* Approval Status Banner inside Modal (Prompt Section 5.C / 5.D / 5.E) */}
-            {(selectedInvoice.approval_status ?? selectedInvoice.approvalStatus ?? 'confirmed').toLowerCase() === 'pending' ? (
+        return (
+          <>
+            <div
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(15, 23, 42, 0.75)',
+                backdropFilter: 'blur(5px)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 99999,
+                padding: '1rem',
+              }}
+              onClick={(e) => {
+                if (e.target === e.currentTarget) {
+                  setSelectedInvoice(null);
+                }
+              }}
+            >
               <div
                 style={{
-                  background: '#fef3c7',
-                  border: '1px solid #fde68a',
-                  borderRadius: '10px',
-                  padding: '0.85rem 1rem',
-                  marginBottom: '1.25rem',
-                  color: '#92400e',
-                  fontSize: '0.825rem',
-                  display: 'flex',
-                  gap: '0.6rem',
-                  alignItems: 'flex-start',
+                  background: '#ffffff',
+                  borderRadius: '16px',
+                  width: '100%',
+                  maxWidth: '720px',
+                  maxHeight: '90vh',
+                  overflowY: 'auto',
+                  padding: '1.75rem',
+                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
                 }}
               >
-                <span style={{ fontSize: '1.2rem', lineHeight: 1 }}>⏳</span>
-                <div>
-                  <div style={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.03em' }}>PENDING ADMIN APPROVAL</div>
-                  <div style={{ marginTop: '0.2rem', lineHeight: 1.45 }}>
-                    Your order is awaiting Admin review. Balance collection and further payment actions will become available after confirmation.
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '2px solid #e2e8f0', paddingBottom: '1rem', marginBottom: '1.25rem', gap: '1rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                    <img
+                      src={logoUrl || '/logo.png'}
+                      alt={appName}
+                      style={{ width: '42px', height: '42px', borderRadius: '8px', objectFit: 'contain', border: '1px solid #e2e8f0', background: '#ffffff' }}
+                      onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                    />
+                    <div>
+                      <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#636B2F', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                        {appName}
+                      </div>
+                      <h3 style={{ margin: '0.1rem 0 0.2rem 0', fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>
+                        {isReceiptMode ? `PAYMENT RECEIPT #RCPT-${activeReceipt.id}` : 'ORDER DETAILS & TAX INVOICE'}
+                      </h3>
+                      <span style={{ fontSize: '0.78rem', color: '#64748b' }}>
+                        Invoice: <strong>{selectedInvoice.invoiceNumber || selectedInvoice.invoice_number || `ORD-${selectedInvoice.id}`}</strong> | Order ID: <strong>#{selectedInvoice.id}</strong> | Date: <strong>{formatDate(selectedInvoice.date || selectedInvoice.created_at)}</strong>
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedInvoice(null)}
+                    style={{ background: 'none', border: 'none', fontSize: '1.25rem', color: '#64748b', cursor: 'pointer', flexShrink: 0 }}
+                    aria-label="Close invoice"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                {/* Approval Status Banner inside Modal */}
+                {approvalStatusVal === 'pending' ? (
+                  <div
+                    style={{
+                      background: '#fef3c7',
+                      border: '1px solid #fde68a',
+                      borderRadius: '10px',
+                      padding: '0.85rem 1rem',
+                      marginBottom: '1.25rem',
+                      color: '#92400e',
+                      fontSize: '0.825rem',
+                      display: 'flex',
+                      gap: '0.6rem',
+                      alignItems: 'flex-start',
+                    }}
+                  >
+                    <span style={{ fontSize: '1.2rem', lineHeight: 1 }}>⏳</span>
+                    <div>
+                      <div style={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.03em' }}>PENDING ADMIN APPROVAL</div>
+                      <div style={{ marginTop: '0.2rem', lineHeight: 1.45 }}>
+                        Your order is awaiting Admin review. Balance collection and further payment actions will become available after confirmation.
+                      </div>
+                    </div>
+                  </div>
+                ) : approvalStatusVal === 'cancelled' ? (
+                  <div
+                    style={{
+                      background: '#fef2f2',
+                      border: '1px solid #fecaca',
+                      borderRadius: '10px',
+                      padding: '0.85rem 1rem',
+                      marginBottom: '1.25rem',
+                      color: '#991b1b',
+                      fontSize: '0.825rem',
+                    }}
+                  >
+                    <div style={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.03em' }}>✕ ORDER CANCELLED BY ADMIN</div>
+                    <div style={{ marginTop: '0.25rem', fontWeight: 600 }}>
+                      Reason: &quot;{selectedInvoice.cancellation_reason || selectedInvoice.cancellationReason || 'No reason specified'}&quot;
+                    </div>
+                    <div style={{ marginTop: '0.35rem', fontSize: '0.75rem', opacity: 0.9 }}>
+                      Balance collection is voided. To view full audit details, visit{' '}
+                      <span
+                        onClick={() => {
+                          setSelectedInvoice(null);
+                          navigate('/entity/orders/cancelled');
+                        }}
+                        style={{ textDecoration: 'underline', fontWeight: 700, cursor: 'pointer' }}
+                      >
+                        Cancelled Orders
+                      </span>.
+                    </div>
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      background: '#f0fdf4',
+                      border: '1px solid #bbf7d0',
+                      borderRadius: '10px',
+                      padding: '0.65rem 1rem',
+                      marginBottom: '1.25rem',
+                      color: '#166534',
+                      fontSize: '0.825rem',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      flexWrap: 'wrap',
+                      gap: '0.5rem',
+                    }}
+                  >
+                    <div>
+                      <span style={{ fontWeight: 800 }}>✓ ORDER CONFIRMED</span>
+                      <span style={{ fontSize: '0.78rem', marginLeft: '0.5rem', color: '#15803d' }}>
+                        (Approved Admin Commission: {invoiceFin.commissionPercent}%)
+                      </span>
+                    </div>
+                    {selectedInvoice.admin_confirmed_at && (
+                      <span style={{ fontSize: '0.72rem', color: '#166534' }}>
+                        Confirmed {formatDate(selectedInvoice.admin_confirmed_at)}
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                {/* Order Summary vs Individual Payment Receipt Selector */}
+                {sortedPayments.length > 0 && (
+                  <div style={{ marginBottom: '1.15rem' }}>
+                    <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', marginBottom: '0.4rem' }}>
+                      Invoice View Mode ({sortedPayments.length} Verified {sortedPayments.length === 1 ? 'Payment' : 'Payments'})
+                    </div>
+                    <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap' }}>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedReceiptPaymentId(null)}
+                        style={{
+                          padding: '0.38rem 0.75rem',
+                          borderRadius: '8px',
+                          border: selectedReceiptPaymentId === null ? '1.5px solid #0f172a' : '1px solid #cbd5e1',
+                          background: selectedReceiptPaymentId === null ? '#0f172a' : '#f8fafc',
+                          color: selectedReceiptPaymentId === null ? '#ffffff' : '#334155',
+                          fontSize: '0.76rem',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Order Summary (Collected: {formatCurrency(invoiceFin.orderCollectedToDate)})
+                      </button>
+                      {sortedPayments.map((p) => {
+                        const isActive = String(selectedReceiptPaymentId) === String(p.id);
+                        return (
+                          <button
+                            key={p.id}
+                            type="button"
+                            onClick={() => setSelectedReceiptPaymentId(p.id)}
+                            style={{
+                              padding: '0.38rem 0.75rem',
+                              borderRadius: '8px',
+                              border: isActive ? '1.5px solid #636B2F' : '1px solid #cbd5e1',
+                              background: isActive ? '#636B2F' : '#f8fafc',
+                              color: isActive ? '#ffffff' : '#334155',
+                              fontSize: '0.76rem',
+                              fontWeight: 700,
+                              cursor: 'pointer',
+                              textTransform: 'capitalize',
+                            }}
+                          >
+                            RCPT-{p.id} ({p.payment_type || p.paymentType || 'Payment'}: {formatCurrency(p.amount)})
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Seller & Customer Details */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', fontSize: '0.82rem', marginBottom: '1.25rem' }}>
+                  <div>
+                    <strong style={{ color: '#475569', display: 'block', marginBottom: '0.2rem' }}>SELLER / ENTITY:</strong>
+                    <div style={{ fontWeight: 700, color: '#0f172a' }}>{selectedInvoice.entityName || selectedInvoice.entity_name || entityName}</div>
+                    <div style={{ color: '#64748b' }}>Authorized Partner Portal</div>
+                  </div>
+                  <div>
+                    <strong style={{ color: '#475569', display: 'block', marginBottom: '0.2rem' }}>BILLED TO:</strong>
+                    <div style={{ fontWeight: 700, color: '#0f172a' }}>{selectedInvoice.customerName || selectedInvoice.customer_name || selectedInvoice.customer}</div>
+                    <div style={{ color: '#2563eb', fontFamily: 'monospace' }}>
+                      Member ID: {selectedInvoice.customer_user_code || selectedInvoice.customerUserCode || selectedInvoice.sponsor || 'N/A'}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ) : (selectedInvoice.approval_status ?? selectedInvoice.approvalStatus ?? '').toLowerCase() === 'cancelled' ? (
-              <div
-                style={{
-                  background: '#fef2f2',
-                  border: '1px solid #fecaca',
-                  borderRadius: '10px',
-                  padding: '0.85rem 1rem',
-                  marginBottom: '1.25rem',
-                  color: '#991b1b',
-                  fontSize: '0.825rem',
-                }}
-              >
-                <div style={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.03em' }}>✕ ORDER CANCELLED BY ADMIN</div>
-                <div style={{ marginTop: '0.25rem', fontWeight: 600 }}>
-                  Reason: "{selectedInvoice.cancellation_reason || selectedInvoice.cancellationReason || 'No reason specified'}"
-                </div>
-                <div style={{ marginTop: '0.35rem', fontSize: '0.75rem', opacity: 0.9 }}>
-                  Balance collection is voided. To view full audit details, visit{' '}
-                  <span
-                    onClick={() => {
-                      setSelectedInvoice(null);
-                      navigate('/entity/orders/cancelled');
-                    }}
-                    style={{ textDecoration: 'underline', fontWeight: 700, cursor: 'pointer' }}
-                  >
-                    Cancelled Orders
-                  </span>.
-                </div>
-              </div>
-            ) : (
-              <div
-                style={{
-                  background: '#f0fdf4',
-                  border: '1px solid #bbf7d0',
-                  borderRadius: '10px',
-                  padding: '0.65rem 1rem',
-                  marginBottom: '1.25rem',
-                  color: '#166534',
-                  fontSize: '0.825rem',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-              >
-                <div>
-                  <span style={{ fontWeight: 800 }}>✓ ORDER CONFIRMED</span>
-                  <span style={{ fontSize: '0.78rem', marginLeft: '0.5rem', color: '#15803d' }}>
-                    (Approved Admin Commission: {selectedInvoice.adminCommissionPercent || selectedInvoice.admin_commission_percent || 15}%)
-                  </span>
-                </div>
-                {selectedInvoice.admin_confirmed_at && (
-                  <span style={{ fontSize: '0.72rem', color: '#166534' }}>
-                    Confirmed {formatDate(selectedInvoice.admin_confirmed_at)}
-                  </span>
+
+                {/* Payment-Specific Metadata (Receipt Mode) */}
+                {isReceiptMode && (
+                  <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '8px', padding: '0.75rem 1rem', marginBottom: '1rem', fontSize: '0.78rem', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', color: '#166534' }}>
+                    <span><strong>Receipt:</strong> RCPT-{activeReceipt.id} ({activeReceipt.payment_type || activeReceipt.paymentType || 'Payment'})</span>
+                    <span><strong>Mode:</strong> {activeReceipt.payment_method || activeReceipt.paymentMethod || 'N/A'}</span>
+                    <span><strong>Ref/UTR:</strong> {activeReceipt.reference_no || activeReceipt.referenceNo || 'N/A'}</span>
+                    <span><strong>Date:</strong> {formatDateTime(activeReceipt.payment_date || activeReceipt.paymentDate || activeReceipt.created_at)}</span>
+                  </div>
                 )}
-              </div>
-            )}
 
-            {/* Seller & Customer Details */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', fontSize: '0.82rem', marginBottom: '1.25rem' }}>
-              <div>
-                <strong style={{ color: '#475569', display: 'block', marginBottom: '0.2rem' }}>SELLER / ENTITY:</strong>
-                <div style={{ fontWeight: 700, color: '#0f172a' }}>{selectedInvoice.entityName || selectedInvoice.entity_name || entityName}</div>
-                <div style={{ color: '#64748b' }}>Authorized Partner Portal</div>
-              </div>
-              <div>
-                <strong style={{ color: '#475569', display: 'block', marginBottom: '0.2rem' }}>BILLED TO:</strong>
-                <div style={{ fontWeight: 700, color: '#0f172a' }}>{selectedInvoice.customerName || selectedInvoice.customer_name || selectedInvoice.customer}</div>
-                <div style={{ color: '#2563eb', fontFamily: 'monospace' }}>
-                  Member ID: {selectedInvoice.customer_user_code || selectedInvoice.customerUserCode || selectedInvoice.sponsor || 'N/A'}
+                {/* Authoritative Payment-Based Financial Breakdown */}
+                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '1rem', marginBottom: '1.25rem', fontSize: '0.82rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', gap: '0.75rem' }}>
+                    <span><strong>Total Order Cost ({selectedInvoice.item}):</strong></span>
+                    <span style={{ fontWeight: 700, color: '#0f172a' }}>{formatCurrency(invoiceFin.totalOrderCost)}</span>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#16a34a', marginBottom: '0.5rem', fontWeight: 700 }}>
+                    <span>
+                      {isReceiptMode
+                        ? `Actual Payment Received (Receipt #RCPT-${activeReceipt.id}):`
+                        : `Amount Collected to Date (${invoiceFin.paymentCount} ${invoiceFin.paymentCount === 1 ? 'payment' : 'payments'}):`}
+                    </span>
+                    <span>{formatCurrency(invoiceFin.actualPaymentAmount)}</span>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#dc2626', marginBottom: '0.5rem', fontWeight: 600 }}>
+                    <span>
+                      Admin Commission Cut ({invoiceFin.commissionPercent}% on {isReceiptMode ? 'This Payment' : 'Collected'} {formatCurrency(invoiceFin.actualPaymentAmount)}):
+                    </span>
+                    <span>-{formatCurrency(invoiceFin.adminCommissionCut)}</span>
+                  </div>
+
+                  <div style={{ borderTop: '1px solid #cbd5e1', paddingTop: '0.5rem', marginBottom: !isReceiptMode ? '0.5rem' : 0, display: 'flex', justifyContent: 'space-between', fontWeight: 800, fontSize: '0.9rem', color: '#166534' }}>
+                    <span>{isReceiptMode ? 'Net Entity Realized (This Payment):' : 'Net Entity Realized (From Collected Payments):'}</span>
+                    <span>{formatCurrency(invoiceFin.netEntityRealized)}</span>
+                  </div>
+
+                  {!isReceiptMode && invoiceFin.approvedDumpAmount > 0 && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', color: '#9a3412', marginBottom: '0.45rem', fontWeight: 600 }}>
+                      <span>Approved Dump Write-Off:</span>
+                      <span>-{formatCurrency(invoiceFin.approvedDumpAmount)}</span>
+                    </div>
+                  )}
+
+                  {!isReceiptMode && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', color: invoiceFin.remainingOrderBalance > 0 ? '#b45309' : '#16a34a', fontWeight: 700 }}>
+                      <span>Remaining Order Balance Due:</span>
+                      <span>{formatCurrency(invoiceFin.remainingOrderBalance)}</span>
+                    </div>
+                  )}
+
+                  {isReceiptMode && (
+                    <div style={{ marginTop: '0.65rem', paddingTop: '0.55rem', borderTop: '1px dashed #cbd5e1', fontSize: '0.75rem', color: '#475569', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+                      <span>Order Cumulative Collected: <strong>{formatCurrency(invoiceFin.orderCollectedToDate)}</strong></span>
+                      <span>Remaining Order Balance: <strong>{formatCurrency(invoiceFin.remainingOrderBalance)}</strong></span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Payment Installments Table (Order Summary Mode) */}
+                {!isReceiptMode && sortedPayments.length > 0 && (
+                  <div style={{ marginBottom: '1.25rem' }}>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', marginBottom: '0.45rem' }}>
+                      Payment Receipts Breakdown ({sortedPayments.length})
+                    </div>
+                    <div style={{ border: '1px solid #e2e8f0', borderRadius: '8px', overflowX: 'auto' }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.76rem' }}>
+                        <thead>
+                          <tr style={{ background: '#f1f5f9', color: '#475569', borderBottom: '1px solid #cbd5e1' }}>
+                            <th style={{ padding: '0.5rem 0.65rem', textAlign: 'left' }}>Receipt</th>
+                            <th style={{ padding: '0.5rem 0.65rem', textAlign: 'left' }}>Type &amp; Ref</th>
+                            <th style={{ padding: '0.5rem 0.65rem', textAlign: 'right' }}>Received</th>
+                            <th style={{ padding: '0.5rem 0.65rem', textAlign: 'right' }}>Admin Cut</th>
+                            <th style={{ padding: '0.5rem 0.65rem', textAlign: 'right' }}>Net Realized</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {sortedPayments.map((p) => {
+                            const amt = Number(p.amount) || 0;
+                            const pct = Number(p.adminCommissionPercent ?? p.admin_commission_percent ?? invoiceFin.commissionPercent);
+                            const cut = Number(p.adminCommissionCut ?? p.admin_commission_cut ?? (amt * pct) / 100);
+                            const net = Number(p.netEntityAmount ?? p.net_entity_amount ?? Math.max(0, amt - cut));
+                            return (
+                              <tr key={p.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                                <td style={{ padding: '0.45rem 0.65rem', fontWeight: 700 }}>
+                                  RCPT-{p.id}
+                                  <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 500 }}>
+                                    {formatDate(p.payment_date || p.paymentDate || p.created_at)}
+                                  </div>
+                                </td>
+                                <td style={{ padding: '0.45rem 0.65rem', textTransform: 'capitalize' }}>
+                                  {p.payment_type || p.paymentType || 'payment'} • {p.payment_method || p.paymentMethod || 'N/A'}
+                                  {(p.reference_no || p.referenceNo) && (
+                                    <div style={{ fontSize: '0.68rem', color: '#64748b', fontFamily: 'monospace' }}>
+                                      {p.reference_no || p.referenceNo}
+                                    </div>
+                                  )}
+                                </td>
+                                <td style={{ padding: '0.45rem 0.65rem', textAlign: 'right', fontWeight: 700 }}>{formatCurrency(amt)}</td>
+                                <td style={{ padding: '0.45rem 0.65rem', textAlign: 'right', color: '#dc2626' }}>-{formatCurrency(cut)} ({pct}%)</td>
+                                <td style={{ padding: '0.45rem 0.65rem', textAlign: 'right', fontWeight: 700, color: '#16a34a' }}>{formatCurrency(net)}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+                  <button
+                    type="button"
+                    onClick={handlePrintInvoice}
+                    style={{ padding: '0.55rem 1rem', background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', borderRadius: '8px', fontWeight: 600, fontSize: '0.82rem', cursor: 'pointer' }}
+                  >
+                    🖨️ Print Invoice
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedInvoice(null)}
+                    style={{ padding: '0.55rem 1rem', background: '#0f172a', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer' }}
+                  >
+                    Close
+                  </button>
                 </div>
               </div>
             </div>
 
-            {/* Item Breakdown */}
-            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '1rem', marginBottom: '1.25rem', fontSize: '0.82rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.45rem' }}>
-                <span><strong>Item / Offering:</strong> {selectedInvoice.item}</span>
-                <span style={{ fontWeight: 700 }}>{formatCurrency(selectedInvoice.grossAmount ?? selectedInvoice.gross_amount)}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#16a34a', marginBottom: '0.45rem', fontWeight: 600 }}>
-                <span>Amount Collected to Date:</span>
-                <span>{formatCurrency(selectedInvoice.advancePayment ?? selectedInvoice.advance_payment)}</span>
-              </div>
-              {Number(selectedInvoice.balanceDue ?? selectedInvoice.balance_due ?? 0) > 0 && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#b45309', marginBottom: '0.45rem', fontWeight: 700 }}>
-                  <span>Remaining Balance Due:</span>
-                  <span>{formatCurrency(selectedInvoice.balanceDue ?? selectedInvoice.balance_due)}</span>
-                </div>
-              )}
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#dc2626', marginBottom: '0.45rem' }}>
-                <span>Admin Commission Cut ({selectedInvoice.adminCommissionPercent || selectedInvoice.admin_commission_percent || 15}%):</span>
-                <span>-{formatCurrency(selectedInvoice.adminCommissionCut ?? selectedInvoice.admin_commission_cut)}</span>
-              </div>
-              <div style={{ borderTop: '1px solid #cbd5e1', paddingTop: '0.5rem', display: 'flex', justifyContent: 'space-between', fontWeight: 800, color: '#16a34a' }}>
-                <span>Net Entity Realized:</span>
-                <span>{formatCurrency(selectedInvoice.netEntityPayout ?? selectedInvoice.net_entity_payout)}</span>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
-              <button
-                type="button"
-                onClick={() => window.print()}
-                style={{ padding: '0.55rem 1rem', background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', borderRadius: '8px', fontWeight: 600, fontSize: '0.82rem', cursor: 'pointer' }}
-              >
-                🖨️ Print Invoice
-              </button>
-              <button
-                type="button"
-                onClick={() => setSelectedInvoice(null)}
-                style={{ padding: '0.55rem 1rem', background: '#0f172a', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer' }}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+            {/* Dedicated Full-Page A4 Portrait Print Sheet (Mounted on document.body via Portal) */}
+            <EntityInvoicePrintView
+              order={selectedInvoice}
+              selectedPaymentId={selectedReceiptPaymentId}
+              entityProfile={currentEntity}
+              fallbackEntityName={entityName}
+            />
+          </>
+        );
+      })()}
     </div>
   );
 }

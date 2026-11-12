@@ -6,7 +6,6 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Service;
 use App\Models\ProductPackage;
-use App\Models\EntityCommissionSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -85,9 +84,8 @@ class ProductCatalogController extends Controller
 
         $ownerType = $request->input('owner_type') ?: 'business';
         $ownerName = $request->input('owner_name') ?: ($request->user()?->business_name ?? $request->user()?->name ?? null);
-        $commissionConfig = EntityCommissionSetting::resolveForEntity($ownerType, $ownerName);
 
-        $adminCommissionPercent = $commissionConfig['total_commission_percent'];
+        $adminCommissionPercent = 15.0;
         if ($request->filled('admin_commission_percent') && is_numeric($request->input('admin_commission_percent'))) {
             $val = (float) $request->input('admin_commission_percent');
             if ($val >= 0 && $val <= 100) {
@@ -151,7 +149,6 @@ class ProductCatalogController extends Controller
 
         $ownerType = $request->input('owner_type') ?: $product->owner_type;
         $ownerName = $request->input('owner_name') ?: $product->owner_name;
-        $commissionConfig = EntityCommissionSetting::resolveForEntity($ownerType, $ownerName);
 
         $adminCommissionPercent = $product->admin_commission_percent;
         if ($request->filled('admin_commission_percent') && is_numeric($request->input('admin_commission_percent'))) {
@@ -159,8 +156,6 @@ class ProductCatalogController extends Controller
             if ($val >= 0 && $val <= 100) {
                 $adminCommissionPercent = $val;
             }
-        } elseif ($commissionConfig['is_custom']) {
-            $adminCommissionPercent = $commissionConfig['total_commission_percent'];
         }
 
         $product->update([
@@ -266,9 +261,8 @@ class ProductCatalogController extends Controller
 
         $ownerType = $request->input('owner_type') ?: 'business';
         $ownerName = $request->input('owner_name') ?: 'ChhotaBusiness Tax Advisory';
-        $commissionConfig = EntityCommissionSetting::resolveForEntity($ownerType, $ownerName);
 
-        $adminCommissionPercent = $commissionConfig['total_commission_percent'];
+        $adminCommissionPercent = 15.0;
         if ($request->filled('admin_commission_percent') && is_numeric($request->input('admin_commission_percent'))) {
             $val = (float) $request->input('admin_commission_percent');
             if ($val >= 0 && $val <= 100) {
@@ -330,7 +324,6 @@ class ProductCatalogController extends Controller
 
         $ownerType = $request->input('owner_type') ?: $service->owner_type;
         $ownerName = $request->input('owner_name') ?: $service->owner_name;
-        $commissionConfig = EntityCommissionSetting::resolveForEntity($ownerType, $ownerName);
 
         $adminCommissionPercent = $service->admin_commission_percent;
         if ($request->filled('admin_commission_percent') && is_numeric($request->input('admin_commission_percent'))) {
@@ -338,8 +331,6 @@ class ProductCatalogController extends Controller
             if ($val >= 0 && $val <= 100) {
                 $adminCommissionPercent = $val;
             }
-        } elseif ($commissionConfig['is_custom']) {
-            $adminCommissionPercent = $commissionConfig['total_commission_percent'];
         }
 
         $service->update([
