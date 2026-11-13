@@ -112,6 +112,11 @@ class User extends Authenticatable
         return $this->hasMany(DiamondTransaction::class, 'user_id');
     }
 
+    public function totalLevelIncomes()
+    {
+        return $this->hasMany(TotalLevelIncome::class, 'user_code', 'user_code');
+    }
+
     /**
      * Auto generate unique random MLM user_code on creation
      */

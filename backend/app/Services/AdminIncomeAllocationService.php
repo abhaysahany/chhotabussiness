@@ -271,7 +271,12 @@ class AdminIncomeAllocationService
                     $order->customer_user_code,
                     $split['level_amount'],
                     0.00, // Bug 2 Fix: Never propagate order dump_amount to level income
-                    $split['level_breakdown']
+                    $payment->payment_type ?? 'advance',
+                    $order->id,
+                    $order->invoice_number,
+                    $payment->id,
+                    null,
+                    $split['level_breakdown'] ?? null
                 );
             }
 

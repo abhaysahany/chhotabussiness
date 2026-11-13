@@ -3,6 +3,7 @@
 use App\Models\CommissionSetting;
 use App\Models\DirectIncome;
 use App\Models\LevelIncome;
+use App\Models\TotalLevelIncome;
 use App\Models\User;
 use App\Models\WalletTransfer;
 
@@ -68,12 +69,35 @@ function directIncome($sponsorid, $memberid, $amount, $dumpAmount = 0, $orderId 
     return $direct;
 }
 
-function levelIncome($buyerUserCode, $levelIncomePool, $dumpAmount = 0, ?array $perLevelAmounts = null)
-{
+function levelIncome(
+    $buyerUserCode,
+    $levelIncomePool,
+    $dumpAmount = 0,
+    $paymentType = 'advance',
+    $orderId = null,
+    $invoiceNumber = null,
+    $paymentId = null,
+    $isNewProject = null,
+    ?array $perLevelAmounts = null
+) {
     $levelIncomePool = round((float) $levelIncomePool, 2);
     if ($levelIncomePool <= 0 || empty($buyerUserCode)) {
         return [];
     }
+
+    // Normalize parameters if paymentType is passed as orderId or array
+    if (is_numeric($paymentType) && $orderId === null) {
+        $orderId = (int) $paymentType;
+        $paymentType = 'advance';
+    } elseif (is_array($paymentType)) {
+        $options = $paymentType;
+        $paymentType = $options['payment_type'] ?? 'advance';
+        $orderId = $options['order_id'] ?? $orderId;
+        $invoiceNumber = $options['invoice_number'] ?? $invoiceNumber;
+        $paymentId = $options['payment_id'] ?? $paymentId;
+        $isNewProject = $options['is_new_project'] ?? $isNewProject;
+    }
+    $paymentType = !empty($paymentType) ? (string) $paymentType : 'advance';
 
     // 1. Find the buyer
     $buyer = User::where('user_code', $buyerUserCode)
@@ -128,36 +152,105 @@ function levelIncome($buyerUserCode, $levelIncomePool, $dumpAmount = 0, ?array $
 
         $incomeAmount = round((float) ($perLevelAmounts[$level] ?? 0.0), 2);
 
-        if ($incomeAmount > 0) {
-            // Save record in level_incomes table
-            $record = new LevelIncome();
-            $record->user_code = $upline->user_code;
-            $record->level_id = $buyer->user_code ?: (string) $buyerUserCode;
-            $record->level = $level;
-            $record->total_amount = $incomeAmount;
-            $record->paid_amount = $incomeAmount;
-            $record->balance_amount = 0.00;
-            $record->dump_amount = 0.00; // Bug 2 Fix: Level incomes must not replicate order dump amount
-            $record->save();
+            if ($incomeAmount > 0) {
+                // Rule: If this is the same project, find and update the existing total_level_incomes record.
+                // If it is a new project arriving from an entity, create a new total_level_incomes record.
+                $existingTLI = null;
 
-            // Update recipient wallet balance
-            $oldWallet = (float) $upline->commission_balance;
-            $newWallet = round($oldWallet + $incomeAmount, 2);
-            $upline->commission_balance = $newWallet;
-            $upline->save();
+                if ($isNewProject !== true) {
+                    if ($orderId !== null) {
+                        $existingTLI = TotalLevelIncome::where('order_id', $orderId)
+                            ->where('user_code', $upline->user_code)
+                            ->where('level', $level)
+                            ->first();
+                    }
 
-            // Record in wallet_transfers
-            walletTransfer(
-                $upline->user_code,
-                $incomeAmount,
-                'credit',
-                $newWallet,
-                'Level Income',
-                "Level {$level} Income credited from member {$buyer->user_code}. Record #{$record->id}"
-            );
+                    if (!$existingTLI && $invoiceNumber !== null) {
+                        $existingTLI = TotalLevelIncome::where('invoice_number', $invoiceNumber)
+                            ->where('user_code', $upline->user_code)
+                            ->where('level', $level)
+                            ->first();
+                    }
 
-            $distributed[] = $record;
-        }
+                    // Fallback for same project without order_id: check if balance payment or explicitly not new
+                    if (!$existingTLI && (strtolower(trim($paymentType)) === 'balance' || $isNewProject === false)) {
+                        $existingTLI = TotalLevelIncome::where('user_code', $upline->user_code)
+                            ->where('level_id', $buyer->user_code ?: (string) $buyerUserCode)
+                            ->where('level', $level)
+                            ->latest('id')
+                            ->first();
+                    }
+                }
+
+                if ($existingTLI) {
+                    // Update existing project's total_level_incomes record
+                    $existingTLI->total_amount = round((float) $existingTLI->total_amount + $incomeAmount, 2);
+                    $existingTLI->paid_amount = round((float) $existingTLI->paid_amount + $incomeAmount, 2);
+                    $existingTLI->payment_type = $paymentType;
+                    if ($orderId !== null && empty($existingTLI->order_id)) {
+                        $existingTLI->order_id = $orderId;
+                    }
+                    if ($invoiceNumber !== null && empty($existingTLI->invoice_number)) {
+                        $existingTLI->invoice_number = $invoiceNumber;
+                    }
+                    $existingTLI->save();
+                    $totalLevelRecord = $existingTLI;
+                } else {
+                    // Create new total_level_incomes record for new project from entity
+                    $totalLevelRecord = new TotalLevelIncome();
+                    if ($orderId !== null) {
+                        $totalLevelRecord->order_id = $orderId;
+                    }
+                    if ($invoiceNumber !== null) {
+                        $totalLevelRecord->invoice_number = $invoiceNumber;
+                    }
+                    $totalLevelRecord->user_code = $upline->user_code;
+                    $totalLevelRecord->level_id = $buyer->user_code ?: (string) $buyerUserCode;
+                    $totalLevelRecord->level = (string) $level;
+                    $totalLevelRecord->payment_type = $paymentType;
+                    $totalLevelRecord->total_amount = $incomeAmount;
+                    $totalLevelRecord->paid_amount = $incomeAmount;
+                    $totalLevelRecord->balance_amount = 0.00;
+                    $totalLevelRecord->dump_amount = 0.00;
+                    $totalLevelRecord->save();
+                }
+
+                // 2. Insert distribution record into level_incomes table with the correct amount
+                $distributionRecord = new LevelIncome();
+                $distributionRecord->user_code = $upline->user_code;
+                $distributionRecord->level_id = $buyer->user_code ?: (string) $buyerUserCode;
+                $distributionRecord->level = $level;
+                $distributionRecord->payment_type = $paymentType;
+                $distributionRecord->amount = $incomeAmount;
+                if ($orderId !== null) {
+                    $distributionRecord->order_id = $orderId;
+                }
+                if ($invoiceNumber !== null) {
+                    $distributionRecord->invoice_number = $invoiceNumber;
+                }
+                if ($paymentId !== null) {
+                    $distributionRecord->payment_id = $paymentId;
+                }
+                $distributionRecord->save();
+
+                // 3. Update recipient wallet balance
+                $oldWallet = (float) $upline->commission_balance;
+                $newWallet = round($oldWallet + $incomeAmount, 2);
+                $upline->commission_balance = $newWallet;
+                $upline->save();
+
+                // 4. Record in wallet_transfers
+                walletTransfer(
+                    $upline->user_code,
+                    $incomeAmount,
+                    'credit',
+                    $newWallet,
+                    'Level Income',
+                    "Level {$level} Income credited from member {$buyer->user_code}. Record #{$totalLevelRecord->id}"
+                );
+
+                $distributed[] = $totalLevelRecord;
+            }
 
         // Move to next sponsor in upline
         $currSponsorCode = $upline->sponsor_id;
