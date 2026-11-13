@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use App\Models\BusinessEntity;
 use App\Models\FreelancerEntity;
@@ -83,224 +85,281 @@ class EntityAuthController extends Controller
     }
 
     /**
-     * Handle login request with entity selection and credentials verification.
+     * Handle entity login request with registered email/login ID and password.
+     * Identifies the associated Entity automatically on the backend.
      */
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|string',
+            'email' => 'required_without:login|nullable|string',
+            'login' => 'required_without:email|nullable|string',
             'password' => 'required|string',
+        ], [
+            'email.required_without' => 'Registered email or entity login ID is required.',
+            'login.required_without' => 'Registered email or entity login ID is required.',
+            'password.required' => 'Password is required.',
         ]);
 
-        if ($validator->fails()) {
+        $rawLogin = trim((string) ($request->input('email') ?? $request->input('login') ?? ''));
+        $rawPassword = (string) $request->input('password');
+
+        if ($validator->fails() || $rawLogin === '' || $rawPassword === '') {
+            $errors = $validator->errors();
+            if ($rawLogin === '' && !$errors->has('email')) {
+                $errors->add('email', 'Registered email or entity login ID is required.');
+            }
+            if ($rawPassword === '' && !$errors->has('password')) {
+                $errors->add('password', 'Password is required.');
+            }
             return response()->json([
                 'success' => false,
                 'status' => 'error',
-                'message' => 'Both entity login ID / email and password are required.',
-                'errors' => $validator->errors(),
+                'message' => $errors->first() ?: 'Both entity login ID / email and password are required.',
+                'errors' => $errors,
             ], 422);
         }
 
-        $loginId = trim($request->input('email'));
-        $password = $request->input('password');
+        // Apply rate limiting (5 attempts per minute per identifier & IP)
+        $loginLower = strtolower($rawLogin);
+        $throttleKey = 'entity_login_' . $loginLower . '|' . $request->ip();
+
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
+            return response()->json([
+                'success' => false,
+                'status' => 'error',
+                'message' => "Too many login attempts. Please try again in {$seconds} seconds.",
+                'error' => "Too many login attempts. Please try again in {$seconds} seconds.",
+                'retry_after' => $seconds,
+            ], 429);
+        }
+
+        $password = $rawPassword;
         $remember = $request->boolean('remember');
 
-        // Extract entity selection
-        $entityKey = $request->input('entity_key') ?? $request->input('entity');
-        $entityType = $request->input('entity_type');
-        $entityId = $request->input('entity_id');
-
-        if ($entityKey && (empty($entityType) || empty($entityId))) {
-            if (str_contains($entityKey, '_')) {
-                [$entityType, $entityId] = explode('_', $entityKey, 2);
+        // Optional scoping filters if provided by caller (never trusted blindly)
+        $suppliedEntityId = $request->input('entity_id');
+        $suppliedEntityType = $request->input('entity_type');
+        $suppliedEntityKey = $request->input('entity_key') ?? $request->input('entity');
+        if ($suppliedEntityKey && (empty($suppliedEntityType) || empty($suppliedEntityId))) {
+            if (str_contains($suppliedEntityKey, '_')) {
+                [$suppliedEntityType, $suppliedEntityId] = explode('_', $suppliedEntityKey, 2);
             }
         }
 
-        // Entity selection is strictly required
-        if (empty($entityType) || empty($entityId)) {
+        // 1. Query candidate Business Entities matching login identifier
+        $businessQuery = BusinessEntity::with('category')
+            ->where(function ($q) use ($loginLower, $rawLogin) {
+                $q->whereRaw('LOWER(TRIM(email)) = ?', [$loginLower])
+                  ->orWhere('phone', $rawLogin)
+                  ->orWhere(function ($sub) use ($loginLower) {
+                      $sub->whereNotNull('registration_no')
+                          ->where('registration_no', '!=', '')
+                          ->whereRaw('LOWER(TRIM(registration_no)) = ?', [$loginLower]);
+                  });
+            });
+
+        // 2. Query candidate Freelancer Entities matching login identifier
+        $freelancerQuery = FreelancerEntity::with('category')
+            ->where(function ($q) use ($loginLower, $rawLogin) {
+                $q->whereRaw('LOWER(TRIM(email)) = ?', [$loginLower])
+                  ->orWhere('phone', $rawLogin);
+            });
+
+        $candidateBusinesses = $businessQuery->get();
+        $candidateFreelancers = $freelancerQuery->get();
+
+        // 3. Authenticate candidates against password hash
+        $authenticatedCandidates = [];
+
+        foreach ($candidateBusinesses as $b) {
+            $pwMatches = !empty($b->password) && Hash::check($password, $b->password);
+            if (!$pwMatches) {
+                $legacyUser = User::where('email', $b->email)->first();
+                if ($legacyUser && !empty($legacyUser->password) && Hash::check($password, $legacyUser->password)) {
+                    $pwMatches = true;
+                    if (empty($b->password)) {
+                        $b->password = $legacyUser->password;
+                        $b->save();
+                    }
+                }
+            }
+            if ($pwMatches) {
+                $authenticatedCandidates[] = [
+                    'type' => 'business',
+                    'entity' => $b,
+                ];
+            }
+        }
+
+        foreach ($candidateFreelancers as $f) {
+            $pwMatches = !empty($f->password) && Hash::check($password, $f->password);
+            if (!$pwMatches) {
+                $legacyUser = User::where('email', $f->email)->first();
+                if ($legacyUser && !empty($legacyUser->password) && Hash::check($password, $legacyUser->password)) {
+                    $pwMatches = true;
+                    if (empty($f->password)) {
+                        $f->password = $legacyUser->password;
+                        $f->save();
+                    }
+                }
+            }
+            if ($pwMatches) {
+                $authenticatedCandidates[] = [
+                    'type' => 'freelancer',
+                    'entity' => $f,
+                ];
+            }
+        }
+
+        // If credentials do not match any candidate entity
+        if (empty($authenticatedCandidates)) {
+            RateLimiter::hit($throttleKey, 60);
+
             return response()->json([
                 'success' => false,
                 'status' => 'error',
-                'message' => 'Please select your registered entity from the dropdown to continue.',
-                'error' => 'Please select your registered entity from the dropdown to continue.',
+                'message' => 'Invalid email or password credentials.',
+                'error' => 'Invalid email or password credentials.',
+            ], 401);
+        }
+
+        // If multiple candidates authenticated with the same credentials (ambiguity check)
+        if (count($authenticatedCandidates) > 1) {
+            // If caller provided an entity_type, check if that safely disambiguates
+            if (!empty($suppliedEntityType)) {
+                $filtered = array_values(array_filter($authenticatedCandidates, function ($c) use ($suppliedEntityType) {
+                    return strtolower($c['type']) === strtolower($suppliedEntityType);
+                }));
+                if (count($filtered) === 1) {
+                    $authenticatedCandidates = $filtered;
+                }
+            }
+        }
+
+        if (count($authenticatedCandidates) > 1) {
+            // Still ambiguous: never select an arbitrary entity.
+            Log::warning("Ambiguous entity login attempt for identifier [{$rawLogin}]. Multiple entities matched and authenticated.", [
+                'candidates' => array_map(fn($c) => ['type' => $c['type'], 'id' => $c['entity']->id, 'name' => $c['entity']->name], $authenticatedCandidates),
+                'ip' => $request->ip(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'status' => 'error',
+                'code' => 'AMBIGUOUS_ENTITY_MAPPING',
+                'message' => 'Multiple entity accounts are associated with this login identifier. Please contact administration to resolve your account mapping.',
+                'error' => 'Multiple entity accounts are associated with this login identifier. Please contact administration to resolve your account mapping.',
             ], 422);
         }
 
-        $entityType = strtolower(trim($entityType));
-        $entityId = (int) $entityId;
+        $chosen = $authenticatedCandidates[0];
+        $entity = $chosen['entity'];
+        $entityType = $chosen['type'];
 
-        $user = null;
-        $business = null;
-        $freelancer = null;
-        $authenticated = false;
+        // If client explicitly passed an entity_id, verify that it matches the authenticated entity
+        if (!empty($suppliedEntityId) && (int) $suppliedEntityId !== (int) $entity->id) {
+            RateLimiter::hit($throttleKey, 60);
+
+            return response()->json([
+                'success' => false,
+                'status' => 'error',
+                'message' => 'The entered credentials do not belong to the selected entity.',
+                'error' => 'The entered credentials do not belong to the selected entity.',
+            ], 401);
+        }
+
+        if (!empty($suppliedEntityType) && strtolower($suppliedEntityType) !== $entityType) {
+            RateLimiter::hit($throttleKey, 60);
+
+            return response()->json([
+                'success' => false,
+                'status' => 'error',
+                'message' => 'The entered credentials do not belong to the selected entity type.',
+                'error' => 'The entered credentials do not belong to the selected entity type.',
+            ], 401);
+        }
+
+        // Check account status & eligibility
+        if (isset($entity->status) && strtolower((string) $entity->status) === 'inactive') {
+            return response()->json([
+                'success' => false,
+                'status' => 'error',
+                'message' => 'Your entity account is currently inactive. Please contact administration.',
+                'error' => 'Your entity account is currently inactive. Please contact administration.',
+            ], 403);
+        }
+
+        if ($entity->verification_status === 'rejected') {
+            return response()->json([
+                'success' => false,
+                'status' => 'error',
+                'message' => 'Your entity account application has been rejected. Please contact support.',
+                'error' => 'Your entity account application has been rejected. Please contact support.',
+            ], 403);
+        }
+
+        // Authentication successful: clear rate limiting attempts
+        RateLimiter::clear($throttleKey);
+
+        // Generate Sanctum token directly on the Authenticatable Entity model
+        $token = $entity->createToken('entity_token')->plainTextToken;
 
         if ($entityType === 'business') {
-            $business = BusinessEntity::with('category')->find($entityId);
-            if (!$business) {
-                return response()->json([
-                    'success' => false,
-                    'status' => 'error',
-                    'message' => 'The selected business entity was not found in our records.',
-                    'error' => 'The selected business entity was not found in our records.',
-                ], 422);
-            }
-
-            // Verify login ID matches the selected business
-            $loginLower = strtolower($loginId);
-            $matchesEmail = !empty($business->email) && strtolower(trim($business->email)) === $loginLower;
-            $matchesPhone = !empty($business->phone) && trim($business->phone) === $loginId;
-            $matchesRegNo = !empty($business->registration_no) && strtolower(trim($business->registration_no)) === $loginLower;
-
-            if (!$matchesEmail && !$matchesPhone && !$matchesRegNo) {
-                return response()->json([
-                    'success' => false,
-                    'status' => 'error',
-                    'message' => 'The entered credentials do not belong to the selected business entity.',
-                    'error' => 'The entered credentials do not belong to the selected business entity.',
-                ], 401);
-            }
-
-            // Verify password using Laravel Hash
-            $user = User::where('email', $business->email)->first();
-            $pwMatchesBusiness = !empty($business->password) && Hash::check($password, $business->password);
-            $pwMatchesUser = $user && !empty($user->password) && Hash::check($password, $user->password);
-
-            if ($pwMatchesBusiness || $pwMatchesUser) {
-                $authenticated = true;
-                // Backfill password on business entity if historically only set on user
-                if (!$pwMatchesBusiness && $pwMatchesUser && empty($business->password)) {
-                    $business->password = $user->password;
-                    $business->save();
-                }
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'status' => 'error',
-                    'message' => 'Invalid password for the selected business entity.',
-                    'error' => 'Invalid password for the selected business entity.',
-                ], 401);
-            }
-        } elseif ($entityType === 'freelancer') {
-            $freelancer = FreelancerEntity::with('category')->find($entityId);
-            if (!$freelancer) {
-                return response()->json([
-                    'success' => false,
-                    'status' => 'error',
-                    'message' => 'The selected freelancer entity was not found in our records.',
-                    'error' => 'The selected freelancer entity was not found in our records.',
-                ], 422);
-            }
-
-            // Verify login ID matches the selected freelancer
-            $loginLower = strtolower($loginId);
-            $matchesEmail = !empty($freelancer->email) && strtolower(trim($freelancer->email)) === $loginLower;
-            $matchesPhone = !empty($freelancer->phone) && trim($freelancer->phone) === $loginId;
-
-            if (!$matchesEmail && !$matchesPhone) {
-                return response()->json([
-                    'success' => false,
-                    'status' => 'error',
-                    'message' => 'The entered credentials do not belong to the selected freelancer entity.',
-                    'error' => 'The entered credentials do not belong to the selected freelancer entity.',
-                ], 401);
-            }
-
-            // Verify password using Laravel Hash
-            $user = User::where('email', $freelancer->email)->first();
-            $pwMatchesFreelancer = !empty($freelancer->password) && Hash::check($password, $freelancer->password);
-            $pwMatchesUser = $user && !empty($user->password) && Hash::check($password, $user->password);
-
-            if ($pwMatchesFreelancer || $pwMatchesUser) {
-                $authenticated = true;
-                // Backfill password on freelancer entity if historically only set on user
-                if (!$pwMatchesFreelancer && $pwMatchesUser && empty($freelancer->password)) {
-                    $freelancer->password = $user->password;
-                    $freelancer->save();
-                }
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'status' => 'error',
-                    'message' => 'Invalid password for the selected freelancer entity.',
-                    'error' => 'Invalid password for the selected freelancer entity.',
-                ], 401);
-            }
+            $entityDetails = [
+                'entity_type' => 'business',
+                'entity_id' => $entity->id,
+                'business_name' => $entity->name,
+                'owner_name' => $entity->owner_name,
+                'category' => $entity->category?->name ?? 'General Business',
+                'registration_no' => $entity->registration_no,
+                'website' => $entity->website,
+                'verification_status' => $entity->verification_status,
+                'logo_url' => $entity->logo_url,
+                'documents_count' => is_array($entity->documents) ? count($entity->documents) : 0,
+                'documents' => $entity->documents ?? [],
+            ];
+            $userPayload = [
+                'id' => $entity->id,
+                'name' => $entity->name,
+                'email' => $entity->email,
+                'user_code' => 'ENT-B' . str_pad($entity->id, 5, '0', STR_PAD_LEFT),
+                'entity_details' => $entityDetails,
+            ];
         } else {
-            return response()->json([
-                'success' => false,
-                'status' => 'error',
-                'message' => 'Invalid entity type specified. Must be business or freelancer.',
-                'error' => 'Invalid entity type specified.',
-            ], 422);
-        }
-
-        if ($authenticated && ($business || $freelancer)) {
-            $entityDetails = null;
-            if ($business) {
-                $token = $business->createToken('entity_token')->plainTextToken;
-                $entityDetails = [
-                    'entity_type' => 'business',
-                    'entity_id' => $business->id,
-                    'business_name' => $business->name,
-                    'owner_name' => $business->owner_name,
-                    'category' => $business->category?->name ?? 'General Business',
-                    'registration_no' => $business->registration_no,
-                    'website' => $business->website,
-                    'verification_status' => $business->verification_status,
-                    'logo_url' => $business->logo_url,
-                    'documents_count' => is_array($business->documents) ? count($business->documents) : 0,
-                    'documents' => $business->documents ?? [],
-                ];
-                $userPayload = [
-                    'id' => $business->id,
-                    'name' => $business->name,
-                    'email' => $business->email,
-                    'user_code' => 'ENT-B' . str_pad($business->id, 5, '0', STR_PAD_LEFT),
-                    'entity_details' => $entityDetails,
-                ];
-            } else {
-                $token = $freelancer->createToken('entity_token')->plainTextToken;
-                $entityDetails = [
-                    'entity_type' => 'freelancer',
-                    'entity_id' => $freelancer->id,
-                    'business_name' => $freelancer->name,
-                    'title' => $freelancer->title,
-                    'category' => $freelancer->category?->name ?? 'Professional Freelance',
-                    'hourly_rate' => $freelancer->hourly_rate,
-                    'verification_status' => $freelancer->verification_status,
-                    'avatar_url' => $freelancer->avatar_url,
-                    'documents_count' => is_array($freelancer->documents) ? count($freelancer->documents) : 0,
-                    'documents' => $freelancer->documents ?? [],
-                ];
-                $userPayload = [
-                    'id' => $freelancer->id,
-                    'name' => $freelancer->name,
-                    'email' => $freelancer->email,
-                    'user_code' => 'ENT-F' . str_pad($freelancer->id, 5, '0', STR_PAD_LEFT),
-                    'entity_details' => $entityDetails,
-                ];
-            }
-
-            return response()->json([
-                'success' => true,
-                'status' => 'success',
-                'message' => 'Login successful! Welcome to the Entity Portal.',
-                'user' => $userPayload,
-                'token' => $token,
-                'session' => [
-                    'idle_timeout_minutes' => (int) config('session_timeout.idle_timeout_minutes', 30),
-                    'absolute_timeout_hours' => (int) config('session_timeout.absolute_timeout_hours', 12),
-                    'session_start' => now()->toIso8601String(),
-                ],
-            ], 200);
+            $entityDetails = [
+                'entity_type' => 'freelancer',
+                'entity_id' => $entity->id,
+                'business_name' => $entity->name,
+                'title' => $entity->title,
+                'category' => $entity->category?->name ?? 'Professional Freelance',
+                'hourly_rate' => $entity->hourly_rate,
+                'verification_status' => $entity->verification_status,
+                'avatar_url' => $entity->avatar_url,
+                'documents_count' => is_array($entity->documents) ? count($entity->documents) : 0,
+                'documents' => $entity->documents ?? [],
+            ];
+            $userPayload = [
+                'id' => $entity->id,
+                'name' => $entity->name,
+                'email' => $entity->email,
+                'user_code' => 'ENT-F' . str_pad($entity->id, 5, '0', STR_PAD_LEFT),
+                'entity_details' => $entityDetails,
+            ];
         }
 
         return response()->json([
-            'success' => false,
-            'status' => 'error',
-            'error' => 'Invalid email or password credentials.',
-            'message' => 'Invalid email or password credentials.',
-        ], 401);
+            'success' => true,
+            'status' => 'success',
+            'message' => 'Login successful! Welcome to the Entity Portal.',
+            'user' => $userPayload,
+            'token' => $token,
+            'session' => [
+                'idle_timeout_minutes' => (int) config('session_timeout.idle_timeout_minutes', 30),
+                'absolute_timeout_hours' => (int) config('session_timeout.absolute_timeout_hours', 12),
+                'session_start' => now()->toIso8601String(),
+            ],
+        ], 200);
     }
 
     /**
@@ -456,20 +515,21 @@ class EntityAuthController extends Controller
     protected function resolveTargetEntity(string $email, ?string $type = null): array
     {
         $normalizedType = strtolower(trim((string) $type));
+        $cleanEmail = strtolower(trim($email));
 
         if (in_array($normalizedType, ['business', 'business_entity'])) {
-            $business = BusinessEntity::where('email', $email)->first();
+            $business = BusinessEntity::whereRaw('LOWER(TRIM(email)) = ?', [$cleanEmail])->first();
             return [$business, 'business', 'Business Entity'];
         }
 
         if (in_array($normalizedType, ['freelancer', 'freelancer_entity', 'freelance'])) {
-            $freelancer = FreelancerEntity::where('email', $email)->first();
+            $freelancer = FreelancerEntity::whereRaw('LOWER(TRIM(email)) = ?', [$cleanEmail])->first();
             return [$freelancer, 'freelancer', 'Freelancer'];
         }
 
         // Backwards compatibility fallback if type was not provided
-        $business = BusinessEntity::where('email', $email)->first();
-        $freelancer = FreelancerEntity::where('email', $email)->first();
+        $business = BusinessEntity::whereRaw('LOWER(TRIM(email)) = ?', [$cleanEmail])->first();
+        $freelancer = FreelancerEntity::whereRaw('LOWER(TRIM(email)) = ?', [$cleanEmail])->first();
 
         if ($business && $freelancer) {
             return [null, 'ambiguous', 'Both'];

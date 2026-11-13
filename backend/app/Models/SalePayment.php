@@ -89,6 +89,14 @@ class SalePayment extends Model
         return $this->order();
     }
 
+    /**
+     * Relationship to the Direct Income distribution record for this specific payment receipt.
+     */
+    public function directIncome()
+    {
+        return $this->hasOne(DirectIncome::class, 'sale_payment_id');
+    }
+
     public function getInvoiceNumberAttribute()
     {
         return $this->attributes['invoice_number'] ?? null;

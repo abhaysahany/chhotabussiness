@@ -4,7 +4,6 @@ import { useBranding } from '../utils/branding';
 import { initSession, getExpiredNotice } from '../utils/sessionManager';
 import {
   loginEntity,
-  getSelectableEntities,
   forgotPasswordEntity,
   verifyResetOtpEntity,
   resetPasswordEntity,
@@ -12,10 +11,6 @@ import {
 
 function EntityLogin({ onLoginSuccess }) {
   const { appName, logoUrl } = useBranding();
-  const [entities, setEntities] = useState([]);
-  const [loadingEntities, setLoadingEntities] = useState(true);
-  const [selectedEntityKey, setSelectedEntityKey] = useState('');
-  const [selectedEntity, setSelectedEntity] = useState(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -34,38 +29,6 @@ function EntityLogin({ onLoginSuccess }) {
     }
   }, []);
   const navigate = useNavigate();
-
-  // Load registered entities dynamically from the database on mount
-  useEffect(() => {
-    const fetchEntities = async () => {
-      setLoadingEntities(true);
-      try {
-        const res = await getSelectableEntities();
-        if (res && res.status === 'success' && Array.isArray(res.entities)) {
-          setEntities(res.entities);
-        }
-      } catch (err) {
-        console.error('Error fetching registered entities for dropdown:', err);
-      } finally {
-        setLoadingEntities(false);
-      }
-    };
-
-    fetchEntities();
-  }, []);
-
-  // Handle entity selection change
-  const handleEntitySelect = (key) => {
-    setSelectedEntityKey(key);
-    setError(null);
-    const matched = entities.find((ent) => ent.value === key || ent.key === key);
-    setSelectedEntity(matched || null);
-
-    // Auto-prefill entity email if currently empty or if switching between entities
-    if (matched && matched.email) {
-      setEmail(matched.email);
-    }
-  };
 
   // Forgot Password Modal States
   const [showForgotModal, setShowForgotModal] = useState(false);
@@ -98,13 +61,9 @@ function EntityLogin({ onLoginSuccess }) {
     setSuccessMsg(null);
     const newErrors = {};
 
-    if (!selectedEntityKey || !selectedEntity) {
-      newErrors.entity = 'Please select your registered entity from the dropdown to proceed.';
-    }
-
     const trimmedEmail = (email || '').trim();
     if (!trimmedEmail) {
-      newErrors.email = 'Entity login ID or registered email is required.';
+      newErrors.email = 'Registered email or entity login ID is required.';
     } else if (trimmedEmail.includes('@')) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(trimmedEmail)) {
@@ -130,10 +89,7 @@ function EntityLogin({ onLoginSuccess }) {
 
     try {
       const response = await loginEntity({
-        entity_key: selectedEntityKey,
-        entity_type: selectedEntity.type || selectedEntity.entity_type,
-        entity_id: selectedEntity.id,
-        email,
+        email: trimmedEmail,
         password,
         remember: rememberMe,
       });
@@ -436,73 +392,9 @@ function EntityLogin({ onLoginSuccess }) {
         )}
 
         <form onSubmit={handleSubmit} className="auth-form">
-          {/* Entity Selection Dropdown */}
-          <div className="form-group">
-            <label htmlFor="entitySelect">
-              Select Registered Entity <span className="required-asterisk">*</span>
-            </label>
-            <div style={{ position: 'relative' }}>
-              <select
-                id="entitySelect"
-                className="form-input"
-                value={selectedEntityKey}
-                onChange={(e) => { handleEntitySelect(e.target.value); setFieldErrors(prev => ({ ...prev, entity: null })); }}
-                required
-                disabled={loadingEntities}
-                style={{
-                  appearance: 'none',
-                  paddingRight: '2rem',
-                  fontWeight: selectedEntity ? 700 : 400,
-                  color: selectedEntity ? '#111827' : '#6b7280',
-                  background: '#ffffff',
-                }}
-              >
-                <option value="">
-                  {loadingEntities ? '⏳ Loading registered entities from database...' : '-- Choose your Registered Entity --'}
-                </option>
-                {entities.map((ent) => (
-                  <option key={ent.value} value={ent.value}>
-                    {ent.type === 'business' ? '🏢 [Business] ' : '👤 [Freelance] '}
-                    {ent.label}
-                  </option>
-                ))}
-              </select>
-              <div
-                style={{
-                  position: 'absolute',
-                  right: '12px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  pointerEvents: 'none',
-                  color: '#6b7280',
-                  fontSize: '0.8rem',
-                }}
-              >
-                ▼
-              </div>
-            </div>
-            {fieldErrors.entity && (<span style={{ color: "#ef4444", fontSize: "0.78rem", marginTop: "0.25rem", display: "block", fontWeight: 600 }}>⚠️ {fieldErrors.entity}</span>)}
-            {selectedEntity ? (
-              <div style={{ marginTop: '0.4rem', fontSize: '0.78rem', color: '#047857', display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
-                <span style={{ fontWeight: 600 }}>✓ Selected Entity:</span>
-                <span style={{ fontWeight: 800 }}>{selectedEntity.name}</span>
-                <span style={{ background: '#ecfdf5', border: '1px solid #a7f3d0', padding: '0.1rem 0.45rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 700 }}>
-                  ID: {selectedEntity.identifier}
-                </span>
-                <span style={{ background: '#eff6ff', color: '#1e40af', padding: '0.1rem 0.45rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 700 }}>
-                  {selectedEntity.type?.toUpperCase()}
-                </span>
-              </div>
-            ) : (
-              <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.74rem', color: '#6b7280' }}>
-                Select whether you are logging in as a Registered Business or Freelancer Entity.
-              </p>
-            )}
-          </div>
-
           <div className="form-group">
             <label htmlFor="email">
-              Entity Login ID / Registered Email <span className="required-asterisk">*</span>
+              Registered Email / Login ID <span className="required-asterisk">*</span>
             </label>
             <input
               id="email"

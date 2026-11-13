@@ -5,8 +5,12 @@ namespace App\Services;
 require_once app_path('Helpers/admin_function.php');
 
 use App\Models\CommissionSetting;
+use App\Models\DirectIncome;
+use App\Models\DirectIncomeOrderSummary;
 use App\Models\Order;
+use App\Models\OrderPaymentDump;
 use App\Models\SalePayment;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -242,16 +246,21 @@ class AdminIncomeAllocationService
             $this->syncOrderIncomeDistributionStatus($order);
 
             // 9. Distribute Direct Income using helper (Direct Income only to customer's upline sponsor)
+            $directRecord = null;
             if ($split['direct_amount'] > 0) {
-                $customer = $order->customer_user_code ? \App\Models\User::where('user_code', $order->customer_user_code)->first() : null;
+                $customer = $order->customer_user_code ? User::where('user_code', $order->customer_user_code)->first() : null;
                 $sponsorCode = $customer ? $customer->sponsor_id : $order->sponsor;
 
                 if (!empty($sponsorCode) && strtolower(trim((string) $sponsorCode)) !== 'root' && trim((string) $sponsorCode) !== trim((string) $order->customer_user_code)) {
-                    \directIncome(
+                    $directRecord = \directIncome(
                         $sponsorCode,
                         $order->customer_user_code,
                         $split['direct_amount'],
-                        0.00 // Bug 2 Fix: Never propagate order dump_amount to direct income
+                        0.00, // Bug 2 Fix: Never propagate order dump_amount to direct income
+                        $order->id,
+                        $payment->id,
+                        $order->customer_user_code,
+                        (float) $configSnapshot['direct_percent']
                     );
                 }
             }
@@ -274,9 +283,13 @@ class AdminIncomeAllocationService
                 $split['reward_level_2_amount']
             );
 
+            // 12. Synchronize consolidated Order-wise Direct Income Summary atomically inside the transaction
+            $orderSummary = $this->syncOrderDirectIncomeSummary($order, $directRecord, $configSnapshot);
+
             return [
                 'payment' => $payment->fresh(),
                 'order' => $order->fresh(['payments']),
+                'direct_income_summary' => $orderSummary,
                 'allocated' => [
                     'payment_id' => $payment->id,
                     'eligible_admin_cut' => $paymentAdminCut,
@@ -337,6 +350,127 @@ class AdminIncomeAllocationService
 
         $order->update(['income_distribution_status' => $status]);
         return $status;
+    }
+
+    /**
+     * Synchronize and persist the consolidated Order-wise Direct Income Summary
+     * for the eligible beneficiary sponsor of an Order.
+     *
+     * @param Order $order
+     * @param DirectIncome|null $newDirectRecord
+     * @param array|null $configSnapshot
+     * @return DirectIncomeOrderSummary|null
+     */
+    public function syncOrderDirectIncomeSummary(Order $order, ?DirectIncome $newDirectRecord = null, ?array $configSnapshot = null): ?DirectIncomeOrderSummary
+    {
+        // 1. Identify Sponsor Beneficiary
+        $customer = $order->customer_user_code ? User::where('user_code', $order->customer_user_code)->first() : null;
+        $sponsorCode = $customer ? $customer->sponsor_id : $order->sponsor;
+
+        if (empty($sponsorCode) || strtolower(trim((string) $sponsorCode)) === 'root' || trim((string) $sponsorCode) === trim((string) $order->customer_user_code)) {
+            return null;
+        }
+
+        $sponsor = User::where('user_code', $sponsorCode)->orWhere('id', $sponsorCode)->first();
+        if (!$sponsor) {
+            return null;
+        }
+
+        // 2. Resolve Active Commission Snapshot
+        $config = $configSnapshot ?? CommissionSetting::getValidatedGlobalSnapshot();
+        $directPercent = (float) ($config['direct_percent'] ?? 40.0);
+
+        // 3. Financial Metrics
+        $orderGross = (float) ($order->gross_amount ?? 0);
+        $orderCommissionRate = (float) ($order->admin_commission_percent ?: 15.0);
+        $expectedOrderAdminCut = (float) ($order->admin_commission_cut > 0
+            ? $order->admin_commission_cut
+            : round(($orderGross * $orderCommissionRate) / 100, 2));
+
+        $totalExpectedDirect = round(($expectedOrderAdminCut * $directPercent) / 100, 2);
+
+        // Actual distributed Direct Income for this order (sum of completed installments)
+        $totalDistributedDirect = (float) round(
+            SalePayment::where('sales_record_id', $order->id)
+                ->whereIn('income_distribution_status', ['completed', 'legacy_completed'])
+                ->sum('direct_income_amount'),
+            2
+        );
+
+        // Approved Dump Direct Income write-off portion
+        $approvedDumps = OrderPaymentDump::where('order_id', $order->id)
+            ->where('status', 'approved')
+            ->get();
+
+        $totalApprovedDumpDirect = (float) round($approvedDumps->sum('direct_income_amount'), 2);
+        if ($totalApprovedDumpDirect <= 0 && $approvedDumps->isNotEmpty()) {
+            $dumpCutSum = (float) $approvedDumps->sum('admin_commission_cut');
+            $totalApprovedDumpDirect = round(($dumpCutSum * $directPercent) / 100, 2);
+        }
+
+        // Total Pending Direct Income: Expected - Distributed - Approved Dump
+        $totalPendingDirect = max(0.0, round($totalExpectedDirect - $totalDistributedDirect - $totalApprovedDumpDirect, 2));
+
+        // Distribution count (count of completed payments that distributed direct income)
+        $distributionCount = SalePayment::where('sales_record_id', $order->id)
+            ->whereIn('income_distribution_status', ['completed', 'legacy_completed'])
+            ->where('direct_income_amount', '>', 0)
+            ->count();
+
+        // Distribution status
+        if ($totalDistributedDirect <= 0) {
+            $distributionStatus = 'pending';
+        } elseif ($totalPendingDirect <= 0.00) {
+            $distributionStatus = 'completed';
+        } else {
+            $distributionStatus = 'partial';
+        }
+
+        // Last distribution timestamp
+        $lastDistributionAt = SalePayment::where('sales_record_id', $order->id)
+            ->whereIn('income_distribution_status', ['completed', 'legacy_completed'])
+            ->max('income_distributed_at');
+
+        if (!$lastDistributionAt && $totalDistributedDirect > 0) {
+            $lastDistributionAt = now();
+        }
+
+        $sourceCustomerName = $order->customer_name;
+        if (empty($sourceCustomerName) && $customer) {
+            $sourceCustomerName = $customer->name;
+        }
+
+        // 4. Atomic Upsert with row-level lock
+        $summary = DirectIncomeOrderSummary::lockForUpdate()
+            ->where('user_id', $sponsor->id)
+            ->where('order_id', $order->id)
+            ->first();
+
+        $data = [
+            'user_id' => $sponsor->id,
+            'user_code' => $sponsor->user_code,
+            'order_id' => $order->id,
+            'invoice_number' => $order->invoice_number,
+            'source_user_code' => $order->customer_user_code ?: ($customer?->user_code ?? ''),
+            'source_user_name' => $sourceCustomerName,
+            'item_name' => $order->item,
+            'order_gross_amount' => $orderGross,
+            'total_expected_amount' => $totalExpectedDirect,
+            'total_distributed_amount' => $totalDistributedDirect,
+            'total_pending_amount' => $totalPendingDirect,
+            'total_dump_amount' => $totalApprovedDumpDirect,
+            'distribution_count' => $distributionCount,
+            'distribution_status' => $distributionStatus,
+            'last_distribution_at' => $lastDistributionAt,
+        ];
+
+        if ($summary) {
+            $summary->update($data);
+        } else {
+            $summary = DirectIncomeOrderSummary::create($data);
+        }
+
+        return $summary->fresh();
     }
 
     /**

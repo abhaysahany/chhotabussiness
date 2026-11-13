@@ -223,6 +223,12 @@ Route::get('/user/income/direct', [UserIncomeController::class, 'getDirectIncome
 Route::get('/user/income/levels', [UserIncomeController::class, 'getLevelIncome']);
 Route::get('/user/income/summary', [UserIncomeController::class, 'getIncomeSummary']);
 
+// User Order-Wise Direct Income System Endpoints (Phase 1)
+Route::get('/user/income/direct-orders', [UserIncomeController::class, 'getOrderDirectIncomeSummaries']);
+Route::get('/user/income/direct-orders/{orderId}', [UserIncomeController::class, 'getOrderDirectIncomeDetails']);
+Route::get('/user/direct-income/orders', [UserIncomeController::class, 'getOrderDirectIncomeSummaries']);
+Route::get('/user/direct-income/orders/{orderId}', [UserIncomeController::class, 'getOrderDirectIncomeDetails']);
+
 // User Payouts Management Endpoints (MySQL Database Backed)
 use App\Http\Controllers\UserPayoutController;
 use App\Http\Controllers\RewardController;
@@ -438,6 +444,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/admin/settings/branding', [SystemSettingController::class, 'getBranding']);
     Route::post('/admin/settings/branding', [SystemSettingController::class, 'saveBranding']);
     Route::put('/admin/settings/branding', [SystemSettingController::class, 'saveBranding']);
+
+    // Admin Global Order-wise Direct Income Reporting Endpoints (Admin Phase 1)
+    Route::prefix('admin/income')->group(function () {
+        Route::get('/direct-overview', [\App\Http\Controllers\Admin\AdminIncomeReportController::class, 'getDirectIncomeOverview']);
+        Route::get('/direct-orders', [\App\Http\Controllers\Admin\AdminIncomeReportController::class, 'getOrderDirectIncomeList']);
+        Route::get('/direct-orders/{orderId}', [\App\Http\Controllers\Admin\AdminIncomeReportController::class, 'getOrderDirectIncomeDetails']);
+    });
+
+    // Admin Direct Income Aliases
+    Route::get('/admin/direct-income/overview', [\App\Http\Controllers\Admin\AdminIncomeReportController::class, 'getDirectIncomeOverview']);
+    Route::get('/admin/direct-income/orders', [\App\Http\Controllers\Admin\AdminIncomeReportController::class, 'getOrderDirectIncomeList']);
+    Route::get('/admin/direct-income/orders/{orderId}', [\App\Http\Controllers\Admin\AdminIncomeReportController::class, 'getOrderDirectIncomeDetails']);
 });
 
 
