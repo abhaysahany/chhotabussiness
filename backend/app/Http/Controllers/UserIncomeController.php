@@ -158,14 +158,14 @@ class UserIncomeController extends Controller
             : collect([]);
 
         // Calculate cumulative totals across existing level records
-        $totalAmount = (float) $records->sum('total_amount');
-        $paidAmount = (float) $records->sum('paid_amount');
+        $totalAmount = (float) ($records->sum('amount') ?: $records->sum('total_amount'));
+        $paidAmount = (float) ($records->sum('amount') ?: $records->sum('paid_amount'));
         $balanceAmount = max(0.0, round($totalAmount - $paidAmount, 2));
         $dumpAmount = (float) $records->sum('dump_amount');
 
         $todayAmount = (float) $records->filter(function ($rec) {
             return $rec->created_at && Carbon::parse($rec->created_at)->setTimezone('Asia/Kolkata')->isToday();
-        })->sum('total_amount');
+        })->sum(fn($rec) => (float)($rec->amount ?? $rec->total_amount ?? 0));
 
         $recordsByLevel = $records->groupBy('level');
 
@@ -173,8 +173,8 @@ class UserIncomeController extends Controller
         $levelsBreakdown = [];
         foreach ([2, 3, 4, 5] as $levelNum) {
             $levelGroup = $recordsByLevel->get($levelNum, collect([]));
-            $lvlTotal = (float) $levelGroup->sum('total_amount');
-            $lvlPaid = (float) $levelGroup->sum('paid_amount');
+            $lvlTotal = (float) ($levelGroup->sum('amount') ?: $levelGroup->sum('total_amount'));
+            $lvlPaid = (float) ($levelGroup->sum('amount') ?: $levelGroup->sum('paid_amount'));
             $lvlBalance = max(0.0, round($lvlTotal - $lvlPaid, 2));
             $lvlDump = (float) $levelGroup->sum('dump_amount');
 
@@ -225,8 +225,8 @@ class UserIncomeController extends Controller
         ];
 
         $mappedRecords = $records->map(function ($rec) use ($user) {
-            $total = (float) $rec->total_amount;
-            $paid = (float) $rec->paid_amount;
+            $total = (float) ($rec->amount ?? $rec->total_amount ?? 0);
+            $paid = (float) ($rec->amount ?? $rec->paid_amount ?? 0);
             $balance = max(0.0, round($total - $paid, 2));
             $dump = (float) $rec->dump_amount;
 
@@ -302,13 +302,13 @@ class UserIncomeController extends Controller
             return $rec->created_at && Carbon::parse($rec->created_at)->setTimezone('Asia/Kolkata')->isToday();
         })->sum('total_amount');
 
-        $levelTotal = (float) $levelIncomes->sum('total_amount');
-        $levelPaid = (float) $levelIncomes->sum('paid_amount');
+        $levelTotal = (float) ($levelIncomes->sum('amount') ?: $levelIncomes->sum('total_amount'));
+        $levelPaid = (float) ($levelIncomes->sum('amount') ?: $levelIncomes->sum('paid_amount'));
         $levelBalance = max(0.0, round($levelTotal - $levelPaid, 2));
         $levelDump = (float) $levelIncomes->sum('dump_amount');
         $todayLevel = (float) $levelIncomes->filter(function ($rec) {
             return $rec->created_at && Carbon::parse($rec->created_at)->setTimezone('Asia/Kolkata')->isToday();
-        })->sum('total_amount');
+        })->sum(fn($rec) => (float)($rec->amount ?? $rec->total_amount ?? 0));
 
         $totalIncome = round($directTotal + $levelTotal, 2);
         $todayIncome = round($todayDirect + $todayLevel, 2);
@@ -338,8 +338,8 @@ class UserIncomeController extends Controller
         })->values()->all();
 
         $mappedLevelRecords = $levelIncomes->map(function ($rec) use ($user) {
-            $total = (float) $rec->total_amount;
-            $paid = (float) $rec->paid_amount;
+            $total = (float) ($rec->amount ?? $rec->total_amount ?? 0);
+            $paid = (float) ($rec->amount ?? $rec->paid_amount ?? 0);
             $balance = max(0.0, round($total - $paid, 2));
             $dump = (float) $rec->dump_amount;
 

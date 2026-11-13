@@ -4,14 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 
 class EntityCommissionSetting extends Model
 {
     use HasFactory;
 
-    protected $table = 'entity_commission_settings';
+    protected $table = 'commission_settings';
 
     protected $fillable = [
+        'setting_key',
         'entity_type',
         'entity_id',
         'direct_percent',
@@ -21,7 +23,10 @@ class EntityCommissionSetting extends Model
         'level_4_percent',
         'level_5_percent',
         'reward_percent',
+        'reward_level_1_percent',
+        'reward_level_2_percent',
         'is_custom',
+        'updated_by_admin_id',
     ];
 
     protected $casts = [
@@ -33,8 +38,28 @@ class EntityCommissionSetting extends Model
         'level_4_percent' => 'float',
         'level_5_percent' => 'float',
         'reward_percent' => 'float',
+        'reward_level_1_percent' => 'float',
+        'reward_level_2_percent' => 'float',
         'is_custom' => 'boolean',
     ];
+
+    /**
+     * Auto generate unique setting_key on creation if not provided
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->setting_key)) {
+                if ($model->entity_type && $model->entity_id) {
+                    $model->setting_key = 'entity_' . $model->entity_type . '_' . $model->entity_id;
+                } else {
+                    $model->setting_key = 'custom_' . uniqid();
+                }
+            }
+        });
+    }
 
     /**
      * Default percentages structure for unconfigured business entities
@@ -68,7 +93,9 @@ class EntityCommissionSetting extends Model
         $type = ($entityType === 'freelance' || $entityType === 'freelancer') ? 'freelancer' : 'business';
 
         if ($entityId) {
-            $setting = self::where('entity_type', $type)->where('entity_id', $entityId)->first();
+            $setting = self::where(function ($q) use ($type, $entityId) {
+                $q->where('entity_type', $type)->where('entity_id', $entityId);
+            })->orWhere('setting_key', "entity_{$type}_{$entityId}")->first();
         }
 
         if (!$setting && !empty($entityName)) {
@@ -83,7 +110,9 @@ class EntityCommissionSetting extends Model
                     ->first();
             }
             if ($entity) {
-                $setting = self::where('entity_type', $type)->where('entity_id', $entity->id)->first();
+                $setting = self::where(function ($q) use ($type, $entity) {
+                    $q->where('entity_type', $type)->where('entity_id', $entity->id);
+                })->orWhere('setting_key', "entity_{$type}_{$entity->id}")->first();
             }
         }
 
@@ -99,7 +128,7 @@ class EntityCommissionSetting extends Model
 
             return [
                 'direct_percent' => $direct,
-                'level_1_percent' => 0.0,
+                'level_1_percent' => (float) ($setting->level_1_percent ?? 0.0),
                 'level_2_percent' => $l2,
                 'level_3_percent' => $l3,
                 'level_4_percent' => $l4,
@@ -110,6 +139,34 @@ class EntityCommissionSetting extends Model
                 'is_custom' => (bool) $setting->is_custom,
                 'source' => 'entity_configured',
                 'setting_id' => $setting->id,
+            ];
+        }
+
+        // Fallback to global setting in commission_settings table
+        $global = self::where('setting_key', 'global')->first() ?? self::first();
+        if ($global) {
+            $direct = (float) $global->direct_percent;
+            $l2 = (float) $global->level_2_percent;
+            $l3 = (float) $global->level_3_percent;
+            $l4 = (float) $global->level_4_percent;
+            $l5 = (float) $global->level_5_percent;
+            $reward = (float) $global->reward_percent;
+            $networkLevelsTotal = round($l2 + $l3 + $l4 + $l5, 2);
+            $totalCommission = round($direct + $networkLevelsTotal, 2);
+
+            return [
+                'direct_percent' => $direct,
+                'level_1_percent' => (float) ($global->level_1_percent ?? 0.0),
+                'level_2_percent' => $l2,
+                'level_3_percent' => $l3,
+                'level_4_percent' => $l4,
+                'level_5_percent' => $l5,
+                'reward_percent' => $reward,
+                'network_levels_total' => $networkLevelsTotal,
+                'total_commission_percent' => $totalCommission,
+                'is_custom' => false,
+                'source' => 'commission_settings_global',
+                'setting_id' => $global->id,
             ];
         }
 

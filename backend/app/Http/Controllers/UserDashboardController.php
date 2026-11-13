@@ -74,10 +74,10 @@ class UserDashboardController extends Controller
                 ->whereDate('created_at', Carbon::today('Asia/Kolkata'))
                 ->sum('total_amount');
 
-            $levelIncomeTotal = (float) LevelIncome::where('user_code', $userCode)->sum('total_amount');
+            $levelIncomeTotal = (float) LevelIncome::where('user_code', $userCode)->sum('amount');
             $todayLevelIncome = (float) LevelIncome::where('user_code', $userCode)
                 ->whereDate('created_at', Carbon::today('Asia/Kolkata'))
-                ->sum('total_amount');
+                ->sum('amount');
         }
 
         $totalIncomeFromTables = round($directIncomeTotal + $levelIncomeTotal, 2);
@@ -124,7 +124,7 @@ class UserDashboardController extends Controller
                 $lVal = 0.0;
                 if ($userCode) {
                     $dVal = (float) DirectIncome::where('user_code', $userCode)->whereBetween('created_at', [$mStart, $mEnd])->sum('total_amount');
-                    $lVal = (float) LevelIncome::where('user_code', $userCode)->whereBetween('created_at', [$mStart, $mEnd])->sum('total_amount');
+                    $lVal = (float) LevelIncome::where('user_code', $userCode)->whereBetween('created_at', [$mStart, $mEnd])->sum('amount');
                 }
                 $directSeries[] = round($dVal, 2);
                 $levelSeries[] = round($lVal, 2);
@@ -138,7 +138,7 @@ class UserDashboardController extends Controller
                 $lVal = 0.0;
                 if ($userCode) {
                     $dVal = (float) DirectIncome::where('user_code', $userCode)->whereBetween('created_at', [$wStart, $wEnd])->sum('total_amount');
-                    $lVal = (float) LevelIncome::where('user_code', $userCode)->whereBetween('created_at', [$wStart, $wEnd])->sum('total_amount');
+                    $lVal = (float) LevelIncome::where('user_code', $userCode)->whereBetween('created_at', [$wStart, $wEnd])->sum('amount');
                 }
                 $directSeries[] = round($dVal, 2);
                 $levelSeries[] = round($lVal, 2);
@@ -153,7 +153,7 @@ class UserDashboardController extends Controller
                 $lVal = 0.0;
                 if ($userCode) {
                     $dVal = (float) DirectIncome::where('user_code', $userCode)->whereBetween('created_at', [$dStart, $dEnd])->sum('total_amount');
-                    $lVal = (float) LevelIncome::where('user_code', $userCode)->whereBetween('created_at', [$dStart, $dEnd])->sum('total_amount');
+                    $lVal = (float) LevelIncome::where('user_code', $userCode)->whereBetween('created_at', [$dStart, $dEnd])->sum('amount');
                 }
                 $directSeries[] = round($dVal, 2);
                 $levelSeries[] = round($lVal, 2);

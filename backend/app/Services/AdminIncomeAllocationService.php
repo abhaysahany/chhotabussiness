@@ -217,7 +217,11 @@ class AdminIncomeAllocationService
                 \levelIncome(
                     $order->customer_user_code,
                     $split['level_amount'],
-                    0.00 // Bug 2 Fix: Never propagate order dump_amount to level income
+                    0.00, // Bug 2 Fix: Never propagate order dump_amount to level income
+                    $payment->payment_type ?? 'advance',
+                    $order->id,
+                    $order->invoice_number,
+                    $payment->id
                 );
             }
 

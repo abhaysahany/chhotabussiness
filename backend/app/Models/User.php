@@ -97,6 +97,11 @@ class User extends Authenticatable
         return $this->hasMany(LevelIncome::class, 'user_code', 'user_code');
     }
 
+    public function totalLevelIncomes()
+    {
+        return $this->hasMany(TotalLevelIncome::class, 'user_code', 'user_code');
+    }
+
     /**
      * Auto generate unique MLM user_code on creation
      */
