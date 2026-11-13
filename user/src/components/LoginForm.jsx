@@ -1,0 +1,1175 @@
+import React, { useState, useEffect } from 'react';
+import { useBranding } from '../utils/branding';
+import {
+  Building2,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  ArrowLeft,
+  Sparkles,
+  ShieldCheck,
+  CheckCircle2,
+  Users,
+  Briefcase,
+  Star,
+  AlertCircle,
+  Loader2,
+  HelpCircle,
+  LogIn,
+  UserPlus,
+  KeyRound,
+  X,
+} from 'lucide-react';
+import './auth.css';
+import { initiateGoogleCodePopup } from '../utils/googleOAuth';
+import { getExpiredNotice } from '../utils/sessionManager';
+import {
+  authenticateWithGoogle,
+  forgotPasswordUser,
+  verifyResetOtpUser,
+  resetPasswordUser,
+} from '../api/userService';
+
+function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackToHome, onOpenLegalPage, onGoogleSuccess }) {
+  const { appName, logoUrl } = useBranding();
+  const [email, setEmail] = useState('user@addnet.com');
+  const [password, setPassword] = useState('password123');
+  const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [sessionExpiredNotice, setSessionExpiredNotice] = useState(null);
+
+  useEffect(() => {
+    const notice = getExpiredNotice();
+    if (notice) {
+      setSessionExpiredNotice(notice);
+    }
+  }, []);
+
+  // Google SSO state
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [showRegisterPrompt, setShowRegisterPrompt] = useState(false);
+  const [accountLinkModal, setAccountLinkModal] = useState(null); // { email, code }
+  const [linkPassword, setLinkPassword] = useState('');
+  const [linkingLoading, setLinkingLoading] = useState(false);
+  const [linkError, setLinkError] = useState('');
+
+  // Forgot password modal state
+  const [showForgotModal, setShowForgotModal] = useState(false);
+  const [forgotStep, setForgotStep] = useState(1); // 1: Email/UserCode, 2: OTP, 3: New Password, 4: Success
+  const [forgotLogin, setForgotLogin] = useState('');
+  const [forgotOtp, setForgotOtp] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotError, setForgotError] = useState(null);
+  const [maskedEmail, setMaskedEmail] = useState('');
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  // 60-second cooldown timer
+  useEffect(() => {
+    let timer;
+    if (resendCooldown > 0) {
+      timer = setInterval(() => {
+        setResendCooldown((prev) => (prev <= 1 ? 0 : prev - 1));
+      }, 1000);
+    }
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [resendCooldown]);
+
+  const handleOpenForgotModal = () => {
+    setForgotLogin(email || '');
+    setForgotOtp('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setForgotStep(1);
+    setForgotError(null);
+    setMaskedEmail('');
+    setResendCooldown(0);
+    setShowForgotModal(true);
+  };
+
+  const handleSendOtp = async (e) => {
+    if (e) e.preventDefault();
+    if (!forgotLogin.trim()) {
+      setForgotError('Please enter your registered email address or partner ID.');
+      return;
+    }
+
+    setForgotLoading(true);
+    setForgotError(null);
+
+    try {
+      const res = await forgotPasswordUser({ email: forgotLogin.trim() });
+      if (res.status === 'success') {
+        if (res.masked_email) {
+          setMaskedEmail(res.masked_email);
+        }
+        setResendCooldown(60);
+        setForgotStep(2);
+      } else {
+        setForgotError(res.message || 'Failed to dispatch verification code.');
+      }
+    } catch (err) {
+      console.error('User forgot password error:', err);
+      const remainingSeconds = err.response?.data?.retry_after_seconds;
+      if (remainingSeconds) {
+        setResendCooldown(remainingSeconds);
+      }
+      setForgotError(
+        err.response?.data?.message || 'No partner account found with that email or ID.'
+      );
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e) => {
+    if (e) e.preventDefault();
+    const cleanOtp = (forgotOtp || '').trim();
+    if (!cleanOtp || cleanOtp.length !== 6 || !/^\d{6}$/.test(cleanOtp)) {
+      setForgotError('Please enter the valid 6-digit numeric verification code.');
+      return;
+    }
+
+    setForgotLoading(true);
+    setForgotError(null);
+
+    try {
+      const res = await verifyResetOtpUser({ email: forgotLogin.trim(), otp: forgotOtp.trim() });
+      if (res.status === 'success' || res.success) {
+        setForgotStep(3);
+      } else {
+        setForgotError(res.message || 'Invalid or expired OTP code.');
+      }
+    } catch (err) {
+      console.error('User verify OTP error:', err);
+      setForgotError(err.response?.data?.message || 'Invalid or expired OTP code.');
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    if (newPassword.length < 6) {
+      setForgotError('Password must be at least 6 characters long.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setForgotError('Passwords do not match. Please verify both fields.');
+      return;
+    }
+
+    setForgotLoading(true);
+    setForgotError(null);
+
+    try {
+      const res = await resetPasswordUser({
+        email: forgotLogin.trim(),
+        otp: forgotOtp.trim(),
+        password: newPassword,
+        password_confirmation: confirmPassword,
+      });
+
+      if (res.status === 'success') {
+        setForgotStep(4);
+        setEmail(forgotLogin);
+        setPassword('');
+      } else {
+        setForgotError(res.message || 'Failed to reset password.');
+      }
+    } catch (err) {
+      console.error('User reset password error:', err);
+      setForgotError(
+        err.response?.data?.message ||
+          (err.response?.data?.errors
+            ? Object.values(err.response.data.errors).flat().join(' ')
+            : 'Failed to reset password.')
+      );
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setErrorMessage('');
+    setShowRegisterPrompt(false);
+
+    const newErrors = {};
+    const trimmedEmail = (email || '').trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!trimmedEmail) {
+      newErrors.email = 'Email address is required.';
+    } else if (!emailRegex.test(trimmedEmail)) {
+      newErrors.email = 'Please enter a valid email address format.';
+    }
+
+    const trimmedPassword = (password || '').trim();
+    if (!trimmedPassword) {
+      newErrors.password = 'Password is required.';
+    } else if (trimmedPassword.length < 4) {
+      newErrors.password = 'Password must be at least 4 characters.';
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setFieldErrors(newErrors);
+      setErrorMessage('Please resolve the highlighted validation errors.');
+      return;
+    }
+
+    setFieldErrors({});
+    setLoading(true);
+
+    try {
+      await onLoginSuccess({ email: trimmedEmail, password: trimmedPassword, rememberMe });
+    } catch (err) {
+      console.error('Login error:', err);
+      const networkMsg = typeof window !== 'undefined' && window.location.origin.includes('vyaparadnet.com')
+        ? 'Unable to connect to backend server. Please verify your connection or try again shortly.'
+        : 'Network Error: Unable to connect to backend server.';
+      setErrorMessage(
+        err.response?.data?.message ||
+        (err.response?.data?.errors ? Object.values(err.response.data.errors).flat().join(' ') : null) ||
+        (!err.response ? networkMsg : err.message || 'Invalid email or password. Please verify credentials and try again.')
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = () => {
+    setErrorMessage('');
+    setShowRegisterPrompt(false);
+    setAccountLinkModal(null);
+    setGoogleLoading(true);
+
+    initiateGoogleCodePopup({
+      onCodeSuccess: async (code) => {
+        try {
+          const res = await authenticateWithGoogle({
+            code,
+            mode: 'login',
+          });
+          if (onGoogleSuccess) {
+            onGoogleSuccess(res);
+          } else if (onLoginSuccess) {
+            onLoginSuccess(res);
+          }
+        } catch (err) {
+          console.error('Google Sign-In error:', err);
+          const data = err.response?.data;
+          if (data?.requires_registration || err.response?.status === 404) {
+            setErrorMessage(data?.message || 'This Google email is not registered yet. Please register first.');
+            setShowRegisterPrompt(true);
+          } else if (data?.requires_password_link || err.response?.status === 409) {
+            setErrorMessage(data?.message || 'An account with this email already exists. Please log in with your password to link your Google account.');
+            setAccountLinkModal({ email: data?.email || email, code });
+          } else {
+            setErrorMessage(data?.message || err.message || 'Google Sign-In failed. Please try again.');
+          }
+        } finally {
+          setGoogleLoading(false);
+        }
+      },
+      onError: (errMsg) => {
+        setGoogleLoading(false);
+        if (errMsg && !errMsg.toLowerCase().includes('closed')) {
+          setErrorMessage(errMsg);
+        }
+      },
+    });
+  };
+
+  const handleConfirmLink = async (e) => {
+    e.preventDefault();
+    if (!accountLinkModal?.code || !linkPassword) return;
+
+    setLinkingLoading(true);
+    setLinkError('');
+
+    try {
+      const res = await authenticateWithGoogle({
+        code: accountLinkModal.code,
+        mode: 'login',
+        link_password: linkPassword,
+      });
+      setAccountLinkModal(null);
+      if (onGoogleSuccess) {
+        onGoogleSuccess(res);
+      } else if (onLoginSuccess) {
+        onLoginSuccess(res);
+      }
+    } catch (err) {
+      console.error('Account link error:', err);
+      setLinkError(err.response?.data?.message || 'Incorrect password for this account. Please verify and try again.');
+    } finally {
+      setLinkingLoading(false);
+    }
+  };
+
+  return (
+    <div className="cb-auth-page">
+      {/* 1. Top Navigation Bar */}
+      <header className="cb-auth-topbar">
+        {onBackToHome ? (
+          <button
+            type="button"
+            onClick={onBackToHome}
+            className="cb-auth-back-btn"
+          >
+            <ArrowLeft size={16} />
+            <span>Back to Homepage</span>
+          </button>
+        ) : <div />}
+
+        {/* Brand Center/Right in Topbar */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <a
+            href="#help"
+            onClick={(e) => {
+              e.preventDefault();
+              if (onOpenLegalPage) onOpenLegalPage('terms');
+            }}
+            className="cb-auth-help-link"
+          >
+            <HelpCircle size={15} />
+            <span>Need Help?</span>
+          </a>
+        </div>
+      </header>
+
+      {/* 2. Main Auth Content */}
+      <main className="cb-auth-main">
+        <div className="cb-auth-container">
+          
+          {/* Left Column: AddNet Value Showcase (Desktop) */}
+          <div className="cb-auth-showcase">
+            <div>
+              {/* Pill Badge */}
+              <div className="cb-showcase-badge">
+                <Sparkles size={13} />
+                <span>Zero Upfront Cost • Pay On Deals</span>
+              </div>
+
+              {/* Title */}
+              <h2 className="cb-showcase-title">
+                Welcome Back to Your <span className="text-orange">Partner Portal</span>
+              </h2>
+
+              <p className="cb-showcase-desc">
+                Access your real-time promoter network, monitor closing sales, track multi-tier commission payouts, and scale your client base across India.
+              </p>
+
+              {/* 3 Key Value Points */}
+              <div className="cb-showcase-features">
+                <div className="cb-showcase-feature-item">
+                  <div className="cb-showcase-feature-icon">
+                    <Briefcase size={18} />
+                  </div>
+                  <div className="cb-showcase-feature-text">
+                    <h4>Pay Only When You Close</h4>
+                    <p>No monthly subscription or advertising risk. Pay a small commission only on closed revenue.</p>
+                  </div>
+                </div>
+
+                <div className="cb-showcase-feature-item">
+                  <div className="cb-showcase-feature-icon">
+                    <ShieldCheck size={18} />
+                  </div>
+                  <div className="cb-showcase-feature-text">
+                    <h4>Direct Customer Settlements</h4>
+                    <p>Clients pay 100% directly to your company account. Full financial control always.</p>
+                  </div>
+                </div>
+
+                <div className="cb-showcase-feature-item">
+                  <div className="cb-showcase-feature-icon">
+                    <Users size={18} />
+                  </div>
+                  <div className="cb-showcase-feature-text">
+                    <h4>Multi-Tier Network Earnings</h4>
+                    <p>Transparent genealogy tree tracking and instant TDS-compliant tax summaries.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Testimonial / Trust Social Proof */}
+            <div className="cb-showcase-testimonial">
+              <div className="cb-testimonial-stars">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} size={14} fill="#FF7A00" color="#FF7A00" />
+                ))}
+              </div>
+              <p className="cb-testimonial-quote">
+                "{appName} connected our software development agency with over 28 genuine corporate clients within the first 60 days."
+              </p>
+              <div className="cb-testimonial-author">
+                <div className="cb-author-avatar">R</div>
+                <div className="cb-author-info">
+                  <span className="cb-author-name">Rajesh Sharma</span>
+                  <span className="cb-author-role">Enterprise IT Solutions Partner</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Sign In Form Box */}
+          <div className="cb-auth-form-panel">
+            
+            {/* Brand Logo Header */}
+            <div className="cb-auth-brand-header">
+              <div className="cb-auth-logo-badge" style={{ background: "transparent", padding: 0 }}><img src={logoUrl || "/logo.png"} alt={appName} style={{ width: "36px", height: "36px", borderRadius: "50%", objectFit: "contain" }} onError={(e) => { e.target.src = "/logo.png"; }} /></div>
+              <div>
+                <div className="cb-auth-logo-text-title">
+                  {appName}
+                </div>
+                <span className="cb-auth-logo-text-sub">
+                  Business Promoter Network
+                </span>
+              </div>
+            </div>
+
+            {/* Switch Tabs (Login vs Register) */}
+            <div className="cb-auth-tabs">
+              <button
+                type="button"
+                className="cb-auth-tab active"
+              >
+                <LogIn size={15} />
+                <span>Partner Sign In</span>
+              </button>
+              <button
+                type="button"
+                className="cb-auth-tab"
+                onClick={onSwitchToRegister}
+              >
+                <UserPlus size={15} />
+                <span>Register Partner</span>
+              </button>
+            </div>
+
+            {/* Form Headline */}
+            <div className="cb-form-header">
+              <h1 className="cb-form-title">Welcome back!</h1>
+              <p className="cb-form-subtitle">
+                Enter your credentials to access your business dashboard.
+              </p>
+            </div>
+
+            {/* Session Expired Notice */}
+            {sessionExpiredNotice && (
+              <div
+                className="cb-alert-error"
+                style={{
+                  background: '#fffbeb',
+                  border: '1px solid #fde68a',
+                  color: '#92400e',
+                  marginBottom: '1rem',
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '0.6rem',
+                  padding: '0.75rem 1rem',
+                  borderRadius: '10px',
+                }}
+              >
+                <AlertCircle size={18} style={{ flexShrink: 0, marginTop: '2px', color: '#d97706' }} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', width: '100%' }}>
+                  <strong style={{ fontSize: '0.875rem', color: '#92400e' }}>Session Expired</strong>
+                  <span style={{ fontSize: '0.8125rem', color: '#78350f', lineHeight: 1.4 }}>{sessionExpiredNotice}</span>
+                </div>
+              </div>
+            )}
+
+            {/* Error Message */}
+            {errorMessage && (
+              <div className="cb-alert-error">
+                <AlertCircle size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', width: '100%' }}>
+                  <span>{errorMessage}</span>
+                  {showRegisterPrompt && (
+                    <button
+                      type="button"
+                      className="highlight-link"
+                      style={{ textAlign: 'left', fontWeight: '700', padding: 0, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--cb-primary, #0F4C81)' }}
+                      onClick={onSwitchToRegister}
+                    >
+                      Register as Partner with Google →
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Main Login Form */}
+            <form onSubmit={handleSubmit}>
+              {/* Email Field */}
+              <div className="cb-form-group">
+                <label className="cb-input-label">
+                  <span>Email Address</span>
+                  <span className="required-dot">*</span>
+                </label>
+                <div className="cb-input-wrapper">
+                  <span className="cb-input-icon">
+                    <Mail size={18} />
+                  </span>
+                  <input
+                    type="email"
+                    className="cb-input-field"
+                    value={email}
+                    onChange={(e) => { setEmail(e.target.value); setFieldErrors(prev => ({ ...prev, email: null })); }}
+                    placeholder="partner@addnet.com"
+                    autoComplete="email"
+                    required
+                  />
+                </div>
+                {fieldErrors.email && (
+                  <span style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '0.35rem', display: 'block', fontWeight: 600 }}>
+                    ⚠️ {fieldErrors.email}
+                  </span>
+                )}
+              </div>
+
+              {/* Password Field */}
+              <div className="cb-form-group">
+                <div className="cb-input-label">
+                  <span>Password</span>
+                  <span className="required-dot">*</span>
+                </div>
+                <div className="cb-input-wrapper">
+                  <span className="cb-input-icon">
+                    <Lock size={18} />
+                  </span>
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    className="cb-input-field"
+                    value={password}
+                    onChange={(e) => { setPassword(e.target.value); setFieldErrors(prev => ({ ...prev, password: null })); }}
+                    placeholder="Enter your password"
+                    autoComplete="current-password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="cb-password-toggle"
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                {fieldErrors.password && (
+                  <span style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '0.35rem', display: 'block', fontWeight: 600 }}>
+                    ⚠️ {fieldErrors.password}
+                  </span>
+                )}
+              </div>
+
+              {/* Options: Remember Me & Forgot Password */}
+              <div className="cb-form-options">
+                <label className="cb-checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                  />
+                  <span>Remember me</span>
+                </label>
+
+                <button
+                  type="button"
+                  className="cb-link-btn"
+                  onClick={handleOpenForgotModal}
+                >
+                  Forgot password?
+                </button>
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                className="cb-submit-btn"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 size={18} className="spin" style={{ animation: 'spin 1s linear infinite' }} />
+                    <span>Signing in securely...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Sign In to Dashboard</span>
+                    <ArrowRight size={18} />
+                  </>
+                )}
+              </button>
+            </form>
+
+            {/* Social Divider */}
+            <div className="cb-auth-divider">
+              <span>Or continue with</span>
+            </div>
+
+            {/* Google SSO Button */}
+            <button
+              type="button"
+              className="cb-google-sso-btn"
+              onClick={handleGoogleSignIn}
+              disabled={loading || googleLoading}
+            >
+              {googleLoading ? (
+                <>
+                  <Loader2 size={18} className="spin" style={{ animation: 'spin 1s linear infinite' }} />
+                  <span>Connecting to Google...</span>
+                </>
+              ) : (
+                <>
+                  <svg width="18" height="18" viewBox="0 0 24 24">
+                    <path fill="#ea4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.9C6.2 7.2 8.9 5 12 5z"/>
+                    <path fill="#4285f4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/>
+                    <path fill="#fbbc05" d="M5.3 14.7c-.2-.7-.4-1.4-.4-2.2s.2-1.5.4-2.2L1.6 7.4C.6 9.4 0 11.6 0 14s.6 4.6 1.6 6.6l3.7-2.9c0-.6.1-1.3.1-2.4z"/>
+                    <path fill="#34a853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.1 0-5.8-2.2-6.7-5.3L1.6 16c1.9 3.8 5.8 7 10.4 7z"/>
+                  </svg>
+                  <span>Continue with Google</span>
+                </>
+              )}
+            </button>
+
+            {/* Footer Prompt */}
+            <div className="cb-auth-footer-text">
+              <span>Don't have an account yet?</span>
+              <button
+                type="button"
+                className="highlight-link"
+                onClick={onSwitchToRegister}
+              >
+                Register as Partner →
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      {/* 3. Bottom Legal Footer */}
+      <footer className="cb-auth-bottom-footer">
+        <span>© {new Date().getFullYear()} {appName} Pvt. Ltd. All rights reserved.</span>
+        <div style={{ display: 'flex', gap: '1.25rem' }}>
+          <a
+            href="#terms"
+            onClick={(e) => {
+              e.preventDefault();
+              if (onOpenLegalPage) onOpenLegalPage('terms');
+            }}
+          >
+            Terms of Service
+          </a>
+          <a
+            href="#privacy"
+            onClick={(e) => {
+              e.preventDefault();
+              if (onOpenLegalPage) onOpenLegalPage('privacy');
+            }}
+          >
+            Privacy Policy
+          </a>
+        </div>
+      </footer>
+
+      {/* Account Linking Modal for Existing Email Accounts */}
+      {accountLinkModal && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.7)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '1rem',
+          }}
+        >
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '20px',
+              maxWidth: '460px',
+              width: '100%',
+              padding: '2rem',
+              boxShadow: '0 25px 50px -12px rgba(15, 76, 129, 0.25)',
+              border: '1px solid #E2E8F0',
+              position: 'relative',
+              animation: 'cbFadeIn 0.25s ease-out',
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => setAccountLinkModal(null)}
+              style={{
+                position: 'absolute',
+                top: '1.25rem',
+                right: '1.25rem',
+                background: '#F1F5F9',
+                border: 'none',
+                borderRadius: '50%',
+                width: '32px',
+                height: '32px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#64748B',
+                cursor: 'pointer',
+              }}
+            >
+              <X size={18} />
+            </button>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
+              <div
+                style={{
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '12px',
+                  background: '#FEF3C7',
+                  color: '#D97706',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <KeyRound size={22} />
+              </div>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>
+                  Link Google Account
+                </h3>
+                <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748B' }}>
+                  Confirm password to link existing account
+                </p>
+              </div>
+            </div>
+
+            <p style={{ fontSize: '0.88rem', color: '#475569', lineHeight: 1.5, marginBottom: '1.25rem' }}>
+              An account with <strong>{accountLinkModal.email}</strong> is already registered. To link your Google login, please enter your existing password to verify ownership.
+            </p>
+
+            {linkError && (
+              <div className="cb-alert-error" style={{ marginBottom: '1rem' }}>
+                <AlertCircle size={16} style={{ flexShrink: 0 }} />
+                <span style={{ fontSize: '0.84rem' }}>{linkError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleConfirmLink}>
+              <div className="cb-form-group">
+                <label className="cb-input-label">Account Password</label>
+                <div className="cb-input-wrapper">
+                  <span className="cb-input-icon">
+                    <Lock size={18} />
+                  </span>
+                  <input
+                    type="password"
+                    className="cb-input-field"
+                    value={linkPassword}
+                    onChange={(e) => setLinkPassword(e.target.value)}
+                    placeholder="Enter existing password"
+                    required
+                    autoFocus
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.25rem' }}>
+                <button
+                  type="button"
+                  className="cb-btn-ghost"
+                  style={{ flex: 1 }}
+                  onClick={() => setAccountLinkModal(null)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="cb-submit-btn"
+                  style={{ flex: 1.5 }}
+                  disabled={linkingLoading || !linkPassword}
+                >
+                  {linkingLoading ? 'Verifying...' : 'Verify & Link'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Forgot Password Modal */}
+      {showForgotModal && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.7)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '1rem',
+          }}
+        >
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '20px',
+              maxWidth: '460px',
+              width: '100%',
+              padding: '2rem',
+              boxShadow: '0 25px 50px -12px rgba(15, 76, 129, 0.25)',
+              border: '1px solid #E2E8F0',
+              position: 'relative',
+              animation: 'cbFadeIn 0.25s ease-out',
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => setShowForgotModal(false)}
+              style={{
+                position: 'absolute',
+                top: '1.25rem',
+                right: '1.25rem',
+                background: '#F1F5F9',
+                border: 'none',
+                borderRadius: '50%',
+                width: '32px',
+                height: '32px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#64748B',
+                cursor: 'pointer',
+              }}
+            >
+              <X size={18} />
+            </button>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
+              <div
+                style={{
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '12px',
+                  background: 'var(--cb-primary-light, #e8f1f8)',
+                  color: 'var(--cb-primary, #0F4C81)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <KeyRound size={22} />
+              </div>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0F172A', fontFamily: 'Poppins, sans-serif' }}>
+                  Reset Password
+                </h3>
+                <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748B' }}>
+                  {forgotStep === 1 && "We'll send a 6-digit OTP to your registered email."}
+                  {forgotStep === 2 && 'Enter the verification code sent to your email.'}
+                  {forgotStep === 3 && 'Choose a secure new password for your account.'}
+                  {forgotStep === 4 && 'Password successfully updated.'}
+                </p>
+              </div>
+            </div>
+
+            {/* Stepper Indicator */}
+            {forgotStep < 4 && (
+              <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem' }}>
+                <div style={{ flex: 1, height: '4px', borderRadius: '2px', background: forgotStep >= 1 ? 'var(--cb-primary, #0F4C81)' : '#E2E8F0', transition: 'background 0.3s' }} />
+                <div style={{ flex: 1, height: '4px', borderRadius: '2px', background: forgotStep >= 2 ? 'var(--cb-primary, #0F4C81)' : '#E2E8F0', transition: 'background 0.3s' }} />
+                <div style={{ flex: 1, height: '4px', borderRadius: '2px', background: forgotStep >= 3 ? 'var(--cb-primary, #0F4C81)' : '#E2E8F0', transition: 'background 0.3s' }} />
+              </div>
+            )}
+
+            {/* Error Message */}
+            {forgotError && (
+              <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', color: '#B91C1C', padding: '0.65rem 0.85rem', borderRadius: '8px', fontSize: '0.82rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <AlertCircle size={16} style={{ flexShrink: 0 }} />
+                <span>{forgotError}</span>
+              </div>
+            )}
+
+            {/* STEP 1: Enter Email / User Code */}
+            {forgotStep === 1 && (
+              <form onSubmit={handleSendOtp}>
+                <p style={{ color: '#64748B', fontSize: '0.85rem', marginBottom: '1rem' }}>
+                  Enter your registered partner email address or Member ID to receive a 6-digit verification code.
+                </p>
+
+                <div className="cb-form-group">
+                  <label className="cb-input-label">
+                    <span>Registered Email or Member ID</span>
+                    <span className="required-dot">*</span>
+                  </label>
+                  <div className="cb-input-wrapper">
+                    <span className="cb-input-icon">
+                      <Mail size={18} />
+                    </span>
+                    <input
+                      type="text"
+                      className="cb-input-field"
+                      value={forgotLogin}
+                      onChange={(e) => setForgotLogin(e.target.value)}
+                      placeholder="e.g. partner@addnet.com or AD12345"
+                      required
+                      autoFocus
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.25rem' }}>
+                  <button
+                    type="button"
+                    className="cb-btn-ghost"
+                    style={{ flex: 1 }}
+                    onClick={() => setShowForgotModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={forgotLoading}
+                    className="cb-submit-btn"
+                    style={{ flex: 1.5 }}
+                  >
+                    {forgotLoading ? (
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}>
+                        <Loader2 size={16} className="animate-spin" /> Sending...
+                      </span>
+                    ) : (
+                      'Send OTP Code'
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* STEP 2: Enter OTP */}
+            {forgotStep === 2 && (
+              <form onSubmit={handleVerifyOtp}>
+                <p style={{ color: '#64748B', fontSize: '0.85rem', marginBottom: '1rem' }}>
+                  We sent a 6-digit code to{' '}
+                  <strong style={{ color: '#0F172A' }}>{maskedEmail || forgotLogin}</strong>.
+                  Code expires in 15 minutes.
+                </p>
+
+                <div className="cb-form-group">
+                  <label className="cb-input-label">
+                    <span>6-Digit Verification Code</span>
+                    <span className="required-dot">*</span>
+                  </label>
+                  <div className="cb-input-wrapper">
+                    <span className="cb-input-icon">
+                      <KeyRound size={18} />
+                    </span>
+                    <input
+                      type="text"
+                      maxLength={6}
+                      required
+                      className="cb-input-field"
+                      value={forgotOtp}
+                      onChange={(e) => setForgotOtp(e.target.value.replace(/[^0-9]/g, ''))}
+                      placeholder="123456"
+                      style={{ letterSpacing: '0.3em', fontWeight: 700, fontSize: '1.1rem' }}
+                      autoFocus
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem', marginBottom: '1.25rem' }}>
+                  <button
+                    type="button"
+                    onClick={() => setForgotStep(1)}
+                    style={{ background: 'none', border: 'none', color: '#64748B', fontSize: '0.8rem', cursor: 'pointer', textDecoration: 'underline' }}
+                  >
+                    ← Change ID/Email
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleSendOtp}
+                    disabled={forgotLoading || resendCooldown > 0}
+                    style={{ padding: '0.45rem 0.8rem', background: '#F1F5F9', color: resendCooldown > 0 ? '#94A3B8' : '#475569', border: 'none', borderRadius: '8px', fontWeight: 600, fontSize: '0.8rem', cursor: resendCooldown > 0 ? 'not-allowed' : 'pointer' }}
+                  >
+                    {resendCooldown > 0 ? `Resend (${resendCooldown}s)` : 'Resend Code'}
+                  </button>
+                </div>
+
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                  <button
+                    type="button"
+                    className="cb-btn-ghost"
+                    style={{ flex: 1 }}
+                    onClick={() => setForgotStep(1)}
+                  >
+                    Back
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={forgotLoading || forgotOtp.length !== 6}
+                    className="cb-submit-btn"
+                    style={{ flex: 1.5 }}
+                  >
+                    {forgotLoading ? (
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}>
+                        <Loader2 size={16} className="animate-spin" /> Verifying...
+                      </span>
+                    ) : (
+                      'Verify Code'
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* STEP 3: Enter New Password */}
+            {forgotStep === 3 && (
+              <form onSubmit={handleResetPassword}>
+                <p style={{ color: '#64748B', fontSize: '0.85rem', marginBottom: '1rem' }}>
+                  Create a new secure password for <strong style={{ color: '#0F172A' }}>{forgotLogin}</strong>.
+                </p>
+
+                <div className="cb-form-group">
+                  <label className="cb-input-label">
+                    <span>New Password</span>
+                    <span className="required-dot">*</span>
+                  </label>
+                  <div className="cb-input-wrapper">
+                    <span className="cb-input-icon">
+                      <Lock size={18} />
+                    </span>
+                    <input
+                      type={showNewPassword ? 'text' : 'password'}
+                      required
+                      minLength={6}
+                      className="cb-input-field"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="At least 6 characters"
+                      autoFocus
+                    />
+                    <button
+                      type="button"
+                      className="cb-password-toggle"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      aria-label={showNewPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="cb-form-group" style={{ marginTop: '0.85rem' }}>
+                  <label className="cb-input-label">
+                    <span>Confirm New Password</span>
+                    <span className="required-dot">*</span>
+                  </label>
+                  <div className="cb-input-wrapper">
+                    <span className="cb-input-icon">
+                      <Lock size={18} />
+                    </span>
+                    <input
+                      type={showNewPassword ? 'text' : 'password'}
+                      required
+                      minLength={6}
+                      className="cb-input-field"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Confirm new password"
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.25rem' }}>
+                  <button
+                    type="button"
+                    className="cb-btn-ghost"
+                    style={{ flex: 1 }}
+                    onClick={() => setForgotStep(2)}
+                  >
+                    Back
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={forgotLoading}
+                    className="cb-submit-btn"
+                    style={{ flex: 1.5 }}
+                  >
+                    {forgotLoading ? (
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}>
+                        <Loader2 size={16} className="animate-spin" /> Updating...
+                      </span>
+                    ) : (
+                      'Update Password'
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* STEP 4: Success */}
+            {forgotStep === 4 && (
+              <div style={{ textAlign: 'center', padding: '1.5rem 0' }}>
+                <div
+                  style={{
+                    width: '56px',
+                    height: '56px',
+                    borderRadius: '50%',
+                    background: '#DCFCE7',
+                    color: '#16A34A',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto 1rem auto',
+                  }}
+                >
+                  <CheckCircle2 size={32} />
+                </div>
+                <h4 style={{ margin: '0 0 0.5rem 0', color: '#0F172A', fontSize: '1.15rem', fontWeight: 700 }}>
+                  Password Reset Successfully!
+                </h4>
+                <p style={{ fontSize: '0.88rem', color: '#64748B', lineHeight: 1.5, margin: '0 0 1.5rem 0' }}>
+                  Your partner account password has been updated. You can now log in with your new password.
+                </p>
+                <button
+                  type="button"
+                  className="cb-submit-btn"
+                  onClick={() => setShowForgotModal(false)}
+                >
+                  Return to Sign In
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default LoginForm;

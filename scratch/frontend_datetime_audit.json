@@ -1,0 +1,2448 @@
+{
+  "dependencies": {
+    "admin": {},
+    "entity": {},
+    "user": {}
+  },
+  "pattern_counts": {
+    "admin": {
+      "new_date": 35,
+      "iso_string": 7,
+      "to_locale_string": 196,
+      "to_locale_date": 8,
+      "to_locale_time": 0,
+      "intl_dt": 0,
+      "tz_offset": 0,
+      "input_date": 2,
+      "input_datetime": 0,
+      "input_time": 0,
+      "date_fns_or_moment": 0,
+      "format_date_fn": 0
+    },
+    "entity": {
+      "new_date": 24,
+      "iso_string": 5,
+      "to_locale_string": 77,
+      "to_locale_date": 6,
+      "to_locale_time": 0,
+      "intl_dt": 0,
+      "tz_offset": 0,
+      "input_date": 2,
+      "input_datetime": 0,
+      "input_time": 0,
+      "date_fns_or_moment": 0,
+      "format_date_fn": 1
+    },
+    "user": {
+      "new_date": 37,
+      "iso_string": 9,
+      "to_locale_string": 38,
+      "to_locale_date": 9,
+      "to_locale_time": 1,
+      "intl_dt": 0,
+      "tz_offset": 0,
+      "input_date": 7,
+      "input_datetime": 0,
+      "input_time": 0,
+      "date_fns_or_moment": 0,
+      "format_date_fn": 3
+    }
+  },
+  "findings": {
+    "admin": {
+      "new_date": [
+        {
+          "file": "admin/src/components/AdminLoginForm.jsx",
+          "line": 643,
+          "text": "\u00a9 {new Date().getFullYear()} {appName} \u2014 Powered by Laravel & React"
+        },
+        {
+          "file": "admin/src/components/entities/AdminEntityCommissionPage.jsx",
+          "line": 226,
+          "text": "updated_at: new Date().toISOString(),"
+        },
+        {
+          "file": "admin/src/components/entities/AdminEntityCommissionPage.jsx",
+          "line": 304,
+          "text": "updated_at: new Date().toISOString(),"
+        },
+        {
+          "file": "admin/src/components/layout/AdminFooter.jsx",
+          "line": 9,
+          "text": "<div>\u00a9 {new Date().getFullYear()} {appName} Admin \u2014 Powered by Laravel & React</div>"
+        },
+        {
+          "file": "admin/src/components/products/AdminProductsServicesPage.jsx",
+          "line": 153,
+          "text": "created_at: new Date().toISOString().split('T')[0],"
+        },
+        {
+          "file": "admin/src/components/sales/AdminDumpRequestsPage.jsx",
+          "line": 422,
+          "text": "{d.requested_at ? new Date(d.requested_at).toLocaleDateString('en-IN') : '\u2014'}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminDumpRequestsPage.jsx",
+          "line": 894,
+          "text": "<div><strong style={{ color: '#6B7280' }}>Requested At:</strong> <div>{selectedDumpForDetails.requested_at ? new Date(selectedDumpForDetails.requested_at).toLocaleString('en-IN') : '\u2014'}</div></div>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminDumpRequestsPage.jsx",
+          "line": 915,
+          "text": "Approved by Admin #{selectedDumpForDetails.approved_by} on {selectedDumpForDetails.approved_at ? new Date(selectedDumpForDetails.approved_at).toLocaleString('en-IN') : '\u2014'}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminDumpRequestsPage.jsx",
+          "line": 925,
+          "text": "Rejected by Admin #{selectedDumpForDetails.rejected_by} on {selectedDumpForDetails.rejected_at ? new Date(selectedDumpForDetails.rejected_at).toLocaleString('en-IN') : '\u2014'}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 284,
+          "text": "const todayStr = new Date().toISOString().split('T')[0];"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1068,
+          "text": "const timeA = a.date ? new Date(a.date).getTime() : 0;"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1069,
+          "text": "const timeB = b.date ? new Date(b.date).getTime() : 0;"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1299,
+          "text": "const timeA = a.date ? new Date(a.date).getTime() : 0;"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1300,
+          "text": "const timeB = b.date ? new Date(b.date).getTime() : 0;"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1368,
+          "text": "{entry.date ? new Date(entry.date).toLocaleDateString('en-IN') : 'N/A'}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1486,
+          "text": "{entry.date ? new Date(entry.date).toLocaleDateString('en-IN') : 'N/A'}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1949,
+          "text": "{selectedDumpDetails.requested_at && <div>Requested at: {new Date(selectedDumpDetails.requested_at).toLocaleString('en-IN')}</div>}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1950,
+          "text": "{selectedDumpDetails.approved_at && <div>Approved at: {new Date(selectedDumpDetails.approved_at).toLocaleString('en-IN')}</div>}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1951,
+          "text": "{selectedDumpDetails.rejected_at && <div>Rejected at: {new Date(selectedDumpDetails.rejected_at).toLocaleString('en-IN')}</div>}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 2143,
+          "text": "\u26a0\ufe0f This payment receipt has already been allocated (Status: {paymentAllocationData.income_distribution_status}). Distributed at: {paymentAllocationData.income_distributed_at ? new Date(paymentAllocationData.income_distributed_at).toLocaleString() : 'N/A'}."
+        },
+        {
+          "file": "admin/src/components/sales/AdminPaymentHistoryPage.jsx",
+          "line": 346,
+          "text": "const formattedDate = paymentDate ? new Date(paymentDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '\u2014';"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPaymentHistoryPage.jsx",
+          "line": 363,
+          "text": "const formattedDistributedAt = distributedAt ? new Date(distributedAt).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Completed';"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPaymentHistoryPage.jsx",
+          "line": 670,
+          "text": "{viewingPayment.income_distributed_at || viewingPayment.incomeDistributedAt ? new Date(viewingPayment.income_distributed_at || viewingPayment.incomeDistributedAt).toLocaleString('en-IN') : 'Completed'}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPendingOrdersPage.jsx",
+          "line": 621,
+          "text": "{order.date || (order.created_at ? new Date(order.created_at).toLocaleDateString('en-IN') : 'N/A')}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPendingOrdersPage.jsx",
+          "line": 913,
+          "text": "{selectedOrderForReview.date || (selectedOrderForReview.created_at ? new Date(selectedOrderForReview.created_at).toLocaleDateString('en-IN') : 'N/A')}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 191,
+          "text": "date: new Date().toISOString().replace('T', ' ').substring(0, 16),"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 243,
+          "text": "dumped_at: new Date().toISOString().split('T')[0],"
+        },
+        {
+          "file": "admin/src/components/support/AdminSendNotificationPage.jsx",
+          "line": 492,
+          "text": "{n.created_at ? new Date(n.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'N/A'}"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutRequestsPage.jsx",
+          "line": 69,
+          "text": "const reqDate = new Date(p.requestDate);"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutRequestsPage.jsx",
+          "line": 71,
+          "text": "const todayStr = new Date().toISOString().slice(0, 10);"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutRequestsPage.jsx",
+          "line": 76,
+          "text": "const now = new Date();"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutRequestsPage.jsx",
+          "line": 77,
+          "text": "const firstDay = new Date(now.setDate(now.getDate() - now.getDay()));"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutRequestsPage.jsx",
+          "line": 80,
+          "text": "const now = new Date();"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutRequestsPage.jsx",
+          "line": 81,
+          "text": "const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);"
+        },
+        {
+          "file": "admin/src/components/users/AdminRewardsClaimPage.jsx",
+          "line": 234,
+          "text": "{claim.claim_date ? new Date(claim.claim_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}"
+        }
+      ],
+      "iso_string": [
+        {
+          "file": "admin/src/components/entities/AdminEntityCommissionPage.jsx",
+          "line": 226,
+          "text": "updated_at: new Date().toISOString(),"
+        },
+        {
+          "file": "admin/src/components/entities/AdminEntityCommissionPage.jsx",
+          "line": 304,
+          "text": "updated_at: new Date().toISOString(),"
+        },
+        {
+          "file": "admin/src/components/products/AdminProductsServicesPage.jsx",
+          "line": 153,
+          "text": "created_at: new Date().toISOString().split('T')[0],"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 284,
+          "text": "const todayStr = new Date().toISOString().split('T')[0];"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 191,
+          "text": "date: new Date().toISOString().replace('T', ' ').substring(0, 16),"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 243,
+          "text": "dumped_at: new Date().toISOString().split('T')[0],"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutRequestsPage.jsx",
+          "line": 71,
+          "text": "const todayStr = new Date().toISOString().slice(0, 10);"
+        }
+      ],
+      "to_locale_string": [
+        {
+          "file": "admin/src/components/content/AdminContentLibraryPage.jsx",
+          "line": 770,
+          "text": "<div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0f172a' }}>{totalDownloadsSum.toLocaleString()}</div>"
+        },
+        {
+          "file": "admin/src/components/content/AdminContentLibraryPage.jsx",
+          "line": 778,
+          "text": "<div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0f172a' }}>{totalSharesSum.toLocaleString()}</div>"
+        },
+        {
+          "file": "admin/src/components/content/AdminContentSupportUploadsPage.jsx",
+          "line": 233,
+          "text": "<div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', margin: '0.3rem 0' }}>\ud83d\udc41\ufe0f {totalViews.toLocaleString()}</div>"
+        },
+        {
+          "file": "admin/src/components/content/AdminContentSupportUploadsPage.jsx",
+          "line": 234,
+          "text": "<div style={{ fontSize: '0.78rem', color: '#059669', fontWeight: '700' }}>\ud83d\udc4d {totalHelpful.toLocaleString()} Helpful Votes</div>"
+        },
+        {
+          "file": "admin/src/components/dashboard/AdminDashboardOverview.jsx",
+          "line": 161,
+          "text": "formatter: (val) => `\u20b9${(Number(val) || 0).toLocaleString('en-IN')}`,"
+        },
+        {
+          "file": "admin/src/components/dashboard/AdminDashboardOverview.jsx",
+          "line": 501,
+          "text": "\u20b9{kpis.totalGmv.toLocaleString('en-IN', { minimumFractionDigits: 2 })}"
+        },
+        {
+          "file": "admin/src/components/dashboard/AdminDashboardOverview.jsx",
+          "line": 532,
+          "text": "\u20b9{kpis.totalPlatformRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}"
+        },
+        {
+          "file": "admin/src/components/dashboard/AdminDashboardOverview.jsx",
+          "line": 569,
+          "text": "\u20b9{kpis.totalCommissionsPaid.toLocaleString('en-IN', { minimumFractionDigits: 2 })}"
+        },
+        {
+          "file": "admin/src/components/dashboard/AdminDashboardOverview.jsx",
+          "line": 572,
+          "text": "<span>TDS Pool: \u20b9{kpis.totalTdsCollected.toLocaleString('en-IN')} (5% Tax)</span>"
+        },
+        {
+          "file": "admin/src/components/dashboard/AdminDashboardOverview.jsx",
+          "line": 600,
+          "text": "{kpis.totalUsers.toLocaleString('en-IN')}{' '}"
+        },
+        {
+          "file": "admin/src/components/dashboard/AdminDashboardOverview.jsx",
+          "line": 641,
+          "text": "{kpis.pendingPayoutsCount} Payout Requests Pending (\u20b9{kpis.pendingPayoutsAmount.toLocaleString('en-IN')}) \u2022 {kpis.pendingKycCount} KYC Submissions Awaiting Audit"
+        },
+        {
+          "file": "admin/src/components/dashboard/AdminDashboardOverview.jsx",
+          "line": 951,
+          "text": "\u20b9{txn.gross.toLocaleString('en-IN', { minimumFractionDigits: 2 })}"
+        },
+        {
+          "file": "admin/src/components/dashboard/AdminDashboardOverview.jsx",
+          "line": 954,
+          "text": "\u20b9{txn.adminFee.toLocaleString('en-IN', { minimumFractionDigits: 2 })}"
+        },
+        {
+          "file": "admin/src/components/products/AdminPackagesPage.jsx",
+          "line": 373,
+          "text": "<strong style={{ fontSize: '0.95rem', color: '#0f172a' }}>\u20b9{pkg.price.toLocaleString()}</strong>"
+        },
+        {
+          "file": "admin/src/components/products/AdminPackagesPage.jsx",
+          "line": 435,
+          "text": "<span className=\"pro-card-price\">\u20b9{pkg.price.toLocaleString()}</span>"
+        },
+        {
+          "file": "admin/src/components/products/AdminProductsPage.jsx",
+          "line": 465,
+          "text": "<span className=\"price-tag-value\">\u20b9{Number(p.price).toLocaleString('en-IN')}</span>"
+        },
+        {
+          "file": "admin/src/components/products/AdminProductsPage.jsx",
+          "line": 523,
+          "text": "<div className=\"grid-price\">Base: \u20b9{Number(p.price).toLocaleString('en-IN')}</div>"
+        },
+        {
+          "file": "admin/src/components/products/AdminProductsServicesPage.jsx",
+          "line": 498,
+          "text": "<strong style={{ color: '#0f172a', fontSize: '0.95rem' }}>\u20b9{item.price.toLocaleString()}</strong>"
+        },
+        {
+          "file": "admin/src/components/products/AdminServicesPage.jsx",
+          "line": 457,
+          "text": "<span className=\"price-tag-value\">\u20b9{Number(s.price).toLocaleString('en-IN')}</span>"
+        },
+        {
+          "file": "admin/src/components/products/AdminServicesPage.jsx",
+          "line": 513,
+          "text": "<div className=\"grid-price\">Base: \u20b9{Number(s.price).toLocaleString('en-IN')}</div>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminDumpRequestsPage.jsx",
+          "line": 51,
+          "text": "return '\u20b9' + num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });"
+        },
+        {
+          "file": "admin/src/components/sales/AdminDumpRequestsPage.jsx",
+          "line": 894,
+          "text": "<div><strong style={{ color: '#6B7280' }}>Requested At:</strong> <div>{selectedDumpForDetails.requested_at ? new Date(selectedDumpForDetails.requested_at).toLocaleString('en-IN') : '\u2014'}</div></div>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminDumpRequestsPage.jsx",
+          "line": 915,
+          "text": "Approved by Admin #{selectedDumpForDetails.approved_by} on {selectedDumpForDetails.approved_at ? new Date(selectedDumpForDetails.approved_at).toLocaleString('en-IN') : '\u2014'}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminDumpRequestsPage.jsx",
+          "line": 925,
+          "text": "Rejected by Admin #{selectedDumpForDetails.rejected_by} on {selectedDumpForDetails.rejected_at ? new Date(selectedDumpForDetails.rejected_at).toLocaleString('en-IN') : '\u2014'}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 390,
+          "text": "\u20b9{totalGross.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 400,
+          "text": "\u20b9{totalExpectedAdminCommission.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 410,
+          "text": "\u20b9{totalCollected.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 420,
+          "text": "\u20b9{totalBalanceDue.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 430,
+          "text": "\u20b9{totalAdminCommissionCollected.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 440,
+          "text": "\u20b9{totalRemainingAdminCommission.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 450,
+          "text": "\u20b9{totalDistributedAdminCut.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 616,
+          "text": "\u20b9{gross.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 621,
+          "text": "<div>\u20b9{expectedAdminCut.toLocaleString()}</div>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 627,
+          "text": "\u20b9{totalPaymentReceived.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 632,
+          "text": "\u20b9{balanceDue.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 637,
+          "text": "\u20b9{adminCutCollected.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 642,
+          "text": "\u20b9{remainingAdminCut.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 676,
+          "text": "Allocated: \u20b9{distributedCut.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 682,
+          "text": "Dump: \u20b9{dumpAmount.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 833,
+          "text": "<strong style={{ fontSize: '1rem', color: '#0f172a' }}>\u20b9{Number(selectedInvoiceForView.grossAmount ?? selectedInvoiceForView.gross_amount ?? 0).toLocaleString()}</strong>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 837,
+          "text": "<strong style={{ color: '#2563eb' }}>\u20b9{Number(selectedInvoiceForView.advancePayment ?? selectedInvoiceForView.advance_payment ?? 0).toLocaleString()}</strong>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 842,
+          "text": "\u20b9{Number(selectedInvoiceForView.balanceDue ?? selectedInvoiceForView.balance_due ?? 0).toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 847,
+          "text": "<strong style={{ color: '#16a34a', fontSize: '1rem' }}>\u20b9{Number(selectedInvoiceForView.adminCommissionCut ?? selectedInvoiceForView.admin_commission_cut ?? 0).toLocaleString()} ({selectedInvoiceForView.adminCommissionPercent || 15}%)</strong>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 852,
+          "text": "<strong style={{ color: '#7c3aed', fontSize: '1rem' }}>\u20b9{Number(selectedInvoiceForView.dump_amount ?? selectedInvoiceForView.dumpAmount ?? 0).toLocaleString()}</strong>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 932,
+          "text": "<div><span style={{ color: '#64748b' }}>Project Value:</span> <strong style={{ color: '#0f172a' }}>\u20b9{Number(selectedOrderForDetails.grossAmount ?? selectedOrderForDetails.gross_amount ?? 0).toLocaleString()}</strong></div>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 933,
+          "text": "<div><span style={{ color: '#64748b' }}>Collected:</span> <strong style={{ color: '#2563eb' }}>\u20b9{Number(selectedOrderForDetails.advancePayment ?? selectedOrderForDetails.advance_payment ?? 0).toLocaleString()}</strong></div>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 934,
+          "text": "<div><span style={{ color: '#64748b' }}>Balance Due:</span> <strong style={{ color: Number(selectedOrderForDetails.balanceDue ?? selectedOrderForDetails.balance_due ?? 0) > 0 ? '#d97706' : '#16a34a' }}>\u20b9{Number(selectedOrderForDetails.balanceDue ?? selectedOrderForDetails.balance_due ?? 0).toLocaleString()}</strong></div>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1081,
+          "text": "\u20b9{orderGross.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1089,
+          "text": "\u20b9{orderExpectedCut.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1097,
+          "text": "\u20b9{orderReceived.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1105,
+          "text": "\u20b9{orderBalance.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1113,
+          "text": "\u20b9{orderCollectedCut.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1121,
+          "text": "\u20b9{orderDumpAdminCut.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1129,
+          "text": "\u20b9{orderRemainingCut.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1140,
+          "text": "\u20b9{orderDistributedCut.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1148,
+          "text": "\u20b9{directCut.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1156,
+          "text": "\u20b9{levelCut.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1164,
+          "text": "\u20b9{rewardCut.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1174,
+          "text": "<span>\ud83d\udce6</span> APPROVED DUMP WRITE-OFF: \u20b9{orderApprovedDump.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1185,
+          "text": "\u20b9{orderDumpAdminCut.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1371,
+          "text": "\u20b9{entry.amount.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1374,
+          "text": "\u20b9{entry.adminCut.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1377,
+          "text": "\u20b9{entry.directIncome.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1380,
+          "text": "\u20b9{entry.levelIncome.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1383,
+          "text": "\u20b9{entry.rewardIncome.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1490,
+          "text": "\u20b9{entry.amount.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1497,
+          "text": "\u20b9{entry.adminCut.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1501,
+          "text": "\u20b9{entry.directIncome.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1505,
+          "text": "\u20b9{entry.levelIncome.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1509,
+          "text": "\u20b9{entry.rewardIncome.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1692,
+          "text": "<strong style={{ color: '#6b21a8', fontSize: '1.05rem' }}>\u20b9{dumpAmt.toLocaleString()}</strong>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1700,
+          "text": "<span>\u20b9{dumpCut.toLocaleString()}</span>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1711,
+          "text": "<div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#1d4ed8', marginTop: '0.1rem' }}>\u20b9{directDump.toLocaleString()}</div>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1715,
+          "text": "<div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#1d4ed8', marginTop: '0.1rem' }}>\u20b9{levelDump.toLocaleString()}</div>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1719,
+          "text": "<div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#1d4ed8', marginTop: '0.1rem' }}>\u20b9{rewardDump.toLocaleString()}</div>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1765,
+          "text": "{isProcessingDump ? 'Approving Dump...' : `Confirm & Approve Dump of \u20b9${Number(selectedDumpForReview.dump_amount || 0).toLocaleString()}`}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1806,
+          "text": "Request #{selectedDumpForReject.id} \u2022 Amount: \u20b9{Number(selectedDumpForReject.dump_amount || 0).toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1921,
+          "text": "<strong>\u20b9{Number(selectedDumpDetails.dump_amount || 0).toLocaleString()}</strong>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1925,
+          "text": "<strong style={{ color: '#16a34a' }}>\u20b9{Number(selectedDumpDetails.admin_commission_cut || 0).toLocaleString()}</strong>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1929,
+          "text": "<div>Direct (40%): <strong>\u20b9{Number(selectedDumpDetails.direct_income_amount || 0).toLocaleString()}</strong></div>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1930,
+          "text": "<div>Level (40%): <strong>\u20b9{Number(selectedDumpDetails.level_income_amount || 0).toLocaleString()}</strong></div>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1931,
+          "text": "<div>Reward (20%): <strong>\u20b9{Number(selectedDumpDetails.reward_income_amount || 0).toLocaleString()}</strong></div>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1949,
+          "text": "{selectedDumpDetails.requested_at && <div>Requested at: {new Date(selectedDumpDetails.requested_at).toLocaleString('en-IN')}</div>}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1950,
+          "text": "{selectedDumpDetails.approved_at && <div>Approved at: {new Date(selectedDumpDetails.approved_at).toLocaleString('en-IN')}</div>}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1951,
+          "text": "{selectedDumpDetails.rejected_at && <div>Rejected at: {new Date(selectedDumpDetails.rejected_at).toLocaleString('en-IN')}</div>}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 2039,
+          "text": "<div><span style={{ color: '#64748b' }}>Payment Received:</span> <strong style={{ color: '#2563eb' }}>\u20b9{Number(paymentAllocationData.payment_amount).toLocaleString()}</strong></div>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 2064,
+          "text": "\u20b9{Number(paymentAllocationData.payment_admin_cut).toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 2072,
+          "text": "\u20b9{Number(paymentAllocationData.previously_allocated).toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 2080,
+          "text": "\u20b9{Number(paymentAllocationData.eligible_admin_cut).toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 2100,
+          "text": "value={`\u20b9${Number(paymentAllocationData.direct_income_amount).toLocaleString()}`}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 2112,
+          "text": "value={`\u20b9${Number(paymentAllocationData.level_income_amount).toLocaleString()}`}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 2124,
+          "text": "value={`\u20b9${Number(paymentAllocationData.reward_income_amount).toLocaleString()}`}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 2132,
+          "text": "<strong style={{ fontSize: '1rem', color: '#0f172a' }}>\u20b9{Number(paymentAllocationData.total_allocation).toLocaleString()}</strong>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 2138,
+          "text": "\u2139\ufe0f <strong>System Note:</strong> Confirming this distribution allocates \u20b9{Number(paymentAllocationData.eligible_admin_cut).toLocaleString()} for Payment Receipt #{paymentAllocationData.payment_id} and accumulates onto Order #{paymentAllocationData.sales_record_id}. No individual user accounts, sponsor wallets, or buyer payout balances are credited in this phase."
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 2143,
+          "text": "\u26a0\ufe0f This payment receipt has already been allocated (Status: {paymentAllocationData.income_distribution_status}). Distributed at: {paymentAllocationData.income_distributed_at ? new Date(paymentAllocationData.income_distributed_at).toLocaleString() : 'N/A'}."
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 2266,
+          "text": "<div><span style={{ color: '#64748b' }}>Project Value:</span> <strong style={{ color: '#0f172a' }}>\u20b9{Number(allocationData.project_value).toLocaleString()}</strong></div>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 2290,
+          "text": "\u20b9{Number(allocationData.total_admin_cut).toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 2298,
+          "text": "\u20b9{Number(allocationData.previously_allocated).toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 2306,
+          "text": "\u20b9{Number(allocationData.eligible_admin_cut).toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 2326,
+          "text": "value={`\u20b9${Number(allocationData.direct_income_amount).toLocaleString()}`}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 2338,
+          "text": "value={`\u20b9${Number(allocationData.level_income_amount).toLocaleString()}`}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 2350,
+          "text": "value={`\u20b9${Number(allocationData.reward_income_amount).toLocaleString()}`}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 2358,
+          "text": "<strong style={{ fontSize: '1rem', color: '#0f172a' }}>\u20b9{Number(allocationData.total_allocation).toLocaleString()}</strong>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 2364,
+          "text": "\u2139\ufe0f <strong>System Note:</strong> Cumulative amounts currently persisted on this order: Direct: \u20b9{Number(allocationData.cumulative_totals?.direct_income_amount || 0).toLocaleString()} \u2022 Level: \u20b9{Number(allocationData.cumulative_totals?.level_income_amount || 0).toLocaleString()} \u2022 Reward: \u20b9{Number(allocationData.cumulative_totals?.reward_income_amount || 0).toLocaleString()}. Confirming will safely persist newly eligible amounts onto the order record without crediting individual user accounts."
+        },
+        {
+          "file": "admin/src/components/sales/AdminPaymentHistoryPage.jsx",
+          "line": 197,
+          "text": "\u20b9{totalDistributedPayments.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPaymentHistoryPage.jsx",
+          "line": 209,
+          "text": "\u20b9{totalDistributedAdminCut.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPaymentHistoryPage.jsx",
+          "line": 221,
+          "text": "\u20b9{totalDirectIncome.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPaymentHistoryPage.jsx",
+          "line": 233,
+          "text": "\u20b9{totalLevelIncome.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPaymentHistoryPage.jsx",
+          "line": 245,
+          "text": "\u20b9{totalRewardIncome.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPaymentHistoryPage.jsx",
+          "line": 363,
+          "text": "const formattedDistributedAt = distributedAt ? new Date(distributedAt).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Completed';"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPaymentHistoryPage.jsx",
+          "line": 421,
+          "text": "\u20b9{amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPaymentHistoryPage.jsx",
+          "line": 426,
+          "text": "\u20b9{totalProjectCost.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPaymentHistoryPage.jsx",
+          "line": 436,
+          "text": "\u20b9{adminCut.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPaymentHistoryPage.jsx",
+          "line": 441,
+          "text": "\u20b9{totalAdminAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPaymentHistoryPage.jsx",
+          "line": 446,
+          "text": "\u20b9{remainingAdminAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPaymentHistoryPage.jsx",
+          "line": 451,
+          "text": "\u20b9{directIncome.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPaymentHistoryPage.jsx",
+          "line": 456,
+          "text": "\u20b9{levelIncome.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPaymentHistoryPage.jsx",
+          "line": 461,
+          "text": "\u20b9{rewardIncome.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPaymentHistoryPage.jsx",
+          "line": 466,
+          "text": "\u20b9{distributedCut.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPaymentHistoryPage.jsx",
+          "line": 601,
+          "text": "\u20b9{Number(viewingPayment.amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPaymentHistoryPage.jsx",
+          "line": 608,
+          "text": "\u20b9{Number(viewingPayment.admin_commission_cut ?? viewingPayment.adminCommissionCut ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPaymentHistoryPage.jsx",
+          "line": 616,
+          "text": "\u20b9{Number(viewingPayment.direct_income_amount ?? viewingPayment.directIncomeAmount ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPaymentHistoryPage.jsx",
+          "line": 623,
+          "text": "\u20b9{Number(viewingPayment.level_income_amount ?? viewingPayment.levelIncomeAmount ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPaymentHistoryPage.jsx",
+          "line": 630,
+          "text": "\u20b9{Number(viewingPayment.reward_income_amount ?? viewingPayment.rewardIncomeAmount ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPaymentHistoryPage.jsx",
+          "line": 638,
+          "text": "\u20b9{Number(viewingPayment.distributed_admin_cut_amount ?? viewingPayment.distributedAdminCutAmount ?? viewingPayment.admin_commission_cut ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPaymentHistoryPage.jsx",
+          "line": 650,
+          "text": "\u20b9{Number(viewingPayment.total_project_cost ?? viewingPayment.totalProjectCost ?? viewingPayment.order?.gross_amount ?? viewingPayment.amount ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPaymentHistoryPage.jsx",
+          "line": 656,
+          "text": "\u20b9{Number(viewingPayment.total_admin_amount ?? viewingPayment.totalAdminAmount ?? viewingPayment.order?.expected_admin_cut ?? viewingPayment.order?.expectedAdminCut ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPaymentHistoryPage.jsx",
+          "line": 662,
+          "text": "\u20b9{Number(viewingPayment.remaining_admin_amount ?? viewingPayment.remainingAdminAmount ?? viewingPayment.order?.remaining_admin_commission ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPaymentHistoryPage.jsx",
+          "line": 670,
+          "text": "{viewingPayment.income_distributed_at || viewingPayment.incomeDistributedAt ? new Date(viewingPayment.income_distributed_at || viewingPayment.incomeDistributedAt).toLocaleString('en-IN') : 'Completed'}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPendingOrdersPage.jsx",
+          "line": 41,
+          "text": "return '\u20b9' + num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 302,
+          "text": "\u20b9{totalOutstandingBalance.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 337,
+          "text": "\u20b9{totalDumpedLoss.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 419,
+          "text": "{sale.id} \u2014 {sale.customer} | {sale.item} | Due: \u20b9{sale.balanceDue.toLocaleString()} (Adv: \u20b9{sale.advancePaid.toLocaleString()})"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 497,
+          "text": "\ud83c\udf10 Network Commissions & Volume Triggered on Balance Received (\u20b9{balancePaymentAmt.toLocaleString()})"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 504,
+          "text": "+\u20b9{Math.round(directSponsorComm).toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 512,
+          "text": "+\u20b9{Math.round(perLevelComm).toLocaleString()} <span style={{ fontSize: '0.75rem' }}>/ level</span>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 514,
+          "text": "<div style={{ fontSize: '0.7rem', color: '#7e22ce' }}>Pool: \u20b9{Math.round(levelCommPool).toLocaleString()} ({activeSale?.levelIncomePercent}%)</div>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 520,
+          "text": "+\u20b9{Math.round(teamBizVol).toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 545,
+          "text": "<span>\u20b9{activeSale.totalValue.toLocaleString()}</span>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 550,
+          "text": "<span>\u20b9{activeSale.advancePaid.toLocaleString()}</span>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 555,
+          "text": "<span>\u20b9{activeSale.balanceDue.toLocaleString()}</span>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 561,
+          "text": "<span>+\u20b9{Math.round(directSponsorComm).toLocaleString()}</span>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 566,
+          "text": "<span>+\u20b9{Math.round(perLevelComm).toLocaleString()} / lvl</span>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 571,
+          "text": "<span>+\u20b9{Math.round(teamBizVol).toLocaleString()}</span>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 651,
+          "text": "<strong style={{ fontSize: '0.95rem', color: '#0f172a' }}>\u20b9{sale.totalValue.toLocaleString()}</strong>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 654,
+          "text": "<span style={{ color: '#059669', fontSize: '0.9rem', fontWeight: '700' }}>\u20b9{sale.advancePaid.toLocaleString()}</span>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 657,
+          "text": "<strong style={{ color: '#c2410c', fontSize: '0.95rem' }}>\u20b9{sale.balanceDue.toLocaleString()}</strong>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 714,
+          "text": "<strong style={{ fontSize: '1rem', color: '#10b981' }}>\u20b9{rec.amountReceived.toLocaleString()}</strong>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 717,
+          "text": "<strong style={{ color: '#4338ca', fontSize: '0.92rem' }}>+\u20b9{rec.directIncome.toLocaleString()}</strong>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 720,
+          "text": "<div style={{ color: '#7c3aed', fontSize: '0.85rem', fontWeight: '700' }}>+\u20b9{rec.perLevelIncome.toLocaleString()} / lvl</div>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 721,
+          "text": "<div style={{ fontSize: '0.72rem', color: '#64748b' }}>Pool: \u20b9{rec.levelIncomePool.toLocaleString()}</div>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 725,
+          "text": "+\u20b9{rec.teamBizVolume.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 783,
+          "text": "<td>\u20b9{d.totalValue.toLocaleString()}</td>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 784,
+          "text": "<td>\u20b9{d.advancePaid.toLocaleString()}</td>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 786,
+          "text": "<strong style={{ color: '#b91c1c', fontSize: '0.95rem' }}>- \u20b9{d.lostBalance.toLocaleString()}</strong>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 812,
+          "text": "Are you sure you want to <strong>Dump Project</strong> for invoice <strong>#{activeSale.id}</strong>? This will cancel the order and log the uncollected balance of <strong>\u20b9{activeSale.balanceDue.toLocaleString()}</strong> into the Dumped Projects Archive."
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 863,
+          "text": "Balance Amount Received: <strong>\u20b9{activeDistributionLog.amountReceived.toLocaleString()}</strong>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 872,
+          "text": "<span style={{ fontSize: '1rem', fontWeight: '800', color: '#4338ca' }}>+\u20b9{activeDistributionLog.directIncome.toLocaleString()}</span>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 900,
+          "text": "<strong style={{ color: '#7c3aed' }}>+\u20b9{activeDistributionLog.perLevelIncome.toLocaleString()}</strong>"
+        },
+        {
+          "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+          "line": 903,
+          "text": "<span style={{ color: '#15803d', fontWeight: '700' }}>+\u20b9{activeDistributionLog.teamBizVolume.toLocaleString()}</span>"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutHistoryPage.jsx",
+          "line": 110,
+          "text": "\u20b9{totalSettledNet.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutHistoryPage.jsx",
+          "line": 120,
+          "text": "\u20b9{totalSettledGross.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutHistoryPage.jsx",
+          "line": 130,
+          "text": "\u20b9{totalTdsCollected.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutHistoryPage.jsx",
+          "line": 245,
+          "text": "\u20b9{Number(p.requestedAmount).toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutHistoryPage.jsx",
+          "line": 248,
+          "text": "-\u20b9{Number(p.tdsDeduction).toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutHistoryPage.jsx",
+          "line": 251,
+          "text": "\u20b9{Number(p.netPayableAmount).toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutHistoryPage.jsx",
+          "line": 373,
+          "text": "<strong style={{ color: '#0f172a' }}>\u20b9{Number(viewingVoucher.requestedAmount).toLocaleString()}</strong>"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutHistoryPage.jsx",
+          "line": 377,
+          "text": "<strong style={{ color: '#dc2626' }}>-\u20b9{Number(viewingVoucher.tdsDeduction).toLocaleString()}</strong>"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutHistoryPage.jsx",
+          "line": 381,
+          "text": "<strong style={{ color: '#16a34a', fontWeight: 900 }}>\u20b9{Number(viewingVoucher.netPayableAmount).toLocaleString()}</strong>"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutReportsPage.jsx",
+          "line": 141,
+          "text": "\u20b9{lifetimeNet.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutReportsPage.jsx",
+          "line": 151,
+          "text": "\u20b9{lifetimeTDS.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutReportsPage.jsx",
+          "line": 161,
+          "text": "\u20b9{lifetimeGross.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutReportsPage.jsx",
+          "line": 171,
+          "text": "\u20b9{avgPayout.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutReportsPage.jsx",
+          "line": 202,
+          "text": "<strong style={{ fontSize: '0.85rem', color: '#2563eb' }}>\u20b9{data.total.toLocaleString()} ({pct}%)</strong>"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutReportsPage.jsx",
+          "line": 238,
+          "text": "<strong style={{ fontSize: '0.9rem', color: '#7c3aed' }}>\u20b9{lifetimeTDS.toLocaleString()}</strong>"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutReportsPage.jsx",
+          "line": 312,
+          "text": "\u20b9{m.totalGross.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutReportsPage.jsx",
+          "line": 315,
+          "text": "-\u20b9{m.totalTDS.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutReportsPage.jsx",
+          "line": 318,
+          "text": "\u20b9{m.totalNet.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutRequestsPage.jsx",
+          "line": 122,
+          "text": "showToast(`\u2713 Disbursed \u20b9${selectedForDisburse.netPayableAmount.toLocaleString()} to ${selectedForDisburse.memberName} (${selectedForDisburse.userCode})!`);"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutRequestsPage.jsx",
+          "line": 260,
+          "text": "\u20b9{totalPendingGross.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutRequestsPage.jsx",
+          "line": 270,
+          "text": "\u20b9{totalPendingTDS.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutRequestsPage.jsx",
+          "line": 280,
+          "text": "\u20b9{totalPendingNetPayable.toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutRequestsPage.jsx",
+          "line": 470,
+          "text": "\u20b9{Number(p.requestedAmount).toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutRequestsPage.jsx",
+          "line": 473,
+          "text": "-\u20b9{Number(p.tdsDeduction).toLocaleString()} (5%)"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutRequestsPage.jsx",
+          "line": 476,
+          "text": "\u20b9{Number(p.netPayableAmount).toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutRequestsPage.jsx",
+          "line": 588,
+          "text": "<strong>\u20b9{Number(selectedForDisburse.requestedAmount).toLocaleString()}</strong>"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutRequestsPage.jsx",
+          "line": 592,
+          "text": "<strong style={{ color: '#dc2626' }}>-\u20b9{Number(selectedForDisburse.tdsDeduction).toLocaleString()}</strong>"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutRequestsPage.jsx",
+          "line": 596,
+          "text": "<strong style={{ color: '#16a34a', fontWeight: 900 }}>\u20b9{Number(selectedForDisburse.netPayableAmount).toLocaleString()}</strong>"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutRequestsPage.jsx",
+          "line": 659,
+          "text": "{isProcessing ? 'Processing Transfer...' : `\u2713 Disburse \u20b9${selectedForDisburse.netPayableAmount.toLocaleString()}`}"
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutRequestsPage.jsx",
+          "line": 699,
+          "text": "Are you sure you want to reject request <strong>{selectedForReject.payoutCode}</strong> for <strong>{selectedForReject.memberName}</strong>? Gross amount of <strong>\u20b9{selectedForReject.requestedAmount.toLocaleString()}</strong> will be returned to user's wallet."
+        },
+        {
+          "file": "admin/src/components/users/AdminRewardsPage.jsx",
+          "line": 351,
+          "text": "Market Value: <strong>\u20b9{Number(reward.reward_value_inr).toLocaleString()}</strong>"
+        },
+        {
+          "file": "admin/src/components/users/AdminUserDetailsPage.jsx",
+          "line": 142,
+          "text": "<div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#ffffff' }}>\ud83d\udc8e {totalBpCollected.toLocaleString()} BP</div>"
+        },
+        {
+          "file": "admin/src/components/users/AdminUserDetailsPage.jsx",
+          "line": 143,
+          "text": "<div style={{ fontSize: '0.7rem', color: '#a5b4fc' }}>\u2248 \u20b9{(totalBpCollected * bpRate).toLocaleString()} (@ \u20b9{bpRate}/BP)</div>"
+        },
+        {
+          "file": "admin/src/components/users/AdminUserDetailsPage.jsx",
+          "line": 241,
+          "text": "\u2248 \u20b9{((u.bpBalance || 0) * bpRate).toLocaleString()} (@ \u20b9{bpRate}/BP)"
+        },
+        {
+          "file": "admin/src/components/users/AdminUserDetailsPage.jsx",
+          "line": 246,
+          "text": "\u20b9{(u.commissionWallet || 0).toLocaleString()}"
+        },
+        {
+          "file": "admin/src/components/users/AdminUserDetailsPage.jsx",
+          "line": 307,
+          "text": "<div style={{ fontSize: '1.5rem', fontWeight: 800 }}>\u20b9{((selectedUserBpWallet.bpBalance || 0) * bpRate).toLocaleString()}</div>"
+        }
+      ],
+      "to_locale_date": [
+        {
+          "file": "admin/src/components/sales/AdminDumpRequestsPage.jsx",
+          "line": 422,
+          "text": "{d.requested_at ? new Date(d.requested_at).toLocaleDateString('en-IN') : '\u2014'}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1368,
+          "text": "{entry.date ? new Date(entry.date).toLocaleDateString('en-IN') : 'N/A'}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminOrdersPage.jsx",
+          "line": 1486,
+          "text": "{entry.date ? new Date(entry.date).toLocaleDateString('en-IN') : 'N/A'}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPaymentHistoryPage.jsx",
+          "line": 346,
+          "text": "const formattedDate = paymentDate ? new Date(paymentDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '\u2014';"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPendingOrdersPage.jsx",
+          "line": 621,
+          "text": "{order.date || (order.created_at ? new Date(order.created_at).toLocaleDateString('en-IN') : 'N/A')}"
+        },
+        {
+          "file": "admin/src/components/sales/AdminPendingOrdersPage.jsx",
+          "line": 913,
+          "text": "{selectedOrderForReview.date || (selectedOrderForReview.created_at ? new Date(selectedOrderForReview.created_at).toLocaleDateString('en-IN') : 'N/A')}"
+        },
+        {
+          "file": "admin/src/components/support/AdminSendNotificationPage.jsx",
+          "line": 492,
+          "text": "{n.created_at ? new Date(n.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'N/A'}"
+        },
+        {
+          "file": "admin/src/components/users/AdminRewardsClaimPage.jsx",
+          "line": 234,
+          "text": "{claim.claim_date ? new Date(claim.claim_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}"
+        }
+      ],
+      "to_locale_time": [],
+      "intl_dt": [],
+      "tz_offset": [],
+      "input_date": [
+        {
+          "file": "admin/src/components/users/AdminPayoutRequestsPage.jsx",
+          "line": 353,
+          "text": "type=\"date\""
+        },
+        {
+          "file": "admin/src/components/users/AdminPayoutRequestsPage.jsx",
+          "line": 365,
+          "text": "type=\"date\""
+        }
+      ],
+      "input_datetime": [],
+      "input_time": [],
+      "date_fns_or_moment": [],
+      "format_date_fn": []
+    },
+    "entity": {
+      "new_date": [
+        {
+          "file": "entity/src/components/layout/EntityFooter.jsx",
+          "line": 9,
+          "text": "<div>\u00a9 {new Date().getFullYear()} {appName} Entity Panel \u2014 Empowering Local Businesses</div>"
+        },
+        {
+          "file": "entity/src/pages/EntityCancelledOrders.jsx",
+          "line": 420,
+          "text": "? new Date(order.admin_cancelled_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })"
+        },
+        {
+          "file": "entity/src/pages/EntityCancelledOrders.jsx",
+          "line": 421,
+          "text": ": (order.updated_at ? new Date(order.updated_at).toLocaleDateString('en-IN') : 'N/A');"
+        },
+        {
+          "file": "entity/src/pages/EntityCancelledOrders.jsx",
+          "line": 685,
+          "text": "? new Date(selectedOrderForDetails.admin_cancelled_at).toLocaleString('en-IN')"
+        },
+        {
+          "file": "entity/src/pages/EntityCancelledOrders.jsx",
+          "line": 751,
+          "text": "{selectedOrderForDetails.date || (selectedOrderForDetails.created_at ? new Date(selectedOrderForDetails.created_at).toLocaleDateString('en-IN') : 'N/A')}"
+        },
+        {
+          "file": "entity/src/pages/EntityCreateOrder.jsx",
+          "line": 244,
+          "text": "created_at: new Date().toISOString(),"
+        },
+        {
+          "file": "entity/src/pages/EntityOrders.jsx",
+          "line": 129,
+          "text": "const todayStr = new Date().toISOString().split('T')[0];"
+        },
+        {
+          "file": "entity/src/pages/EntityOrders.jsx",
+          "line": 485,
+          "text": "{sale.date || (sale.created_at ? new Date(sale.created_at).toLocaleDateString('en-IN') : 'N/A')}"
+        },
+        {
+          "file": "entity/src/pages/EntityOrders.jsx",
+          "line": 1026,
+          "text": "Confirmed {new Date(selectedInvoice.admin_confirmed_at).toLocaleDateString('en-IN')}"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutReportsPage.jsx",
+          "line": 176,
+          "text": "link.setAttribute('download', `Entity_Payout_Report_Statement_${new Date().toISOString().split('T')[0]}.csv`);"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutTransactionsPage.jsx",
+          "line": 78,
+          "text": "const now = new Date();"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutTransactionsPage.jsx",
+          "line": 89,
+          "text": "const yest = new Date();"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutTransactionsPage.jsx",
+          "line": 95,
+          "text": "const weekStart = new Date();"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutTransactionsPage.jsx",
+          "line": 100,
+          "text": "const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutTransactionsPage.jsx",
+          "line": 104,
+          "text": "const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutTransactionsPage.jsx",
+          "line": 105,
+          "text": "const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutTransactionsPage.jsx",
+          "line": 140,
+          "text": "const start = new Date(startDate);"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutTransactionsPage.jsx",
+          "line": 143,
+          "text": "const d = new Date(p.request_date || p.requestDate);"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutTransactionsPage.jsx",
+          "line": 149,
+          "text": "const end = new Date(endDate);"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutTransactionsPage.jsx",
+          "line": 152,
+          "text": "const d = new Date(p.request_date || p.requestDate);"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutTransactionsPage.jsx",
+          "line": 174,
+          "text": "const dateA = new Date(a.request_date || a.requestDate || 0).getTime();"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutTransactionsPage.jsx",
+          "line": 175,
+          "text": "const dateB = new Date(b.request_date || b.requestDate || 0).getTime();"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutTransactionsPage.jsx",
+          "line": 270,
+          "text": "link.setAttribute('download', `Entity_Payout_Transactions_${new Date().toISOString().split('T')[0]}.csv`);"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutTransactionsPage.jsx",
+          "line": 836,
+          "text": "\ud83d\udcc5 {p.request_date ? new Date(p.request_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}"
+        }
+      ],
+      "iso_string": [
+        {
+          "file": "entity/src/pages/EntityCreateOrder.jsx",
+          "line": 244,
+          "text": "created_at: new Date().toISOString(),"
+        },
+        {
+          "file": "entity/src/pages/EntityOrders.jsx",
+          "line": 129,
+          "text": "const todayStr = new Date().toISOString().split('T')[0];"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutReportsPage.jsx",
+          "line": 176,
+          "text": "link.setAttribute('download', `Entity_Payout_Report_Statement_${new Date().toISOString().split('T')[0]}.csv`);"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutTransactionsPage.jsx",
+          "line": 79,
+          "text": "const formatDate = (d) => d.toISOString().split('T')[0];"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutTransactionsPage.jsx",
+          "line": 270,
+          "text": "link.setAttribute('download', `Entity_Payout_Transactions_${new Date().toISOString().split('T')[0]}.csv`);"
+        }
+      ],
+      "to_locale_string": [
+        {
+          "file": "entity/src/pages/EntityBankSettlementsPage.jsx",
+          "line": 179,
+          "text": "\u20b9{totalNetRealizedRevenue.toLocaleString()}"
+        },
+        {
+          "file": "entity/src/pages/EntityBankSettlementsPage.jsx",
+          "line": 189,
+          "text": "\u20b9{totalCollectedRevenue.toLocaleString()}"
+        },
+        {
+          "file": "entity/src/pages/EntityBankSettlementsPage.jsx",
+          "line": 199,
+          "text": "\u20b9{totalAdminCommissionCut.toLocaleString()}"
+        },
+        {
+          "file": "entity/src/pages/EntityCancelledOrders.jsx",
+          "line": 29,
+          "text": "return '\u20b9' + num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });"
+        },
+        {
+          "file": "entity/src/pages/EntityCancelledOrders.jsx",
+          "line": 685,
+          "text": "? new Date(selectedOrderForDetails.admin_cancelled_at).toLocaleString('en-IN')"
+        },
+        {
+          "file": "entity/src/pages/EntityCreateOrder.jsx",
+          "line": 371,
+          "text": "{item.name} \u2014 \u20b9{item.basePrice.toLocaleString()} (\ud83c\udfdb\ufe0f {item.adminCommissionPercent}% Admin Cut)"
+        },
+        {
+          "file": "entity/src/pages/EntityCreateOrder.jsx",
+          "line": 685,
+          "text": "\u20b9{remainingBalanceDue.toLocaleString()}"
+        },
+        {
+          "file": "entity/src/pages/EntityCreateOrder.jsx",
+          "line": 709,
+          "text": "<span>\u20b9{grossSubtotal.toLocaleString()}</span>"
+        },
+        {
+          "file": "entity/src/pages/EntityCreateOrder.jsx",
+          "line": 715,
+          "text": "<span>-\u20b9{discountAmount.toLocaleString()}</span>"
+        },
+        {
+          "file": "entity/src/pages/EntityCreateOrder.jsx",
+          "line": 721,
+          "text": "<span style={{ color: '#0f172a' }}>\u20b9{grandTotal.toLocaleString()}</span>"
+        },
+        {
+          "file": "entity/src/pages/EntityCreateOrder.jsx",
+          "line": 726,
+          "text": "<span>\u20b9{receivedAmount.toLocaleString()}</span>"
+        },
+        {
+          "file": "entity/src/pages/EntityCreateOrder.jsx",
+          "line": 732,
+          "text": "<span>\u20b9{remainingBalanceDue.toLocaleString()}</span>"
+        },
+        {
+          "file": "entity/src/pages/EntityCreateOrder.jsx",
+          "line": 744,
+          "text": "{adminCommissionPercent}% (\u20b9{adminCommissionAmount.toLocaleString()})"
+        },
+        {
+          "file": "entity/src/pages/EntityCreateOrder.jsx",
+          "line": 748,
+          "text": "Calculated strictly on the <strong>received amount (\u20b9{receivedAmount.toLocaleString()})</strong>"
+        },
+        {
+          "file": "entity/src/pages/EntityCreateOrder.jsx",
+          "line": 756,
+          "text": "\u20b9{netEntityEarnings.toLocaleString()}"
+        },
+        {
+          "file": "entity/src/pages/EntityCreateOrder.jsx",
+          "line": 763,
+          "text": "\u2139\ufe0f <strong>Admin Commission Release:</strong> Admin commission of \u20b9{adminCommissionAmount.toLocaleString()} is recorded in the database. When balance payments are collected in the Payments section, additional admin commission will be automatically released."
+        },
+        {
+          "file": "entity/src/pages/EntityCreateOrder.jsx",
+          "line": 852,
+          "text": "<strong>\u20b9{Number(createdSaleData.grossAmount || createdSaleData.gross_amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</strong>"
+        },
+        {
+          "file": "entity/src/pages/EntityCreateOrder.jsx",
+          "line": 856,
+          "text": "<strong style={{ color: '#16a34a' }}>\u20b9{Number(createdSaleData.advancePayment || createdSaleData.advance_payment || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</strong>"
+        },
+        {
+          "file": "entity/src/pages/EntityCreateOrder.jsx",
+          "line": 861,
+          "text": "\u20b9{Number(createdSaleData.balanceDue || createdSaleData.balance_due || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}"
+        },
+        {
+          "file": "entity/src/pages/EntityDashboard.jsx",
+          "line": 176,
+          "text": "formatter: (val) => `\u20b9${(Number(val) || 0).toLocaleString('en-IN')}`,"
+        },
+        {
+          "file": "entity/src/pages/EntityDashboard.jsx",
+          "line": 302,
+          "text": "y: { formatter: (val) => `\u20b9${(Number(val) || 0).toLocaleString('en-IN')}` },"
+        },
+        {
+          "file": "entity/src/pages/EntityDashboard.jsx",
+          "line": 552,
+          "text": "\u20b9{kpis.totalGrossSales.toLocaleString('en-IN', { minimumFractionDigits: 2 })}"
+        },
+        {
+          "file": "entity/src/pages/EntityDashboard.jsx",
+          "line": 583,
+          "text": "\u20b9{kpis.totalNetEarnings.toLocaleString('en-IN', { minimumFractionDigits: 2 })}"
+        },
+        {
+          "file": "entity/src/pages/EntityDashboard.jsx",
+          "line": 620,
+          "text": "\u20b9{kpis.totalBalanceDue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}"
+        },
+        {
+          "file": "entity/src/pages/EntityDashboard.jsx",
+          "line": 657,
+          "text": "\u20b9{kpis.totalPlatformFeePaid.toLocaleString('en-IN', { minimumFractionDigits: 2 })}"
+        },
+        {
+          "file": "entity/src/pages/EntityDashboard.jsx",
+          "line": 889,
+          "text": "<div style={{ fontSize: '0.72rem', color: '#9a3412', fontWeight: 700 }}>\u20b9{kpis.totalBalanceDue.toLocaleString('en-IN')} pending</div>"
+        },
+        {
+          "file": "entity/src/pages/EntityDashboard.jsx",
+          "line": 1011,
+          "text": "\u20b9{txn.gross.toLocaleString('en-IN', { minimumFractionDigits: 2 })}"
+        },
+        {
+          "file": "entity/src/pages/EntityDashboard.jsx",
+          "line": 1014,
+          "text": "\u20b9{txn.netPayout.toLocaleString('en-IN', { minimumFractionDigits: 2 })}"
+        },
+        {
+          "file": "entity/src/pages/EntityOrders.jsx",
+          "line": 53,
+          "text": "setDumpError(`Dump amount cannot exceed remaining collectible balance of \u20b9${balance.toLocaleString('en-IN')}.`);"
+        },
+        {
+          "file": "entity/src/pages/EntityOrders.jsx",
+          "line": 85,
+          "text": "return '\u20b9' + num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });"
+        },
+        {
+          "file": "entity/src/pages/EntityPaymentReceiptsPage.jsx",
+          "line": 204,
+          "text": "\u20b9{totalCollectedSum.toLocaleString()}"
+        },
+        {
+          "file": "entity/src/pages/EntityPaymentReceiptsPage.jsx",
+          "line": 214,
+          "text": "\u20b9{totalAdminCommissionSum.toLocaleString()}"
+        },
+        {
+          "file": "entity/src/pages/EntityPaymentReceiptsPage.jsx",
+          "line": 224,
+          "text": "\u20b9{totalNetEntitySum.toLocaleString()}"
+        },
+        {
+          "file": "entity/src/pages/EntityPaymentReceiptsPage.jsx",
+          "line": 350,
+          "text": "\u20b9{amount.toLocaleString()}"
+        },
+        {
+          "file": "entity/src/pages/EntityPaymentReceiptsPage.jsx",
+          "line": 353,
+          "text": "-\u20b9{adminCut.toLocaleString()} ({p.admin_commission_percent || p.adminCommissionPercent || 15}%)"
+        },
+        {
+          "file": "entity/src/pages/EntityPaymentReceiptsPage.jsx",
+          "line": 356,
+          "text": "+\u20b9{netEntity.toLocaleString()}"
+        },
+        {
+          "file": "entity/src/pages/EntityPaymentReceiptsPage.jsx",
+          "line": 445,
+          "text": "<strong style={{ fontSize: '0.95rem', color: '#0f172a' }}>\u20b9{Number(selectedReceipt.amount || 0).toLocaleString()}</strong>"
+        },
+        {
+          "file": "entity/src/pages/EntityPaymentReceiptsPage.jsx",
+          "line": 449,
+          "text": "<strong style={{ color: '#dc2626' }}>-\u20b9{Number(selectedReceipt.admin_commission_cut ?? selectedReceipt.adminCommissionCut ?? 0).toLocaleString()}</strong>"
+        },
+        {
+          "file": "entity/src/pages/EntityPaymentReceiptsPage.jsx",
+          "line": 453,
+          "text": "<strong style={{ color: '#16a34a', fontSize: '1.05rem' }}>\u20b9{Number(selectedReceipt.net_entity_amount ?? selectedReceipt.netEntityAmount ?? 0).toLocaleString()}</strong>"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutReportsPage.jsx",
+          "line": 320,
+          "text": "\u20b9{summary.total_paid.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutReportsPage.jsx",
+          "line": 347,
+          "text": "\u20b9{summary.balance.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutReportsPage.jsx",
+          "line": 374,
+          "text": "\u20b9{summary.total_tds.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutReportsPage.jsx",
+          "line": 446,
+          "text": "\u20b9{item.paid.toLocaleString('en-IN')} <span style={{ color: '#94a3b8', fontWeight: 500 }}>({item.count} payouts)</span>"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutReportsPage.jsx",
+          "line": 487,
+          "text": "\u20b9{m.amount.toLocaleString('en-IN')} ({m.percentage}%)"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutReportsPage.jsx",
+          "line": 528,
+          "text": "\u20b9{s.amount.toLocaleString('en-IN')}"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutReportsPage.jsx",
+          "line": 622,
+          "text": "\u20b9{r.grossVolume.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutReportsPage.jsx",
+          "line": 627,
+          "text": "\u20b9{r.totalPaid.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutReportsPage.jsx",
+          "line": 632,
+          "text": "\u20b9{r.balance.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutReportsPage.jsx",
+          "line": 638,
+          "text": "-\u20b9{r.tdsDeducted.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutTransactionsPage.jsx",
+          "line": 417,
+          "text": "\u20b9{computedTotalPaid.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutTransactionsPage.jsx",
+          "line": 444,
+          "text": "\u20b9{computedTotalBalance.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutTransactionsPage.jsx",
+          "line": 475,
+          "text": "<span>\u26a1</span> TDS Deducted: \u20b9{computedTotalTds.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutTransactionsPage.jsx",
+          "line": 852,
+          "text": "\u20b9{grossAmt.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutTransactionsPage.jsx",
+          "line": 857,
+          "text": "-\u20b9{tdsAmt.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutTransactionsPage.jsx",
+          "line": 863,
+          "text": "\u20b9{netPaidAmt.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}"
+        },
+        {
+          "file": "entity/src/pages/EntityReceiveBalancePage.jsx",
+          "line": 53,
+          "text": "setDumpError(`Dump amount cannot exceed remaining collectible balance of \u20b9${balance.toLocaleString('en-IN')}.`);"
+        },
+        {
+          "file": "entity/src/pages/EntityReceiveBalancePage.jsx",
+          "line": 175,
+          "text": "showToast(`Payment amount cannot exceed outstanding balance (\u20b9${balance.toLocaleString()}).`);"
+        },
+        {
+          "file": "entity/src/pages/EntityReceiveBalancePage.jsx",
+          "line": 188,
+          "text": "showToast(`\u2713 Successfully collected \u20b9${amount.toLocaleString()}! Admin commission of \u20b9${modalAdminCut.toLocaleString()} released.`);"
+        },
+        {
+          "file": "entity/src/pages/EntityReceiveBalancePage.jsx",
+          "line": 323,
+          "text": "\u20b9{totalOutstandingBalance.toLocaleString()}"
+        },
+        {
+          "file": "entity/src/pages/EntityReceiveBalancePage.jsx",
+          "line": 333,
+          "text": "\u20b9{totalCollectedToDate.toLocaleString()}"
+        },
+        {
+          "file": "entity/src/pages/EntityReceiveBalancePage.jsx",
+          "line": 343,
+          "text": "\u20b9{totalAdminCommissionReleased.toLocaleString()}"
+        },
+        {
+          "file": "entity/src/pages/EntityReceiveBalancePage.jsx",
+          "line": 353,
+          "text": "\u20b9{totalNetEarningsRealized.toLocaleString()}"
+        },
+        {
+          "file": "entity/src/pages/EntityReceiveBalancePage.jsx",
+          "line": 455,
+          "text": "\u20b9{gross.toLocaleString()}"
+        },
+        {
+          "file": "entity/src/pages/EntityReceiveBalancePage.jsx",
+          "line": 458,
+          "text": "\u20b9{collected.toLocaleString()}"
+        },
+        {
+          "file": "entity/src/pages/EntityReceiveBalancePage.jsx",
+          "line": 461,
+          "text": "\u20b9{balance.toLocaleString()}"
+        },
+        {
+          "file": "entity/src/pages/EntityReceiveBalancePage.jsx",
+          "line": 565,
+          "text": "<strong>\u20b9{Number(selectedSaleForPayment.grossAmount ?? selectedSaleForPayment.gross_amount ?? 0).toLocaleString()}</strong>"
+        },
+        {
+          "file": "entity/src/pages/EntityReceiveBalancePage.jsx",
+          "line": 569,
+          "text": "<strong style={{ color: '#2563eb' }}>\u20b9{Number(selectedSaleForPayment.advancePayment ?? selectedSaleForPayment.advance_payment ?? 0).toLocaleString()}</strong>"
+        },
+        {
+          "file": "entity/src/pages/EntityReceiveBalancePage.jsx",
+          "line": 573,
+          "text": "<strong style={{ color: '#d97706', fontSize: '0.95rem' }}>\u20b9{Number(selectedSaleForPayment.balanceDue ?? selectedSaleForPayment.balance_due ?? 0).toLocaleString()}</strong>"
+        },
+        {
+          "file": "entity/src/pages/EntityReceiveBalancePage.jsx",
+          "line": 598,
+          "text": "Pay Full Remaining Balance (\u20b9{Number(selectedSaleForPayment.balanceDue ?? selectedSaleForPayment.balance_due ?? 0).toLocaleString()})"
+        },
+        {
+          "file": "entity/src/pages/EntityReceiveBalancePage.jsx",
+          "line": 657,
+          "text": "<strong style={{ color: '#dc2626' }}>\u20b9{modalAdminCut.toLocaleString()}</strong>"
+        },
+        {
+          "file": "entity/src/pages/EntityReceiveBalancePage.jsx",
+          "line": 661,
+          "text": "<strong style={{ color: '#15803d', fontSize: '0.95rem' }}>\u20b9{modalNetEntity.toLocaleString()}</strong>"
+        },
+        {
+          "file": "entity/src/pages/EntityReceiveBalancePage.jsx",
+          "line": 689,
+          "text": "{isProcessing ? 'Processing Receipt...' : `Confirm & Record \u20b9${(Number(paymentAmount) || 0).toLocaleString()} Payment`}"
+        },
+        {
+          "file": "entity/src/pages/EntityReceiveBalancePage.jsx",
+          "line": 753,
+          "text": "<strong>\u20b9{Number(selectedSaleForDump.grossAmount ?? selectedSaleForDump.gross_amount ?? 0).toLocaleString()}</strong>"
+        },
+        {
+          "file": "entity/src/pages/EntityReceiveBalancePage.jsx",
+          "line": 757,
+          "text": "<strong style={{ color: '#16a34a' }}>\u20b9{Number(selectedSaleForDump.advancePayment ?? selectedSaleForDump.advance_payment ?? 0).toLocaleString()}</strong>"
+        },
+        {
+          "file": "entity/src/pages/EntityReceiveBalancePage.jsx",
+          "line": 761,
+          "text": "<strong style={{ color: '#d97706', fontSize: '0.95rem' }}>\u20b9{Number(selectedSaleForDump.balanceDue ?? selectedSaleForDump.balance_due ?? 0).toLocaleString()}</strong>"
+        },
+        {
+          "file": "entity/src/pages/EntityReceiveBalancePage.jsx",
+          "line": 795,
+          "text": "Full Balance (\u20b9{Number(selectedSaleForDump.balanceDue ?? selectedSaleForDump.balance_due ?? 0).toLocaleString()})"
+        },
+        {
+          "file": "entity/src/pages/EntityReceiveBalancePage.jsx",
+          "line": 852,
+          "text": "{submittingDump ? 'Submitting Request...' : `Submit Dump Request for \u20b9${(Number(dumpAmount) || 0).toLocaleString()}`}"
+        }
+      ],
+      "to_locale_date": [
+        {
+          "file": "entity/src/pages/EntityCancelledOrders.jsx",
+          "line": 420,
+          "text": "? new Date(order.admin_cancelled_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })"
+        },
+        {
+          "file": "entity/src/pages/EntityCancelledOrders.jsx",
+          "line": 421,
+          "text": ": (order.updated_at ? new Date(order.updated_at).toLocaleDateString('en-IN') : 'N/A');"
+        },
+        {
+          "file": "entity/src/pages/EntityCancelledOrders.jsx",
+          "line": 751,
+          "text": "{selectedOrderForDetails.date || (selectedOrderForDetails.created_at ? new Date(selectedOrderForDetails.created_at).toLocaleDateString('en-IN') : 'N/A')}"
+        },
+        {
+          "file": "entity/src/pages/EntityOrders.jsx",
+          "line": 485,
+          "text": "{sale.date || (sale.created_at ? new Date(sale.created_at).toLocaleDateString('en-IN') : 'N/A')}"
+        },
+        {
+          "file": "entity/src/pages/EntityOrders.jsx",
+          "line": 1026,
+          "text": "Confirmed {new Date(selectedInvoice.admin_confirmed_at).toLocaleDateString('en-IN')}"
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutTransactionsPage.jsx",
+          "line": 836,
+          "text": "\ud83d\udcc5 {p.request_date ? new Date(p.request_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}"
+        }
+      ],
+      "to_locale_time": [],
+      "intl_dt": [],
+      "tz_offset": [],
+      "input_date": [
+        {
+          "file": "entity/src/pages/EntityPayoutTransactionsPage.jsx",
+          "line": 556,
+          "text": "type=\"date\""
+        },
+        {
+          "file": "entity/src/pages/EntityPayoutTransactionsPage.jsx",
+          "line": 580,
+          "text": "type=\"date\""
+        }
+      ],
+      "input_datetime": [],
+      "input_time": [],
+      "date_fns_or_moment": [],
+      "format_date_fn": [
+        {
+          "file": "entity/src/pages/EntityPayoutTransactionsPage.jsx",
+          "line": 79,
+          "text": "const formatDate = (d) => d.toISOString().split('T')[0];"
+        }
+      ]
+    },
+    "user": {
+      "new_date": [
+        {
+          "file": "user/src/components/LoginForm.jsx",
+          "line": 465,
+          "text": "<span>\u00a9 {new Date().getFullYear()} {appName} Pvt. Ltd. All rights reserved.</span>"
+        },
+        {
+          "file": "user/src/components/RegisterForm.jsx",
+          "line": 824,
+          "text": "<span>\u00a9 {new Date().getFullYear()} {appName} Pvt. Ltd. All rights reserved.</span>"
+        },
+        {
+          "file": "user/src/components/payments/BaseCommission.jsx",
+          "line": 36,
+          "text": "const now = new Date();"
+        },
+        {
+          "file": "user/src/components/payments/BaseCommission.jsx",
+          "line": 41,
+          "text": "const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);"
+        },
+        {
+          "file": "user/src/components/payments/BaseCommission.jsx",
+          "line": 42,
+          "text": "const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().slice(0, 10);"
+        },
+        {
+          "file": "user/src/components/payments/BaseCommission.jsx",
+          "line": 46,
+          "text": "const firstDay = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString().slice(0, 10);"
+        },
+        {
+          "file": "user/src/components/payments/BaseCommission.jsx",
+          "line": 47,
+          "text": "const lastDay = new Date(now.getFullYear(), now.getMonth(), 0).toISOString().slice(0, 10);"
+        },
+        {
+          "file": "user/src/components/payments/RewardsClaimed.jsx",
+          "line": 93,
+          "text": "{val ? new Date(val).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}"
+        },
+        {
+          "file": "user/src/components/payouts/CurrentPayouts.jsx",
+          "line": 111,
+          "text": "{row.request_date ? new Date(row.request_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}"
+        },
+        {
+          "file": "user/src/components/payouts/CurrentPayouts.jsx",
+          "line": 604,
+          "text": "<span>{selectedReceipt.request_date ? new Date(selectedReceipt.request_date).toLocaleString('en-IN') : 'N/A'}</span>"
+        },
+        {
+          "file": "user/src/components/payouts/PayoutHistory.jsx",
+          "line": 101,
+          "text": "link.setAttribute('download', `Payout_History_${userCode || 'member'}_${new Date().toISOString().slice(0, 10)}.csv`);"
+        },
+        {
+          "file": "user/src/components/payouts/PayoutHistory.jsx",
+          "line": 118,
+          "text": "{row.request_date ? new Date(row.request_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}"
+        },
+        {
+          "file": "user/src/components/payouts/PayoutHistory.jsx",
+          "line": 512,
+          "text": "<span>{selectedReceipt.request_date ? new Date(selectedReceipt.request_date).toLocaleString('en-IN') : 'N/A'}</span>"
+        },
+        {
+          "file": "user/src/components/settings/KycVerification.jsx",
+          "line": 420,
+          "text": "{currentUser?.kyc_submitted_at ? new Date(currentUser.kyc_submitted_at).toLocaleString('en-IN') : 'Saved in Database'}"
+        },
+        {
+          "file": "user/src/components/support/SupportSystem.jsx",
+          "line": 165,
+          "text": "updatedAt: new Date().toISOString(),"
+        },
+        {
+          "file": "user/src/components/support/SupportSystem.jsx",
+          "line": 205,
+          "text": "updatedAt: new Date().toISOString(),"
+        },
+        {
+          "file": "user/src/components/support/SupportSystem.jsx",
+          "line": 232,
+          "text": "createdAt: new Date().toISOString(),"
+        },
+        {
+          "file": "user/src/components/support/SupportSystem.jsx",
+          "line": 233,
+          "text": "updatedAt: new Date().toISOString(),"
+        },
+        {
+          "file": "user/src/components/support/SupportTickets.jsx",
+          "line": 459,
+          "text": "Category: <strong style={{ color: '#334155' }}>{selectedTicket.category}</strong> \u2022 Priority: <strong style={{ color: '#334155' }}>{selectedTicket.priority}</strong> \u2022 Created: <strong style={{ color: '#334155' }}>{new Date(selectedTicket.created_at).toLocaleString('en-IN')}</strong>"
+        },
+        {
+          "file": "user/src/components/support/SupportTickets.jsx",
+          "line": 505,
+          "text": "{new Date(m.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}"
+        },
+        {
+          "file": "user/src/layout/Footer.jsx",
+          "line": 10,
+          "text": "Copyright \u00a9 {new Date().getFullYear()} <strong className=\"footer-brand-bold\">{appName}</strong>. All rights reserved"
+        },
+        {
+          "file": "user/src/layout/Header.jsx",
+          "line": 214,
+          "text": "{n.time_ago || (n.created_at ? new Date(n.created_at).toLocaleDateString() : '')}"
+        },
+        {
+          "file": "user/src/layout/Header.jsx",
+          "line": 398,
+          "text": "{n.time_ago || (n.created_at ? new Date(n.created_at).toLocaleDateString() : '')}"
+        },
+        {
+          "file": "user/src/pages/UserNotificationsPage.jsx",
+          "line": 344,
+          "text": "{n.time_ago || (n.created_at ? new Date(n.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '')}"
+        },
+        {
+          "file": "user/src/pages/income/DirectIncomePage.jsx",
+          "line": 49,
+          "text": "const d = new Date(dateStr);"
+        },
+        {
+          "file": "user/src/pages/income/LevelIncomePage.jsx",
+          "line": 50,
+          "text": "const d = new Date(dateStr);"
+        },
+        {
+          "file": "user/src/pages/income/MyIncomePage.jsx",
+          "line": 51,
+          "text": "const d = new Date(dateStr);"
+        },
+        {
+          "file": "user/src/pages/landing/components/LandingFooter.jsx",
+          "line": 120,
+          "text": "\u00a9 {new Date().getFullYear()} <strong>AddNet Promoters Network Ltd</strong>. All rights reserved."
+        },
+        {
+          "file": "user/src/pages/reports/MlmEarningsPage.jsx",
+          "line": 68,
+          "text": "const targetDate = new Date(itemDate);"
+        },
+        {
+          "file": "user/src/pages/reports/MlmEarningsPage.jsx",
+          "line": 71,
+          "text": "const now = new Date();"
+        },
+        {
+          "file": "user/src/pages/reports/MlmEarningsPage.jsx",
+          "line": 75,
+          "text": "const today = new Date();"
+        },
+        {
+          "file": "user/src/pages/reports/MlmEarningsPage.jsx",
+          "line": 80,
+          "text": "const pastWeek = new Date();"
+        },
+        {
+          "file": "user/src/pages/reports/MlmEarningsPage.jsx",
+          "line": 86,
+          "text": "const pastMonth = new Date();"
+        },
+        {
+          "file": "user/src/pages/reports/MlmEarningsPage.jsx",
+          "line": 92,
+          "text": "const pastQuarter = new Date();"
+        },
+        {
+          "file": "user/src/pages/reports/MlmEarningsPage.jsx",
+          "line": 98,
+          "text": "const pastYear = new Date();"
+        },
+        {
+          "file": "user/src/pages/reports/MlmEarningsPage.jsx",
+          "line": 105,
+          "text": "const start = new Date(startDate);"
+        },
+        {
+          "file": "user/src/pages/reports/MlmEarningsPage.jsx",
+          "line": 110,
+          "text": "const end = new Date(endDate);"
+        }
+      ],
+      "iso_string": [
+        {
+          "file": "user/src/components/payments/BaseCommission.jsx",
+          "line": 41,
+          "text": "const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);"
+        },
+        {
+          "file": "user/src/components/payments/BaseCommission.jsx",
+          "line": 42,
+          "text": "const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().slice(0, 10);"
+        },
+        {
+          "file": "user/src/components/payments/BaseCommission.jsx",
+          "line": 46,
+          "text": "const firstDay = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString().slice(0, 10);"
+        },
+        {
+          "file": "user/src/components/payments/BaseCommission.jsx",
+          "line": 47,
+          "text": "const lastDay = new Date(now.getFullYear(), now.getMonth(), 0).toISOString().slice(0, 10);"
+        },
+        {
+          "file": "user/src/components/payouts/PayoutHistory.jsx",
+          "line": 101,
+          "text": "link.setAttribute('download', `Payout_History_${userCode || 'member'}_${new Date().toISOString().slice(0, 10)}.csv`);"
+        },
+        {
+          "file": "user/src/components/support/SupportSystem.jsx",
+          "line": 165,
+          "text": "updatedAt: new Date().toISOString(),"
+        },
+        {
+          "file": "user/src/components/support/SupportSystem.jsx",
+          "line": 205,
+          "text": "updatedAt: new Date().toISOString(),"
+        },
+        {
+          "file": "user/src/components/support/SupportSystem.jsx",
+          "line": 232,
+          "text": "createdAt: new Date().toISOString(),"
+        },
+        {
+          "file": "user/src/components/support/SupportSystem.jsx",
+          "line": 233,
+          "text": "updatedAt: new Date().toISOString(),"
+        }
+      ],
+      "to_locale_string": [
+        {
+          "file": "user/src/components/dashboard/DashboardOverview.jsx",
+          "line": 140,
+          "text": "y: { formatter: (val) => `\u20b9${val.toLocaleString('en-IN', { minimumFractionDigits: 2 })}` },"
+        },
+        {
+          "file": "user/src/components/dashboard/DashboardOverview.jsx",
+          "line": 430,
+          "text": "\u20b9{kpis.todayIncome.toLocaleString('en-IN', { minimumFractionDigits: 2 })}"
+        },
+        {
+          "file": "user/src/components/dashboard/DashboardOverview.jsx",
+          "line": 448,
+          "text": "\u20b9{kpis.totalIncome.toLocaleString('en-IN', { minimumFractionDigits: 2 })}"
+        },
+        {
+          "file": "user/src/components/dashboard/DashboardOverview.jsx",
+          "line": 471,
+          "text": "\u20b9{kpis.directIncome.toLocaleString('en-IN', { minimumFractionDigits: 2 })}"
+        },
+        {
+          "file": "user/src/components/dashboard/DashboardOverview.jsx",
+          "line": 494,
+          "text": "\u20b9{kpis.levelIncome.toLocaleString('en-IN', { minimumFractionDigits: 2 })}"
+        },
+        {
+          "file": "user/src/components/dashboard/DashboardOverview.jsx",
+          "line": 521,
+          "text": "\u20b9{kpis.totalEarnings.toLocaleString('en-IN', { minimumFractionDigits: 2 })}"
+        },
+        {
+          "file": "user/src/components/dashboard/DashboardOverview.jsx",
+          "line": 537,
+          "text": "\u20b9{kpis.commissionBalance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}"
+        },
+        {
+          "file": "user/src/components/dashboard/DashboardOverview.jsx",
+          "line": 560,
+          "text": "{kpis.teamVolumeBv.toLocaleString('en-IN')}{' '}"
+        },
+        {
+          "file": "user/src/components/dashboard/DashboardOverview.jsx",
+          "line": 596,
+          "text": "{kpis.bpBalance.toLocaleString('en-IN')}{' '}"
+        },
+        {
+          "file": "user/src/components/dashboard/DashboardOverview.jsx",
+          "line": 816,
+          "text": "{item.volumeBv.toLocaleString('en-IN')} BV"
+        },
+        {
+          "file": "user/src/components/dashboard/DashboardOverview.jsx",
+          "line": 882,
+          "text": "\u20b9{txn.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}"
+        },
+        {
+          "file": "user/src/components/dashboard/DashboardOverview.jsx",
+          "line": 885,
+          "text": "\u20b9{txn.net.toLocaleString('en-IN', { minimumFractionDigits: 2 })}"
+        },
+        {
+          "file": "user/src/components/payments/RewardDetails.jsx",
+          "line": 162,
+          "text": "\ud83d\udc8e {userBp.toLocaleString()} <span style={{ fontSize: '1rem', color: '#ffffff' }}>BP</span>"
+        },
+        {
+          "file": "user/src/components/payments/RewardDetails.jsx",
+          "line": 287,
+          "text": "Market Worth: <span style={{ color: '#0f172a', fontWeight: 800 }}>\u20b9{Number(reward.reward_value_inr).toLocaleString()}</span>"
+        },
+        {
+          "file": "user/src/components/payouts/CurrentPayouts.jsx",
+          "line": 604,
+          "text": "<span>{selectedReceipt.request_date ? new Date(selectedReceipt.request_date).toLocaleString('en-IN') : 'N/A'}</span>"
+        },
+        {
+          "file": "user/src/components/payouts/PayoutHistory.jsx",
+          "line": 512,
+          "text": "<span>{selectedReceipt.request_date ? new Date(selectedReceipt.request_date).toLocaleString('en-IN') : 'N/A'}</span>"
+        },
+        {
+          "file": "user/src/components/payouts/RequestWithdrawal.jsx",
+          "line": 430,
+          "text": "\u20b9{preset.toLocaleString('en-IN')}"
+        },
+        {
+          "file": "user/src/components/settings/KycVerification.jsx",
+          "line": 420,
+          "text": "{currentUser?.kyc_submitted_at ? new Date(currentUser.kyc_submitted_at).toLocaleString('en-IN') : 'Saved in Database'}"
+        },
+        {
+          "file": "user/src/components/support/SupportTickets.jsx",
+          "line": 459,
+          "text": "Category: <strong style={{ color: '#334155' }}>{selectedTicket.category}</strong> \u2022 Priority: <strong style={{ color: '#334155' }}>{selectedTicket.priority}</strong> \u2022 Created: <strong style={{ color: '#334155' }}>{new Date(selectedTicket.created_at).toLocaleString('en-IN')}</strong>"
+        },
+        {
+          "file": "user/src/pages/BusinessSalesReportPage.jsx",
+          "line": 149,
+          "text": "<div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a' }}>\u20b9{totalRevenueSum.toLocaleString()}</div>"
+        },
+        {
+          "file": "user/src/pages/BusinessSalesReportPage.jsx",
+          "line": 159,
+          "text": "<div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '0.2rem' }}>Avg Order: \u20b9{Math.round(totalRevenueSum / salesTransactions.length).toLocaleString()}</div>"
+        },
+        {
+          "file": "user/src/pages/BusinessSalesReportPage.jsx",
+          "line": 167,
+          "text": "<div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a' }}>\u20b9{totalCommissionSum.toLocaleString()}</div>"
+        },
+        {
+          "file": "user/src/pages/BusinessSalesReportPage.jsx",
+          "line": 324,
+          "text": "<td style={{ padding: '0.85rem 1rem', fontWeight: '800', color: '#0f172a' }}>\u20b9{tx.amount.toLocaleString()}</td>"
+        },
+        {
+          "file": "user/src/pages/BusinessSalesReportPage.jsx",
+          "line": 325,
+          "text": "<td style={{ padding: '0.85rem 1rem', fontWeight: '800', color: '#059669' }}>+\u20b9{tx.commission.toLocaleString()}</td>"
+        },
+        {
+          "file": "user/src/pages/BusinessSalesReportPage.jsx",
+          "line": 356,
+          "text": "\u20b9{cat.totalRevenue.toLocaleString()}"
+        },
+        {
+          "file": "user/src/pages/BusinessSalesReportPage.jsx",
+          "line": 395,
+          "text": "<td style={{ padding: '0.85rem 1rem', fontWeight: '800', color: '#0f172a' }}>\u20b9{member.volume.toLocaleString()}</td>"
+        },
+        {
+          "file": "user/src/pages/BusinessSalesReportPage.jsx",
+          "line": 396,
+          "text": "<td style={{ padding: '0.85rem 1rem', textAlign: 'right', fontWeight: '800', color: '#059669' }}>\u20b9{member.commissionEarned.toLocaleString()}</td>"
+        },
+        {
+          "file": "user/src/pages/BusinessSalesReportPage.jsx",
+          "line": 441,
+          "text": "<td style={{ padding: '0.85rem 1rem', fontWeight: '700', color: '#334155' }}>\u20b9{row.gross.toLocaleString()}</td>"
+        },
+        {
+          "file": "user/src/pages/BusinessSalesReportPage.jsx",
+          "line": 442,
+          "text": "<td style={{ padding: '0.85rem 1rem', fontWeight: '700', color: '#dc2626' }}>-\u20b9{row.tds.toLocaleString()}</td>"
+        },
+        {
+          "file": "user/src/pages/BusinessSalesReportPage.jsx",
+          "line": 443,
+          "text": "<td style={{ padding: '0.85rem 1rem', fontWeight: '800', color: '#059669' }}>\u20b9{row.net.toLocaleString()}</td>"
+        },
+        {
+          "file": "user/src/pages/UserProductsServicesPage.jsx",
+          "line": 295,
+          "text": "<strong style={{ fontSize: '1.15rem', color: '#0f172a', fontWeight: 800 }}>\u20b9{item.price.toLocaleString()}</strong>"
+        },
+        {
+          "file": "user/src/pages/UserProductsServicesPage.jsx",
+          "line": 511,
+          "text": "Category: <strong>{selectedItemForDetails.category}</strong> \u2022 Starting Price: <strong>\u20b9{selectedItemForDetails.price.toLocaleString()}</strong>"
+        },
+        {
+          "file": "user/src/pages/reports/TaxLedgerPage.jsx",
+          "line": 47,
+          "text": "<div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', margin: '0.3rem 0' }}>\u20b9{totalGrossSum.toLocaleString()}</div>"
+        },
+        {
+          "file": "user/src/pages/reports/TaxLedgerPage.jsx",
+          "line": 52,
+          "text": "<div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#dc2626', margin: '0.3rem 0' }}>-\u20b9{totalTdsSum.toLocaleString()}</div>"
+        },
+        {
+          "file": "user/src/pages/reports/TaxLedgerPage.jsx",
+          "line": 57,
+          "text": "<div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', margin: '0.3rem 0' }}>\u20b9{totalNetSum.toLocaleString()}</div>"
+        },
+        {
+          "file": "user/src/pages/reports/TaxLedgerPage.jsx",
+          "line": 97,
+          "text": "<td style={{ padding: '0.85rem 1rem', fontWeight: '700', color: '#334155' }}>\u20b9{row.gross.toLocaleString()}</td>"
+        },
+        {
+          "file": "user/src/pages/reports/TaxLedgerPage.jsx",
+          "line": 98,
+          "text": "<td style={{ padding: '0.85rem 1rem', fontWeight: '700', color: '#dc2626' }}>-\u20b9{row.tds.toLocaleString()}</td>"
+        },
+        {
+          "file": "user/src/pages/reports/TaxLedgerPage.jsx",
+          "line": 99,
+          "text": "<td style={{ padding: '0.85rem 1rem', fontWeight: '800', color: '#059669' }}>\u20b9{row.net.toLocaleString()}</td>"
+        }
+      ],
+      "to_locale_date": [
+        {
+          "file": "user/src/components/payments/RewardsClaimed.jsx",
+          "line": 93,
+          "text": "{val ? new Date(val).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}"
+        },
+        {
+          "file": "user/src/components/payouts/CurrentPayouts.jsx",
+          "line": 111,
+          "text": "{row.request_date ? new Date(row.request_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}"
+        },
+        {
+          "file": "user/src/components/payouts/PayoutHistory.jsx",
+          "line": 118,
+          "text": "{row.request_date ? new Date(row.request_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}"
+        },
+        {
+          "file": "user/src/layout/Header.jsx",
+          "line": 214,
+          "text": "{n.time_ago || (n.created_at ? new Date(n.created_at).toLocaleDateString() : '')}"
+        },
+        {
+          "file": "user/src/layout/Header.jsx",
+          "line": 398,
+          "text": "{n.time_ago || (n.created_at ? new Date(n.created_at).toLocaleDateString() : '')}"
+        },
+        {
+          "file": "user/src/pages/UserNotificationsPage.jsx",
+          "line": 344,
+          "text": "{n.time_ago || (n.created_at ? new Date(n.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '')}"
+        },
+        {
+          "file": "user/src/pages/income/DirectIncomePage.jsx",
+          "line": 51,
+          "text": "return d.toLocaleDateString('en-IN', {"
+        },
+        {
+          "file": "user/src/pages/income/LevelIncomePage.jsx",
+          "line": 52,
+          "text": "return d.toLocaleDateString('en-IN', {"
+        },
+        {
+          "file": "user/src/pages/income/MyIncomePage.jsx",
+          "line": 53,
+          "text": "return d.toLocaleDateString('en-IN', {"
+        }
+      ],
+      "to_locale_time": [
+        {
+          "file": "user/src/components/support/SupportTickets.jsx",
+          "line": 505,
+          "text": "{new Date(m.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}"
+        }
+      ],
+      "intl_dt": [],
+      "tz_offset": [],
+      "input_date": [
+        {
+          "file": "user/src/components/payouts/CurrentPayouts.jsx",
+          "line": 505,
+          "text": "type=\"date\""
+        },
+        {
+          "file": "user/src/components/payouts/CurrentPayouts.jsx",
+          "line": 517,
+          "text": "type=\"date\""
+        },
+        {
+          "file": "user/src/components/payouts/PayoutHistory.jsx",
+          "line": 414,
+          "text": "type=\"date\""
+        },
+        {
+          "file": "user/src/components/payouts/PayoutHistory.jsx",
+          "line": 426,
+          "text": "type=\"date\""
+        },
+        {
+          "file": "user/src/components/settings/PersonalProfile.jsx",
+          "line": 609,
+          "text": "type=\"date\""
+        },
+        {
+          "file": "user/src/pages/reports/MlmEarningsPage.jsx",
+          "line": 627,
+          "text": "type=\"date\""
+        },
+        {
+          "file": "user/src/pages/reports/MlmEarningsPage.jsx",
+          "line": 634,
+          "text": "type=\"date\""
+        }
+      ],
+      "input_datetime": [],
+      "input_time": [],
+      "date_fns_or_moment": [],
+      "format_date_fn": [
+        {
+          "file": "user/src/pages/income/DirectIncomePage.jsx",
+          "line": 46,
+          "text": "const formatDate = (dateStr) => {"
+        },
+        {
+          "file": "user/src/pages/income/LevelIncomePage.jsx",
+          "line": 47,
+          "text": "const formatDate = (dateStr) => {"
+        },
+        {
+          "file": "user/src/pages/income/MyIncomePage.jsx",
+          "line": 48,
+          "text": "const formatDate = (dateStr) => {"
+        }
+      ]
+    }
+  }
+}

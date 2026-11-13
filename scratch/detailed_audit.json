@@ -1,0 +1,564 @@
+[
+  {
+    "file": "admin/src/components/dashboard/AdminDashboardOverview.jsx",
+    "issues": [
+      {
+        "line": 305,
+        "type": "STATIC_BUSINESS_ARRAY",
+        "var": "groupedVelocitySeries",
+        "detail": "const groupedVelocitySeries = ["
+      },
+      {
+        "line": 327,
+        "type": "STATIC_BUSINESS_ARRAY",
+        "var": "merchantPartners",
+        "detail": "const merchantPartners = ["
+      },
+      {
+        "line": 312,
+        "type": "FALLBACK_MOCK_DATA",
+        "detail": "return (data?.recentTransactions || ["
+      },
+      {
+        "line": 177,
+        "type": "HARDCODED_CHART_VALUES",
+        "detail": "{ name: 'Gross Platform GMV', data: [640000, 780000, 890000, 1050000, 1220000, 1450000] },"
+      },
+      {
+        "line": 178,
+        "type": "HARDCODED_CHART_VALUES",
+        "detail": "{ name: 'Retained Admin Fee Pool', data: [96000, 117000, 133500, 157500, 183000, 217500] },"
+      },
+      {
+        "line": 179,
+        "type": "HARDCODED_CHART_VALUES",
+        "detail": "{ name: 'Disbursed Network Payouts', data: [128000, 156000, 178000, 210000, 244000, 290000] },"
+      },
+      {
+        "line": 184,
+        "type": "HARDCODED_CHART_VALUES",
+        "detail": "{ name: 'Gross Platform GMV', data: [280000, 320000, 390000, 440000, 520000] },"
+      },
+      {
+        "line": 185,
+        "type": "HARDCODED_CHART_VALUES",
+        "detail": "{ name: 'Retained Admin Fee Pool', data: [42000, 48000, 58500, 66000, 78000] },"
+      },
+      {
+        "line": 186,
+        "type": "HARDCODED_CHART_VALUES",
+        "detail": "{ name: 'Disbursed Network Payouts', data: [56000, 64000, 78000, 88000, 104000] },"
+      },
+      {
+        "line": 190,
+        "type": "HARDCODED_CHART_VALUES",
+        "detail": "{ name: 'Gross Platform GMV', data: [45000, 68000, 54000, 92000, 81000, 115000, 142000] },"
+      },
+      {
+        "line": 191,
+        "type": "HARDCODED_CHART_VALUES",
+        "detail": "{ name: 'Retained Admin Fee Pool', data: [6750, 10200, 8100, 13800, 12150, 17250, 21300] },"
+      },
+      {
+        "line": 192,
+        "type": "HARDCODED_CHART_VALUES",
+        "detail": "{ name: 'Disbursed Network Payouts', data: [9000, 13600, 10800, 18400, 16200, 23000, 28400] },"
+      },
+      {
+        "line": 306,
+        "type": "HARDCODED_CHART_VALUES",
+        "detail": "{ name: 'New Affiliates', data: [18, 24, 21, 32, 29, 44, 52] },"
+      },
+      {
+        "line": 307,
+        "type": "HARDCODED_CHART_VALUES",
+        "detail": "{ name: 'KYC Verified', data: [14, 19, 18, 26, 25, 38, 46] },"
+      },
+      {
+        "line": 87,
+        "type": "HARDCODED_KPI_FALLBACK",
+        "detail": "totalGmv: Number(raw.totalGmv) || 4852400.00,"
+      },
+      {
+        "line": 88,
+        "type": "HARDCODED_KPI_FALLBACK",
+        "detail": "totalPlatformRevenue: Number(raw.totalPlatformRevenue) || 728500.00,"
+      },
+      {
+        "line": 89,
+        "type": "HARDCODED_KPI_FALLBACK",
+        "detail": "totalCommissionsPaid: Number(raw.totalCommissionsPaid) || 1654200.00,"
+      },
+      {
+        "line": 90,
+        "type": "HARDCODED_KPI_FALLBACK",
+        "detail": "totalTdsCollected: Number(raw.totalTdsCollected) || 82710.00,"
+      },
+      {
+        "line": 91,
+        "type": "HARDCODED_KPI_FALLBACK",
+        "detail": "totalUsers: Number(raw.totalUsers) || 1240,"
+      },
+      {
+        "line": 92,
+        "type": "HARDCODED_KPI_FALLBACK",
+        "detail": "activeUsers: Number(raw.activeUsers) || 980,"
+      },
+      {
+        "line": 93,
+        "type": "HARDCODED_KPI_FALLBACK",
+        "detail": "newUsersThisMonth: Number(raw.newUsersThisMonth) || 142,"
+      },
+      {
+        "line": 94,
+        "type": "HARDCODED_KPI_FALLBACK",
+        "detail": "totalCatalogOfferings: Number(raw.totalCatalogOfferings) || 48,"
+      },
+      {
+        "line": 96,
+        "type": "HARDCODED_KPI_FALLBACK",
+        "detail": "pendingPayoutsAmount: Number(raw.pendingPayoutsAmount) || 84500.00,"
+      },
+      {
+        "line": 97,
+        "type": "HARDCODED_KPI_FALLBACK",
+        "detail": "pendingKycCount: Number(raw.pendingKycCount) || 14,"
+      }
+    ]
+  },
+  {
+    "file": "admin/src/components/products/AdminPackagesPage.jsx",
+    "issues": [
+      {
+        "line": 49,
+        "type": "HARDCODED_KPI_FALLBACK",
+        "detail": "adminCommissionPercent: Number(k.commission_percent ?? k.adminCommissionPercent) || 18,"
+      },
+      {
+        "line": 133,
+        "type": "HARDCODED_KPI_FALLBACK",
+        "detail": "commission_percent: Number(formData.adminCommissionPercent) || 18,"
+      }
+    ]
+  },
+  {
+    "file": "admin/src/components/products/AdminProductsServicesPage.jsx",
+    "issues": [
+      {
+        "line": 12,
+        "type": "MOCK_STATE_INITIALIZER",
+        "detail": "const [items, setItems] = useState(["
+      }
+    ]
+  },
+  {
+    "file": "admin/src/components/sales/AdminReceivePaymentPage.jsx",
+    "issues": [
+      {
+        "line": 12,
+        "type": "MOCK_STATE_INITIALIZER",
+        "detail": "const [balanceSales, setBalanceSales] = useState(["
+      },
+      {
+        "line": 80,
+        "type": "MOCK_STATE_INITIALIZER",
+        "detail": "const [dumpedProjects, setDumpedProjects] = useState(["
+      },
+      {
+        "line": 97,
+        "type": "MOCK_STATE_INITIALIZER",
+        "detail": "const [clearedLedger, setClearedLedger] = useState(["
+      },
+      {
+        "line": 118,
+        "type": "STATIC_BUSINESS_ARRAY",
+        "var": "uplineNetworkChain",
+        "detail": "const uplineNetworkChain = ["
+      }
+    ]
+  },
+  {
+    "file": "admin/src/components/support/AdminContactInquiriesPage.jsx",
+    "issues": [
+      {
+        "line": 4,
+        "type": "MOCK_STATE_INITIALIZER",
+        "detail": "const [callbacks, setCallbacks] = useState(["
+      }
+    ]
+  },
+  {
+    "file": "admin/src/components/support/AdminLiveHelpdeskPage.jsx",
+    "issues": [
+      {
+        "line": 4,
+        "type": "MOCK_STATE_INITIALIZER",
+        "detail": "const [activeSessions, setActiveSessions] = useState(["
+      }
+    ]
+  },
+  {
+    "file": "user/src/pages/BusinessSalesReportPage.jsx",
+    "issues": [
+      {
+        "line": 22,
+        "type": "STATIC_BUSINESS_ARRAY",
+        "var": "salesTransactions",
+        "detail": "const salesTransactions = ["
+      },
+      {
+        "line": 39,
+        "type": "STATIC_BUSINESS_ARRAY",
+        "var": "teamPerformance",
+        "detail": "const teamPerformance = ["
+      }
+    ]
+  },
+  {
+    "file": "user/src/pages/PrivacyPolicyPage.jsx",
+    "issues": [
+      {
+        "line": 6,
+        "type": "STATIC_BUSINESS_ARRAY",
+        "var": "sections",
+        "detail": "const sections = ["
+      }
+    ]
+  },
+  {
+    "file": "user/src/pages/TermsAndConditionsPage.jsx",
+    "issues": [
+      {
+        "line": 7,
+        "type": "STATIC_BUSINESS_ARRAY",
+        "var": "sections",
+        "detail": "const sections = ["
+      }
+    ]
+  },
+  {
+    "file": "user/src/pages/UserSocialPlatformsPage.jsx",
+    "issues": [
+      {
+        "line": 5,
+        "type": "STATIC_BUSINESS_ARRAY",
+        "var": "DEFAULT_PLATFORMS",
+        "detail": "const DEFAULT_PLATFORMS = ["
+      }
+    ]
+  },
+  {
+    "file": "user/src/pages/landing/components/AboutUsSection.jsx",
+    "issues": [
+      {
+        "line": 13,
+        "type": "STATIC_BUSINESS_ARRAY",
+        "var": "values",
+        "detail": "const values = ["
+      },
+      {
+        "line": 19,
+        "type": "STATIC_BUSINESS_ARRAY",
+        "var": "milestones",
+        "detail": "const milestones = ["
+      }
+    ]
+  },
+  {
+    "file": "user/src/pages/landing/components/CategoriesSection.jsx",
+    "issues": [
+      {
+        "line": 15,
+        "type": "STATIC_BUSINESS_ARRAY",
+        "var": "categories",
+        "detail": "const categories = ["
+      }
+    ]
+  },
+  {
+    "file": "user/src/pages/landing/components/StatsSection.jsx",
+    "issues": [
+      {
+        "line": 11,
+        "type": "STATIC_BUSINESS_ARRAY",
+        "var": "stats",
+        "detail": "const stats = ["
+      }
+    ]
+  },
+  {
+    "file": "user/src/pages/landing/components/TestimonialsSection.jsx",
+    "issues": [
+      {
+        "line": 14,
+        "type": "STATIC_BUSINESS_ARRAY",
+        "var": "testimonials",
+        "detail": "const testimonials = ["
+      }
+    ]
+  },
+  {
+    "file": "user/src/pages/landing/components/WhyChooseUsSection.jsx",
+    "issues": [
+      {
+        "line": 14,
+        "type": "STATIC_BUSINESS_ARRAY",
+        "var": "features",
+        "detail": "const features = ["
+      }
+    ]
+  },
+  {
+    "file": "user/src/pages/reports/MlmEarningsPage.jsx",
+    "issues": [
+      {
+        "line": 800,
+        "type": "HARDCODED_KPI_FALLBACK",
+        "detail": "const reqBp = Number(reward.required_bp) || 100;"
+      }
+    ]
+  },
+  {
+    "file": "user/src/pages/reports/TaxLedgerPage.jsx",
+    "issues": [
+      {
+        "line": 8,
+        "type": "STATIC_BUSINESS_ARRAY",
+        "var": "taxLedger",
+        "detail": "const taxLedger = ["
+      }
+    ]
+  },
+  {
+    "file": "user/src/components/dashboard/DashboardOverview.jsx",
+    "issues": [
+      {
+        "line": 148,
+        "type": "HARDCODED_CHART_VALUES",
+        "detail": "{ name: 'Direct Referral Bonus', data: [12000, 18500, 24000, 31000, 38000, 45000] },"
+      },
+      {
+        "line": 149,
+        "type": "HARDCODED_CHART_VALUES",
+        "detail": "{ name: 'Binary Team Commissions', data: [8000, 14000, 19500, 26000, 32000, 41000] },"
+      },
+      {
+        "line": 154,
+        "type": "HARDCODED_CHART_VALUES",
+        "detail": "{ name: 'Direct Referral Bonus', data: [4500, 8200, 11400, 16800] },"
+      },
+      {
+        "line": 155,
+        "type": "HARDCODED_CHART_VALUES",
+        "detail": "{ name: 'Binary Team Commissions', data: [3100, 6400, 9100, 13500] },"
+      },
+      {
+        "line": 159,
+        "type": "HARDCODED_CHART_VALUES",
+        "detail": "{ name: 'Direct Referral Bonus', data: [800, 1200, 950, 1600, 2100, 1800, 2400] },"
+      },
+      {
+        "line": 160,
+        "type": "HARDCODED_CHART_VALUES",
+        "detail": "{ name: 'Binary Team Commissions', data: [400, 750, 600, 1100, 1400, 1300, 1900] },"
+      }
+    ]
+  },
+  {
+    "file": "user/src/components/payments/MyAchievements.jsx",
+    "issues": [
+      {
+        "line": 6,
+        "type": "STATIC_BUSINESS_ARRAY",
+        "var": "achievements",
+        "detail": "const achievements = ["
+      }
+    ]
+  },
+  {
+    "file": "user/src/components/support/ContactSupport.jsx",
+    "issues": [
+      {
+        "line": 35,
+        "type": "STATIC_BUSINESS_ARRAY",
+        "var": "offices",
+        "detail": "const offices = ["
+      }
+    ]
+  },
+  {
+    "file": "user/src/components/support/KnowledgeBase.jsx",
+    "issues": [
+      {
+        "line": 11,
+        "type": "STATIC_BUSINESS_ARRAY",
+        "var": "categories",
+        "detail": "const categories = ["
+      }
+    ]
+  },
+  {
+    "file": "user/src/components/support/LiveHelpdesk.jsx",
+    "issues": [
+      {
+        "line": 4,
+        "type": "MOCK_STATE_INITIALIZER",
+        "detail": "const [messages, setMessages] = useState(["
+      },
+      {
+        "line": 17,
+        "type": "STATIC_BUSINESS_ARRAY",
+        "var": "quickPrompts",
+        "detail": "const quickPrompts = ["
+      }
+    ]
+  },
+  {
+    "file": "user/src/components/support/SupportSystem.jsx",
+    "issues": [
+      {
+        "line": 7,
+        "type": "STATIC_BUSINESS_ARRAY",
+        "var": "initialTickets",
+        "detail": "const initialTickets = ["
+      }
+    ]
+  },
+  {
+    "file": "entity/src/pages/EntityDashboard.jsx",
+    "issues": [
+      {
+        "line": 306,
+        "type": "STATIC_BUSINESS_ARRAY",
+        "var": "horizontalBarSeries",
+        "detail": "const horizontalBarSeries = ["
+      },
+      {
+        "line": 342,
+        "type": "STATIC_BUSINESS_ARRAY",
+        "var": "stackedVelocitySeries",
+        "detail": "const stackedVelocitySeries = ["
+      },
+      {
+        "line": 349,
+        "type": "FALLBACK_MOCK_DATA",
+        "detail": "return (data?.recentInvoices || ["
+      },
+      {
+        "line": 364,
+        "type": "FALLBACK_MOCK_DATA",
+        "detail": "const activityFeed = data?.activityFeed || ["
+      },
+      {
+        "line": 192,
+        "type": "HARDCODED_CHART_VALUES",
+        "detail": "{ name: 'Gross Billed (Column)', type: 'column', data: [240000, 310000, 385000, 460000, 520000, 6100"
+      },
+      {
+        "line": 193,
+        "type": "HARDCODED_CHART_VALUES",
+        "detail": "{ name: 'Net Bank Disbursed (Line)', type: 'line', data: [196800, 254200, 315700, 377200, 426400, 50"
+      },
+      {
+        "line": 194,
+        "type": "HARDCODED_CHART_VALUES",
+        "detail": "{ name: 'Balance Receivables (Dashed)', type: 'line', data: [18000, 22000, 28000, 34000, 38000, 4200"
+      },
+      {
+        "line": 199,
+        "type": "HARDCODED_CHART_VALUES",
+        "detail": "{ name: 'Gross Billed (Column)', type: 'column', data: [115000, 142000, 168000, 195000, 230000] },"
+      },
+      {
+        "line": 200,
+        "type": "HARDCODED_CHART_VALUES",
+        "detail": "{ name: 'Net Bank Disbursed (Line)', type: 'line', data: [94300, 116440, 137760, 159900, 188600] },"
+      },
+      {
+        "line": 201,
+        "type": "HARDCODED_CHART_VALUES",
+        "detail": "{ name: 'Balance Receivables (Dashed)', type: 'line', data: [9000, 11000, 14000, 16000, 21000] },"
+      },
+      {
+        "line": 205,
+        "type": "HARDCODED_CHART_VALUES",
+        "detail": "{ name: 'Gross Billed (Column)', type: 'column', data: [28000, 35000, 42000, 58000, 51000, 74000, 89"
+      },
+      {
+        "line": 206,
+        "type": "HARDCODED_CHART_VALUES",
+        "detail": "{ name: 'Net Bank Disbursed (Line)', type: 'line', data: [22960, 28700, 34440, 47560, 41820, 60680, "
+      },
+      {
+        "line": 207,
+        "type": "HARDCODED_CHART_VALUES",
+        "detail": "{ name: 'Balance Receivables (Dashed)', type: 'line', data: [2500, 3200, 4100, 5800, 4600, 6800, 840"
+      },
+      {
+        "line": 307,
+        "type": "HARDCODED_CHART_VALUES",
+        "detail": "{ name: 'Revenue Generated', data: [889290, 452025, 300735, 202950] },"
+      },
+      {
+        "line": 343,
+        "type": "HARDCODED_CHART_VALUES",
+        "detail": "{ name: 'Full Paid Invoices', data: [12, 16, 19, 24, 21, 32, 38] },"
+      },
+      {
+        "line": 99,
+        "type": "HARDCODED_KPI_FALLBACK",
+        "detail": "totalGrossSales: Number(raw.totalGrossSales) || 1845000.00,"
+      },
+      {
+        "line": 100,
+        "type": "HARDCODED_KPI_FALLBACK",
+        "detail": "totalNetEarnings: Number(raw.totalNetEarnings) || 1512900.00,"
+      },
+      {
+        "line": 101,
+        "type": "HARDCODED_KPI_FALLBACK",
+        "detail": "totalBalanceDue: Number(raw.totalBalanceDue) || 124500.00,"
+      },
+      {
+        "line": 102,
+        "type": "HARDCODED_KPI_FALLBACK",
+        "detail": "totalPlatformFeePaid: Number(raw.totalPlatformFeePaid) || 332100.00,"
+      },
+      {
+        "line": 103,
+        "type": "HARDCODED_KPI_FALLBACK",
+        "detail": "totalInvoicesCount: Number(raw.totalInvoicesCount) || 128,"
+      },
+      {
+        "line": 104,
+        "type": "HARDCODED_KPI_FALLBACK",
+        "detail": "totalCatalogOfferings: Number(raw.totalCatalogOfferings) || 48,"
+      }
+    ]
+  },
+  {
+    "file": "entity/src/pages/EntityPayoutReportsPage.jsx",
+    "issues": [
+      {
+        "line": 63,
+        "type": "FALLBACK_MOCK_DATA",
+        "detail": "const monthlyTrend = reportData?.monthly_trend || ["
+      },
+      {
+        "line": 72,
+        "type": "FALLBACK_MOCK_DATA",
+        "detail": "const methodDistribution = reportData?.method_distribution || ["
+      },
+      {
+        "line": 78,
+        "type": "FALLBACK_MOCK_DATA",
+        "detail": "const statusDistribution = reportData?.status_distribution || ["
+      },
+      {
+        "line": 84,
+        "type": "FALLBACK_MOCK_DATA",
+        "detail": "let rows = reportData?.statement_rows || ["
+      }
+    ]
+  }
+]

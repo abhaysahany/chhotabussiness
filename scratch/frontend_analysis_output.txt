@@ -1,0 +1,509 @@
+
+============================== ADMIN PANEL DATE USAGES ==============================
+
+--- ADMIN new_date (35 items) ---
+  admin/src/components/AdminLoginForm.jsx:643 -> © {new Date().getFullYear()} {appName} — Powered by Laravel & React
+  admin/src/components/entities/AdminEntityCommissionPage.jsx:226 -> updated_at: new Date().toISOString(),
+  admin/src/components/entities/AdminEntityCommissionPage.jsx:304 -> updated_at: new Date().toISOString(),
+  admin/src/components/layout/AdminFooter.jsx:9 -> <div>© {new Date().getFullYear()} {appName} Admin — Powered by Laravel & React</div>
+  admin/src/components/products/AdminProductsServicesPage.jsx:153 -> created_at: new Date().toISOString().split('T')[0],
+  admin/src/components/sales/AdminDumpRequestsPage.jsx:422 -> {d.requested_at ? new Date(d.requested_at).toLocaleDateString('en-IN') : '—'}
+  admin/src/components/sales/AdminDumpRequestsPage.jsx:894 -> <div><strong style={{ color: '#6B7280' }}>Requested At:</strong> <div>{selectedDumpForDetails.requested_at ? new Date(selectedDumpForDetails.requested_at).toLocaleString('en-IN') : '—'}</div></div>
+  admin/src/components/sales/AdminDumpRequestsPage.jsx:915 -> Approved by Admin #{selectedDumpForDetails.approved_by} on {selectedDumpForDetails.approved_at ? new Date(selectedDumpForDetails.approved_at).toLocaleString('en-IN') : '—'}
+  admin/src/components/sales/AdminDumpRequestsPage.jsx:925 -> Rejected by Admin #{selectedDumpForDetails.rejected_by} on {selectedDumpForDetails.rejected_at ? new Date(selectedDumpForDetails.rejected_at).toLocaleString('en-IN') : '—'}
+  admin/src/components/sales/AdminOrdersPage.jsx:284 -> const todayStr = new Date().toISOString().split('T')[0];
+  admin/src/components/sales/AdminOrdersPage.jsx:1068 -> const timeA = a.date ? new Date(a.date).getTime() : 0;
+  admin/src/components/sales/AdminOrdersPage.jsx:1069 -> const timeB = b.date ? new Date(b.date).getTime() : 0;
+  admin/src/components/sales/AdminOrdersPage.jsx:1299 -> const timeA = a.date ? new Date(a.date).getTime() : 0;
+  admin/src/components/sales/AdminOrdersPage.jsx:1300 -> const timeB = b.date ? new Date(b.date).getTime() : 0;
+  admin/src/components/sales/AdminOrdersPage.jsx:1368 -> {entry.date ? new Date(entry.date).toLocaleDateString('en-IN') : 'N/A'}
+  admin/src/components/sales/AdminOrdersPage.jsx:1486 -> {entry.date ? new Date(entry.date).toLocaleDateString('en-IN') : 'N/A'}
+  admin/src/components/sales/AdminOrdersPage.jsx:1949 -> {selectedDumpDetails.requested_at && <div>Requested at: {new Date(selectedDumpDetails.requested_at).toLocaleString('en-IN')}</div>}
+  admin/src/components/sales/AdminOrdersPage.jsx:1950 -> {selectedDumpDetails.approved_at && <div>Approved at: {new Date(selectedDumpDetails.approved_at).toLocaleString('en-IN')}</div>}
+  admin/src/components/sales/AdminOrdersPage.jsx:1951 -> {selectedDumpDetails.rejected_at && <div>Rejected at: {new Date(selectedDumpDetails.rejected_at).toLocaleString('en-IN')}</div>}
+  admin/src/components/sales/AdminOrdersPage.jsx:2143 -> ⚠️ This payment receipt has already been allocated (Status: {paymentAllocationData.income_distribution_status}). Distributed at: {paymentAllocationData.income_distributed_at ? new Date(paymentAllocationData.income_distributed_at).toLocaleString() : 'N/A'}.
+  admin/src/components/sales/AdminPaymentHistoryPage.jsx:346 -> const formattedDate = paymentDate ? new Date(paymentDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+  admin/src/components/sales/AdminPaymentHistoryPage.jsx:363 -> const formattedDistributedAt = distributedAt ? new Date(distributedAt).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Completed';
+  admin/src/components/sales/AdminPaymentHistoryPage.jsx:670 -> {viewingPayment.income_distributed_at || viewingPayment.incomeDistributedAt ? new Date(viewingPayment.income_distributed_at || viewingPayment.incomeDistributedAt).toLocaleString('en-IN') : 'Completed'}
+  admin/src/components/sales/AdminPendingOrdersPage.jsx:621 -> {order.date || (order.created_at ? new Date(order.created_at).toLocaleDateString('en-IN') : 'N/A')}
+  admin/src/components/sales/AdminPendingOrdersPage.jsx:913 -> {selectedOrderForReview.date || (selectedOrderForReview.created_at ? new Date(selectedOrderForReview.created_at).toLocaleDateString('en-IN') : 'N/A')}
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:191 -> date: new Date().toISOString().replace('T', ' ').substring(0, 16),
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:243 -> dumped_at: new Date().toISOString().split('T')[0],
+  admin/src/components/support/AdminSendNotificationPage.jsx:492 -> {n.created_at ? new Date(n.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'N/A'}
+  admin/src/components/users/AdminPayoutRequestsPage.jsx:69 -> const reqDate = new Date(p.requestDate);
+  admin/src/components/users/AdminPayoutRequestsPage.jsx:71 -> const todayStr = new Date().toISOString().slice(0, 10);
+  admin/src/components/users/AdminPayoutRequestsPage.jsx:76 -> const now = new Date();
+  admin/src/components/users/AdminPayoutRequestsPage.jsx:77 -> const firstDay = new Date(now.setDate(now.getDate() - now.getDay()));
+  admin/src/components/users/AdminPayoutRequestsPage.jsx:80 -> const now = new Date();
+  admin/src/components/users/AdminPayoutRequestsPage.jsx:81 -> const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+  admin/src/components/users/AdminRewardsClaimPage.jsx:234 -> {claim.claim_date ? new Date(claim.claim_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
+
+--- ADMIN iso_string (7 items) ---
+  admin/src/components/entities/AdminEntityCommissionPage.jsx:226 -> updated_at: new Date().toISOString(),
+  admin/src/components/entities/AdminEntityCommissionPage.jsx:304 -> updated_at: new Date().toISOString(),
+  admin/src/components/products/AdminProductsServicesPage.jsx:153 -> created_at: new Date().toISOString().split('T')[0],
+  admin/src/components/sales/AdminOrdersPage.jsx:284 -> const todayStr = new Date().toISOString().split('T')[0];
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:191 -> date: new Date().toISOString().replace('T', ' ').substring(0, 16),
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:243 -> dumped_at: new Date().toISOString().split('T')[0],
+  admin/src/components/users/AdminPayoutRequestsPage.jsx:71 -> const todayStr = new Date().toISOString().slice(0, 10);
+
+--- ADMIN to_locale_string (196 items) ---
+  admin/src/components/content/AdminContentLibraryPage.jsx:770 -> <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0f172a' }}>{totalDownloadsSum.toLocaleString()}</div>
+  admin/src/components/content/AdminContentLibraryPage.jsx:778 -> <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0f172a' }}>{totalSharesSum.toLocaleString()}</div>
+  admin/src/components/content/AdminContentSupportUploadsPage.jsx:233 -> <div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', margin: '0.3rem 0' }}>👁️ {totalViews.toLocaleString()}</div>
+  admin/src/components/content/AdminContentSupportUploadsPage.jsx:234 -> <div style={{ fontSize: '0.78rem', color: '#059669', fontWeight: '700' }}>👍 {totalHelpful.toLocaleString()} Helpful Votes</div>
+  admin/src/components/dashboard/AdminDashboardOverview.jsx:161 -> formatter: (val) => `₹${(Number(val) || 0).toLocaleString('en-IN')}`,
+  admin/src/components/dashboard/AdminDashboardOverview.jsx:501 -> ₹{kpis.totalGmv.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+  admin/src/components/dashboard/AdminDashboardOverview.jsx:532 -> ₹{kpis.totalPlatformRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+  admin/src/components/dashboard/AdminDashboardOverview.jsx:569 -> ₹{kpis.totalCommissionsPaid.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+  admin/src/components/dashboard/AdminDashboardOverview.jsx:572 -> <span>TDS Pool: ₹{kpis.totalTdsCollected.toLocaleString('en-IN')} (5% Tax)</span>
+  admin/src/components/dashboard/AdminDashboardOverview.jsx:600 -> {kpis.totalUsers.toLocaleString('en-IN')}{' '}
+  admin/src/components/dashboard/AdminDashboardOverview.jsx:641 -> {kpis.pendingPayoutsCount} Payout Requests Pending (₹{kpis.pendingPayoutsAmount.toLocaleString('en-IN')}) • {kpis.pendingKycCount} KYC Submissions Awaiting Audit
+  admin/src/components/dashboard/AdminDashboardOverview.jsx:951 -> ₹{txn.gross.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+  admin/src/components/dashboard/AdminDashboardOverview.jsx:954 -> ₹{txn.adminFee.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+  admin/src/components/products/AdminPackagesPage.jsx:373 -> <strong style={{ fontSize: '0.95rem', color: '#0f172a' }}>₹{pkg.price.toLocaleString()}</strong>
+  admin/src/components/products/AdminPackagesPage.jsx:435 -> <span className="pro-card-price">₹{pkg.price.toLocaleString()}</span>
+  admin/src/components/products/AdminProductsPage.jsx:465 -> <span className="price-tag-value">₹{Number(p.price).toLocaleString('en-IN')}</span>
+  admin/src/components/products/AdminProductsPage.jsx:523 -> <div className="grid-price">Base: ₹{Number(p.price).toLocaleString('en-IN')}</div>
+  admin/src/components/products/AdminProductsServicesPage.jsx:498 -> <strong style={{ color: '#0f172a', fontSize: '0.95rem' }}>₹{item.price.toLocaleString()}</strong>
+  admin/src/components/products/AdminServicesPage.jsx:457 -> <span className="price-tag-value">₹{Number(s.price).toLocaleString('en-IN')}</span>
+  admin/src/components/products/AdminServicesPage.jsx:513 -> <div className="grid-price">Base: ₹{Number(s.price).toLocaleString('en-IN')}</div>
+  admin/src/components/sales/AdminDumpRequestsPage.jsx:51 -> return '₹' + num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  admin/src/components/sales/AdminDumpRequestsPage.jsx:894 -> <div><strong style={{ color: '#6B7280' }}>Requested At:</strong> <div>{selectedDumpForDetails.requested_at ? new Date(selectedDumpForDetails.requested_at).toLocaleString('en-IN') : '—'}</div></div>
+  admin/src/components/sales/AdminDumpRequestsPage.jsx:915 -> Approved by Admin #{selectedDumpForDetails.approved_by} on {selectedDumpForDetails.approved_at ? new Date(selectedDumpForDetails.approved_at).toLocaleString('en-IN') : '—'}
+  admin/src/components/sales/AdminDumpRequestsPage.jsx:925 -> Rejected by Admin #{selectedDumpForDetails.rejected_by} on {selectedDumpForDetails.rejected_at ? new Date(selectedDumpForDetails.rejected_at).toLocaleString('en-IN') : '—'}
+  admin/src/components/sales/AdminOrdersPage.jsx:390 -> ₹{totalGross.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:400 -> ₹{totalExpectedAdminCommission.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:410 -> ₹{totalCollected.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:420 -> ₹{totalBalanceDue.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:430 -> ₹{totalAdminCommissionCollected.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:440 -> ₹{totalRemainingAdminCommission.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:450 -> ₹{totalDistributedAdminCut.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:616 -> ₹{gross.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:621 -> <div>₹{expectedAdminCut.toLocaleString()}</div>
+  admin/src/components/sales/AdminOrdersPage.jsx:627 -> ₹{totalPaymentReceived.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:632 -> ₹{balanceDue.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:637 -> ₹{adminCutCollected.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:642 -> ₹{remainingAdminCut.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:676 -> Allocated: ₹{distributedCut.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:682 -> Dump: ₹{dumpAmount.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:833 -> <strong style={{ fontSize: '1rem', color: '#0f172a' }}>₹{Number(selectedInvoiceForView.grossAmount ?? selectedInvoiceForView.gross_amount ?? 0).toLocaleString()}</strong>
+  admin/src/components/sales/AdminOrdersPage.jsx:837 -> <strong style={{ color: '#2563eb' }}>₹{Number(selectedInvoiceForView.advancePayment ?? selectedInvoiceForView.advance_payment ?? 0).toLocaleString()}</strong>
+  admin/src/components/sales/AdminOrdersPage.jsx:842 -> ₹{Number(selectedInvoiceForView.balanceDue ?? selectedInvoiceForView.balance_due ?? 0).toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:847 -> <strong style={{ color: '#16a34a', fontSize: '1rem' }}>₹{Number(selectedInvoiceForView.adminCommissionCut ?? selectedInvoiceForView.admin_commission_cut ?? 0).toLocaleString()} ({selectedInvoiceForView.adminCommissionPercent || 15}%)</strong>
+  admin/src/components/sales/AdminOrdersPage.jsx:852 -> <strong style={{ color: '#7c3aed', fontSize: '1rem' }}>₹{Number(selectedInvoiceForView.dump_amount ?? selectedInvoiceForView.dumpAmount ?? 0).toLocaleString()}</strong>
+  admin/src/components/sales/AdminOrdersPage.jsx:932 -> <div><span style={{ color: '#64748b' }}>Project Value:</span> <strong style={{ color: '#0f172a' }}>₹{Number(selectedOrderForDetails.grossAmount ?? selectedOrderForDetails.gross_amount ?? 0).toLocaleString()}</strong></div>
+  admin/src/components/sales/AdminOrdersPage.jsx:933 -> <div><span style={{ color: '#64748b' }}>Collected:</span> <strong style={{ color: '#2563eb' }}>₹{Number(selectedOrderForDetails.advancePayment ?? selectedOrderForDetails.advance_payment ?? 0).toLocaleString()}</strong></div>
+  admin/src/components/sales/AdminOrdersPage.jsx:934 -> <div><span style={{ color: '#64748b' }}>Balance Due:</span> <strong style={{ color: Number(selectedOrderForDetails.balanceDue ?? selectedOrderForDetails.balance_due ?? 0) > 0 ? '#d97706' : '#16a34a' }}>₹{Number(selectedOrderForDetails.balanceDue ?? selectedOrderForDetails.balance_due ?? 0).toLocaleString()}</strong></div>
+  admin/src/components/sales/AdminOrdersPage.jsx:1081 -> ₹{orderGross.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:1089 -> ₹{orderExpectedCut.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:1097 -> ₹{orderReceived.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:1105 -> ₹{orderBalance.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:1113 -> ₹{orderCollectedCut.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:1121 -> ₹{orderDumpAdminCut.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:1129 -> ₹{orderRemainingCut.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:1140 -> ₹{orderDistributedCut.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:1148 -> ₹{directCut.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:1156 -> ₹{levelCut.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:1164 -> ₹{rewardCut.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:1174 -> <span>📦</span> APPROVED DUMP WRITE-OFF: ₹{orderApprovedDump.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:1185 -> ₹{orderDumpAdminCut.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:1371 -> ₹{entry.amount.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:1374 -> ₹{entry.adminCut.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:1377 -> ₹{entry.directIncome.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:1380 -> ₹{entry.levelIncome.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:1383 -> ₹{entry.rewardIncome.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:1490 -> ₹{entry.amount.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:1497 -> ₹{entry.adminCut.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:1501 -> ₹{entry.directIncome.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:1505 -> ₹{entry.levelIncome.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:1509 -> ₹{entry.rewardIncome.toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:1692 -> <strong style={{ color: '#6b21a8', fontSize: '1.05rem' }}>₹{dumpAmt.toLocaleString()}</strong>
+  admin/src/components/sales/AdminOrdersPage.jsx:1700 -> <span>₹{dumpCut.toLocaleString()}</span>
+  admin/src/components/sales/AdminOrdersPage.jsx:1711 -> <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#1d4ed8', marginTop: '0.1rem' }}>₹{directDump.toLocaleString()}</div>
+  admin/src/components/sales/AdminOrdersPage.jsx:1715 -> <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#1d4ed8', marginTop: '0.1rem' }}>₹{levelDump.toLocaleString()}</div>
+  admin/src/components/sales/AdminOrdersPage.jsx:1719 -> <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#1d4ed8', marginTop: '0.1rem' }}>₹{rewardDump.toLocaleString()}</div>
+  admin/src/components/sales/AdminOrdersPage.jsx:1765 -> {isProcessingDump ? 'Approving Dump...' : `Confirm & Approve Dump of ₹${Number(selectedDumpForReview.dump_amount || 0).toLocaleString()}`}
+  admin/src/components/sales/AdminOrdersPage.jsx:1806 -> Request #{selectedDumpForReject.id} • Amount: ₹{Number(selectedDumpForReject.dump_amount || 0).toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:1921 -> <strong>₹{Number(selectedDumpDetails.dump_amount || 0).toLocaleString()}</strong>
+  admin/src/components/sales/AdminOrdersPage.jsx:1925 -> <strong style={{ color: '#16a34a' }}>₹{Number(selectedDumpDetails.admin_commission_cut || 0).toLocaleString()}</strong>
+  admin/src/components/sales/AdminOrdersPage.jsx:1929 -> <div>Direct (40%): <strong>₹{Number(selectedDumpDetails.direct_income_amount || 0).toLocaleString()}</strong></div>
+  admin/src/components/sales/AdminOrdersPage.jsx:1930 -> <div>Level (40%): <strong>₹{Number(selectedDumpDetails.level_income_amount || 0).toLocaleString()}</strong></div>
+  admin/src/components/sales/AdminOrdersPage.jsx:1931 -> <div>Reward (20%): <strong>₹{Number(selectedDumpDetails.reward_income_amount || 0).toLocaleString()}</strong></div>
+  admin/src/components/sales/AdminOrdersPage.jsx:1949 -> {selectedDumpDetails.requested_at && <div>Requested at: {new Date(selectedDumpDetails.requested_at).toLocaleString('en-IN')}</div>}
+  admin/src/components/sales/AdminOrdersPage.jsx:1950 -> {selectedDumpDetails.approved_at && <div>Approved at: {new Date(selectedDumpDetails.approved_at).toLocaleString('en-IN')}</div>}
+  admin/src/components/sales/AdminOrdersPage.jsx:1951 -> {selectedDumpDetails.rejected_at && <div>Rejected at: {new Date(selectedDumpDetails.rejected_at).toLocaleString('en-IN')}</div>}
+  admin/src/components/sales/AdminOrdersPage.jsx:2039 -> <div><span style={{ color: '#64748b' }}>Payment Received:</span> <strong style={{ color: '#2563eb' }}>₹{Number(paymentAllocationData.payment_amount).toLocaleString()}</strong></div>
+  admin/src/components/sales/AdminOrdersPage.jsx:2064 -> ₹{Number(paymentAllocationData.payment_admin_cut).toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:2072 -> ₹{Number(paymentAllocationData.previously_allocated).toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:2080 -> ₹{Number(paymentAllocationData.eligible_admin_cut).toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:2100 -> value={`₹${Number(paymentAllocationData.direct_income_amount).toLocaleString()}`}
+  admin/src/components/sales/AdminOrdersPage.jsx:2112 -> value={`₹${Number(paymentAllocationData.level_income_amount).toLocaleString()}`}
+  admin/src/components/sales/AdminOrdersPage.jsx:2124 -> value={`₹${Number(paymentAllocationData.reward_income_amount).toLocaleString()}`}
+  admin/src/components/sales/AdminOrdersPage.jsx:2132 -> <strong style={{ fontSize: '1rem', color: '#0f172a' }}>₹{Number(paymentAllocationData.total_allocation).toLocaleString()}</strong>
+  admin/src/components/sales/AdminOrdersPage.jsx:2138 -> ℹ️ <strong>System Note:</strong> Confirming this distribution allocates ₹{Number(paymentAllocationData.eligible_admin_cut).toLocaleString()} for Payment Receipt #{paymentAllocationData.payment_id} and accumulates onto Order #{paymentAllocationData.sales_record_id}. No individual user accounts, sponsor wallets, or buyer payout balances are credited in this phase.
+  admin/src/components/sales/AdminOrdersPage.jsx:2143 -> ⚠️ This payment receipt has already been allocated (Status: {paymentAllocationData.income_distribution_status}). Distributed at: {paymentAllocationData.income_distributed_at ? new Date(paymentAllocationData.income_distributed_at).toLocaleString() : 'N/A'}.
+  admin/src/components/sales/AdminOrdersPage.jsx:2266 -> <div><span style={{ color: '#64748b' }}>Project Value:</span> <strong style={{ color: '#0f172a' }}>₹{Number(allocationData.project_value).toLocaleString()}</strong></div>
+  admin/src/components/sales/AdminOrdersPage.jsx:2290 -> ₹{Number(allocationData.total_admin_cut).toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:2298 -> ₹{Number(allocationData.previously_allocated).toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:2306 -> ₹{Number(allocationData.eligible_admin_cut).toLocaleString()}
+  admin/src/components/sales/AdminOrdersPage.jsx:2326 -> value={`₹${Number(allocationData.direct_income_amount).toLocaleString()}`}
+  admin/src/components/sales/AdminOrdersPage.jsx:2338 -> value={`₹${Number(allocationData.level_income_amount).toLocaleString()}`}
+  admin/src/components/sales/AdminOrdersPage.jsx:2350 -> value={`₹${Number(allocationData.reward_income_amount).toLocaleString()}`}
+  admin/src/components/sales/AdminOrdersPage.jsx:2358 -> <strong style={{ fontSize: '1rem', color: '#0f172a' }}>₹{Number(allocationData.total_allocation).toLocaleString()}</strong>
+  admin/src/components/sales/AdminOrdersPage.jsx:2364 -> ℹ️ <strong>System Note:</strong> Cumulative amounts currently persisted on this order: Direct: ₹{Number(allocationData.cumulative_totals?.direct_income_amount || 0).toLocaleString()} • Level: ₹{Number(allocationData.cumulative_totals?.level_income_amount || 0).toLocaleString()} • Reward: ₹{Number(allocationData.cumulative_totals?.reward_income_amount || 0).toLocaleString()}. Confirming will safely persist newly eligible amounts onto the order record without crediting individual user accounts.
+  admin/src/components/sales/AdminPaymentHistoryPage.jsx:197 -> ₹{totalDistributedPayments.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  admin/src/components/sales/AdminPaymentHistoryPage.jsx:209 -> ₹{totalDistributedAdminCut.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  admin/src/components/sales/AdminPaymentHistoryPage.jsx:221 -> ₹{totalDirectIncome.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  admin/src/components/sales/AdminPaymentHistoryPage.jsx:233 -> ₹{totalLevelIncome.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  admin/src/components/sales/AdminPaymentHistoryPage.jsx:245 -> ₹{totalRewardIncome.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  admin/src/components/sales/AdminPaymentHistoryPage.jsx:363 -> const formattedDistributedAt = distributedAt ? new Date(distributedAt).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Completed';
+  admin/src/components/sales/AdminPaymentHistoryPage.jsx:421 -> ₹{amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  admin/src/components/sales/AdminPaymentHistoryPage.jsx:426 -> ₹{totalProjectCost.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  admin/src/components/sales/AdminPaymentHistoryPage.jsx:436 -> ₹{adminCut.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  admin/src/components/sales/AdminPaymentHistoryPage.jsx:441 -> ₹{totalAdminAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  admin/src/components/sales/AdminPaymentHistoryPage.jsx:446 -> ₹{remainingAdminAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  admin/src/components/sales/AdminPaymentHistoryPage.jsx:451 -> ₹{directIncome.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  admin/src/components/sales/AdminPaymentHistoryPage.jsx:456 -> ₹{levelIncome.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  admin/src/components/sales/AdminPaymentHistoryPage.jsx:461 -> ₹{rewardIncome.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  admin/src/components/sales/AdminPaymentHistoryPage.jsx:466 -> ₹{distributedCut.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  admin/src/components/sales/AdminPaymentHistoryPage.jsx:601 -> ₹{Number(viewingPayment.amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  admin/src/components/sales/AdminPaymentHistoryPage.jsx:608 -> ₹{Number(viewingPayment.admin_commission_cut ?? viewingPayment.adminCommissionCut ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  admin/src/components/sales/AdminPaymentHistoryPage.jsx:616 -> ₹{Number(viewingPayment.direct_income_amount ?? viewingPayment.directIncomeAmount ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  admin/src/components/sales/AdminPaymentHistoryPage.jsx:623 -> ₹{Number(viewingPayment.level_income_amount ?? viewingPayment.levelIncomeAmount ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  admin/src/components/sales/AdminPaymentHistoryPage.jsx:630 -> ₹{Number(viewingPayment.reward_income_amount ?? viewingPayment.rewardIncomeAmount ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  admin/src/components/sales/AdminPaymentHistoryPage.jsx:638 -> ₹{Number(viewingPayment.distributed_admin_cut_amount ?? viewingPayment.distributedAdminCutAmount ?? viewingPayment.admin_commission_cut ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  admin/src/components/sales/AdminPaymentHistoryPage.jsx:650 -> ₹{Number(viewingPayment.total_project_cost ?? viewingPayment.totalProjectCost ?? viewingPayment.order?.gross_amount ?? viewingPayment.amount ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  admin/src/components/sales/AdminPaymentHistoryPage.jsx:656 -> ₹{Number(viewingPayment.total_admin_amount ?? viewingPayment.totalAdminAmount ?? viewingPayment.order?.expected_admin_cut ?? viewingPayment.order?.expectedAdminCut ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  admin/src/components/sales/AdminPaymentHistoryPage.jsx:662 -> ₹{Number(viewingPayment.remaining_admin_amount ?? viewingPayment.remainingAdminAmount ?? viewingPayment.order?.remaining_admin_commission ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  admin/src/components/sales/AdminPaymentHistoryPage.jsx:670 -> {viewingPayment.income_distributed_at || viewingPayment.incomeDistributedAt ? new Date(viewingPayment.income_distributed_at || viewingPayment.incomeDistributedAt).toLocaleString('en-IN') : 'Completed'}
+  admin/src/components/sales/AdminPendingOrdersPage.jsx:41 -> return '₹' + num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:302 -> ₹{totalOutstandingBalance.toLocaleString()}
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:337 -> ₹{totalDumpedLoss.toLocaleString()}
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:419 -> {sale.id} — {sale.customer} | {sale.item} | Due: ₹{sale.balanceDue.toLocaleString()} (Adv: ₹{sale.advancePaid.toLocaleString()})
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:497 -> 🌐 Network Commissions & Volume Triggered on Balance Received (₹{balancePaymentAmt.toLocaleString()})
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:504 -> +₹{Math.round(directSponsorComm).toLocaleString()}
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:512 -> +₹{Math.round(perLevelComm).toLocaleString()} <span style={{ fontSize: '0.75rem' }}>/ level</span>
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:514 -> <div style={{ fontSize: '0.7rem', color: '#7e22ce' }}>Pool: ₹{Math.round(levelCommPool).toLocaleString()} ({activeSale?.levelIncomePercent}%)</div>
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:520 -> +₹{Math.round(teamBizVol).toLocaleString()}
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:545 -> <span>₹{activeSale.totalValue.toLocaleString()}</span>
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:550 -> <span>₹{activeSale.advancePaid.toLocaleString()}</span>
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:555 -> <span>₹{activeSale.balanceDue.toLocaleString()}</span>
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:561 -> <span>+₹{Math.round(directSponsorComm).toLocaleString()}</span>
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:566 -> <span>+₹{Math.round(perLevelComm).toLocaleString()} / lvl</span>
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:571 -> <span>+₹{Math.round(teamBizVol).toLocaleString()}</span>
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:651 -> <strong style={{ fontSize: '0.95rem', color: '#0f172a' }}>₹{sale.totalValue.toLocaleString()}</strong>
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:654 -> <span style={{ color: '#059669', fontSize: '0.9rem', fontWeight: '700' }}>₹{sale.advancePaid.toLocaleString()}</span>
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:657 -> <strong style={{ color: '#c2410c', fontSize: '0.95rem' }}>₹{sale.balanceDue.toLocaleString()}</strong>
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:714 -> <strong style={{ fontSize: '1rem', color: '#10b981' }}>₹{rec.amountReceived.toLocaleString()}</strong>
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:717 -> <strong style={{ color: '#4338ca', fontSize: '0.92rem' }}>+₹{rec.directIncome.toLocaleString()}</strong>
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:720 -> <div style={{ color: '#7c3aed', fontSize: '0.85rem', fontWeight: '700' }}>+₹{rec.perLevelIncome.toLocaleString()} / lvl</div>
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:721 -> <div style={{ fontSize: '0.72rem', color: '#64748b' }}>Pool: ₹{rec.levelIncomePool.toLocaleString()}</div>
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:725 -> +₹{rec.teamBizVolume.toLocaleString()}
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:783 -> <td>₹{d.totalValue.toLocaleString()}</td>
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:784 -> <td>₹{d.advancePaid.toLocaleString()}</td>
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:786 -> <strong style={{ color: '#b91c1c', fontSize: '0.95rem' }}>- ₹{d.lostBalance.toLocaleString()}</strong>
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:812 -> Are you sure you want to <strong>Dump Project</strong> for invoice <strong>#{activeSale.id}</strong>? This will cancel the order and log the uncollected balance of <strong>₹{activeSale.balanceDue.toLocaleString()}</strong> into the Dumped Projects Archive.
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:863 -> Balance Amount Received: <strong>₹{activeDistributionLog.amountReceived.toLocaleString()}</strong>
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:872 -> <span style={{ fontSize: '1rem', fontWeight: '800', color: '#4338ca' }}>+₹{activeDistributionLog.directIncome.toLocaleString()}</span>
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:900 -> <strong style={{ color: '#7c3aed' }}>+₹{activeDistributionLog.perLevelIncome.toLocaleString()}</strong>
+  admin/src/components/sales/AdminReceivePaymentPage.jsx:903 -> <span style={{ color: '#15803d', fontWeight: '700' }}>+₹{activeDistributionLog.teamBizVolume.toLocaleString()}</span>
+  admin/src/components/users/AdminPayoutHistoryPage.jsx:110 -> ₹{totalSettledNet.toLocaleString()}
+  admin/src/components/users/AdminPayoutHistoryPage.jsx:120 -> ₹{totalSettledGross.toLocaleString()}
+  admin/src/components/users/AdminPayoutHistoryPage.jsx:130 -> ₹{totalTdsCollected.toLocaleString()}
+  admin/src/components/users/AdminPayoutHistoryPage.jsx:245 -> ₹{Number(p.requestedAmount).toLocaleString()}
+  admin/src/components/users/AdminPayoutHistoryPage.jsx:248 -> -₹{Number(p.tdsDeduction).toLocaleString()}
+  admin/src/components/users/AdminPayoutHistoryPage.jsx:251 -> ₹{Number(p.netPayableAmount).toLocaleString()}
+  admin/src/components/users/AdminPayoutHistoryPage.jsx:373 -> <strong style={{ color: '#0f172a' }}>₹{Number(viewingVoucher.requestedAmount).toLocaleString()}</strong>
+  admin/src/components/users/AdminPayoutHistoryPage.jsx:377 -> <strong style={{ color: '#dc2626' }}>-₹{Number(viewingVoucher.tdsDeduction).toLocaleString()}</strong>
+  admin/src/components/users/AdminPayoutHistoryPage.jsx:381 -> <strong style={{ color: '#16a34a', fontWeight: 900 }}>₹{Number(viewingVoucher.netPayableAmount).toLocaleString()}</strong>
+  admin/src/components/users/AdminPayoutReportsPage.jsx:141 -> ₹{lifetimeNet.toLocaleString()}
+  admin/src/components/users/AdminPayoutReportsPage.jsx:151 -> ₹{lifetimeTDS.toLocaleString()}
+  admin/src/components/users/AdminPayoutReportsPage.jsx:161 -> ₹{lifetimeGross.toLocaleString()}
+  admin/src/components/users/AdminPayoutReportsPage.jsx:171 -> ₹{avgPayout.toLocaleString()}
+  admin/src/components/users/AdminPayoutReportsPage.jsx:202 -> <strong style={{ fontSize: '0.85rem', color: '#2563eb' }}>₹{data.total.toLocaleString()} ({pct}%)</strong>
+  admin/src/components/users/AdminPayoutReportsPage.jsx:238 -> <strong style={{ fontSize: '0.9rem', color: '#7c3aed' }}>₹{lifetimeTDS.toLocaleString()}</strong>
+  admin/src/components/users/AdminPayoutReportsPage.jsx:312 -> ₹{m.totalGross.toLocaleString()}
+  admin/src/components/users/AdminPayoutReportsPage.jsx:315 -> -₹{m.totalTDS.toLocaleString()}
+  admin/src/components/users/AdminPayoutReportsPage.jsx:318 -> ₹{m.totalNet.toLocaleString()}
+  admin/src/components/users/AdminPayoutRequestsPage.jsx:122 -> showToast(`✓ Disbursed ₹${selectedForDisburse.netPayableAmount.toLocaleString()} to ${selectedForDisburse.memberName} (${selectedForDisburse.userCode})!`);
+  admin/src/components/users/AdminPayoutRequestsPage.jsx:260 -> ₹{totalPendingGross.toLocaleString()}
+  admin/src/components/users/AdminPayoutRequestsPage.jsx:270 -> ₹{totalPendingTDS.toLocaleString()}
+  admin/src/components/users/AdminPayoutRequestsPage.jsx:280 -> ₹{totalPendingNetPayable.toLocaleString()}
+  admin/src/components/users/AdminPayoutRequestsPage.jsx:470 -> ₹{Number(p.requestedAmount).toLocaleString()}
+  admin/src/components/users/AdminPayoutRequestsPage.jsx:473 -> -₹{Number(p.tdsDeduction).toLocaleString()} (5%)
+  admin/src/components/users/AdminPayoutRequestsPage.jsx:476 -> ₹{Number(p.netPayableAmount).toLocaleString()}
+  admin/src/components/users/AdminPayoutRequestsPage.jsx:588 -> <strong>₹{Number(selectedForDisburse.requestedAmount).toLocaleString()}</strong>
+  admin/src/components/users/AdminPayoutRequestsPage.jsx:592 -> <strong style={{ color: '#dc2626' }}>-₹{Number(selectedForDisburse.tdsDeduction).toLocaleString()}</strong>
+  admin/src/components/users/AdminPayoutRequestsPage.jsx:596 -> <strong style={{ color: '#16a34a', fontWeight: 900 }}>₹{Number(selectedForDisburse.netPayableAmount).toLocaleString()}</strong>
+  admin/src/components/users/AdminPayoutRequestsPage.jsx:659 -> {isProcessing ? 'Processing Transfer...' : `✓ Disburse ₹${selectedForDisburse.netPayableAmount.toLocaleString()}`}
+  admin/src/components/users/AdminPayoutRequestsPage.jsx:699 -> Are you sure you want to reject request <strong>{selectedForReject.payoutCode}</strong> for <strong>{selectedForReject.memberName}</strong>? Gross amount of <strong>₹{selectedForReject.requestedAmount.toLocaleString()}</strong> will be returned to user's wallet.
+  admin/src/components/users/AdminRewardsPage.jsx:351 -> Market Value: <strong>₹{Number(reward.reward_value_inr).toLocaleString()}</strong>
+  admin/src/components/users/AdminUserDetailsPage.jsx:142 -> <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#ffffff' }}>💎 {totalBpCollected.toLocaleString()} BP</div>
+  admin/src/components/users/AdminUserDetailsPage.jsx:143 -> <div style={{ fontSize: '0.7rem', color: '#a5b4fc' }}>≈ ₹{(totalBpCollected * bpRate).toLocaleString()} (@ ₹{bpRate}/BP)</div>
+  admin/src/components/users/AdminUserDetailsPage.jsx:241 -> ≈ ₹{((u.bpBalance || 0) * bpRate).toLocaleString()} (@ ₹{bpRate}/BP)
+  admin/src/components/users/AdminUserDetailsPage.jsx:246 -> ₹{(u.commissionWallet || 0).toLocaleString()}
+  admin/src/components/users/AdminUserDetailsPage.jsx:307 -> <div style={{ fontSize: '1.5rem', fontWeight: 800 }}>₹{((selectedUserBpWallet.bpBalance || 0) * bpRate).toLocaleString()}</div>
+
+--- ADMIN to_locale_date (8 items) ---
+  admin/src/components/sales/AdminDumpRequestsPage.jsx:422 -> {d.requested_at ? new Date(d.requested_at).toLocaleDateString('en-IN') : '—'}
+  admin/src/components/sales/AdminOrdersPage.jsx:1368 -> {entry.date ? new Date(entry.date).toLocaleDateString('en-IN') : 'N/A'}
+  admin/src/components/sales/AdminOrdersPage.jsx:1486 -> {entry.date ? new Date(entry.date).toLocaleDateString('en-IN') : 'N/A'}
+  admin/src/components/sales/AdminPaymentHistoryPage.jsx:346 -> const formattedDate = paymentDate ? new Date(paymentDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+  admin/src/components/sales/AdminPendingOrdersPage.jsx:621 -> {order.date || (order.created_at ? new Date(order.created_at).toLocaleDateString('en-IN') : 'N/A')}
+  admin/src/components/sales/AdminPendingOrdersPage.jsx:913 -> {selectedOrderForReview.date || (selectedOrderForReview.created_at ? new Date(selectedOrderForReview.created_at).toLocaleDateString('en-IN') : 'N/A')}
+  admin/src/components/support/AdminSendNotificationPage.jsx:492 -> {n.created_at ? new Date(n.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'N/A'}
+  admin/src/components/users/AdminRewardsClaimPage.jsx:234 -> {claim.claim_date ? new Date(claim.claim_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
+
+--- ADMIN input_date (2 items) ---
+  admin/src/components/users/AdminPayoutRequestsPage.jsx:353 -> type="date"
+  admin/src/components/users/AdminPayoutRequestsPage.jsx:365 -> type="date"
+
+============================== ENTITY PANEL DATE USAGES ==============================
+
+--- ENTITY new_date (24 items) ---
+  entity/src/components/layout/EntityFooter.jsx:9 -> <div>© {new Date().getFullYear()} {appName} Entity Panel — Empowering Local Businesses</div>
+  entity/src/pages/EntityCancelledOrders.jsx:420 -> ? new Date(order.admin_cancelled_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+  entity/src/pages/EntityCancelledOrders.jsx:421 -> : (order.updated_at ? new Date(order.updated_at).toLocaleDateString('en-IN') : 'N/A');
+  entity/src/pages/EntityCancelledOrders.jsx:685 -> ? new Date(selectedOrderForDetails.admin_cancelled_at).toLocaleString('en-IN')
+  entity/src/pages/EntityCancelledOrders.jsx:751 -> {selectedOrderForDetails.date || (selectedOrderForDetails.created_at ? new Date(selectedOrderForDetails.created_at).toLocaleDateString('en-IN') : 'N/A')}
+  entity/src/pages/EntityCreateOrder.jsx:244 -> created_at: new Date().toISOString(),
+  entity/src/pages/EntityOrders.jsx:129 -> const todayStr = new Date().toISOString().split('T')[0];
+  entity/src/pages/EntityOrders.jsx:485 -> {sale.date || (sale.created_at ? new Date(sale.created_at).toLocaleDateString('en-IN') : 'N/A')}
+  entity/src/pages/EntityOrders.jsx:1026 -> Confirmed {new Date(selectedInvoice.admin_confirmed_at).toLocaleDateString('en-IN')}
+  entity/src/pages/EntityPayoutReportsPage.jsx:176 -> link.setAttribute('download', `Entity_Payout_Report_Statement_${new Date().toISOString().split('T')[0]}.csv`);
+  entity/src/pages/EntityPayoutTransactionsPage.jsx:78 -> const now = new Date();
+  entity/src/pages/EntityPayoutTransactionsPage.jsx:89 -> const yest = new Date();
+  entity/src/pages/EntityPayoutTransactionsPage.jsx:95 -> const weekStart = new Date();
+  entity/src/pages/EntityPayoutTransactionsPage.jsx:100 -> const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  entity/src/pages/EntityPayoutTransactionsPage.jsx:104 -> const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  entity/src/pages/EntityPayoutTransactionsPage.jsx:105 -> const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+  entity/src/pages/EntityPayoutTransactionsPage.jsx:140 -> const start = new Date(startDate);
+  entity/src/pages/EntityPayoutTransactionsPage.jsx:143 -> const d = new Date(p.request_date || p.requestDate);
+  entity/src/pages/EntityPayoutTransactionsPage.jsx:149 -> const end = new Date(endDate);
+  entity/src/pages/EntityPayoutTransactionsPage.jsx:152 -> const d = new Date(p.request_date || p.requestDate);
+  entity/src/pages/EntityPayoutTransactionsPage.jsx:174 -> const dateA = new Date(a.request_date || a.requestDate || 0).getTime();
+  entity/src/pages/EntityPayoutTransactionsPage.jsx:175 -> const dateB = new Date(b.request_date || b.requestDate || 0).getTime();
+  entity/src/pages/EntityPayoutTransactionsPage.jsx:270 -> link.setAttribute('download', `Entity_Payout_Transactions_${new Date().toISOString().split('T')[0]}.csv`);
+  entity/src/pages/EntityPayoutTransactionsPage.jsx:836 -> 📅 {p.request_date ? new Date(p.request_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
+
+--- ENTITY iso_string (5 items) ---
+  entity/src/pages/EntityCreateOrder.jsx:244 -> created_at: new Date().toISOString(),
+  entity/src/pages/EntityOrders.jsx:129 -> const todayStr = new Date().toISOString().split('T')[0];
+  entity/src/pages/EntityPayoutReportsPage.jsx:176 -> link.setAttribute('download', `Entity_Payout_Report_Statement_${new Date().toISOString().split('T')[0]}.csv`);
+  entity/src/pages/EntityPayoutTransactionsPage.jsx:79 -> const formatDate = (d) => d.toISOString().split('T')[0];
+  entity/src/pages/EntityPayoutTransactionsPage.jsx:270 -> link.setAttribute('download', `Entity_Payout_Transactions_${new Date().toISOString().split('T')[0]}.csv`);
+
+--- ENTITY to_locale_string (77 items) ---
+  entity/src/pages/EntityBankSettlementsPage.jsx:179 -> ₹{totalNetRealizedRevenue.toLocaleString()}
+  entity/src/pages/EntityBankSettlementsPage.jsx:189 -> ₹{totalCollectedRevenue.toLocaleString()}
+  entity/src/pages/EntityBankSettlementsPage.jsx:199 -> ₹{totalAdminCommissionCut.toLocaleString()}
+  entity/src/pages/EntityCancelledOrders.jsx:29 -> return '₹' + num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  entity/src/pages/EntityCancelledOrders.jsx:685 -> ? new Date(selectedOrderForDetails.admin_cancelled_at).toLocaleString('en-IN')
+  entity/src/pages/EntityCreateOrder.jsx:371 -> {item.name} — ₹{item.basePrice.toLocaleString()} (🏛️ {item.adminCommissionPercent}% Admin Cut)
+  entity/src/pages/EntityCreateOrder.jsx:685 -> ₹{remainingBalanceDue.toLocaleString()}
+  entity/src/pages/EntityCreateOrder.jsx:709 -> <span>₹{grossSubtotal.toLocaleString()}</span>
+  entity/src/pages/EntityCreateOrder.jsx:715 -> <span>-₹{discountAmount.toLocaleString()}</span>
+  entity/src/pages/EntityCreateOrder.jsx:721 -> <span style={{ color: '#0f172a' }}>₹{grandTotal.toLocaleString()}</span>
+  entity/src/pages/EntityCreateOrder.jsx:726 -> <span>₹{receivedAmount.toLocaleString()}</span>
+  entity/src/pages/EntityCreateOrder.jsx:732 -> <span>₹{remainingBalanceDue.toLocaleString()}</span>
+  entity/src/pages/EntityCreateOrder.jsx:744 -> {adminCommissionPercent}% (₹{adminCommissionAmount.toLocaleString()})
+  entity/src/pages/EntityCreateOrder.jsx:748 -> Calculated strictly on the <strong>received amount (₹{receivedAmount.toLocaleString()})</strong>
+  entity/src/pages/EntityCreateOrder.jsx:756 -> ₹{netEntityEarnings.toLocaleString()}
+  entity/src/pages/EntityCreateOrder.jsx:763 -> ℹ️ <strong>Admin Commission Release:</strong> Admin commission of ₹{adminCommissionAmount.toLocaleString()} is recorded in the database. When balance payments are collected in the Payments section, additional admin commission will be automatically released.
+  entity/src/pages/EntityCreateOrder.jsx:852 -> <strong>₹{Number(createdSaleData.grossAmount || createdSaleData.gross_amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</strong>
+  entity/src/pages/EntityCreateOrder.jsx:856 -> <strong style={{ color: '#16a34a' }}>₹{Number(createdSaleData.advancePayment || createdSaleData.advance_payment || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</strong>
+  entity/src/pages/EntityCreateOrder.jsx:861 -> ₹{Number(createdSaleData.balanceDue || createdSaleData.balance_due || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+  entity/src/pages/EntityDashboard.jsx:176 -> formatter: (val) => `₹${(Number(val) || 0).toLocaleString('en-IN')}`,
+  entity/src/pages/EntityDashboard.jsx:302 -> y: { formatter: (val) => `₹${(Number(val) || 0).toLocaleString('en-IN')}` },
+  entity/src/pages/EntityDashboard.jsx:552 -> ₹{kpis.totalGrossSales.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+  entity/src/pages/EntityDashboard.jsx:583 -> ₹{kpis.totalNetEarnings.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+  entity/src/pages/EntityDashboard.jsx:620 -> ₹{kpis.totalBalanceDue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+  entity/src/pages/EntityDashboard.jsx:657 -> ₹{kpis.totalPlatformFeePaid.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+  entity/src/pages/EntityDashboard.jsx:889 -> <div style={{ fontSize: '0.72rem', color: '#9a3412', fontWeight: 700 }}>₹{kpis.totalBalanceDue.toLocaleString('en-IN')} pending</div>
+  entity/src/pages/EntityDashboard.jsx:1011 -> ₹{txn.gross.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+  entity/src/pages/EntityDashboard.jsx:1014 -> ₹{txn.netPayout.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+  entity/src/pages/EntityOrders.jsx:53 -> setDumpError(`Dump amount cannot exceed remaining collectible balance of ₹${balance.toLocaleString('en-IN')}.`);
+  entity/src/pages/EntityOrders.jsx:85 -> return '₹' + num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  entity/src/pages/EntityPaymentReceiptsPage.jsx:204 -> ₹{totalCollectedSum.toLocaleString()}
+  entity/src/pages/EntityPaymentReceiptsPage.jsx:214 -> ₹{totalAdminCommissionSum.toLocaleString()}
+  entity/src/pages/EntityPaymentReceiptsPage.jsx:224 -> ₹{totalNetEntitySum.toLocaleString()}
+  entity/src/pages/EntityPaymentReceiptsPage.jsx:350 -> ₹{amount.toLocaleString()}
+  entity/src/pages/EntityPaymentReceiptsPage.jsx:353 -> -₹{adminCut.toLocaleString()} ({p.admin_commission_percent || p.adminCommissionPercent || 15}%)
+  entity/src/pages/EntityPaymentReceiptsPage.jsx:356 -> +₹{netEntity.toLocaleString()}
+  entity/src/pages/EntityPaymentReceiptsPage.jsx:445 -> <strong style={{ fontSize: '0.95rem', color: '#0f172a' }}>₹{Number(selectedReceipt.amount || 0).toLocaleString()}</strong>
+  entity/src/pages/EntityPaymentReceiptsPage.jsx:449 -> <strong style={{ color: '#dc2626' }}>-₹{Number(selectedReceipt.admin_commission_cut ?? selectedReceipt.adminCommissionCut ?? 0).toLocaleString()}</strong>
+  entity/src/pages/EntityPaymentReceiptsPage.jsx:453 -> <strong style={{ color: '#16a34a', fontSize: '1.05rem' }}>₹{Number(selectedReceipt.net_entity_amount ?? selectedReceipt.netEntityAmount ?? 0).toLocaleString()}</strong>
+  entity/src/pages/EntityPayoutReportsPage.jsx:320 -> ₹{summary.total_paid.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  entity/src/pages/EntityPayoutReportsPage.jsx:347 -> ₹{summary.balance.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  entity/src/pages/EntityPayoutReportsPage.jsx:374 -> ₹{summary.total_tds.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  entity/src/pages/EntityPayoutReportsPage.jsx:446 -> ₹{item.paid.toLocaleString('en-IN')} <span style={{ color: '#94a3b8', fontWeight: 500 }}>({item.count} payouts)</span>
+  entity/src/pages/EntityPayoutReportsPage.jsx:487 -> ₹{m.amount.toLocaleString('en-IN')} ({m.percentage}%)
+  entity/src/pages/EntityPayoutReportsPage.jsx:528 -> ₹{s.amount.toLocaleString('en-IN')}
+  entity/src/pages/EntityPayoutReportsPage.jsx:622 -> ₹{r.grossVolume.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  entity/src/pages/EntityPayoutReportsPage.jsx:627 -> ₹{r.totalPaid.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  entity/src/pages/EntityPayoutReportsPage.jsx:632 -> ₹{r.balance.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  entity/src/pages/EntityPayoutReportsPage.jsx:638 -> -₹{r.tdsDeducted.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  entity/src/pages/EntityPayoutTransactionsPage.jsx:417 -> ₹{computedTotalPaid.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  entity/src/pages/EntityPayoutTransactionsPage.jsx:444 -> ₹{computedTotalBalance.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  entity/src/pages/EntityPayoutTransactionsPage.jsx:475 -> <span>⚡</span> TDS Deducted: ₹{computedTotalTds.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  entity/src/pages/EntityPayoutTransactionsPage.jsx:852 -> ₹{grossAmt.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  entity/src/pages/EntityPayoutTransactionsPage.jsx:857 -> -₹{tdsAmt.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  entity/src/pages/EntityPayoutTransactionsPage.jsx:863 -> ₹{netPaidAmt.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+  entity/src/pages/EntityReceiveBalancePage.jsx:53 -> setDumpError(`Dump amount cannot exceed remaining collectible balance of ₹${balance.toLocaleString('en-IN')}.`);
+  entity/src/pages/EntityReceiveBalancePage.jsx:175 -> showToast(`Payment amount cannot exceed outstanding balance (₹${balance.toLocaleString()}).`);
+  entity/src/pages/EntityReceiveBalancePage.jsx:188 -> showToast(`✓ Successfully collected ₹${amount.toLocaleString()}! Admin commission of ₹${modalAdminCut.toLocaleString()} released.`);
+  entity/src/pages/EntityReceiveBalancePage.jsx:323 -> ₹{totalOutstandingBalance.toLocaleString()}
+  entity/src/pages/EntityReceiveBalancePage.jsx:333 -> ₹{totalCollectedToDate.toLocaleString()}
+  entity/src/pages/EntityReceiveBalancePage.jsx:343 -> ₹{totalAdminCommissionReleased.toLocaleString()}
+  entity/src/pages/EntityReceiveBalancePage.jsx:353 -> ₹{totalNetEarningsRealized.toLocaleString()}
+  entity/src/pages/EntityReceiveBalancePage.jsx:455 -> ₹{gross.toLocaleString()}
+  entity/src/pages/EntityReceiveBalancePage.jsx:458 -> ₹{collected.toLocaleString()}
+  entity/src/pages/EntityReceiveBalancePage.jsx:461 -> ₹{balance.toLocaleString()}
+  entity/src/pages/EntityReceiveBalancePage.jsx:565 -> <strong>₹{Number(selectedSaleForPayment.grossAmount ?? selectedSaleForPayment.gross_amount ?? 0).toLocaleString()}</strong>
+  entity/src/pages/EntityReceiveBalancePage.jsx:569 -> <strong style={{ color: '#2563eb' }}>₹{Number(selectedSaleForPayment.advancePayment ?? selectedSaleForPayment.advance_payment ?? 0).toLocaleString()}</strong>
+  entity/src/pages/EntityReceiveBalancePage.jsx:573 -> <strong style={{ color: '#d97706', fontSize: '0.95rem' }}>₹{Number(selectedSaleForPayment.balanceDue ?? selectedSaleForPayment.balance_due ?? 0).toLocaleString()}</strong>
+  entity/src/pages/EntityReceiveBalancePage.jsx:598 -> Pay Full Remaining Balance (₹{Number(selectedSaleForPayment.balanceDue ?? selectedSaleForPayment.balance_due ?? 0).toLocaleString()})
+  entity/src/pages/EntityReceiveBalancePage.jsx:657 -> <strong style={{ color: '#dc2626' }}>₹{modalAdminCut.toLocaleString()}</strong>
+  entity/src/pages/EntityReceiveBalancePage.jsx:661 -> <strong style={{ color: '#15803d', fontSize: '0.95rem' }}>₹{modalNetEntity.toLocaleString()}</strong>
+  entity/src/pages/EntityReceiveBalancePage.jsx:689 -> {isProcessing ? 'Processing Receipt...' : `Confirm & Record ₹${(Number(paymentAmount) || 0).toLocaleString()} Payment`}
+  entity/src/pages/EntityReceiveBalancePage.jsx:753 -> <strong>₹{Number(selectedSaleForDump.grossAmount ?? selectedSaleForDump.gross_amount ?? 0).toLocaleString()}</strong>
+  entity/src/pages/EntityReceiveBalancePage.jsx:757 -> <strong style={{ color: '#16a34a' }}>₹{Number(selectedSaleForDump.advancePayment ?? selectedSaleForDump.advance_payment ?? 0).toLocaleString()}</strong>
+  entity/src/pages/EntityReceiveBalancePage.jsx:761 -> <strong style={{ color: '#d97706', fontSize: '0.95rem' }}>₹{Number(selectedSaleForDump.balanceDue ?? selectedSaleForDump.balance_due ?? 0).toLocaleString()}</strong>
+  entity/src/pages/EntityReceiveBalancePage.jsx:795 -> Full Balance (₹{Number(selectedSaleForDump.balanceDue ?? selectedSaleForDump.balance_due ?? 0).toLocaleString()})
+  entity/src/pages/EntityReceiveBalancePage.jsx:852 -> {submittingDump ? 'Submitting Request...' : `Submit Dump Request for ₹${(Number(dumpAmount) || 0).toLocaleString()}`}
+
+--- ENTITY to_locale_date (6 items) ---
+  entity/src/pages/EntityCancelledOrders.jsx:420 -> ? new Date(order.admin_cancelled_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+  entity/src/pages/EntityCancelledOrders.jsx:421 -> : (order.updated_at ? new Date(order.updated_at).toLocaleDateString('en-IN') : 'N/A');
+  entity/src/pages/EntityCancelledOrders.jsx:751 -> {selectedOrderForDetails.date || (selectedOrderForDetails.created_at ? new Date(selectedOrderForDetails.created_at).toLocaleDateString('en-IN') : 'N/A')}
+  entity/src/pages/EntityOrders.jsx:485 -> {sale.date || (sale.created_at ? new Date(sale.created_at).toLocaleDateString('en-IN') : 'N/A')}
+  entity/src/pages/EntityOrders.jsx:1026 -> Confirmed {new Date(selectedInvoice.admin_confirmed_at).toLocaleDateString('en-IN')}
+  entity/src/pages/EntityPayoutTransactionsPage.jsx:836 -> 📅 {p.request_date ? new Date(p.request_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
+
+--- ENTITY input_date (2 items) ---
+  entity/src/pages/EntityPayoutTransactionsPage.jsx:556 -> type="date"
+  entity/src/pages/EntityPayoutTransactionsPage.jsx:580 -> type="date"
+
+--- ENTITY format_date_fn (1 items) ---
+  entity/src/pages/EntityPayoutTransactionsPage.jsx:79 -> const formatDate = (d) => d.toISOString().split('T')[0];
+
+============================== USER PANEL DATE USAGES ==============================
+
+--- USER new_date (37 items) ---
+  user/src/components/LoginForm.jsx:465 -> <span>© {new Date().getFullYear()} {appName} Pvt. Ltd. All rights reserved.</span>
+  user/src/components/RegisterForm.jsx:824 -> <span>© {new Date().getFullYear()} {appName} Pvt. Ltd. All rights reserved.</span>
+  user/src/components/payments/BaseCommission.jsx:36 -> const now = new Date();
+  user/src/components/payments/BaseCommission.jsx:41 -> const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
+  user/src/components/payments/BaseCommission.jsx:42 -> const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().slice(0, 10);
+  user/src/components/payments/BaseCommission.jsx:46 -> const firstDay = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString().slice(0, 10);
+  user/src/components/payments/BaseCommission.jsx:47 -> const lastDay = new Date(now.getFullYear(), now.getMonth(), 0).toISOString().slice(0, 10);
+  user/src/components/payments/RewardsClaimed.jsx:93 -> {val ? new Date(val).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
+  user/src/components/payouts/CurrentPayouts.jsx:111 -> {row.request_date ? new Date(row.request_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
+  user/src/components/payouts/CurrentPayouts.jsx:604 -> <span>{selectedReceipt.request_date ? new Date(selectedReceipt.request_date).toLocaleString('en-IN') : 'N/A'}</span>
+  user/src/components/payouts/PayoutHistory.jsx:101 -> link.setAttribute('download', `Payout_History_${userCode || 'member'}_${new Date().toISOString().slice(0, 10)}.csv`);
+  user/src/components/payouts/PayoutHistory.jsx:118 -> {row.request_date ? new Date(row.request_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
+  user/src/components/payouts/PayoutHistory.jsx:512 -> <span>{selectedReceipt.request_date ? new Date(selectedReceipt.request_date).toLocaleString('en-IN') : 'N/A'}</span>
+  user/src/components/settings/KycVerification.jsx:420 -> {currentUser?.kyc_submitted_at ? new Date(currentUser.kyc_submitted_at).toLocaleString('en-IN') : 'Saved in Database'}
+  user/src/components/support/SupportSystem.jsx:165 -> updatedAt: new Date().toISOString(),
+  user/src/components/support/SupportSystem.jsx:205 -> updatedAt: new Date().toISOString(),
+  user/src/components/support/SupportSystem.jsx:232 -> createdAt: new Date().toISOString(),
+  user/src/components/support/SupportSystem.jsx:233 -> updatedAt: new Date().toISOString(),
+  user/src/components/support/SupportTickets.jsx:459 -> Category: <strong style={{ color: '#334155' }}>{selectedTicket.category}</strong> • Priority: <strong style={{ color: '#334155' }}>{selectedTicket.priority}</strong> • Created: <strong style={{ color: '#334155' }}>{new Date(selectedTicket.created_at).toLocaleString('en-IN')}</strong>
+  user/src/components/support/SupportTickets.jsx:505 -> {new Date(m.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+  user/src/layout/Footer.jsx:10 -> Copyright © {new Date().getFullYear()} <strong className="footer-brand-bold">{appName}</strong>. All rights reserved
+  user/src/layout/Header.jsx:214 -> {n.time_ago || (n.created_at ? new Date(n.created_at).toLocaleDateString() : '')}
+  user/src/layout/Header.jsx:398 -> {n.time_ago || (n.created_at ? new Date(n.created_at).toLocaleDateString() : '')}
+  user/src/pages/UserNotificationsPage.jsx:344 -> {n.time_ago || (n.created_at ? new Date(n.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '')}
+  user/src/pages/income/DirectIncomePage.jsx:49 -> const d = new Date(dateStr);
+  user/src/pages/income/LevelIncomePage.jsx:50 -> const d = new Date(dateStr);
+  user/src/pages/income/MyIncomePage.jsx:51 -> const d = new Date(dateStr);
+  user/src/pages/landing/components/LandingFooter.jsx:120 -> © {new Date().getFullYear()} <strong>AddNet Promoters Network Ltd</strong>. All rights reserved.
+  user/src/pages/reports/MlmEarningsPage.jsx:68 -> const targetDate = new Date(itemDate);
+  user/src/pages/reports/MlmEarningsPage.jsx:71 -> const now = new Date();
+  user/src/pages/reports/MlmEarningsPage.jsx:75 -> const today = new Date();
+  user/src/pages/reports/MlmEarningsPage.jsx:80 -> const pastWeek = new Date();
+  user/src/pages/reports/MlmEarningsPage.jsx:86 -> const pastMonth = new Date();
+  user/src/pages/reports/MlmEarningsPage.jsx:92 -> const pastQuarter = new Date();
+  user/src/pages/reports/MlmEarningsPage.jsx:98 -> const pastYear = new Date();
+  user/src/pages/reports/MlmEarningsPage.jsx:105 -> const start = new Date(startDate);
+  user/src/pages/reports/MlmEarningsPage.jsx:110 -> const end = new Date(endDate);
+
+--- USER iso_string (9 items) ---
+  user/src/components/payments/BaseCommission.jsx:41 -> const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
+  user/src/components/payments/BaseCommission.jsx:42 -> const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().slice(0, 10);
+  user/src/components/payments/BaseCommission.jsx:46 -> const firstDay = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString().slice(0, 10);
+  user/src/components/payments/BaseCommission.jsx:47 -> const lastDay = new Date(now.getFullYear(), now.getMonth(), 0).toISOString().slice(0, 10);
+  user/src/components/payouts/PayoutHistory.jsx:101 -> link.setAttribute('download', `Payout_History_${userCode || 'member'}_${new Date().toISOString().slice(0, 10)}.csv`);
+  user/src/components/support/SupportSystem.jsx:165 -> updatedAt: new Date().toISOString(),
+  user/src/components/support/SupportSystem.jsx:205 -> updatedAt: new Date().toISOString(),
+  user/src/components/support/SupportSystem.jsx:232 -> createdAt: new Date().toISOString(),
+  user/src/components/support/SupportSystem.jsx:233 -> updatedAt: new Date().toISOString(),
+
+--- USER to_locale_string (38 items) ---
+  user/src/components/dashboard/DashboardOverview.jsx:140 -> y: { formatter: (val) => `₹${val.toLocaleString('en-IN', { minimumFractionDigits: 2 })}` },
+  user/src/components/dashboard/DashboardOverview.jsx:430 -> ₹{kpis.todayIncome.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+  user/src/components/dashboard/DashboardOverview.jsx:448 -> ₹{kpis.totalIncome.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+  user/src/components/dashboard/DashboardOverview.jsx:471 -> ₹{kpis.directIncome.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+  user/src/components/dashboard/DashboardOverview.jsx:494 -> ₹{kpis.levelIncome.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+  user/src/components/dashboard/DashboardOverview.jsx:521 -> ₹{kpis.totalEarnings.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+  user/src/components/dashboard/DashboardOverview.jsx:537 -> ₹{kpis.commissionBalance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+  user/src/components/dashboard/DashboardOverview.jsx:560 -> {kpis.teamVolumeBv.toLocaleString('en-IN')}{' '}
+  user/src/components/dashboard/DashboardOverview.jsx:596 -> {kpis.bpBalance.toLocaleString('en-IN')}{' '}
+  user/src/components/dashboard/DashboardOverview.jsx:816 -> {item.volumeBv.toLocaleString('en-IN')} BV
+  user/src/components/dashboard/DashboardOverview.jsx:882 -> ₹{txn.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+  user/src/components/dashboard/DashboardOverview.jsx:885 -> ₹{txn.net.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+  user/src/components/payments/RewardDetails.jsx:162 -> 💎 {userBp.toLocaleString()} <span style={{ fontSize: '1rem', color: '#ffffff' }}>BP</span>
+  user/src/components/payments/RewardDetails.jsx:287 -> Market Worth: <span style={{ color: '#0f172a', fontWeight: 800 }}>₹{Number(reward.reward_value_inr).toLocaleString()}</span>
+  user/src/components/payouts/CurrentPayouts.jsx:604 -> <span>{selectedReceipt.request_date ? new Date(selectedReceipt.request_date).toLocaleString('en-IN') : 'N/A'}</span>
+  user/src/components/payouts/PayoutHistory.jsx:512 -> <span>{selectedReceipt.request_date ? new Date(selectedReceipt.request_date).toLocaleString('en-IN') : 'N/A'}</span>
+  user/src/components/payouts/RequestWithdrawal.jsx:430 -> ₹{preset.toLocaleString('en-IN')}
+  user/src/components/settings/KycVerification.jsx:420 -> {currentUser?.kyc_submitted_at ? new Date(currentUser.kyc_submitted_at).toLocaleString('en-IN') : 'Saved in Database'}
+  user/src/components/support/SupportTickets.jsx:459 -> Category: <strong style={{ color: '#334155' }}>{selectedTicket.category}</strong> • Priority: <strong style={{ color: '#334155' }}>{selectedTicket.priority}</strong> • Created: <strong style={{ color: '#334155' }}>{new Date(selectedTicket.created_at).toLocaleString('en-IN')}</strong>
+  user/src/pages/BusinessSalesReportPage.jsx:149 -> <div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a' }}>₹{totalRevenueSum.toLocaleString()}</div>
+  user/src/pages/BusinessSalesReportPage.jsx:159 -> <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '0.2rem' }}>Avg Order: ₹{Math.round(totalRevenueSum / salesTransactions.length).toLocaleString()}</div>
+  user/src/pages/BusinessSalesReportPage.jsx:167 -> <div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a' }}>₹{totalCommissionSum.toLocaleString()}</div>
+  user/src/pages/BusinessSalesReportPage.jsx:324 -> <td style={{ padding: '0.85rem 1rem', fontWeight: '800', color: '#0f172a' }}>₹{tx.amount.toLocaleString()}</td>
+  user/src/pages/BusinessSalesReportPage.jsx:325 -> <td style={{ padding: '0.85rem 1rem', fontWeight: '800', color: '#059669' }}>+₹{tx.commission.toLocaleString()}</td>
+  user/src/pages/BusinessSalesReportPage.jsx:356 -> ₹{cat.totalRevenue.toLocaleString()}
+  user/src/pages/BusinessSalesReportPage.jsx:395 -> <td style={{ padding: '0.85rem 1rem', fontWeight: '800', color: '#0f172a' }}>₹{member.volume.toLocaleString()}</td>
+  user/src/pages/BusinessSalesReportPage.jsx:396 -> <td style={{ padding: '0.85rem 1rem', textAlign: 'right', fontWeight: '800', color: '#059669' }}>₹{member.commissionEarned.toLocaleString()}</td>
+  user/src/pages/BusinessSalesReportPage.jsx:441 -> <td style={{ padding: '0.85rem 1rem', fontWeight: '700', color: '#334155' }}>₹{row.gross.toLocaleString()}</td>
+  user/src/pages/BusinessSalesReportPage.jsx:442 -> <td style={{ padding: '0.85rem 1rem', fontWeight: '700', color: '#dc2626' }}>-₹{row.tds.toLocaleString()}</td>
+  user/src/pages/BusinessSalesReportPage.jsx:443 -> <td style={{ padding: '0.85rem 1rem', fontWeight: '800', color: '#059669' }}>₹{row.net.toLocaleString()}</td>
+  user/src/pages/UserProductsServicesPage.jsx:295 -> <strong style={{ fontSize: '1.15rem', color: '#0f172a', fontWeight: 800 }}>₹{item.price.toLocaleString()}</strong>
+  user/src/pages/UserProductsServicesPage.jsx:511 -> Category: <strong>{selectedItemForDetails.category}</strong> • Starting Price: <strong>₹{selectedItemForDetails.price.toLocaleString()}</strong>
+  user/src/pages/reports/TaxLedgerPage.jsx:47 -> <div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', margin: '0.3rem 0' }}>₹{totalGrossSum.toLocaleString()}</div>
+  user/src/pages/reports/TaxLedgerPage.jsx:52 -> <div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#dc2626', margin: '0.3rem 0' }}>-₹{totalTdsSum.toLocaleString()}</div>
+  user/src/pages/reports/TaxLedgerPage.jsx:57 -> <div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', margin: '0.3rem 0' }}>₹{totalNetSum.toLocaleString()}</div>
+  user/src/pages/reports/TaxLedgerPage.jsx:97 -> <td style={{ padding: '0.85rem 1rem', fontWeight: '700', color: '#334155' }}>₹{row.gross.toLocaleString()}</td>
+  user/src/pages/reports/TaxLedgerPage.jsx:98 -> <td style={{ padding: '0.85rem 1rem', fontWeight: '700', color: '#dc2626' }}>-₹{row.tds.toLocaleString()}</td>
+  user/src/pages/reports/TaxLedgerPage.jsx:99 -> <td style={{ padding: '0.85rem 1rem', fontWeight: '800', color: '#059669' }}>₹{row.net.toLocaleString()}</td>
+
+--- USER to_locale_date (9 items) ---
+  user/src/components/payments/RewardsClaimed.jsx:93 -> {val ? new Date(val).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
+  user/src/components/payouts/CurrentPayouts.jsx:111 -> {row.request_date ? new Date(row.request_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
+  user/src/components/payouts/PayoutHistory.jsx:118 -> {row.request_date ? new Date(row.request_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
+  user/src/layout/Header.jsx:214 -> {n.time_ago || (n.created_at ? new Date(n.created_at).toLocaleDateString() : '')}
+  user/src/layout/Header.jsx:398 -> {n.time_ago || (n.created_at ? new Date(n.created_at).toLocaleDateString() : '')}
+  user/src/pages/UserNotificationsPage.jsx:344 -> {n.time_ago || (n.created_at ? new Date(n.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '')}
+  user/src/pages/income/DirectIncomePage.jsx:51 -> return d.toLocaleDateString('en-IN', {
+  user/src/pages/income/LevelIncomePage.jsx:52 -> return d.toLocaleDateString('en-IN', {
+  user/src/pages/income/MyIncomePage.jsx:53 -> return d.toLocaleDateString('en-IN', {
+
+--- USER to_locale_time (1 items) ---
+  user/src/components/support/SupportTickets.jsx:505 -> {new Date(m.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+
+--- USER input_date (7 items) ---
+  user/src/components/payouts/CurrentPayouts.jsx:505 -> type="date"
+  user/src/components/payouts/CurrentPayouts.jsx:517 -> type="date"
+  user/src/components/payouts/PayoutHistory.jsx:414 -> type="date"
+  user/src/components/payouts/PayoutHistory.jsx:426 -> type="date"
+  user/src/components/settings/PersonalProfile.jsx:609 -> type="date"
+  user/src/pages/reports/MlmEarningsPage.jsx:627 -> type="date"
+  user/src/pages/reports/MlmEarningsPage.jsx:634 -> type="date"
+
+--- USER format_date_fn (3 items) ---
+  user/src/pages/income/DirectIncomePage.jsx:46 -> const formatDate = (dateStr) => {
+  user/src/pages/income/LevelIncomePage.jsx:47 -> const formatDate = (dateStr) => {
+  user/src/pages/income/MyIncomePage.jsx:48 -> const formatDate = (dateStr) => {

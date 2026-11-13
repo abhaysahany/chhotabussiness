@@ -1,0 +1,413 @@
+/**
+ * Vyapar AdNET Design System — Layout & Shell
+ * Replaces pastel/purple gradients with calm, corporate light theme.
+ * Flattens floating 20px curved canvas to standard 0px flat layout.
+ */
+
+/* Master Layout Wrapper */
+.pro-app-wrapper {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--van-bg-app);
+}
+
+.pro-main-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 100vh;
+  padding-bottom: 3.5rem;
+  transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pro-app-wrapper:not(.sidebar-is-collapsed) .pro-main-wrapper {
+  margin-left: var(--van-sidebar-width);
+}
+
+.pro-app-wrapper.sidebar-is-collapsed .pro-main-wrapper {
+  margin-left: var(--van-sidebar-collapsed-width);
+}
+
+/* Sidebar Shell */
+.pro-sidebar {
+  width: var(--van-sidebar-width);
+  background-color: var(--van-bg-card);
+  border-right: 1px solid var(--van-border-subtle);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 1px 0 3px rgba(15, 23, 42, 0.03);
+}
+
+.pro-sidebar.collapsed {
+  width: var(--van-sidebar-collapsed-width);
+}
+
+.sidebar-brand-header {
+  height: var(--van-header-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1rem;
+  background-color: var(--van-bg-card);
+  border-bottom: 1px solid var(--van-border-subtle);
+  flex-shrink: 0;
+}
+
+.van-sidebar-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  overflow: hidden;
+  width: 100%;
+}
+
+.van-sidebar-logo-img {
+  max-height: 40px;
+  width: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.van-sidebar-brand:hover .van-sidebar-logo-img {
+  transform: scale(1.05);
+}
+
+.van-sidebar-brand-title {
+  display: none;
+}
+
+/* Sidebar Navigation Items */
+.sidebar-nav-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.75rem 0.65rem;
+}
+
+.nav-group-title {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--van-text-muted);
+  letter-spacing: 0.08em;
+  padding: 0.85rem 0.75rem 0.35rem;
+  text-transform: uppercase;
+}
+
+.nav-group-title:first-child {
+  padding-top: 0.35rem;
+}
+
+.nav-item {
+  margin-bottom: 0.15rem;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: var(--van-radius-button);
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--van-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+}
+
+.nav-link:hover {
+  background-color: var(--van-bg-hover);
+  color: var(--van-brand-blue);
+}
+
+.nav-link.active,
+.nav-link.active-parent-pill {
+  background-color: #EFF6FF;
+  color: var(--van-brand-blue);
+  font-weight: 700;
+  border-color: #DBEAFE;
+}
+
+.nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  flex-shrink: 0;
+}
+
+.nav-text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nav-arrow {
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+  color: var(--van-text-muted);
+  transition: transform 0.2s ease;
+}
+
+/* Sub Navigation */
+.sub-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding-left: 0.65rem;
+  margin-top: 0.2rem;
+  margin-bottom: 0.25rem;
+  border-left: 2px solid var(--van-border-subtle);
+  margin-left: 1.25rem;
+}
+
+.sub-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  background: transparent;
+  border: none;
+  text-align: left;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--van-text-secondary);
+  padding: 0.4rem 0.65rem;
+  border-radius: var(--van-radius-button);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sub-nav-link:hover {
+  color: var(--van-brand-blue);
+  background-color: var(--van-bg-hover);
+}
+
+.sub-nav-link.active {
+  color: var(--van-brand-blue);
+  font-weight: 700;
+  background-color: #EFF6FF;
+}
+
+/* Sidebar Bottom Actions & Footer */
+.sidebar-bottom-actions {
+  padding: 0.65rem 0.75rem;
+  border-top: 1px solid var(--van-border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  background-color: var(--van-bg-card);
+}
+
+.sidebar-bottom-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--van-text-secondary);
+  font-size: 0.825rem;
+  font-weight: 600;
+  border-radius: var(--van-radius-button);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+}
+
+.sidebar-bottom-btn:hover {
+  background-color: var(--van-bg-hover);
+  color: var(--van-text-primary);
+}
+
+.sidebar-bottom-btn.logout-btn:hover {
+  color: #DC2626;
+  background-color: var(--van-status-error-bg);
+  border-color: var(--van-status-error-border);
+}
+
+/* Clean Header Bar */
+.pro-header {
+  height: var(--van-header-height);
+  background-color: var(--van-bg-card);
+  border-bottom: 1px solid var(--van-border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-search-wrapper {
+  display: flex;
+  align-items: center;
+  background-color: var(--van-bg-surface);
+  border: 1px solid var(--van-border-default);
+  border-radius: var(--van-radius-input);
+  padding: 0.45rem 0.85rem;
+  width: 280px;
+  gap: 0.5rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.header-search-wrapper:focus-within {
+  border-color: var(--van-brand-blue);
+  background-color: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+}
+
+.header-search-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.825rem;
+  color: var(--van-text-primary);
+  width: 100%;
+}
+
+.header-search-input::placeholder {
+  color: var(--van-text-muted);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.header-icon-btn {
+  background-color: transparent;
+  border: 1px solid transparent;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--van-radius-button);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--van-text-secondary);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.15s ease;
+}
+
+.header-icon-btn:hover {
+  background-color: var(--van-bg-surface);
+  border-color: var(--van-border-subtle);
+  color: var(--van-text-primary);
+}
+
+/* User Profile Badge in Header */
+.header-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  cursor: pointer;
+  padding: 0.35rem 0.6rem;
+  border-radius: var(--van-radius-button);
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+}
+
+.header-profile-btn:hover {
+  background-color: var(--van-bg-surface);
+  border-color: var(--van-border-subtle);
+}
+
+.van-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.825rem;
+  color: #FFFFFF;
+  background: var(--van-btn-gradient-primary);
+  flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(11, 25, 44, 0.2);
+}
+
+/* Page Content Container — Flat, Non-curved, Clean */
+.pro-page-content {
+  flex: 1;
+  padding: 1.5rem;
+  background-color: var(--van-bg-app);
+  border-radius: 0;
+  border: none;
+  margin: 0;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Backward compatibility: remove curved canvas styles */
+.pro-page-content.pro-curved-canvas {
+  background-color: var(--van-bg-app);
+  border-radius: 0;
+  margin: 0;
+  padding: 1.5rem;
+  box-shadow: none;
+  border: none;
+  min-height: calc(100vh - var(--van-header-height) - 56px);
+}
+
+.page-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  flex: 1;
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Mobile Sidebar Backdrop (Hidden on Desktop) */
+.sidebar-mobile-backdrop {
+  display: none;
+}
+
+/* Clean Footer Styling */
+.pro-footer {
+  background-color: var(--van-bg-card);
+  border-top: 1px solid var(--van-border-subtle);
+  color: var(--van-text-muted);
+  font-size: 0.78rem;
+}
+
+.footer-center {
+  color: var(--van-text-secondary);
+}
+
+.footer-brand-bold {
+  color: var(--van-brand-navy);
+  font-weight: 700;
+}

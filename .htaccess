@@ -1,0 +1,32 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # 1. Route all /api/* requests to Laravel backend public index.php
+    RewriteRule ^api/(.*)$ backend/public/index.php [L,QSA]
+    RewriteRule ^api$ backend/public/index.php [L,QSA]
+
+    # 2. Admin SPA routing: serve real files and directories directly, fallback non-existent /admin/* to admin/index.html
+    RewriteCond %{REQUEST_URI} ^/admin
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    RewriteRule ^admin(/.*)?$ admin/index.html [L]
+
+    # 3. Entity SPA routing: serve real files and directories directly, fallback non-existent /entity/* to entity/index.html
+    RewriteCond %{REQUEST_URI} ^/entity
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    RewriteRule ^entity(/.*)?$ entity/index.html [L]
+
+    # 4. Allow direct access to backend sub-application
+    RewriteCond %{REQUEST_URI} ^/backend(/.*)?$
+    RewriteRule ^ - [L]
+
+    # 5. SPA fallback for root User panel
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.html [L]
+</IfModule>

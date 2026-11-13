@@ -1,0 +1,102 @@
+/**
+ * Vyapar AdNET Design System — Forms & Inputs
+ */
+
+.van-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+
+.van-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--van-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.van-input,
+.van-select,
+.van-textarea {
+  width: 100%;
+  font-family: inherit;
+  font-size: 0.84rem;
+  color: var(--van-text-primary);
+  background-color: var(--van-bg-card);
+  border: 1px solid var(--van-border-default);
+  border-radius: var(--van-radius-input);
+  padding: 0 0.75rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  outline: none;
+}
+
+.van-input,
+.van-select {
+  height: 38px;
+}
+
+.van-textarea {
+  padding: 0.65rem 0.75rem;
+  min-height: 80px;
+  resize: vertical;
+}
+
+.van-input::placeholder,
+.van-textarea::placeholder {
+  color: var(--van-text-muted);
+}
+
+.van-input:focus,
+.van-select:focus,
+.van-textarea:focus {
+  border-color: var(--van-brand-blue);
+  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.15);
+}
+
+.van-input:disabled,
+.van-select:disabled,
+.van-textarea:disabled {
+  background-color: var(--van-bg-surface);
+  color: var(--van-text-muted);
+  cursor: not-allowed;
+}
+
+.van-input-error {
+  border-color: #DC2626 !important;
+}
+
+.van-input-error:focus {
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15) !important;
+}
+
+.van-form-error {
+  font-size: 0.72rem;
+  color: #DC2626;
+  font-weight: 500;
+}
+
+.van-form-hint {
+  font-size: 0.72rem;
+  color: var(--van-text-muted);
+}
+
+/* Input with copy button container */
+.van-input-group {
+  display: flex;
+  position: relative;
+  width: 100%;
+}
+
+.van-input-group .van-input {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.van-input-group .van-btn {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  white-space: nowrap;
+}
