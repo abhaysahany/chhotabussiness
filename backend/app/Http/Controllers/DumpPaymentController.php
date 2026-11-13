@@ -517,6 +517,9 @@ class DumpPaymentController extends Controller
                 'balance_due' => $newRemainingBalance,
             ]);
 
+            // 5. Synchronize consolidated Order-wise Direct Income Summary atomically inside transaction
+            $this->allocationService->syncOrderDirectIncomeSummary($order->fresh());
+
             return response()->json([
                 'status' => 'success',
                 'message' => "Dump Payment of ₹" . number_format($dump->dump_amount, 2) . " has been approved successfully.",

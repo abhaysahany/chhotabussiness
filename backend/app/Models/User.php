@@ -92,6 +92,11 @@ class User extends Authenticatable
         return $this->hasOne(DirectIncome::class, 'user_code', 'user_code')->latestOfMany();
     }
 
+    public function directIncomeOrderSummaries()
+    {
+        return $this->hasMany(DirectIncomeOrderSummary::class, 'user_id');
+    }
+
     public function levelIncomes()
     {
         return $this->hasMany(LevelIncome::class, 'user_code', 'user_code');

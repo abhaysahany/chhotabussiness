@@ -7,9 +7,9 @@ use App\Models\User;
 use App\Models\WalletTransfer;
 
 /**
- * Distribute Direct Income to sponsor
+ * Distribute Direct Income to sponsor with order and payment references
  */
-function directIncome($sponsorid, $memberid, $amount, $dumpAmount = 0)
+function directIncome($sponsorid, $memberid, $amount, $dumpAmount = 0, $orderId = null, $salePaymentId = null, $sourceUserCode = null, $percentage = null)
 {
     // 1. Root check
     if (empty($sponsorid) || strtolower(trim((string) $sponsorid)) === 'root') {
@@ -35,8 +35,12 @@ function directIncome($sponsorid, $memberid, $amount, $dumpAmount = 0)
         return null;
     }
 
-    // 3 & 4. Save into direct_incomes table
+    // 3 & 4. Save into direct_incomes table with order/payment traceability
     $direct = new DirectIncome();
+    $direct->order_id = $orderId ? (int) $orderId : null;
+    $direct->sale_payment_id = $salePaymentId ? (int) $salePaymentId : null;
+    $direct->source_user_code = $sourceUserCode ?: (!empty($memberid) ? (string) $memberid : null);
+    $direct->percentage = $percentage !== null ? (float) $percentage : null;
     $direct->user_code = $sponsor->user_code;
     $direct->sponsor_id = $sponsor->sponsor_id ?? 'Root';
     $direct->total_amount = $amount;

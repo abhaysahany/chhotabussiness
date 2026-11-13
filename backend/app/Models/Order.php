@@ -192,6 +192,30 @@ class Order extends Model
         return $this->hasMany(OrderPaymentDump::class, 'order_id')->where('status', 'approved')->orderBy('id', 'desc');
     }
 
+    /**
+     * Relationship to consolidated Direct Income Order Summary.
+     */
+    public function directIncomeSummary()
+    {
+        return $this->hasOne(DirectIncomeOrderSummary::class, 'order_id');
+    }
+
+    /**
+     * Relationship to all Direct Income Order Summaries (for multi-beneficiary safety).
+     */
+    public function directIncomeSummaries()
+    {
+        return $this->hasMany(DirectIncomeOrderSummary::class, 'order_id');
+    }
+
+    /**
+     * Relationship to individual Direct Income ledger transactions for this order.
+     */
+    public function directIncomes()
+    {
+        return $this->hasMany(DirectIncome::class, 'order_id')->orderBy('id', 'asc');
+    }
+
     // Accessors for React camelCase compatibility
     public function getEntityIdAttribute()
     {

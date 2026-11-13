@@ -1,68 +1,207 @@
-import React, { useState, useEffect } from 'react';
-import { getUserDirectIncome } from '../../api/userIncomeService';
-import { formatINR } from '../../utils/formatters';
-import { formatDateTime } from '../../utils/timezone';
+import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  Search,
+  Filter,
+  ArrowUpDown,
+  RotateCcw,
+  Package,
+  ChevronLeft,
+  ChevronRight,
+  X,
+} from 'lucide-react';
+import { getUserDirectIncomeOrders } from '../../api/userIncomeService';
+import OrderDirectIncomeCard from '../../components/income/OrderDirectIncomeCard';
+import { formatINR, formatNumberIN } from '../../utils/formatters';
 
 function DirectIncomePage({ user, onNavigate }) {
+  const navigate = useNavigate();
+
+  // Main Data States
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const loadDirectIncome = async () => {
+  // Filter & Query States
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('last_distribution_at');
+  const [sortOrder, setSortOrder] = useState('desc');
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
+
+  // Fetch Order Summaries from Backend
+  const loadSummaries = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      const res = await getUserDirectIncome();
+
+      const params = {
+        page,
+        per_page: perPage,
+        sort_by: sortBy,
+        sort_order: sortOrder,
+      };
+
+      if (statusFilter && statusFilter !== 'all') {
+        params.status = statusFilter;
+      }
+
+      if (search && search.trim()) {
+        params.search = search.trim();
+      }
+
+      const res = await getUserDirectIncomeOrders(params);
+
       if (res && res.status === 'success') {
         setData(res);
       } else {
-        setError(res?.message || 'Failed to load Direct Income summary.');
+        setError(res?.message || 'Failed to load Direct Income order summaries.');
       }
     } catch (err) {
+      console.error('Error loading direct income order summaries:', err);
       setError(err?.message || 'Error communicating with server.');
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, perPage, statusFilter, sortBy, sortOrder, search]);
 
   useEffect(() => {
-    loadDirectIncome();
-  }, [user]);
+    let active = true;
+    const execute = async () => {
+      try {
+        const params = {
+          page,
+          per_page: perPage,
+          sort_by: sortBy,
+          sort_order: sortOrder,
+        };
+        if (statusFilter && statusFilter !== 'all') params.status = statusFilter;
+        if (search && search.trim()) params.search = search.trim();
 
-  const summary = data?.summary || {
-    user_id: user?.id || '—',
-    member_id: user?.user_code || '—',
-    user_name: user?.name || 'Member',
-    today_amount: 0,
-    total_amount: 0,
-    paid_amount: 0,
-    balance_amount: 0,
-    dump_amount: 0,
-    has_record: false,
-    records_count: 0,
+        const res = await getUserDirectIncomeOrders(params);
+        if (active) {
+          if (res && res.status === 'success') {
+            setData(res);
+            setError(null);
+          } else {
+            setError(res?.message || 'Failed to load Direct Income order summaries.');
+          }
+          setLoading(false);
+        }
+      } catch (err) {
+        if (active) {
+          setError(err?.message || 'Error communicating with server.');
+          setLoading(false);
+        }
+      }
+    };
+
+    execute();
+    return () => {
+      active = false;
+    };
+  }, [page, perPage, statusFilter, sortBy, sortOrder, search]);
+
+  // Reset to page 1 whenever search or status filter changes
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+    setPage(1);
   };
 
-  const records = data?.records || [];
+  const handleClearSearch = () => {
+    setSearch('');
+    setPage(1);
+  };
 
-  const formatDate = (dateStr) => {
-    return formatDateTime(dateStr);
+  const handleStatusChange = (e) => {
+    setStatusFilter(e.target.value);
+    setPage(1);
+  };
+
+  const handleSortChange = (e) => {
+    const val = e.target.value;
+    if (val === 'latest_order') {
+      setSortBy('created_at');
+      setSortOrder('desc');
+    } else if (val === 'highest_received') {
+      setSortBy('total_distributed_amount');
+      setSortOrder('desc');
+    } else if (val === 'highest_pending') {
+      setSortBy('total_pending_amount');
+      setSortOrder('desc');
+    } else if (val === 'highest_gross') {
+      setSortBy('order_gross_amount');
+      setSortOrder('desc');
+    } else {
+      setSortBy('last_distribution_at');
+      setSortOrder('desc');
+    }
+    setPage(1);
+  };
+
+  const handleResetFilters = () => {
+    setSearch('');
+    setStatusFilter('all');
+    setSortBy('last_distribution_at');
+    setSortOrder('desc');
+    setPerPage(10);
+    setPage(1);
+  };
+
+  // Navigate to Dedicated Order Details Page
+  const handleOpenDetails = (orderId) => {
+    if (!orderId) return;
+    if (typeof onNavigate === 'function') {
+      onNavigate(`direct-income/${orderId}`);
+    } else {
+      navigate(`/direct-income/${orderId}`);
+    }
+  };
+
+  // Extract Summary Metrics (safely handles camelCase, snake_case, and aliases)
+  const metrics = data?.summary_metrics || data?.summary || {};
+  const totalExpected = Number(metrics.total_expected_income ?? metrics.total_expected_direct_income ?? metrics.totalExpectedDirectIncome ?? 0);
+  const totalReceived = Number(metrics.total_received_income ?? metrics.total_received_direct_income ?? metrics.totalReceivedDirectIncome ?? 0);
+  const totalPending = Number(metrics.total_pending_income ?? metrics.total_pending_direct_income ?? metrics.totalPendingDirectIncome ?? 0);
+  const totalDump = Number(metrics.total_dump_income ?? metrics.total_dump_direct_income ?? metrics.totalDumpDirectIncome ?? 0);
+  const totalOrders = Number(metrics.total_orders ?? metrics.totalOrders ?? 0);
+  const totalDistributions = Number(metrics.total_distributions_count ?? metrics.totalDistributionsCount ?? 0);
+  const completionPercentage = Number(metrics.completion_percentage ?? metrics.completionPercentage ?? (totalExpected > 0 ? Math.min(100, Math.round((totalReceived / totalExpected) * 100)) : 0));
+
+  const orders = data?.orders || data?.data || [];
+  const pagination = data?.pagination || {
+    current_page: 1,
+    last_page: 1,
+    per_page: perPage,
+    total: orders.length,
   };
 
   return (
     <div className="user-page-container" style={{ padding: '1.5rem', maxWidth: '1360px', margin: '0 auto' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+      {/* Header & Breadcrumb Navigation */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '1.5rem',
+          flexWrap: 'wrap',
+          gap: '1rem',
+        }}
+      >
         <div>
           <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             My Income • Direct Referrals
           </div>
-          <h1 style={{ margin: '0.25rem 0 0 0', fontSize: '1.5rem', fontWeight: 800, color: '#0f172a' }}>
-            Direct Income Ledger
+          <h1 style={{ margin: '0.25rem 0 0 0', fontSize: '1.65rem', fontWeight: 800, color: '#0f172a' }}>
+            Direct Income
           </h1>
-          <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>
-            Authoritative dynamic records of your 40% Direct Referral entitlements calculated from verified orders.
+          <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.86rem', color: '#64748b' }}>
+            Track your Direct Income received from customer orders and installment-wise distributions.
           </p>
         </div>
+
         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
           {onNavigate && (
             <button
@@ -82,9 +221,10 @@ function DirectIncomePage({ user, onNavigate }) {
               ← My Income Overview
             </button>
           )}
+
           <button
             type="button"
-            onClick={loadDirectIncome}
+            onClick={loadSummaries}
             disabled={loading}
             style={{
               padding: '0.55rem 1rem',
@@ -101,7 +241,7 @@ function DirectIncomePage({ user, onNavigate }) {
               boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
             }}
           >
-            <span>🔄</span>
+            <RotateCcw size={14} className={loading ? 'spin-anim' : ''} />
             <span>{loading ? 'Refreshing...' : 'Refresh'}</span>
           </button>
         </div>
@@ -112,7 +252,7 @@ function DirectIncomePage({ user, onNavigate }) {
         style={{
           background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
           color: '#ffffff',
-          borderRadius: '12px',
+          borderRadius: '14px',
           padding: '1.15rem 1.5rem',
           marginBottom: '1.5rem',
           display: 'flex',
@@ -135,25 +275,26 @@ function DirectIncomePage({ user, onNavigate }) {
               alignItems: 'center',
               justifyContent: 'center',
               fontWeight: 800,
-              fontSize: '1.25rem',
+              fontSize: '1.35rem',
             }}
           >
             ₹
           </div>
           <div>
-            <div style={{ fontSize: '1.1rem', fontWeight: 800 }}>
-              {summary.user_name || user?.name || 'Partner Member'}
+            <div style={{ fontSize: '1.15rem', fontWeight: 800 }}>
+              {data?.user?.name || user?.name || 'Partner Member'}
             </div>
             <div style={{ fontSize: '0.8rem', color: '#94a3b8', display: 'flex', gap: '0.75rem', marginTop: '0.15rem', flexWrap: 'wrap' }}>
-              <span>User ID: <strong>#{summary.user_id || user?.id}</strong></span>
+              <span>User ID: <strong>#{data?.user?.id || user?.id}</strong></span>
               <span>•</span>
-              <span>Member Code: <strong>{summary.member_id || user?.user_code}</strong></span>
+              <span>Member Code: <strong>{data?.user?.user_code || user?.user_code}</strong></span>
               <span>•</span>
-              <span>Total Entries: <strong>{records.length} record(s)</strong></span>
+              <span>Eligible Orders: <strong>{totalOrders} Order Card{totalOrders === 1 ? '' : 's'}</strong></span>
             </div>
           </div>
         </div>
-        <div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <span
             style={{
               background: 'rgba(56, 189, 248, 0.15)',
@@ -167,7 +308,7 @@ function DirectIncomePage({ user, onNavigate }) {
               letterSpacing: '0.05em',
             }}
           >
-            Direct Referral Account
+            Direct Referral Account (40% Cut)
           </span>
         </div>
       </div>
@@ -183,193 +324,537 @@ function DirectIncomePage({ user, onNavigate }) {
             padding: '1rem 1.25rem',
             marginBottom: '1.5rem',
             fontSize: '0.85rem',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '0.75rem',
           }}
         >
-          <strong>Error loading data:</strong> {error}
+          <div>
+            <strong>Error loading data:</strong> {error}
+          </div>
+          <button
+            type="button"
+            onClick={loadSummaries}
+            style={{
+              padding: '0.4rem 0.85rem',
+              background: '#ef4444',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '6px',
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+            }}
+          >
+            Retry
+          </button>
         </div>
       )}
 
-      {/* 5 Dynamic Summary Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
-        {/* Card 1: Today's Direct Income */}
-        <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', borderLeft: '4px solid #10b981', padding: '1.25rem', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-          <div style={{ fontSize: '0.74rem', color: '#047857', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            TODAY'S DIRECT INCOME
-          </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#065f46', marginTop: '0.35rem' }}>
-            {formatINR(summary.today_amount)}
-          </div>
-          <div style={{ fontSize: '0.72rem', color: '#059669', fontWeight: 600, marginTop: '0.25rem' }}>
-            ● Earned Today
-          </div>
-        </div>
-
-        {/* Card 2: Total Direct Income */}
-        <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', borderLeft: '4px solid #0284c7', padding: '1.25rem', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+      {/* 4 Top Financial Summary Cards */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gap: '1rem',
+          marginBottom: '1.5rem',
+        }}
+      >
+        {/* Card 1: Total Expected Direct Income */}
+        <div
+          style={{
+            background: '#ffffff',
+            borderRadius: '12px',
+            border: '1px solid #e2e8f0',
+            borderLeft: '4px solid #0284c7',
+            padding: '1.25rem',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+          }}
+        >
           <div style={{ fontSize: '0.74rem', color: '#0369a1', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            TOTAL DIRECT INCOME
+            TOTAL EXPECTED DIRECT INCOME
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0c4a6e', marginTop: '0.35rem' }}>
-            {formatINR(summary.total_amount)}
+          <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0c4a6e', marginTop: '0.35rem' }}>
+            {formatINR(totalExpected)}
           </div>
           <div style={{ fontSize: '0.72rem', color: '#0284c7', fontWeight: 600, marginTop: '0.25rem' }}>
-            40% Admin Cut Direct Allocation
+            Max eligible direct entitlement
           </div>
         </div>
 
-        {/* Card 3: Paid Amount */}
-        <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', borderLeft: '4px solid #16a34a', padding: '1.25rem', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+        {/* Card 2: Total Received Direct Income */}
+        <div
+          style={{
+            background: '#ffffff',
+            borderRadius: '12px',
+            border: '1px solid #e2e8f0',
+            borderLeft: '4px solid #16a34a',
+            padding: '1.25rem',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+          }}
+        >
           <div style={{ fontSize: '0.74rem', color: '#15803d', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            PAID AMOUNT
+            TOTAL RECEIVED DIRECT INCOME
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#14532d', marginTop: '0.35rem' }}>
-            {formatINR(summary.paid_amount)}
+          <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#14532d', marginTop: '0.35rem' }}>
+            {formatINR(totalReceived)}
           </div>
           <div style={{ fontSize: '0.72rem', color: '#16a34a', fontWeight: 600, marginTop: '0.25rem' }}>
-            Disbursed & Settled
+            ● Successfully credited to wallet
           </div>
         </div>
 
-        {/* Card 4: Remaining Balance */}
-        <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', borderLeft: '4px solid #f59e0b', padding: '1.25rem', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+        {/* Card 3: Pending Direct Income */}
+        <div
+          style={{
+            background: '#ffffff',
+            borderRadius: '12px',
+            border: '1px solid #e2e8f0',
+            borderLeft: '4px solid #f59e0b',
+            padding: '1.25rem',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+          }}
+        >
           <div style={{ fontSize: '0.74rem', color: '#b45309', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            REMAINING BALANCE
+            PENDING DIRECT INCOME
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: summary.balance_amount > 0 ? '#b45309' : '#64748b', marginTop: '0.35rem' }}>
-            {formatINR(summary.balance_amount)}
+          <div style={{ fontSize: '1.6rem', fontWeight: 800, color: totalPending > 0 ? '#b45309' : '#64748b', marginTop: '0.35rem' }}>
+            {formatINR(totalPending)}
           </div>
           <div style={{ fontSize: '0.72rem', color: '#b45309', fontWeight: 600, marginTop: '0.25rem' }}>
-            Available for Payout
+            Awaiting order balance installments
           </div>
         </div>
 
-        {/* Card 5: Dump Amount */}
-        <div style={{ background: '#faf5ff', borderRadius: '12px', border: '1px solid #e9d5ff', borderLeft: '4px solid #7c3aed', padding: '1.25rem', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+        {/* Card 4: Approved Dump Direct Income */}
+        <div
+          style={{
+            background: '#faf5ff',
+            borderRadius: '12px',
+            border: '1px solid #e9d5ff',
+            borderLeft: '4px solid #7c3aed',
+            padding: '1.25rem',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+          }}
+        >
           <div style={{ fontSize: '0.74rem', color: '#7c3aed', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            DUMP AMOUNT
+            APPROVED DUMP DIRECT INCOME
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#581c87', marginTop: '0.35rem' }}>
-            {formatINR(summary.dump_amount)}
+          <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#581c87', marginTop: '0.35rem' }}>
+            {formatINR(totalDump)}
           </div>
           <div style={{ fontSize: '0.72rem', color: '#7c3aed', fontWeight: 600, marginTop: '0.25rem' }}>
-            Isolated Admin Parameter
+            Non-cash write-offs (Not in wallet)
           </div>
         </div>
       </div>
 
-      {/* Direct Income Entries Table */}
-      <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', marginBottom: '1.5rem' }}>
-        <div style={{ padding: '1.15rem 1.25rem', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+      {/* Additional Stats & Progress Ribbon */}
+      <div
+        style={{
+          background: '#ffffff',
+          borderRadius: '12px',
+          border: '1px solid #e2e8f0',
+          padding: '1rem 1.35rem',
+          marginBottom: '1.5rem',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '1rem',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+        }}
+      >
+        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap', fontSize: '0.82rem' }}>
           <div>
-            <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#0f172a' }}>
-              Direct Income Records Table
-            </h3>
-            <p style={{ margin: '0.15rem 0 0 0', fontSize: '0.75rem', color: '#64748b' }}>
-              Live entries from <code>direct_incomes</code> database table for Member <strong>{summary.member_id}</strong>
-            </p>
+            <span style={{ color: '#64748b' }}>Total Eligible Orders: </span>
+            <strong style={{ color: '#0f172a' }}>{formatNumberIN(totalOrders)}</strong>
           </div>
-          <span style={{ fontSize: '0.78rem', background: '#eff6ff', color: '#1e40af', padding: '0.25rem 0.65rem', borderRadius: '6px', fontWeight: 700 }}>
-            {records.length} Entry(ies)
-          </span>
+          <span style={{ color: '#cbd5e1' }}>•</span>
+          <div>
+            <span style={{ color: '#64748b' }}>Total Installment Distributions: </span>
+            <strong style={{ color: '#0f172a' }}>{formatNumberIN(totalDistributions)}</strong>
+          </div>
+          <span style={{ color: '#cbd5e1' }}>•</span>
+          <div>
+            <span style={{ color: '#64748b' }}>Overall Collection Progress: </span>
+            <strong style={{ color: completionPercentage >= 100 ? '#15803d' : '#2563eb' }}>
+              {completionPercentage}%
+            </strong>
+          </div>
         </div>
 
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
-            <thead>
-              <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left', color: '#475569' }}>
-                <th style={{ padding: '0.85rem 1rem', width: '70px' }}>ID</th>
-                <th style={{ padding: '0.85rem 1rem' }}>User Code / Member ID</th>
-                <th style={{ padding: '0.85rem 1rem' }}>Sponsor ID</th>
-                <th style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>Total Amount</th>
-                <th style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>Paid Amount</th>
-                <th style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>Balance Amount</th>
-                <th style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>Dump Amount</th>
-                <th style={{ padding: '0.85rem 1rem', textAlign: 'center' }}>Status</th>
-                <th style={{ padding: '0.85rem 1rem' }}>Created Date</th>
-                <th style={{ padding: '0.85rem 1rem' }}>Updated Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan="10" style={{ padding: '3rem 1rem', textAlign: 'center', color: '#64748b' }}>
-                    <div style={{ display: 'inline-block', width: '24px', height: '24px', border: '3px solid #cbd5e1', borderTopColor: '#2563eb', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
-                    <div style={{ marginTop: '0.5rem' }}>Loading Direct Income entries...</div>
-                  </td>
-                </tr>
-              ) : records.length === 0 ? (
-                <tr>
-                  <td colSpan="10" style={{ padding: '3rem 1rem', textAlign: 'center', color: '#64748b' }}>
-                    <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🪙</div>
-                    <div style={{ fontWeight: 700, color: '#0f172a', marginBottom: '0.25rem', fontSize: '1rem' }}>
-                      No Direct Income Records Found
-                    </div>
-                    <div style={{ fontSize: '0.82rem', color: '#64748b', maxWidth: '520px', margin: '0 auto' }}>
-                      There are currently no Direct Income entries recorded for member <strong>{summary.member_id}</strong>. When a sponsored downline completes an activated order, your 40% direct income allocation will appear here automatically.
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                records.map((rec) => (
-                  <tr key={rec.id} style={{ borderBottom: '1px solid #f1f5f9', transition: 'background-color 0.15s ease' }}>
-                    <td style={{ padding: '0.85rem 1rem', fontWeight: 700, color: '#0f172a' }}>
-                      #{rec.id}
-                    </td>
-                    <td style={{ padding: '0.85rem 1rem' }}>
-                      <span style={{ background: '#eff6ff', color: '#1e40af', padding: '0.2rem 0.55rem', borderRadius: '4px', fontWeight: 700, fontSize: '0.78rem' }}>
-                        {rec.user_code || rec.member_id || summary.member_id}
-                      </span>
-                    </td>
-                    <td style={{ padding: '0.85rem 1rem', color: '#475569', fontWeight: 600 }}>
-                      {rec.sponsor_id && rec.sponsor_id !== '—' ? (
-                        <span style={{ background: '#f1f5f9', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.78rem' }}>
-                          {rec.sponsor_id}
-                        </span>
-                      ) : (
-                        <span style={{ color: '#94a3b8' }}>—</span>
-                      )}
-                    </td>
-                    <td style={{ padding: '0.85rem 1rem', fontWeight: 800, color: '#0f172a', textAlign: 'right' }}>
-                      {formatINR(rec.total_amount)}
-                    </td>
-                    <td style={{ padding: '0.85rem 1rem', fontWeight: 700, color: '#16a34a', textAlign: 'right' }}>
-                      {formatINR(rec.paid_amount)}
-                    </td>
-                    <td style={{ padding: '0.85rem 1rem', fontWeight: 800, color: rec.balance_amount > 0 ? '#b45309' : '#16a34a', textAlign: 'right' }}>
-                      {formatINR(rec.balance_amount)}
-                    </td>
-                    <td style={{ padding: '0.85rem 1rem', fontWeight: 700, color: '#7c3aed', textAlign: 'right' }}>
-                      {formatINR(rec.dump_amount)}
-                    </td>
-                    <td style={{ padding: '0.85rem 1rem', textAlign: 'center' }}>
-                      <span
-                        style={{
-                          background: rec.status === 'Active' ? '#f0fdf4' : (rec.status === 'Settled' ? '#f8fafc' : '#fefce8'),
-                          color: rec.status === 'Active' ? '#15803d' : (rec.status === 'Settled' ? '#475569' : '#a16207'),
-                          border: `1px solid ${rec.status === 'Active' ? '#bbf7d0' : (rec.status === 'Settled' ? '#e2e8f0' : '#fef08a')}`,
-                          padding: '0.2rem 0.55rem',
-                          borderRadius: '4px',
-                          fontSize: '0.72rem',
-                          fontWeight: 700,
-                          display: 'inline-block',
-                        }}
-                      >
-                        {rec.status === 'Active' ? '✓ Active' : (rec.status === 'Settled' ? '✓ Settled' : 'Pending')}
-                      </span>
-                    </td>
-                    <td style={{ padding: '0.85rem 1rem', color: '#64748b', fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
-                      {formatDate(rec.created_at)}
-                    </td>
-                    <td style={{ padding: '0.85rem 1rem', color: '#64748b', fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
-                      {formatDate(rec.updated_at)}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+        <div style={{ width: '220px', maxWidth: '100%' }}>
+          <div style={{ height: '7px', background: '#e2e8f0', borderRadius: '9999px', overflow: 'hidden' }}>
+            <div
+              style={{
+                height: '100%',
+                width: `${completionPercentage}%`,
+                background: completionPercentage >= 100 ? '#10b981' : '#2563eb',
+                borderRadius: '9999px',
+                transition: 'width 0.4s ease',
+              }}
+            />
+          </div>
         </div>
       </div>
+
+      {/* Search, Filter & Sort Toolbar */}
+      <div
+        style={{
+          background: '#ffffff',
+          borderRadius: '12px',
+          border: '1px solid #e2e8f0',
+          padding: '1rem 1.25rem',
+          marginBottom: '1.5rem',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '0.85rem',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+        }}
+      >
+        {/* Search Bar */}
+        <div style={{ position: 'relative', flex: '1 1 280px', minWidth: '220px' }}>
+          <Search
+            size={16}
+            color="#94a3b8"
+            style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)' }}
+          />
+          <input
+            type="text"
+            value={search}
+            onChange={handleSearchChange}
+            placeholder="Search by Invoice, Order ID, Customer, Item..."
+            style={{
+              width: '100%',
+              padding: '0.55rem 2.2rem 0.55rem 2.35rem',
+              borderRadius: '8px',
+              border: '1px solid #cbd5e1',
+              fontSize: '0.82rem',
+              color: '#0f172a',
+              outline: 'none',
+              boxSizing: 'border-box',
+            }}
+          />
+          {search && (
+            <button
+              type="button"
+              onClick={handleClearSearch}
+              style={{
+                position: 'absolute',
+                right: '0.65rem',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'transparent',
+                border: 'none',
+                color: '#94a3b8',
+                cursor: 'pointer',
+                padding: '0.2rem',
+                display: 'flex',
+                alignItems: 'center',
+              }}
+              title="Clear search"
+            >
+              <X size={14} />
+            </button>
+          )}
+        </div>
+
+        {/* Filter & Sort Controls */}
+        <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap', alignItems: 'center' }}>
+          {/* Status Filter */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+            <Filter size={15} color="#64748b" />
+            <select
+              value={statusFilter}
+              onChange={handleStatusChange}
+              style={{
+                padding: '0.55rem 0.75rem',
+                borderRadius: '8px',
+                border: '1px solid #cbd5e1',
+                fontSize: '0.82rem',
+                color: '#334155',
+                background: '#ffffff',
+                fontWeight: 600,
+                outline: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              <option value="all">All Distribution Statuses</option>
+              <option value="completed">Completed Only</option>
+              <option value="partial">Partial Only</option>
+              <option value="pending">Pending Only</option>
+            </select>
+          </div>
+
+          {/* Sort By Dropdown */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+            <ArrowUpDown size={15} color="#64748b" />
+            <select
+              value={
+                sortBy === 'created_at'
+                  ? 'latest_order'
+                  : sortBy === 'total_distributed_amount'
+                  ? 'highest_received'
+                  : sortBy === 'total_pending_amount'
+                  ? 'highest_pending'
+                  : sortBy === 'order_gross_amount'
+                  ? 'highest_gross'
+                  : 'last_distribution'
+              }
+              onChange={handleSortChange}
+              style={{
+                padding: '0.55rem 0.75rem',
+                borderRadius: '8px',
+                border: '1px solid #cbd5e1',
+                fontSize: '0.82rem',
+                color: '#334155',
+                background: '#ffffff',
+                fontWeight: 600,
+                outline: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              <option value="last_distribution">Sort: Last Distribution</option>
+              <option value="latest_order">Sort: Latest Order</option>
+              <option value="highest_received">Sort: Highest Received</option>
+              <option value="highest_pending">Sort: Highest Pending</option>
+              <option value="highest_gross">Sort: Highest Order Value</option>
+            </select>
+          </div>
+
+          {/* Per Page Dropdown */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+            <select
+              value={perPage}
+              onChange={(e) => {
+                setPerPage(Number(e.target.value));
+                setPage(1);
+              }}
+              style={{
+                padding: '0.55rem 0.65rem',
+                borderRadius: '8px',
+                border: '1px solid #cbd5e1',
+                fontSize: '0.82rem',
+                color: '#334155',
+                background: '#ffffff',
+                fontWeight: 600,
+                outline: 'none',
+                cursor: 'pointer',
+              }}
+              title="Orders per page"
+            >
+              <option value={10}>10 per page</option>
+              <option value={20}>20 per page</option>
+              <option value={50}>50 per page</option>
+            </select>
+          </div>
+
+          {/* Reset Filters */}
+          {(search || statusFilter !== 'all' || sortBy !== 'last_distribution_at' || perPage !== 10) && (
+            <button
+              type="button"
+              onClick={handleResetFilters}
+              style={{
+                padding: '0.55rem 0.85rem',
+                background: '#f1f5f9',
+                color: '#475569',
+                border: '1px solid #cbd5e1',
+                borderRadius: '8px',
+                fontSize: '0.82rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              Reset
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Order Cards Section: Exactly ONE Card per Order */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginBottom: '1.5rem' }}>
+        {loading ? (
+          // Skeleton loading state
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {[1, 2].map((n) => (
+              <div
+                key={n}
+                style={{
+                  background: '#ffffff',
+                  borderRadius: '14px',
+                  border: '1px solid #e2e8f0',
+                  padding: '2rem 1.5rem',
+                  textAlign: 'center',
+                  color: '#94a3b8',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'inline-block',
+                    width: '28px',
+                    height: '28px',
+                    border: '3px solid #cbd5e1',
+                    borderTopColor: '#2563eb',
+                    borderRadius: '50%',
+                    animation: 'spin 1s linear infinite',
+                  }}
+                />
+                <div style={{ marginTop: '0.5rem', fontSize: '0.85rem' }}>Loading Order Cards...</div>
+              </div>
+            ))}
+          </div>
+        ) : orders.length === 0 ? (
+          // Empty State
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '14px',
+              border: '1px solid #e2e8f0',
+              padding: '3.5rem 1.5rem',
+              textAlign: 'center',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+            }}
+          >
+            <div
+              style={{
+                width: '64px',
+                height: '64px',
+                borderRadius: '50%',
+                background: '#eff6ff',
+                color: '#2563eb',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 1rem auto',
+              }}
+            >
+              <Package size={32} />
+            </div>
+            <h3 style={{ margin: '0 0 0.4rem 0', fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>
+              No Direct Income Orders Found
+            </h3>
+            <p style={{ margin: '0 auto 1.25rem auto', fontSize: '0.85rem', color: '#64748b', maxWidth: '480px' }}>
+              {search || statusFilter !== 'all'
+                ? 'No orders matched your current search or filter criteria. Try clearing filters to see all eligible orders.'
+                : 'Your Direct Income details will appear here when an eligible Order distribution is processed.'}
+            </p>
+            {(search || statusFilter !== 'all') && (
+              <button
+                type="button"
+                onClick={handleResetFilters}
+                style={{
+                  padding: '0.55rem 1.2rem',
+                  background: '#2563eb',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '0.82rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                Clear Filters
+              </button>
+            )}
+          </div>
+        ) : (
+          // Render Consolidated Order Cards
+          orders.map((order) => (
+            <OrderDirectIncomeCard
+              key={order.order_id || order.id || order.orderId}
+              order={order}
+              onViewDetails={handleOpenDetails}
+            />
+          ))
+        )}
+      </div>
+
+      {/* Pagination Controls */}
+      {pagination.total > 0 && (
+        <div
+          style={{
+            background: '#ffffff',
+            borderRadius: '12px',
+            border: '1px solid #e2e8f0',
+            padding: '0.85rem 1.25rem',
+            marginBottom: '1.5rem',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '0.75rem',
+            fontSize: '0.82rem',
+            color: '#64748b',
+          }}
+        >
+          <div>
+            Showing orders{' '}
+            <strong style={{ color: '#0f172a' }}>
+              {(pagination.current_page - 1) * pagination.per_page + 1}
+            </strong>{' '}
+            to{' '}
+            <strong style={{ color: '#0f172a' }}>
+              {Math.min(pagination.current_page * pagination.per_page, pagination.total)}
+            </strong>{' '}
+            of <strong style={{ color: '#0f172a' }}>{pagination.total}</strong> total eligible orders
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <button
+              type="button"
+              disabled={pagination.current_page <= 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              style={{
+                padding: '0.4rem 0.75rem',
+                background: pagination.current_page <= 1 ? '#f8fafc' : '#ffffff',
+                color: pagination.current_page <= 1 ? '#94a3b8' : '#334155',
+                border: '1px solid #cbd5e1',
+                borderRadius: '6px',
+                fontSize: '0.78rem',
+                fontWeight: 700,
+                cursor: pagination.current_page <= 1 ? 'not-allowed' : 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.25rem',
+              }}
+            >
+              <ChevronLeft size={14} />
+              <span>Previous</span>
+            </button>
+
+            <span style={{ padding: '0 0.5rem', fontWeight: 700, color: '#0f172a' }}>
+              Page {pagination.current_page} of {pagination.last_page}
+            </span>
+
+            <button
+              type="button"
+              disabled={pagination.current_page >= pagination.last_page}
+              onClick={() => setPage((p) => Math.min(pagination.last_page, p + 1))}
+              style={{
+                padding: '0.4rem 0.75rem',
+                background: pagination.current_page >= pagination.last_page ? '#f8fafc' : '#ffffff',
+                color: pagination.current_page >= pagination.last_page ? '#94a3b8' : '#334155',
+                border: '1px solid #cbd5e1',
+                borderRadius: '6px',
+                fontSize: '0.78rem',
+                fontWeight: 700,
+                cursor: pagination.current_page >= pagination.last_page ? 'not-allowed' : 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.25rem',
+              }}
+            >
+              <span>Next</span>
+              <ChevronRight size={14} />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Accounting & Policy Information Note */}
       <div
@@ -377,13 +862,27 @@ function DirectIncomePage({ user, onNavigate }) {
           background: '#f8fafc',
           border: '1px solid #e2e8f0',
           borderRadius: '10px',
-          padding: '1rem 1.25rem',
+          padding: '1.15rem 1.35rem',
           fontSize: '0.78rem',
           color: '#64748b',
-          lineHeight: 1.5,
+          lineHeight: 1.6,
         }}
       >
-        ℹ️ <strong>System Note:</strong> Direct Income accounts represent the 40% Admin Cut allocation assigned to direct sponsors from verified customer orders. All figures reflect verified database records from the <code>direct_incomes</code> table for the logged-in member. Balance Amount is calculated dynamically as <code>MAX(total_amount - paid_amount, 0)</code>. Dump Amount is an independent Admin parameter isolated from income formulas.
+        <div style={{ fontWeight: 800, color: '#0f172a', marginBottom: '0.35rem' }}>
+          ℹ️ Vyapar Adnet Direct Income Order-Wise Accounting System
+        </div>
+        <div>
+          • <strong>Order Consolidation:</strong> Each confirmed customer order appears as strictly one consolidated Order Card, regardless of how many installment payments are made.
+        </div>
+        <div>
+          • <strong>Direct Referral Formula:</strong> Direct Income is calculated as exactly 40% of the verified Admin Commission Cut on every collected installment payment.
+        </div>
+        <div>
+          • <strong>Dump Write-Offs:</strong> Approved dump write-offs represent bad debt adjustments or canceled balances. They reduce pending entitlements and do not generate cash wallet credits.
+        </div>
+        <div>
+          • <strong>Real-Time Synchronisation:</strong> Whenever an installment receipt is verified and distributed by Admin, the Order Card's received, pending, and distribution count metrics update automatically.
+        </div>
       </div>
     </div>
   );

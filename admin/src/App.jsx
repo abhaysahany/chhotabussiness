@@ -38,6 +38,10 @@ import AdminPendingOrdersPage from './components/sales/AdminPendingOrdersPage';
 import AdminDumpRequestsPage from './components/sales/AdminDumpRequestsPage';
 import AdminPaymentHistoryPage from './components/sales/AdminPaymentHistoryPage';
 
+// Import Income & Commissions Reporting Suite Pages
+import AdminDirectIncomePage from './components/sales/AdminDirectIncomePage';
+import AdminDirectIncomeDetailsPage from './components/sales/AdminDirectIncomeDetailsPage';
+
 // Import User Management Suite Pages
 import AdminUserDetailsPage from './components/users/AdminUserDetailsPage';
 import AdminUserKycPage from './components/users/AdminUserKycPage';
@@ -142,6 +146,9 @@ function App() {
       'payments-history': '/payments/history',
       'payments-receive': '/payments/history',
       'payments-reports': '/orders',
+      'income-direct': '/income/direct-orders',
+      'income-direct-orders': '/income/direct-orders',
+      'direct-income': '/income/direct-orders',
       'users-details': '/users',
       'users-kyc': '/users/kyc',
       'users-payout-requests': '/payouts/requests',
@@ -268,6 +275,16 @@ function App() {
         element={wrapProtected(<AdminPaymentHistoryPage />)}
       />
 
+      {/* Income & Commissions Reporting Suite */}
+      <Route
+        path="/income/direct-orders"
+        element={wrapProtected(<AdminDirectIncomePage />)}
+      />
+      <Route
+        path="/income/direct-orders/:orderId"
+        element={wrapProtected(<AdminDirectIncomeDetailsPage />)}
+      />
+
       {/* User Management Suite */}
       <Route
         path="/users"
@@ -341,6 +358,11 @@ function App() {
       />
 
       {/* Backward-Compatible Route Aliases */}
+      <Route path="/income" element={<Navigate to="/income/direct-orders" replace />} />
+      <Route path="/admin/income/direct-orders" element={<Navigate to="/income/direct-orders" replace />} />
+      <Route path="/admin/income/direct-orders/:orderId" element={wrapProtected(<AdminDirectIncomeDetailsPage />)} />
+      <Route path="/admin/direct-income/:orderId" element={wrapProtected(<AdminDirectIncomeDetailsPage />)} />
+      <Route path="/orders/direct-income" element={<Navigate to="/income/direct-orders" replace />} />
       <Route path="/orders/management" element={<Navigate to="/orders" replace />} />
       <Route path="/orders/dump-requests" element={<Navigate to="/orders/dumps" replace />} />
       <Route path="/sales" element={<Navigate to="/orders" replace />} />

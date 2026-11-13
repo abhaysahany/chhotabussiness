@@ -42,6 +42,7 @@ import TermsAndConditionsPage from './pages/TermsAndConditionsPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import LandingPage from './pages/landing/LandingPage';
 import DirectIncomePage from './pages/income/DirectIncomePage';
+import MemberDirectIncomeDetailsPage from './pages/income/MemberDirectIncomeDetailsPage';
 import LevelIncomePage from './pages/income/LevelIncomePage';
 import MyIncomePage from './pages/income/MyIncomePage';
 import SponsorOnboardingPage from './pages/SponsorOnboardingPage';
@@ -599,6 +600,8 @@ function AppContent() {
           <Route path="/income-all" element={<Navigate to="/my-income" replace />} />
 
           <Route path="/direct-income" element={<DirectIncomePage user={user} onNavigate={handleNavigate} />} />
+          <Route path="/direct-income/:orderId" element={<MemberDirectIncomeDetailsPage user={user} onNavigate={handleNavigate} />} />
+          <Route path="/income/direct-orders/:orderId" element={<Navigate to="/direct-income/:orderId" replace />} />
           <Route path="/income-direct" element={<Navigate to="/direct-income" replace />} />
           <Route path="/user-income-direct" element={<Navigate to="/direct-income" replace />} />
 
