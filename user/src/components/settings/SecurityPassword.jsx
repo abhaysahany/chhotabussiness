@@ -72,7 +72,7 @@ function SecurityPassword({ user }) {
   };
 
   return (
-    <div className="page-container">
+    <div className="page-container security-password-wrapper">
       {toastMessage && (
         <div className="profile-toast-success">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -97,7 +97,7 @@ function SecurityPassword({ user }) {
         </div>
       </div>
 
-      <div className="profile-cards-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+      <div className="profile-cards-grid">
         {/* Change / Set Password Card */}
         <div className="pro-card">
           <div className="pro-card-header">

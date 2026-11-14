@@ -377,16 +377,6 @@ function PersonalProfile({ user, onNavigate, onUpdateUser }) {
               >
                 {savedData.name ? savedData.name.charAt(0).toUpperCase() : 'U'}
               </div>
-              <button
-                className="avatar-edit-overlay-btn"
-                title="Update Profile Photo"
-                onClick={() => setActiveTab('edit')}
-              >
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                  <circle cx="12" cy="13" r="4"></circle>
-                </svg>
-              </button>
             </div>
 
             {/* Title & Key Specs */}
@@ -666,7 +656,7 @@ function PersonalProfile({ user, onNavigate, onUpdateUser }) {
           {/* Bottom Redirect Action Callout Banner */}
           <div className="profile-edit-callout-banner">
             <div className="callout-content">
-              <h3>Need to update your personal information or address?</h3>
+              <h3 style={{ color: '#ffffff' }}>Need to update your personal information or address?</h3>
               <p>Keep your profile details up to date to ensure uninterrupted settlements and notifications.</p>
             </div>
             <button className="btn-profile-primary" onClick={() => setActiveTab('edit')}>
@@ -723,7 +713,7 @@ function PersonalProfile({ user, onNavigate, onUpdateUser }) {
                   <div className="avatar-system-container" style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start', flexWrap: 'wrap' }}>
                     {/* Left: Large Live Avatar Preview */}
                     <div className="avatar-preview-box" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-                      <div className="profile-avatar-wrapper large" style={{ width: '110px', height: '110px', borderRadius: '50%', overflow: 'hidden', border: '3px solid #0F4C81', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <div className="profile-avatar-wrapper large" style={{ width: '110px', height: '110px', borderRadius: '50%', overflow: 'hidden', border: '3px solid #0F4C81', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 0, margin: '0.25rem 0' }}>
                         {(photoPreview || formData.avatarUrl) ? (
                           <img
                             src={photoPreview || formData.avatarUrl}
