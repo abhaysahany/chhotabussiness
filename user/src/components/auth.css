@@ -446,6 +446,8 @@
 .cb-password-toggle {
   position: absolute;
   right: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
   background: transparent;
   border: none;
   color: #94A3B8;
@@ -456,10 +458,33 @@
   align-items: center;
   justify-content: center;
   transition: color 0.2s ease;
+  z-index: 2;
 }
 
 .cb-password-toggle:hover {
   color: var(--cb-primary, #0F4C81);
+}
+
+.cb-password-toggle:focus-visible {
+  color: var(--cb-primary, #0F4C81);
+  outline: 2px solid var(--cb-primary, #0F4C81);
+  outline-offset: 1px;
+}
+
+/* Password input: ensure sufficient right padding so text never overlaps eye icon */
+.cb-input-field.has-password-toggle,
+.cb-input-wrapper:has(.cb-password-toggle) .cb-input-field {
+  padding-right: 2.75rem;
+}
+
+/* Helper text below input (dark, subtle, clearly readable) */
+.cb-password-helper,
+.cb-input-helper {
+  font-size: 0.78rem;
+  color: var(--cb-text-dark, #1E293B);
+  font-weight: 500;
+  line-height: 1.35;
+  margin-top: -0.1rem;
 }
 
 /* Real-time Sponsor Feedback Badges */
@@ -847,6 +872,15 @@
     padding: 0.8rem 1rem;
     gap: 0.5rem;
   }
+
+  .cb-password-toggle {
+    right: 0.8rem;
+  }
+
+  .cb-input-field.has-password-toggle,
+  .cb-input-wrapper:has(.cb-password-toggle) .cb-input-field {
+    padding-right: 2.75rem;
+  }
 }
 
 @media (max-width: 375px) {
@@ -879,6 +913,20 @@
 
   .cb-input-icon {
     left: 0.75rem;
+  }
+
+  .cb-password-toggle {
+    right: 0.75rem;
+  }
+
+  .cb-input-field.has-password-toggle,
+  .cb-input-wrapper:has(.cb-password-toggle) .cb-input-field {
+    padding-right: 2.75rem;
+  }
+
+  .cb-password-helper,
+  .cb-input-helper {
+    font-size: 0.76rem;
   }
 
   .cb-auth-tab {

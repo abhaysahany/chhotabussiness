@@ -1226,6 +1226,7 @@
   max-width: 620px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   overflow: hidden;
+  box-sizing: border-box;
   animation: netModalScale 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -1353,4 +1354,106 @@
   justify-content: flex-end;
   gap: 0.75rem;
   background: #fafafa;
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   8. RESPONSIVE MODAL FIXES (TREE NODE DETAILS MODAL & BUTTONS)
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .net-modal-backdrop {
+    padding: 0.75rem;
+    box-sizing: border-box;
+  }
+
+  .net-modal-card {
+    max-width: 100%;
+    border-radius: 16px;
+    box-sizing: border-box;
+  }
+
+  .modal-header {
+    position: relative;
+    padding: 1rem 1.25rem;
+    box-sizing: border-box;
+  }
+
+  .modal-title-box {
+    margin-right: 2.5rem;
+    min-width: 0;
+  }
+
+  .close-modal-btn {
+    position: absolute;
+    top: 0.85rem;
+    right: 0.85rem;
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    padding: 0;
+    margin: 0;
+    font-size: 1.5rem;
+    line-height: 1;
+    z-index: 10;
+  }
+
+  .modal-footer {
+    padding: 0.85rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  .modal-footer .net-btn {
+    box-sizing: border-box;
+  }
+
+  /* Close button clearly visible on the left of View 10-Level Team Directory */
+  .modal-footer .net-btn.btn-secondary {
+    flex-shrink: 0;
+    padding: 0.55rem 0.85rem;
+    font-size: 0.82rem;
+    min-width: fit-content;
+  }
+
+  /* Primary action button adapts gracefully without overflowing */
+  .modal-footer .net-btn.btn-primary {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 0.55rem 0.75rem;
+    font-size: clamp(0.72rem, 2.7vw, 0.82rem);
+    white-space: normal;
+    text-align: center;
+    line-height: 1.25;
+  }
+}
+
+@media (max-width: 380px) {
+  .net-modal-backdrop {
+    padding: 0.5rem;
+  }
+
+  .modal-footer {
+    padding: 0.75rem 0.65rem;
+    gap: 0.35rem;
+  }
+
+  .modal-footer .net-btn.btn-secondary {
+    padding: 0.5rem 0.65rem;
+    font-size: 0.78rem;
+  }
+
+  .modal-footer .net-btn.btn-primary {
+    padding: 0.5rem 0.5rem;
+    font-size: 0.72rem;
+    line-height: 1.2;
+  }
 }

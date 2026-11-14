@@ -59,7 +59,8 @@
 /* Very Small Mobile (<390px) */
 @media (max-width: 389.98px) {
   .header-search-wrapper {
-    display: none;
+    display: flex !important;
+    max-width: 140px;
   }
 
   .van-btn-sm {

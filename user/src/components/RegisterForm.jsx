@@ -597,13 +597,13 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
                     </span>
                     <input
                       type={showPassword ? 'text' : 'password'}
-                      className={`cb-input-field ${fieldErrors.password ? 'has-error' : ''}`}
+                      className={`cb-input-field has-password-toggle ${fieldErrors.password ? 'has-error' : ''}`}
                       value={password}
                       onChange={(e) => {
                         setPassword(e.target.value);
                         clearFieldError('password');
                       }}
-                      placeholder="Create secure password (min 6 chars)"
+                      placeholder="Create secure password"
                       minLength={6}
                       autoComplete="new-password"
                       required
@@ -616,6 +616,9 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
                     >
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
+                  </div>
+                  <div className="cb-password-helper">
+                    Minimum 6 characters
                   </div>
                   {fieldErrors.password && (
                     <div className="cb-field-error">
