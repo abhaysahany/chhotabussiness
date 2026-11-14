@@ -12,7 +12,7 @@ const SUPPORT_CATEGORIES = [
   'KYC Verification (PAN / Aadhaar UID)',
   'Bank & UPI Payout Credentials',
   'Commission, Wallet & Withdrawals',
-  'Bonus Points (BP) & Rank Progression',
+  'Diamonds & Rank Progression',
   'Milestone Rewards & Gift Claims',
   'Direct & Team Network Downlines',
   'Product Orders & Package Services',

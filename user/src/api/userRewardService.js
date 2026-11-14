@@ -35,7 +35,7 @@ export const getUserClaims = async (userCode) => {
 };
 
 /**
- * Claim reward using Business Points (BP) - processed and persisted directly in MySQL database
+ * Claim reward using Diamonds - processed and persisted directly in MySQL database
  */
 export const claimReward = async (payload) => {
   try {

@@ -14,7 +14,8 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
     businessEntities: Boolean(currentPath?.startsWith('/business') || activePage?.startsWith('business-entities') || activePage === 'business-reports' || activePage?.startsWith('business-reports-')),
     businessReports: Boolean(currentPath?.startsWith('/reports') || activePage?.startsWith('reports-')),
     income: Boolean(currentPath?.includes('income') || activePage?.startsWith('income-') || activePage?.startsWith('user-income-') || activePage === 'my-income'),
-    payments: Boolean(currentPath?.startsWith('/payments') || activePage?.startsWith('payment') || activePage?.startsWith('reward') || activePage?.startsWith('commission')),
+    rewards: Boolean(currentPath?.startsWith('/payments/reward') || activePage?.startsWith('reward') || activePage === 'rewards' || activePage === 'reward-details' || activePage === 'rewards-claimed'),
+    payments: Boolean(currentPath?.startsWith('/payments/transaction') || currentPath === '/payments' || activePage?.startsWith('payment-transaction') || activePage === 'payment-transactions'),
     payouts: Boolean(currentPath?.startsWith('/payouts') || activePage?.startsWith('payout') || activePage === 'current-payouts'),
     settings: Boolean(currentPath?.startsWith('/profile') || activePage?.startsWith('profile')),
     support: Boolean(currentPath?.startsWith('/support') || currentPath === '/notifications' || activePage?.startsWith('support')),
@@ -37,7 +38,10 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
     if (currentPath?.includes('income') || activePage?.startsWith('income-') || activePage?.startsWith('user-income-') || activePage === 'my-income') {
       setOpenMenus((prev) => ({ ...prev, income: true }));
     }
-    if (currentPath?.startsWith('/payments') || activePage?.startsWith('payment') || activePage?.startsWith('reward') || activePage?.startsWith('commission')) {
+    if (currentPath?.startsWith('/payments/reward') || activePage?.startsWith('reward') || activePage === 'rewards' || activePage === 'reward-details' || activePage === 'rewards-claimed') {
+      setOpenMenus((prev) => ({ ...prev, rewards: true }));
+    }
+    if (currentPath?.startsWith('/payments/transaction') || currentPath === '/payments' || activePage?.startsWith('payment-transaction') || activePage === 'payment-transactions') {
       setOpenMenus((prev) => ({ ...prev, payments: true }));
     }
     if (currentPath?.startsWith('/payouts') || activePage?.startsWith('payout') || activePage === 'current-payouts') {
@@ -366,23 +370,26 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
           )}
         </div>
 
-        {/* 7. Payments Tab */}
+        {/* 7. Rewards Tab */}
         <div className="nav-item">
           <button
-            className={`nav-link ${openMenus.payments || currentPath.startsWith('/payments') ? 'active-parent-pill' : ''}`}
-            onClick={() => toggleMenu('payments')}
+            className={`nav-link ${openMenus.rewards || currentPath.startsWith('/payments/reward') || activePage?.startsWith('reward') ? 'active-parent-pill' : ''}`}
+            onClick={() => toggleMenu('rewards')}
           >
             <span className="nav-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-                <line x1="1" y1="10" x2="23" y2="10"></line>
+                <polyline points="20 12 20 22 4 22 4 12"></polyline>
+                <rect x="2" y="7" width="20" height="5"></rect>
+                <line x1="12" y1="22" x2="12" y2="7"></line>
+                <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
+                <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
               </svg>
             </span>
-            {!collapsed && <span className="nav-text">Payments & Rewards</span>}
-            {!collapsed && <span className="nav-arrow">{openMenus.payments ? <ChevronDown /> : <ChevronRight />}</span>}
+            {!collapsed && <span className="nav-text">Rewards</span>}
+            {!collapsed && <span className="nav-arrow">{openMenus.rewards ? <ChevronDown /> : <ChevronRight />}</span>}
           </button>
 
-          {!collapsed && openMenus.payments && (
+          {!collapsed && openMenus.rewards && (
             <div className="sub-nav-list">
               <button
                 className={`sub-nav-link ${isPathActive('/payments/rewards', ['reward-details', 'rewards']) ? 'active' : ''}`}
@@ -398,20 +405,28 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
                 <span className="sub-icon"><SubDot /></span>
                 <span className="sub-text">Rewards Claimed</span>
               </button>
-              <button
-                className={`sub-nav-link ${isPathActive('/payments/base-commission', ['base-commission']) ? 'active' : ''}`}
-                onClick={() => handleNav('/payments/base-commission')}
-              >
-                <span className="sub-icon"><SubDot /></span>
-                <span className="sub-text">Base Commission</span>
-              </button>
-              <button
-                className={`sub-nav-link ${isPathActive('/payments/team-commission', ['team-commission']) ? 'active' : ''}`}
-                onClick={() => handleNav('/payments/team-commission')}
-              >
-                <span className="sub-icon"><SubDot /></span>
-                <span className="sub-text">Team Commission</span>
-              </button>
+            </div>
+          )}
+        </div>
+
+        {/* 8. Payments Tab */}
+        <div className="nav-item">
+          <button
+            className={`nav-link ${openMenus.payments || currentPath.startsWith('/payments/transaction') || currentPath === '/payments' || activePage?.startsWith('payment-transaction') ? 'active-parent-pill' : ''}`}
+            onClick={() => toggleMenu('payments')}
+          >
+            <span className="nav-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                <line x1="1" y1="10" x2="23" y2="10"></line>
+              </svg>
+            </span>
+            {!collapsed && <span className="nav-text">Payments</span>}
+            {!collapsed && <span className="nav-arrow">{openMenus.payments ? <ChevronDown /> : <ChevronRight />}</span>}
+          </button>
+
+          {!collapsed && openMenus.payments && (
+            <div className="sub-nav-list">
               <button
                 className={`sub-nav-link ${isPathActive('/payments/transactions', ['payment-transactions']) ? 'active' : ''}`}
                 onClick={() => handleNav('/payments/transactions')}
@@ -423,7 +438,7 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
           )}
         </div>
 
-        {/* 8. Payouts Tab */}
+        {/* 9. Payouts Tab */}
         <div className="nav-item">
           <button
             className={`nav-link ${openMenus.payouts || currentPath.startsWith('/payouts') ? 'active-parent-pill' : ''}`}

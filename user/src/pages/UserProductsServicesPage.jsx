@@ -135,7 +135,7 @@ function UserProductsServicesPage({ user, onNavigate }) {
           Available Products & Services
         </h1>
         <p style={{ color: '#cbd5e1', fontSize: '0.925rem', maxWidth: '750px', margin: 0 }}>
-          Explore our certified range of business software, legal solutions, and retail products. Share with your network to earn direct referral bonuses and team volume Business Points (BP).
+          Explore our certified range of business software, legal solutions, and retail products. Share with your network to earn direct referral bonuses and team volume Diamonds.
         </p>
       </div>
 
@@ -300,7 +300,7 @@ function UserProductsServicesPage({ user, onNavigate }) {
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.2rem' }}>
                     <span style={{ fontSize: '0.72rem', color: '#7c3aed', fontWeight: 700 }}>Team Volume Points:</span>
-                    <span style={{ fontSize: '0.8rem', color: '#7c3aed', fontWeight: 800 }}>+{item.teamPointsBp} BP (20 Levels)</span>
+                    <span style={{ fontSize: '0.8rem', color: '#7c3aed', fontWeight: 800 }}>+{item.teamPointsBp} Diamonds (20 Levels)</span>
                   </div>
                 </div>
 
@@ -389,7 +389,7 @@ function UserProductsServicesPage({ user, onNavigate }) {
                   🔗 Personalized Product Share Link
                 </h3>
                 <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.8rem', color: '#64748b' }}>
-                  Earn <strong>₹{selectedItemForShare.referralBonusAmount}</strong> + <strong>{selectedItemForShare.teamPointsBp} BP</strong> on every successful referral purchase.
+                  Earn <strong>₹{selectedItemForShare.referralBonusAmount}</strong> + <strong>{selectedItemForShare.teamPointsBp} Diamonds</strong> on every successful referral purchase.
                 </p>
               </div>
               <button

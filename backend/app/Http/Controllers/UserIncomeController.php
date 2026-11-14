@@ -105,6 +105,15 @@ class UserIncomeController extends Controller
 
             return [
                 'id' => $rec->id,
+                'order_id' => $rec->order_id,
+                'orderId' => $rec->order_id,
+                'invoice_number' => $rec->invoice_number,
+                'invoiceNumber' => $rec->invoice_number,
+                'payment_id' => $rec->payment_id,
+                'paymentId' => $rec->payment_id,
+                'payment_type' => $rec->payment_type,
+                'paymentType' => $rec->payment_type,
+                'amount' => $total,
                 'user_id' => $user->id,
                 'userId' => $user->id,
                 'member_id' => $rec->user_code ?: $user->user_code,
@@ -253,6 +262,15 @@ class UserIncomeController extends Controller
 
             return [
                 'id' => $rec->id,
+                'order_id' => $rec->order_id,
+                'orderId' => $rec->order_id,
+                'invoice_number' => $rec->invoice_number,
+                'invoiceNumber' => $rec->invoice_number,
+                'payment_id' => $rec->payment_id,
+                'paymentId' => $rec->payment_id,
+                'payment_type' => $rec->payment_type,
+                'paymentType' => $rec->payment_type,
+                'amount' => $total,
                 'user_id' => $user->id,
                 'userId' => $user->id,
                 'user_code' => $rec->user_code ?: $user->user_code,
