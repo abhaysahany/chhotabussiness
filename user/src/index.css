@@ -2021,34 +2021,50 @@ body {
   gap: 1.25rem;
 }
 
-/* Toast Banner */
+/* Toast Banner: Centered horizontally with balanced margins */
 .profile-toast-success {
   position: fixed;
-  top: 1.5rem;
-  right: 1.5rem;
+  top: 1.25rem;
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
   z-index: 9999;
   background: #059669;
   color: #ffffff;
-  padding: 0.85rem 1.25rem;
+  padding: 0.75rem 1.15rem;
   border-radius: 0.6rem;
   box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.4);
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.65rem;
   font-weight: 600;
-  font-size: 0.9rem;
-  animation: slideInRight 0.3s ease-out forwards;
+  font-size: 0.85rem;
+  max-width: min(440px, calc(100vw - 32px));
+  width: auto;
+  box-sizing: border-box;
+  text-align: center;
+  animation: profileToastSlideDown 0.3s ease-out forwards;
 }
 
-@keyframes slideInRight {
+@keyframes profileToastSlideDown {
   from {
-    transform: translateX(100%);
+    transform: translate(-50%, -15px);
     opacity: 0;
   }
-
   to {
-    transform: translateX(0);
+    transform: translate(-50%, 0);
     opacity: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-toast-success {
+    top: 1rem;
+    padding: 0.65rem 0.95rem;
+    font-size: 0.8rem;
+    max-width: calc(100vw - 24px);
+    gap: 0.5rem;
   }
 }
 
@@ -2662,6 +2678,7 @@ body {
 .callout-content h3 {
   font-size: 1.1rem;
   font-weight: 700;
+  color: #ffffff !important;
 }
 
 .callout-content p {
@@ -4148,4 +4165,1210 @@ div:has(input[placeholder*="Search entity name"]) ~ div > table tbody tr > td:nt
   }
 }
 
+/* ========================================================================== */
+/* TASK 1: Level Income Table Empty State Text Overflow Responsive Fix       */
+/* ========================================================================== */
 
+/* Ensure empty state cell uses the full available colspan area across all columns */
+.user-page-container table tbody tr td[colspan],
+.user-page-container table tbody td[colspan] {
+  display: table-cell !important;
+  width: 100% !important;
+  white-space: normal !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+  padding: 3rem 1.5rem !important;
+  box-sizing: border-box !important;
+}
+
+/* Ensure all child elements inside empty state wrap cleanly and use available width */
+.user-page-container table tbody td[colspan] div,
+.user-page-container table tbody tr td[colspan] div {
+  white-space: normal !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
+  box-sizing: border-box !important;
+}
+
+/* Empty state heading: clean centered text */
+.user-page-container table tbody td[colspan] div:nth-child(2) {
+  white-space: normal !important;
+  font-weight: 700 !important;
+  color: #0f172a !important;
+  font-size: 1rem !important;
+  margin-bottom: 0.35rem !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  text-align: center !important;
+}
+
+/* Empty state description: use full available width, wrap naturally like notebook page lines */
+.user-page-container table tbody td[colspan] div[style*="max-width"],
+.user-page-container table tbody td[colspan] div[style*="maxWidth"],
+.user-page-container table tbody td[colspan] div:last-child {
+  width: 100% !important;
+  max-width: min(580px, 100%) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  line-height: 1.55 !important;
+  font-size: 0.84rem !important;
+  color: #64748b !important;
+  text-align: center !important;
+  padding: 0 1rem !important;
+}
+
+/* Tablet & Mobile responsive empty state handling */
+@media (max-width: 768px) {
+  .user-page-container table tbody tr td[colspan],
+  .user-page-container table tbody td[colspan] {
+    display: table-cell !important;
+    padding: 2.25rem 1rem !important;
+  }
+
+  .user-page-container table tbody td[colspan] div:nth-child(2) {
+    font-size: 0.95rem !important;
+  }
+
+  .user-page-container table tbody td[colspan] div[style*="max-width"],
+  .user-page-container table tbody td[colspan] div[style*="maxWidth"],
+  .user-page-container table tbody td[colspan] div:last-child {
+    max-width: 100% !important;
+    font-size: 0.81rem !important;
+    line-height: 1.5 !important;
+    padding: 0 0.5rem !important;
+  }
+}
+
+/* Small mobile devices (<= 360px, 320px) */
+@media (max-width: 360px) {
+  .user-page-container table tbody tr td[colspan],
+  .user-page-container table tbody td[colspan] {
+    display: table-cell !important;
+    padding: 1.75rem 0.5rem !important;
+  }
+
+  .user-page-container table tbody td[colspan] div:nth-child(2) {
+    font-size: 0.88rem !important;
+  }
+
+  .user-page-container table tbody td[colspan] div[style*="max-width"],
+  .user-page-container table tbody td[colspan] div[style*="maxWidth"],
+  .user-page-container table tbody td[colspan] div:last-child {
+    font-size: 0.78rem !important;
+    line-height: 1.45 !important;
+    padding: 0 0.25rem !important;
+  }
+}
+
+/* ========================================================================== */
+/* TASK 2: Payments -> Rewards Database Sync Success Toast Responsive Fix    */
+/* ========================================================================== */
+
+/* Desktop & Universal positioning: Sleek, compact, horizontally centered */
+.page-container > div[style*="99999"]:not(:has(form)):not(:has(div)):not(:has(button)),
+.page-container > div[style*="position: fixed"][style*="right: 20px"][style*="99999"]:not(:has(form)):not(:has(div)):not(:has(button)),
+.page-container > div[style*="position: fixed"][style*="top: 20px"][style*="99999"]:not(:has(form)):not(:has(div)):not(:has(button)),
+div[style*="z-index: 99999"][style*="#0f172a"]:not(:has(form)):not(:has(div)):not(:has(button)),
+div[style*="z-index: 99999"][style*="rgb(15, 23, 42)"]:not(:has(form)):not(:has(div)):not(:has(button)),
+div[style*="z-index:99999"][style*="#0f172a"]:not(:has(form)):not(:has(div)):not(:has(button)),
+div[style*="z-index:99999"][style*="rgb(15, 23, 42)"]:not(:has(form)):not(:has(div)):not(:has(button)) {
+  position: fixed !important;
+  top: 18px !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: translateX(-50%) !important;
+  width: auto !important;
+  max-width: min(420px, calc(100vw - 32px)) !important;
+  min-width: 260px !important;
+  box-sizing: border-box !important;
+  padding: 0.65rem 1.15rem !important;
+  font-size: 0.835rem !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+  text-align: center !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.4rem !important;
+  white-space: normal !important;
+  border-radius: 10px !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.08) !important;
+  z-index: 99999 !important;
+  pointer-events: auto !important;
+  animation: toastSlideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+@keyframes toastSlideDown {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* Mobile screens (<= 480px, 414px, 390px, 375px) */
+@media (max-width: 480px) {
+  .page-container > div[style*="99999"]:not(:has(form)):not(:has(div)):not(:has(button)),
+  .page-container > div[style*="position: fixed"][style*="right: 20px"][style*="99999"]:not(:has(form)):not(:has(div)):not(:has(button)),
+  .page-container > div[style*="position: fixed"][style*="top: 20px"][style*="99999"]:not(:has(form)):not(:has(div)):not(:has(button)),
+  div[style*="z-index: 99999"][style*="#0f172a"]:not(:has(form)):not(:has(div)):not(:has(button)),
+  div[style*="z-index: 99999"][style*="rgb(15, 23, 42)"]:not(:has(form)):not(:has(div)):not(:has(button)),
+  div[style*="z-index:99999"][style*="#0f172a"]:not(:has(form)):not(:has(div)):not(:has(button)),
+  div[style*="z-index:99999"][style*="rgb(15, 23, 42)"]:not(:has(form)):not(:has(div)):not(:has(button)) {
+    top: 14px !important;
+    padding: 0.55rem 0.95rem !important;
+    font-size: 0.79rem !important;
+    max-width: calc(100vw - 24px) !important;
+    min-width: 240px !important;
+    border-radius: 8px !important;
+  }
+}
+
+/* Small mobile screens (<= 360px, 320px) */
+@media (max-width: 360px) {
+  .page-container > div[style*="99999"]:not(:has(form)):not(:has(div)):not(:has(button)),
+  .page-container > div[style*="position: fixed"][style*="right: 20px"][style*="99999"]:not(:has(form)):not(:has(div)):not(:has(button)),
+  .page-container > div[style*="position: fixed"][style*="top: 20px"][style*="99999"]:not(:has(form)):not(:has(div)):not(:has(button)),
+  div[style*="z-index: 99999"][style*="#0f172a"]:not(:has(form)):not(:has(div)):not(:has(button)),
+  div[style*="z-index: 99999"][style*="rgb(15, 23, 42)"]:not(:has(form)):not(:has(div)):not(:has(button)),
+  div[style*="z-index:99999"][style*="#0f172a"]:not(:has(form)):not(:has(div)):not(:has(button)),
+  div[style*="z-index:99999"][style*="rgb(15, 23, 42)"]:not(:has(form)):not(:has(div)):not(:has(button)) {
+    top: 12px !important;
+    padding: 0.5rem 0.85rem !important;
+    font-size: 0.76rem !important;
+    max-width: calc(100vw - 16px) !important;
+    min-width: 220px !important;
+  }
+}
+
+
+
+
+/* ========================================================================== */
+/* TASK: Withdrawal Amount Preset Buttons Mobile Responsiveness               */
+/* ========================================================================== */
+
+/* Ensure the header row allows clean wrapping on all screens */
+.page-container form div:has(> input[min="500"]) > div:first-child,
+.page-container form div:has(> input[type="number"]) > div:has(> label):has(> div > button),
+div:has(> input[min="500"]) > div:first-child {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  margin-bottom: 0.45rem !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Preset buttons container: ensure flex-wrap and consistent gap */
+.page-container form div:has(> input[min="500"]) > div:first-child > div:has(> button),
+.page-container form div:has(> input[type="number"]) > div:has(> label) > div:has(> button),
+div:has(> input[min="500"]) > div:first-child > div:has(> button) {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 0.35rem !important;
+  align-items: center !important;
+}
+
+/* Tablet & Mobile (<= 640px): Stack label and preset buttons cleanly */
+@media (max-width: 640px) {
+  .page-container form div:has(> input[min="500"]) > div:first-child,
+  .page-container form div:has(> input[type="number"]) > div:has(> label):has(> div > button),
+  div:has(> input[min="500"]) > div:first-child {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .page-container form div:has(> input[min="500"]) > div:first-child > label,
+  .page-container form div:has(> input[type="number"]) > div:has(> label) > label,
+  div:has(> input[min="500"]) > div:first-child > label {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    font-size: 0.76rem !important;
+    line-height: 1.4 !important;
+  }
+
+  .page-container form div:has(> input[min="500"]) > div:first-child > div:has(> button),
+  .page-container form div:has(> input[type="number"]) > div:has(> label) > div:has(> button),
+  div:has(> input[min="500"]) > div:first-child > div:has(> button) {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 0.4rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .page-container form div:has(> input[min="500"]) > div:first-child > div:has(> button) > button,
+  .page-container form div:has(> input[type="number"]) > div:has(> label) > div:has(> button) > button,
+  div:has(> input[min="500"]) > div:first-child > div:has(> button) > button {
+    width: 100% !important;
+    min-width: 0 !important;
+    text-align: center !important;
+    padding: 0.35rem 0.2rem !important;
+    font-size: 0.72rem !important;
+    white-space: nowrap !important;
+    box-sizing: border-box !important;
+  }
+}
+
+/* Extra small mobile screens (<= 340px) */
+@media (max-width: 340px) {
+  .page-container form div:has(> input[min="500"]) > div:first-child > div:has(> button),
+  .page-container form div:has(> input[type="number"]) > div:has(> label) > div:has(> button),
+  div:has(> input[min="500"]) > div:first-child > div:has(> button) {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.35rem !important;
+  }
+
+  .page-container form div:has(> input[min="500"]) > div:first-child > div:has(> button) > button,
+  .page-container form div:has(> input[type="number"]) > div:has(> label) > div:has(> button) > button,
+  div:has(> input[min="500"]) > div:first-child > div:has(> button) > button {
+    padding: 0.35rem 0.3rem !important;
+    font-size: 0.74rem !important;
+  }
+}
+
+/* ========================================================================== */
+/* PROFILE PAGE RESPONSIVE REFINEMENTS                                        */
+/* ========================================================================== */
+
+/* 1. Prevent Live Avatar Preview from overlapping explanatory paragraph */
+.avatar-preview-box .profile-avatar-wrapper,
+.avatar-preview-box .profile-avatar-wrapper.large {
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.25rem !important;
+}
+
+@media (max-width: 640px) {
+  .avatar-preview-box .profile-avatar-wrapper,
+  .avatar-preview-box .profile-avatar-wrapper.large {
+    width: 96px !important;
+    height: 96px !important;
+    margin-top: 0.65rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+}
+
+/* 2. Save Profile Changes and Cancel buttons: proportionate & responsive */
+.pro-card-footer {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 0.75rem !important;
+}
+
+.pro-card-footer .btn-profile-secondary {
+  width: auto !important;
+  padding: 0.55rem 1.15rem !important;
+  font-size: 0.85rem !important;
+  border-radius: 8px !important;
+  white-space: nowrap !important;
+}
+
+.pro-card-footer .btn-profile-primary {
+  width: auto !important;
+  white-space: nowrap !important;
+  padding: 0.55rem 1.25rem !important;
+  font-size: 0.85rem !important;
+  border-radius: 8px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.45rem !important;
+}
+
+@media (max-width: 640px) {
+  .pro-card-footer {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 0.65rem !important;
+    padding: 0.85rem 1rem !important;
+  }
+
+  .pro-card-footer .btn-profile-secondary {
+    flex: 1 !important;
+    width: auto !important;
+    padding: 0.55rem 0.75rem !important;
+    font-size: 0.82rem !important;
+    text-align: center !important;
+    justify-content: center !important;
+  }
+
+  .pro-card-footer .btn-profile-primary {
+    flex: 1.6 !important;
+    width: auto !important;
+    padding: 0.55rem 0.85rem !important;
+    font-size: 0.82rem !important;
+    white-space: nowrap !important;
+    text-align: center !important;
+    justify-content: center !important;
+  }
+}
+
+/* 3. Hide camera edit icon overlay on avatar */
+.avatar-edit-overlay-btn {
+  display: none !important;
+}
+
+/* ========================================================================== */
+/* SECURITY & PASSWORD PAGE RESPONSIVE REFINEMENTS                           */
+/* ========================================================================== */
+
+/* Ensure Security & Password page has proper bottom spacing above fixed footer */
+.security-password-wrapper {
+  padding-bottom: 5rem !important;
+}
+
+/* Force single-column stacking on mobile and tablet (<= 900px) */
+@media (max-width: 900px) {
+  .security-password-wrapper .profile-cards-grid,
+  .profile-cards-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem !important;
+    width: 100% !important;
+  }
+}
+
+/* Card Header: Ensure title and badge/action wrap cleanly without collision */
+.security-password-wrapper .pro-card-header.flex-between {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 0.65rem !important;
+  padding: 1rem 1.25rem !important;
+}
+
+.security-password-wrapper .pro-card-header .card-box-title {
+  margin: 0 !important;
+  font-size: 1.1rem !important;
+  font-weight: 700 !important;
+  line-height: 1.35 !important;
+}
+
+/* Card 1: Password inputs with proper padding so text doesn't overlap eye icon */
+.security-password-wrapper .form-input {
+  width: 100% !important;
+  padding: 0.65rem 2.5rem 0.65rem 0.85rem !important;
+  font-size: 0.88rem !important;
+  box-sizing: border-box !important;
+}
+
+/* Card 2: 2FA Card button responsive full-width */
+.security-password-wrapper .pro-card-body > .btn-profile-primary,
+.security-password-wrapper .pro-card-body > .btn-profile-secondary {
+  width: auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+@media (max-width: 640px) {
+  .security-password-wrapper .pro-card-body > .btn-profile-primary,
+  .security-password-wrapper .pro-card-body > .btn-profile-secondary {
+    width: 100% !important;
+    padding: 0.65rem 1rem !important;
+    font-size: 0.85rem !important;
+  }
+}
+
+/* Card 3: Active Login Sessions List & Rows */
+.security-password-wrapper .security-summary-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.85rem !important;
+  width: 100% !important;
+}
+
+.security-password-wrapper .security-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-wrap: wrap !important;
+  gap: 0.65rem !important;
+  padding: 0.85rem 1rem !important;
+  border-radius: 0.75rem !important;
+  box-sizing: border-box !important;
+}
+
+.security-password-wrapper .security-row-info {
+  flex: 1 1 auto !important;
+  min-width: 180px !important;
+}
+
+.security-password-wrapper .security-row-info strong {
+  display: block !important;
+  font-size: 0.85rem !important;
+  font-weight: 700 !important;
+  color: #0f172a !important;
+  word-break: break-word !important;
+}
+
+.security-password-wrapper .security-row-info p {
+  font-size: 0.75rem !important;
+  color: #64748b !important;
+  margin-top: 0.15rem !important;
+  word-break: break-word !important;
+}
+
+/* Small mobile devices (<= 360px, 320px) */
+@media (max-width: 360px) {
+  .security-password-wrapper .pro-card-header {
+    padding: 0.85rem 1rem !important;
+  }
+
+  .security-password-wrapper .pro-card-header .card-box-title {
+    font-size: 1rem !important;
+  }
+
+  .security-password-wrapper .pro-card-body {
+    padding: 0.9rem !important;
+  }
+
+  .security-password-wrapper .security-row {
+    padding: 0.75rem 0.85rem !important;
+  }
+
+  .security-password-wrapper .security-row-info strong {
+    font-size: 0.8rem !important;
+  }
+
+  .security-password-wrapper .security-row-info p {
+    font-size: 0.72rem !important;
+  }
+}
+
+
+/* ========================================================================== */
+/* TASK: BANK ACCOUNT & UPI POPUP MODALS MOBILE RESPONSIVENESS FIX           */
+/* ========================================================================== */
+
+/* 1. Modal Overlay Containers (Add Bank & Add UPI Modals) */
+div[style*="fixed"]:has(#primaryBankCheck),
+div[style*="fixed"]:has(#primaryUpiCheck),
+div[style*="fixed"]:has(form[onSubmit*="Bank"]),
+div[style*="fixed"]:has(form[onSubmit*="Upi"]) {
+  position: fixed !important;
+  inset: 0 !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100vw !important;
+  min-width: 100vw !important;
+  transform: none !important;
+  margin: 0 !important;
+  padding: 1.25rem 1rem !important;
+  background-color: rgba(15, 23, 42, 0.75) !important;
+  backdrop-filter: blur(5px) !important;
+  -webkit-backdrop-filter: blur(5px) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  z-index: 99999 !important;
+}
+
+/* 2. Modal Card Containers */
+div[style*="fixed"]:has(#primaryBankCheck) > div,
+div[style*="fixed"]:has(#primaryUpiCheck) > div {
+  position: relative !important;
+  width: 100% !important;
+  max-width: 520px !important;
+  max-height: calc(100vh - 2.5rem) !important;
+  margin: auto !important;
+  padding: 1.75rem 2rem !important;
+  background: #ffffff !important;
+  border-radius: 16px !important;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35) !important;
+  box-sizing: border-box !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* 3. Modal Headers */
+div[style*="fixed"]:has(#primaryBankCheck) > div > div:first-child,
+div[style*="fixed"]:has(#primaryUpiCheck) > div > div:first-child {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  gap: 0.5rem !important;
+}
+
+div[style*="fixed"]:has(#primaryBankCheck) > div > div:first-child h3,
+div[style*="fixed"]:has(#primaryUpiCheck) > div > div:first-child h3 {
+  font-size: 1.25rem !important;
+  line-height: 1.3 !important;
+  word-break: break-word !important;
+}
+
+/* 4. Common Form Inputs & Text in Both Modals */
+form:has(#primaryBankCheck) input[type="text"],
+form:has(#primaryUpiCheck) input[type="text"] {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+form:has(#primaryBankCheck) label,
+form:has(#primaryUpiCheck) label {
+  line-height: 1.35 !important;
+}
+
+/* 5. Add Bank Account Form Specifics */
+form:has(#primaryBankCheck) {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.9rem !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Two-column rows on tablet/desktop */
+form:has(#primaryBankCheck) div[style*="grid"] {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 0.75rem !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Primary Bank Checkbox Alignment */
+form:has(#primaryBankCheck) div:has(#primaryBankCheck) {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 0.6rem !important;
+  margin-top: 0.35rem !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+form:has(#primaryBankCheck) #primaryBankCheck {
+  width: 16px !important;
+  height: 16px !important;
+  margin-top: 2px !important;
+  flex-shrink: 0 !important;
+  cursor: pointer !important;
+}
+
+form:has(#primaryBankCheck) label[for="primaryBankCheck"] {
+  font-size: 0.82rem !important;
+  line-height: 1.4 !important;
+  color: #475569 !important;
+  cursor: pointer !important;
+  white-space: normal !important;
+  word-break: normal !important;
+}
+
+/* Bank Modal Action Buttons */
+form:has(#primaryBankCheck) div:has(> button[type="submit"]) {
+  display: flex !important;
+  gap: 0.75rem !important;
+  margin-top: 0.75rem !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+form:has(#primaryBankCheck) div:has(> button[type="submit"]) button[type="button"] {
+  flex: 1 !important;
+  padding: 0.75rem 0.5rem !important;
+  font-size: 0.86rem !important;
+  font-weight: 700 !important;
+  border-radius: 8px !important;
+  text-align: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  min-width: 0 !important;
+}
+
+form:has(#primaryBankCheck) div:has(> button[type="submit"]) button[type="submit"] {
+  flex: 1.35 !important;
+  padding: 0.75rem 0.5rem !important;
+  font-size: 0.86rem !important;
+  font-weight: 700 !important;
+  border-radius: 8px !important;
+  text-align: center !important;
+  justify-content: center !important;
+  white-space: nowrap !important;
+  cursor: pointer !important;
+  min-width: 0 !important;
+}
+
+/* 6. Add UPI ID & QR Code Form Specifics */
+form:has(#primaryUpiCheck) {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1rem !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Registered Holder Name Header row */
+form:has(#primaryUpiCheck) div:first-child > div:first-child {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 0.35rem !important;
+  margin-bottom: 0.35rem !important;
+}
+
+/* UPI QR Upload Box Outer Container */
+form:has(#primaryUpiCheck) div:has(> label[style*="dashed"]),
+form:has(#primaryUpiCheck) div:has(> input[type="file"]) {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+form:has(#primaryUpiCheck) div:has(> label[style*="dashed"]) > div:first-child,
+form:has(#primaryUpiCheck) div:has(> input[type="file"]) > div:first-child {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 0.35rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+/* Dropzone Label inside QR Box */
+form:has(#primaryUpiCheck) label:has(> input[accept="image/*"]) {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  padding: 1.25rem 0.75rem !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  cursor: pointer !important;
+}
+
+/* Attached QR Thumbnail & Remove Button Row */
+form:has(#primaryUpiCheck) div:has(> img[alt="QR Thumbnail"]) {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-wrap: wrap !important;
+  gap: 0.5rem !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Primary UPI Checkbox Container */
+form:has(#primaryUpiCheck) div:has(#primaryUpiCheck) {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 0.6rem !important;
+  padding: 0.65rem 0.85rem !important;
+  border-radius: 8px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+form:has(#primaryUpiCheck) #primaryUpiCheck {
+  width: 16px !important;
+  height: 16px !important;
+  margin-top: 2px !important;
+  flex-shrink: 0 !important;
+  cursor: pointer !important;
+}
+
+form:has(#primaryUpiCheck) label[for="primaryUpiCheck"] {
+  font-size: 0.82rem !important;
+  line-height: 1.4 !important;
+  color: #334155 !important;
+  cursor: pointer !important;
+  white-space: normal !important;
+  word-break: normal !important;
+}
+
+/* UPI Modal Action Buttons */
+form:has(#primaryUpiCheck) div:has(> button[type="submit"]) {
+  display: flex !important;
+  gap: 0.75rem !important;
+  margin-top: 0.5rem !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+form:has(#primaryUpiCheck) div:has(> button[type="submit"]) button[type="button"] {
+  flex: 1 !important;
+  padding: 0.75rem 0.5rem !important;
+  font-size: 0.86rem !important;
+  font-weight: 700 !important;
+  border-radius: 10px !important;
+  text-align: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  min-width: 0 !important;
+}
+
+form:has(#primaryUpiCheck) div:has(> button[type="submit"]) button[type="submit"] {
+  flex: 1.35 !important;
+  padding: 0.75rem 0.5rem !important;
+  font-size: 0.86rem !important;
+  font-weight: 800 !important;
+  border-radius: 10px !important;
+  text-align: center !important;
+  justify-content: center !important;
+  white-space: nowrap !important;
+  cursor: pointer !important;
+  min-width: 0 !important;
+}
+
+/* 7. Email OTP Verification Modal (Modal 3) & QR Lightbox (Modal 4) Safety */
+div[style*="fixed"]:has(form[onSubmit*="handleVerifyOtpAndProceed"]),
+div[style*="fixed"]:has(input[placeholder*="• • • • • •"]) {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  transform: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 1rem !important;
+  box-sizing: border-box !important;
+  z-index: 999999 !important;
+}
+
+div[style*="fixed"]:has(form[onSubmit*="handleVerifyOtpAndProceed"]) > div,
+div[style*="fixed"]:has(input[placeholder*="• • • • • •"]) > div {
+  width: 100% !important;
+  max-width: 440px !important;
+  max-height: calc(100vh - 2rem) !important;
+  overflow-y: auto !important;
+  margin: auto !important;
+  box-sizing: border-box !important;
+}
+
+div[style*="fixed"]:has(img[alt="UPI QR Full"]) {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  transform: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 1rem !important;
+  box-sizing: border-box !important;
+  z-index: 999999 !important;
+}
+
+div[style*="fixed"]:has(img[alt="UPI QR Full"]) > div {
+  width: 100% !important;
+  max-width: 400px !important;
+  max-height: calc(100vh - 2rem) !important;
+  overflow-y: auto !important;
+  margin: auto !important;
+  box-sizing: border-box !important;
+}
+
+/* ========================================================================== */
+/* Mobile Responsiveness for Both Modals (<= 640px)                           */
+/* ========================================================================== */
+@media (max-width: 640px) {
+  /* Overlay padding on mobile */
+  div[style*="fixed"]:has(#primaryBankCheck),
+  div[style*="fixed"]:has(#primaryUpiCheck) {
+    padding: 0.75rem 0.5rem !important;
+    align-items: center !important;
+  }
+
+  /* Modal cards fill available mobile width cleanly */
+  div[style*="fixed"]:has(#primaryBankCheck) > div,
+  div[style*="fixed"]:has(#primaryUpiCheck) > div {
+    width: 100% !important;
+    max-width: calc(100vw - 1rem) !important;
+    max-height: calc(100vh - 1.5rem) !important;
+    padding: 1.25rem 1rem !important;
+    border-radius: 14px !important;
+  }
+
+  /* Modal 1: Stack 2-column fields (Bank Name + IFSC, Account No + Confirm No) */
+  form:has(#primaryBankCheck) div[style*="grid"] {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  /* Modal 1 Header */
+  div[style*="fixed"]:has(#primaryBankCheck) > div > div:first-child h3 {
+    font-size: 1.15rem !important;
+  }
+
+  /* Modal 2 Header */
+  div[style*="fixed"]:has(#primaryUpiCheck) > div > div:first-child h3 {
+    font-size: 1.15rem !important;
+  }
+
+  /* Inputs sizing */
+  form:has(#primaryBankCheck) input[type="text"],
+  form:has(#primaryUpiCheck) input[type="text"] {
+    padding: 0.65rem 0.75rem !important;
+    font-size: 0.86rem !important;
+  }
+
+  /* Modal 2: Dropzone padding */
+  form:has(#primaryUpiCheck) label:has(> input[accept="image/*"]) {
+    padding: 1rem 0.5rem !important;
+  }
+
+  /* Action buttons: compact & legible on mobile */
+  form:has(#primaryBankCheck) div:has(> button[type="submit"]) button[type="button"],
+  form:has(#primaryBankCheck) div:has(> button[type="submit"]) button[type="submit"],
+  form:has(#primaryUpiCheck) div:has(> button[type="submit"]) button[type="button"],
+  form:has(#primaryUpiCheck) div:has(> button[type="submit"]) button[type="submit"] {
+    padding: 0.7rem 0.4rem !important;
+    font-size: 0.82rem !important;
+  }
+}
+
+/* ========================================================================== */
+/* Small Mobile Devices (<= 360px, 320px)                                     */
+/* ========================================================================== */
+@media (max-width: 360px) {
+  div[style*="fixed"]:has(#primaryBankCheck),
+  div[style*="fixed"]:has(#primaryUpiCheck) {
+    padding: 0.5rem 0.35rem !important;
+  }
+
+  div[style*="fixed"]:has(#primaryBankCheck) > div,
+  div[style*="fixed"]:has(#primaryUpiCheck) > div {
+    max-width: calc(100vw - 0.7rem) !important;
+    padding: 1rem 0.75rem !important;
+    border-radius: 12px !important;
+  }
+
+  div[style*="fixed"]:has(#primaryBankCheck) > div > div:first-child h3,
+  div[style*="fixed"]:has(#primaryUpiCheck) > div > div:first-child h3 {
+    font-size: 1.05rem !important;
+  }
+
+  form:has(#primaryBankCheck) label[for="primaryBankCheck"],
+  form:has(#primaryUpiCheck) label[for="primaryUpiCheck"] {
+    font-size: 0.76rem !important;
+  }
+
+  form:has(#primaryBankCheck) div:has(> button[type="submit"]) button[type="button"],
+  form:has(#primaryBankCheck) div:has(> button[type="submit"]) button[type="submit"],
+  form:has(#primaryUpiCheck) div:has(> button[type="submit"]) button[type="button"],
+  form:has(#primaryUpiCheck) div:has(> button[type="submit"]) button[type="submit"] {
+    padding: 0.65rem 0.3rem !important;
+    font-size: 0.78rem !important;
+  }
+}
+
+
+/* ========================================================================== */
+/* TASK: SUPPORT TICKETS PAGE & CONVERSATION CARD MOBILE RESPONSIVENESS FIX   */
+/* ========================================================================== */
+
+/* 1. Base Support Tickets Page Container */
+.support-tickets-container {
+  width: 100% !important;
+  max-width: 1440px !important;
+  box-sizing: border-box !important;
+}
+
+/* 2. Main Two-Column Layout (Desktop) */
+.support-tickets-grid {
+  display: grid !important;
+  grid-template-columns: minmax(320px, 1fr) 2fr !important;
+  gap: 1.5rem !important;
+  align-items: flex-start !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* 3. Left Column: Tickets List Card */
+.support-tickets-list-card {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* 4. Right Column: Conversation Card / Selected Thread Card */
+.support-tickets-thread-card {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Conversation Placeholder (Empty State) */
+.support-tickets-empty-placeholder {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  padding: 2rem 1.5rem !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.support-tickets-empty-placeholder span {
+  font-size: 3rem !important;
+  margin-bottom: 0.5rem !important;
+  display: block !important;
+}
+
+.support-tickets-empty-placeholder p {
+  margin: 0 !important;
+  font-size: 0.95rem !important;
+  line-height: 1.5 !important;
+  color: #64748b !important;
+  text-align: center !important;
+  white-space: normal !important;
+  word-break: normal !important;
+}
+
+/* ========================================================================== */
+/* Tablet Breakpoint (641px - 991px)                                          */
+/* ========================================================================== */
+@media (min-width: 641px) and (max-width: 991px) {
+  .support-tickets-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem !important;
+  }
+
+  .support-tickets-thread-card {
+    min-height: 380px !important;
+  }
+}
+
+/* ========================================================================== */
+/* Mobile Breakpoint (<= 640px)                                               */
+/* ========================================================================== */
+@media (max-width: 640px) {
+  .support-tickets-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+  }
+
+  /* Page Header Mobile Adjustments */
+  .support-tickets-container > div:nth-child(2) {
+    margin-bottom: 1.25rem !important;
+  }
+
+  .support-tickets-container h1 {
+    font-size: 1.35rem !important;
+    margin-bottom: 0.35rem !important;
+    line-height: 1.25 !important;
+  }
+
+  .support-tickets-container p {
+    font-size: 0.82rem !important;
+    line-height: 1.45 !important;
+  }
+
+  /* Header action buttons row */
+  .support-tickets-container > div:nth-child(2) > div:last-child {
+    width: 100% !important;
+    display: flex !important;
+    gap: 0.5rem !important;
+    margin-top: 0.35rem !important;
+  }
+
+  .support-tickets-container > div:nth-child(2) > div:last-child button {
+    flex: 1 !important;
+    text-align: center !important;
+    justify-content: center !important;
+    padding: 0.55rem 0.65rem !important;
+    font-size: 0.8rem !important;
+    white-space: nowrap !important;
+  }
+
+  /* Filter & Search Bar Mobile */
+  .support-tickets-filter-bar {
+    padding: 0.85rem 1rem !important;
+    border-radius: 12px !important;
+    margin-bottom: 1.25rem !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.65rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .support-tickets-filter-bar > div:first-child {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .support-tickets-filter-bar > div:first-child input {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    font-size: 0.82rem !important;
+    padding: 0.65rem 0.75rem !important;
+  }
+
+  .support-tickets-filter-bar > div:last-child {
+    width: 100% !important;
+    display: flex !important;
+    gap: 0.5rem !important;
+  }
+
+  .support-tickets-filter-bar > div:last-child select {
+    flex: 1 !important;
+    width: 50% !important;
+    max-width: 50% !important;
+    box-sizing: border-box !important;
+    font-size: 0.8rem !important;
+    padding: 0.55rem 0.4rem !important;
+    text-overflow: ellipsis !important;
+  }
+
+  /* Convert Grid into Stacked Column on Mobile */
+  .support-tickets-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Left Column: Tickets List Card */
+  .support-tickets-list-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    border-radius: 14px !important;
+    max-height: 480px !important;
+  }
+
+  /* Right Column: Conversation Card (Core Fix) */
+  .support-tickets-thread-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    border-radius: 14px !important;
+    min-height: 240px !important;
+    max-height: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    margin: 0 !important;
+  }
+
+  /* Empty State Placeholder Inside Right Card */
+  .support-tickets-empty-placeholder {
+    padding: 2.25rem 1rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .support-tickets-empty-placeholder span {
+    font-size: 2.5rem !important;
+    margin-bottom: 0.35rem !important;
+  }
+
+  .support-tickets-empty-placeholder p {
+    font-size: 0.88rem !important;
+    line-height: 1.45 !important;
+    max-width: 280px !important;
+    margin: 0 auto !important;
+    text-align: center !important;
+  }
+
+  /* Selected Ticket Thread on Mobile */
+  .support-tickets-thread-card > div:first-child {
+    padding: 1rem !important;
+    border-radius: 14px 14px 0 0 !important;
+  }
+
+  .support-tickets-thread-card > div:first-child h2 {
+    font-size: 1.05rem !important;
+  }
+
+  /* Thread Messages scroll area */
+  .support-tickets-thread-card > div:nth-child(2) {
+    padding: 1rem 0.75rem !important;
+    gap: 0.75rem !important;
+    max-height: 380px !important;
+  }
+
+  .support-tickets-thread-card > div:nth-child(2) > div {
+    max-width: 88% !important;
+    padding: 0.75rem 0.85rem !important;
+  }
+
+  /* Thread Reply box */
+  .support-tickets-thread-card > div:last-child {
+    padding: 0.75rem 0.85rem !important;
+    border-radius: 0 0 14px 14px !important;
+  }
+
+  .support-tickets-thread-card > div:last-child form {
+    gap: 0.5rem !important;
+  }
+
+  .support-tickets-thread-card > div:last-child form input {
+    padding: 0.6rem 0.75rem !important;
+    font-size: 0.82rem !important;
+  }
+
+  .support-tickets-thread-card > div:last-child form button {
+    padding: 0.6rem 0.85rem !important;
+    font-size: 0.82rem !important;
+    white-space: nowrap !important;
+  }
+
+  /* Raise Ticket Modal on Mobile */
+  .support-ticket-modal-card {
+    width: 100% !important;
+    max-width: calc(100vw - 1rem) !important;
+    max-height: calc(100vh - 1.5rem) !important;
+    padding: 1.25rem 1rem !important;
+    border-radius: 14px !important;
+  }
+
+  .support-ticket-modal-card h3 {
+    font-size: 1.15rem !important;
+  }
+}
+
+/* ========================================================================== */
+/* Small Mobile Devices (<= 360px, 320px)                                     */
+/* ========================================================================== */
+@media (max-width: 360px) {
+  .support-tickets-empty-placeholder p {
+    font-size: 0.84rem !important;
+    max-width: 250px !important;
+  }
+
+  .support-tickets-filter-bar > div:last-child select {
+    font-size: 0.76rem !important;
+    padding: 0.5rem 0.35rem !important;
+  }
+
+  .support-tickets-container > div:nth-child(2) > div:last-child button {
+    font-size: 0.76rem !important;
+    padding: 0.5rem 0.4rem !important;
+  }
+
+  .support-tickets-thread-card > div:last-child form button {
+    padding: 0.6rem 0.65rem !important;
+    font-size: 0.78rem !important;
+  }
+}

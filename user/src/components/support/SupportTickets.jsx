@@ -236,7 +236,7 @@ function SupportTickets({ user }) {
   };
 
   return (
-    <div className="page-container">
+    <div className="page-container support-tickets-container">
       {/* Toast Alert */}
       {toastMessage && (
         <div
@@ -317,6 +317,7 @@ function SupportTickets({ user }) {
 
       {/* Filter & Search Bar */}
       <div
+        className="support-tickets-filter-bar"
         style={{
           background: '#ffffff',
           borderRadius: '14px',
@@ -367,9 +368,9 @@ function SupportTickets({ user }) {
       </div>
 
       {/* Main Two-Column Layout */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(320px, 1fr) 2fr', gap: '1.5rem', alignItems: 'flex-start' }}>
+      <div className="support-tickets-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(320px, 1fr) 2fr', gap: '1.5rem', alignItems: 'flex-start' }}>
         {/* Left Column: Tickets List */}
-        <div style={{ background: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden', display: 'flex', flexDirection: 'column', maxHeight: '720px' }}>
+        <div className="support-tickets-list-card" style={{ background: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden', display: 'flex', flexDirection: 'column', maxHeight: '720px' }}>
           <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid #f1f5f9', background: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <strong style={{ fontSize: '0.9rem', color: '#0f172a' }}>Tickets ({tickets.length})</strong>
             <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Select to view thread</span>
@@ -456,7 +457,7 @@ function SupportTickets({ user }) {
         </div>
 
         {/* Right Column: Selected Ticket Thread */}
-        <div style={{ background: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', minHeight: '600px', maxHeight: '720px' }}>
+        <div className="support-tickets-thread-card" style={{ background: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', minHeight: '600px', maxHeight: '720px' }}>
           {selectedTicket ? (
             <>
               {/* Thread Header */}
@@ -575,7 +576,7 @@ function SupportTickets({ user }) {
               </div>
             </>
           ) : (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, color: '#64748b', flexDirection: 'column' }}>
+            <div className="support-tickets-empty-placeholder" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, color: '#64748b', flexDirection: 'column' }}>
               <span style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>💬</span>
               <p style={{ margin: 0, fontSize: '0.95rem' }}>Select a ticket from the left column to view the conversation.</p>
             </div>
@@ -602,6 +603,7 @@ function SupportTickets({ user }) {
           }}
         >
           <div
+            className="support-ticket-modal-card"
             style={{
               background: '#ffffff',
               borderRadius: '20px',
