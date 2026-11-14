@@ -44,6 +44,7 @@ import LandingPage from './pages/landing/LandingPage';
 import DirectIncomePage from './pages/income/DirectIncomePage';
 import MemberDirectIncomeDetailsPage from './pages/income/MemberDirectIncomeDetailsPage';
 import LevelIncomePage from './pages/income/LevelIncomePage';
+import LevelIncomeDetailsPage from './pages/income/LevelIncomeDetailsPage';
 import MyIncomePage from './pages/income/MyIncomePage';
 import SponsorOnboardingPage from './pages/SponsorOnboardingPage';
 import {
@@ -82,7 +83,9 @@ export const pageToRouteMap = {
   'income-direct': '/direct-income',
   'user-income-direct': '/direct-income',
   'level-income': '/level-income',
+  'level-income-details': '/level-income/details',
   'income-levels': '/level-income',
+  'income-levels-details': '/level-income/details',
   'user-income-levels': '/level-income',
 
   // Network / Connections
@@ -606,6 +609,9 @@ function AppContent() {
           <Route path="/user-income-direct" element={<Navigate to="/direct-income" replace />} />
 
           <Route path="/level-income" element={<LevelIncomePage user={user} onNavigate={handleNavigate} />} />
+          <Route path="/level-income/details" element={<LevelIncomeDetailsPage user={user} onNavigate={handleNavigate} />} />
+          <Route path="/level-income/details/:orderId" element={<LevelIncomeDetailsPage user={user} onNavigate={handleNavigate} />} />
+          <Route path="/level-income/:orderId" element={<LevelIncomeDetailsPage user={user} onNavigate={handleNavigate} />} />
           <Route path="/income-levels" element={<Navigate to="/level-income" replace />} />
           <Route path="/user-income-levels" element={<Navigate to="/level-income" replace />} />
 

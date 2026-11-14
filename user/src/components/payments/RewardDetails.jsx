@@ -11,7 +11,6 @@ const formatDiamonds = (val) => {
 function RewardDetails({ user }) {
   const [currentUser, setCurrentUser] = useState(user || null);
   const userCode = currentUser?.user_code || user?.user_code || user?.sponsor_id || '';
-  const [userBp, setUserBp] = useState(Number(user?.bp_balance) || 0);
 
   const [rewards, setRewards] = useState([]);
   const [diamondWallet, setDiamondWallet] = useState({
@@ -26,6 +25,8 @@ function RewardDetails({ user }) {
   const [toastMessage, setToastMessage] = useState('');
   const [isClaiming, setIsClaiming] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+
+  const userDiamonds = Number(diamondWallet.diamond_balance) || 0;
 
   // Claim Form Shipping Details - initialized from live database profile
   const [shippingData, setShippingData] = useState({
@@ -60,7 +61,6 @@ function RewardDetails({ user }) {
 
       if (freshUser) {
         setCurrentUser(freshUser);
-        setUserBp(Number(freshUser.bp_balance) || 0);
         setShippingData((prev) => ({
           shipping_address: prev.shipping_address || freshUser.location || '',
           shipping_city: prev.shipping_city || freshUser.city || '',
@@ -68,8 +68,6 @@ function RewardDetails({ user }) {
           shipping_pincode: prev.shipping_pincode || freshUser.pincode || '',
           shipping_phone: prev.shipping_phone || freshUser.phone || '',
         }));
-      } else if (user?.bp_balance !== undefined) {
-        setUserBp(Number(user.bp_balance) || 0);
       }
 
       if (showToastNotice) {
@@ -89,9 +87,10 @@ function RewardDetails({ user }) {
   }, [loadDatabaseData]);
 
   const handleOpenClaimModal = (reward) => {
-    if (userBp < reward.required_bp) {
-      const diff = reward.required_bp - userBp;
-      showToast(`⚠️ Insufficient BP Balance in database! You need ${diff} more Business Points to claim this reward.`);
+    const required = Number(reward.required_bp) || 0;
+    if (userDiamonds < required) {
+      const diff = required - userDiamonds;
+      showToast(`⚠️ Insufficient Diamond Balance! You need ${diff} more Diamonds to claim this reward.`);
       return;
     }
     setSelectedReward(reward);
@@ -115,8 +114,6 @@ function RewardDetails({ user }) {
       });
 
       if (res.status === 'success') {
-        const remaining = res.remaining_bp !== undefined ? Number(res.remaining_bp) : (userBp - selectedReward.required_bp);
-        setUserBp(remaining);
         showToast(res.message || `🎉 Claim for "${selectedReward.title}" saved in database successfully! Reference: ${res.claim?.claim_code}`);
         setSelectedReward(null);
         // Refresh database state
@@ -125,7 +122,7 @@ function RewardDetails({ user }) {
         showToast(res.message || 'Failed to claim reward in database.');
       }
     } catch (err) {
-      const msg = err.response?.data?.message || 'Error submitting claim to database. Please check your BP balance.';
+      const msg = err.response?.data?.message || 'Error submitting claim to database. Please check your Diamond balance.';
       showToast(`❌ ${msg}`);
     } finally {
       setIsClaiming(false);
@@ -161,24 +158,24 @@ function RewardDetails({ user }) {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
           <div>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.12)', padding: '0.25rem 0.85rem', borderRadius: '20px', fontSize: '0.78rem', fontWeight: '700', color: '#c7d2fe', marginBottom: '0.75rem' }}>
-              <span>🎁 Database-Backed Business Points (BP) Rewards Desk</span>
+              <span>🎁 Diamond Rewards Desk</span>
             </div>
             <h1 style={{ fontSize: '1.85rem', fontWeight: '800', margin: '0 0 0.4rem 0', color: '#ffffff' }}>
-              Business Points (BP) Wallet & Rewards Catalog
+              Diamond Wallet & Rewards Catalog
             </h1>
             <p style={{ color: '#cbd5e1', fontSize: '0.925rem', maxWidth: '720px', margin: 0 }}>
-              Redeem your accumulated Business Points for high-value gadgets, luxury holiday packages, gold, and international tours directly from our live database catalog.
+              Redeem your accumulated Diamonds for high-value gadgets, luxury holiday packages, gold, and international tours directly from our live catalog.
             </p>
           </div>
 
-          {/* User BP Wallet Pill & Database Sync */}
+          {/* User Diamond Wallet Pill & Database Sync */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
             <div style={{ background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: '16px', padding: '1.25rem 1.75rem', textAlign: 'center', minWidth: '220px' }}>
               <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#c7d2fe', fontWeight: 700 }}>
-                Your Database BP Balance
+                Your Diamond Balance
               </span>
               <div style={{ fontSize: '2.2rem', fontWeight: 800, color: '#fbbf24', marginTop: '0.25rem' }}>
-                💎 {userBp.toLocaleString()} <span style={{ fontSize: '1rem', color: '#ffffff' }}>BP</span>
+                💎 {formatDiamonds(diamondWallet.diamond_balance)} <span style={{ fontSize: '1rem', color: '#ffffff' }}>Diamonds</span>
               </div>
               <span style={{ fontSize: '0.72rem', color: '#e2e8f0', display: 'block', marginTop: '0.2rem' }}>
                 Member: {currentUser?.user_code || userCode || 'Database User'}
@@ -371,8 +368,9 @@ function RewardDetails({ user }) {
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
           {rewards.map((reward) => {
-            const hasEnough = userBp >= reward.required_bp;
-            const progress = Math.min(100, Math.round((userBp / reward.required_bp) * 100));
+            const requiredDiamonds = Number(reward.required_bp) || 0;
+            const hasEnough = userDiamonds >= requiredDiamonds;
+            const progress = Math.min(100, Math.round((userDiamonds / (requiredDiamonds || 1)) * 100));
 
             return (
               <div
@@ -409,7 +407,7 @@ function RewardDetails({ user }) {
                       backdropFilter: 'blur(4px)',
                     }}
                   >
-                    {hasEnough ? '✓ BP Ready' : `${progress}% BP`}
+                    {hasEnough ? '✓ Diamonds Ready' : `${progress}% Diamonds`}
                   </div>
 
                   <div
@@ -426,7 +424,7 @@ function RewardDetails({ user }) {
                       boxShadow: '0 4px 10px rgba(0,0,0,0.25)',
                     }}
                   >
-                    💎 {reward.required_bp} BP Required
+                    💎 {reward.required_bp} Diamonds Required
                   </div>
                 </div>
 
@@ -449,11 +447,11 @@ function RewardDetails({ user }) {
                       </div>
                     )}
 
-                    {/* Progress Bar towards required BP */}
+                    {/* Progress Bar towards required Diamonds */}
                     <div style={{ marginBottom: '1.25rem' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 700, color: '#64748b', marginBottom: '0.35rem' }}>
-                        <span>BP Progress</span>
-                        <span>{userBp} / {reward.required_bp} BP</span>
+                        <span>Diamond Progress</span>
+                        <span>{formatDiamonds(userDiamonds)} / {reward.required_bp} Diamonds</span>
                       </div>
                       <div style={{ height: '8px', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
                         <div
@@ -510,7 +508,7 @@ function RewardDetails({ user }) {
                           cursor: 'not-allowed',
                         }}
                       >
-                        🔒 Need {reward.required_bp - userBp} more BP
+                        🔒 Need {reward.required_bp - userDiamonds} more Diamonds
                       </button>
                     )}
                   </div>
@@ -570,16 +568,16 @@ function RewardDetails({ user }) {
             {/* Deduction Notice */}
             <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '10px', padding: '0.9rem', marginBottom: '1.25rem', fontSize: '0.85rem', color: '#166534' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.3rem' }}>
-                <span>Current BP Wallet Balance:</span>
-                <strong>{userBp} BP</strong>
+                <span>Current Diamond Wallet Balance:</span>
+                <strong>{formatDiamonds(userDiamonds)} Diamonds</strong>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.3rem', color: '#b91c1c' }}>
                 <span>Reward Deduction:</span>
-                <strong>- {selectedReward.required_bp} BP</strong>
+                <strong>- {selectedReward.required_bp} Diamonds</strong>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #bbf7d0', paddingTop: '0.3rem', fontWeight: 800 }}>
                 <span>Balance After Claim:</span>
-                <strong>{userBp - selectedReward.required_bp} BP</strong>
+                <strong>{formatDiamonds(userDiamonds - selectedReward.required_bp)} Diamonds</strong>
               </div>
             </div>
 

@@ -18,9 +18,11 @@ import {
   UserCheck,
 } from 'lucide-react';
 import { getDashboardStats } from '../../api/userService';
+import { getUserDiamondRewards } from '../../api/userRewardService';
 
 function DashboardOverview({ user, onNavigate }) {
   const [data, setData] = useState(null);
+  const [diamondBalance, setDiamondBalance] = useState(0);
   const [loading, setLoading] = useState(true);
   const [toastMessage, setToastMessage] = useState('');
   const [copiedLink, setCopiedLink] = useState(false);
@@ -31,9 +33,15 @@ function DashboardOverview({ user, onNavigate }) {
   const fetchStats = async () => {
     setLoading(true);
     try {
-      const res = await getDashboardStats(chartPeriod);
+      const [res, diamondRes] = await Promise.all([
+        getDashboardStats(chartPeriod),
+        getUserDiamondRewards(),
+      ]);
       if (res && res.status === 'success') {
         setData(res);
+      }
+      if (diamondRes?.wallet?.diamond_balance !== undefined) {
+        setDiamondBalance(Number(diamondRes.wallet.diamond_balance) || 0);
       }
     } catch (err) {
       console.error('Error loading dashboard stats:', err);
@@ -580,20 +588,20 @@ function DashboardOverview({ user, onNavigate }) {
           </div>
         </div>
 
-        {/* KPI 5: Business Points (BP) */}
+        {/* KPI 5: Diamond Balance */}
         <div className="van-stat-card">
           <div className="van-stat-header">
-            <span className="van-stat-label">Business Points</span>
+            <span className="van-stat-label">Diamond Balance</span>
             <div className="van-stat-icon-wrapper">
               <Zap size={16} />
             </div>
           </div>
           <div className="van-stat-value">
-            {kpis.bpBalance.toLocaleString('en-IN')}{' '}
-            <span style={{ fontSize: '0.85rem', color: 'var(--van-text-muted)', fontWeight: 600 }}>BP</span>
+            {diamondBalance.toLocaleString('en-IN')}{' '}
+            <span style={{ fontSize: '0.85rem', color: 'var(--van-text-muted)', fontWeight: 600 }}>Diamonds</span>
           </div>
           <div className="van-stat-footer">
-            <span className="van-badge van-badge-warning">Accumulated BP</span>
+            <span className="van-badge van-badge-warning">Accumulated Diamonds</span>
           </div>
         </div>
 

@@ -68,12 +68,12 @@ function RewardsClaimed({ user }) {
       ),
     },
     {
-      header: 'Points Redeemed',
+      header: 'Diamonds Redeemed',
       accessor: 'points_deducted',
       align: 'center',
       render: (val) => (
         <span style={{ background: '#f3e8ff', color: '#7c3aed', padding: '0.25rem 0.65rem', borderRadius: '20px', fontSize: '0.82rem', fontWeight: 800 }}>
-          💎 {val} BP
+          💎 {val} Diamonds
         </span>
       ),
     },
@@ -197,8 +197,8 @@ function RewardsClaimed({ user }) {
           <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0f172a', margin: '0.3rem 0 0 0' }}>{claims.length}</h2>
         </div>
         <div style={{ background: '#ffffff', borderRadius: '12px', padding: '1.25rem', border: '1px solid #e2e8f0' }}>
-          <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Total BP Points Redeemed</span>
-          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#7c3aed', margin: '0.3rem 0 0 0' }}>{totalPointsSpent} BP</h2>
+          <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Total Diamonds Redeemed</span>
+          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#7c3aed', margin: '0.3rem 0 0 0' }}>{totalPointsSpent} Diamonds</h2>
         </div>
         <div style={{ background: '#ffffff', borderRadius: '12px', padding: '1.25rem', border: '1px solid #e2e8f0' }}>
           <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>In Transit / Dispatched</span>
@@ -217,7 +217,7 @@ function RewardsClaimed({ user }) {
         defaultPageSize={10}
         searchPlaceholder="Search by claim code, reward name, or location..."
         loading={loading}
-        emptyMessage="You haven't claimed any rewards yet. Visit Reward Details to redeem your BP points!"
+        emptyMessage="You haven't claimed any rewards yet. Visit Reward Details to redeem your Diamonds!"
       />
     </div>
   );

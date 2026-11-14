@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { getTeamConnections, getDirectConnections } from '../../api/userNetworkService';
-import { getUserRewards, getUserClaims, getUserFreshProfile } from '../../api/userRewardService';
+import { getUserRewards, getUserClaims, getUserFreshProfile, getUserDiamondRewards } from '../../api/userRewardService';
 import { formatINR, formatNumberIN } from '../../utils/formatters';
 import DataTable from '../../components/common/DataTable';
 
@@ -12,6 +12,7 @@ function MlmEarningsPage({ user }) {
   const [rewardsList, setRewardsList] = useState([]);
   const [claimsList, setClaimsList] = useState([]);
   const [summary, setSummary] = useState(null);
+  const [diamondBalance, setDiamondBalance] = useState(0);
   const [loading, setLoading] = useState(true);
 
   // Date Filters
@@ -26,17 +27,17 @@ function MlmEarningsPage({ user }) {
   const [selectedRewardCategory, setSelectedRewardCategory] = useState('all');
 
   const userCode = currentUser?.user_code || user?.user_code || '';
-  const userBpBalance = Number(currentUser?.bp_balance ?? user?.bp_balance) || 0;
 
   const fetchAllData = async () => {
     try {
       setLoading(true);
-      const [teamRes, directRes, rewRes, claimsRes, freshUser] = await Promise.all([
+      const [teamRes, directRes, rewRes, claimsRes, freshUser, diamondData] = await Promise.all([
         getTeamConnections({ user_code: userCode }),
         getDirectConnections({ user_code: userCode }),
         getUserRewards(),
         getUserClaims(userCode),
         getUserFreshProfile(),
+        getUserDiamondRewards(),
       ]);
 
       if (teamRes && teamRes.status === 'success') {
@@ -48,6 +49,9 @@ function MlmEarningsPage({ user }) {
       }
       setRewardsList(rewRes || []);
       setClaimsList(claimsRes || []);
+      if (diamondData?.wallet?.diamond_balance !== undefined) {
+        setDiamondBalance(Number(diamondData.wallet.diamond_balance) || 0);
+      }
       if (freshUser) {
         setCurrentUser(freshUser);
       }
@@ -426,8 +430,8 @@ function MlmEarningsPage({ user }) {
           </div>
           <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
             <div style={{ background: 'rgba(255,255,255,0.12)', padding: '0.75rem 1.25rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.2)', textAlign: 'right' }}>
-              <div style={{ fontSize: '0.74rem', color: '#cbd5e1', textTransform: 'uppercase', fontWeight: '700' }}>Available BP Balance</div>
-              <div style={{ fontSize: '1.35rem', fontWeight: '800', color: '#38bdf8' }}>💎 {userBpBalance} BP</div>
+              <div style={{ fontSize: '0.74rem', color: '#cbd5e1', textTransform: 'uppercase', fontWeight: '700' }}>Available Diamond Balance</div>
+              <div style={{ fontSize: '1.35rem', fontWeight: '800', color: '#38bdf8' }}>💎 {diamondBalance} Diamonds</div>
             </div>
             <button
               onClick={fetchAllData}
@@ -763,7 +767,7 @@ function MlmEarningsPage({ user }) {
       {/* TAB 4: REWARDS STATISTICS & MILESTONES */}
       {!loading && activeTab === 'rewards' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {/* BP Wallet Status Card */}
+          {/* Diamond Wallet Status Card */}
           <div
             style={{
               background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)',
@@ -779,13 +783,13 @@ function MlmEarningsPage({ user }) {
           >
             <div>
               <div style={{ fontSize: '0.8rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: '700' }}>
-                Your Rewards Business Points (BP) Wallet
+                Your Rewards Diamond Wallet
               </div>
               <div style={{ fontSize: '2rem', fontWeight: '800', color: '#38bdf8', marginTop: '0.2rem' }}>
-                💎 {userBpBalance} BP Available
+                💎 {diamondBalance} Diamonds Available
               </div>
               <div style={{ fontSize: '0.85rem', color: '#cbd5e1', marginTop: '0.2rem' }}>
-                Accumulated automatically from self business and network volume up to 20 levels.
+                Accumulated automatically from sponsor rewards and network sales.
               </div>
             </div>
             <div style={{ background: 'rgba(255,255,255,0.1)', padding: '0.75rem 1.25rem', borderRadius: '10px', textAlign: 'center' }}>
@@ -797,9 +801,9 @@ function MlmEarningsPage({ user }) {
           {/* Reward Milestone Cards Grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
             {filteredRewards.map((reward) => {
-              const reqBp = Number(reward.required_bp) || 100;
-              const progressPct = Math.min(100, Math.round((userBpBalance / reqBp) * 100));
-              const isEligible = userBpBalance >= reqBp;
+              const reqDiamonds = Number(reward.required_bp) || 100;
+              const progressPct = Math.min(100, Math.round((diamondBalance / reqDiamonds) * 100));
+              const isEligible = diamondBalance >= reqDiamonds;
 
               return (
                 <div
@@ -825,7 +829,7 @@ function MlmEarningsPage({ user }) {
                         <span style={{ background: '#eff6ff', color: '#2563eb', fontSize: '0.72rem', fontWeight: '800', padding: '0.2rem 0.55rem', borderRadius: '6px' }}>
                           {reward.category}
                         </span>
-                        <strong style={{ fontSize: '1rem', color: '#7c3aed' }}>💎 {reqBp} BP</strong>
+                        <strong style={{ fontSize: '1rem', color: '#7c3aed' }}>💎 {reqDiamonds} Diamonds</strong>
                       </div>
                       <h4 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0f172a', margin: '0 0 0.35rem 0' }}>
                         {reward.title}
@@ -842,7 +846,7 @@ function MlmEarningsPage({ user }) {
 
                     <div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: '#64748b', marginBottom: '0.35rem' }}>
-                        <span>Progress: {userBpBalance} / {reqBp} BP</span>
+                        <span>Progress: {diamondBalance} / {reqDiamonds} Diamonds</span>
                         <strong style={{ color: isEligible ? '#15803d' : '#2563eb' }}>{progressPct}%</strong>
                       </div>
                       <div style={{ background: '#f1f5f9', height: '8px', borderRadius: '4px', overflow: 'hidden', marginBottom: '1rem' }}>
@@ -871,7 +875,7 @@ function MlmEarningsPage({ user }) {
                           boxShadow: isEligible ? '0 4px 12px rgba(16, 185, 129, 0.3)' : 'none',
                         }}
                       >
-                        {isEligible ? '🎁 Claim This Reward Now' : `🔒 Needs ${reqBp - userBpBalance} More BP`}
+                        {isEligible ? '🎁 Claim This Reward Now' : `🔒 Needs ${reqDiamonds - diamondBalance} More Diamonds`}
                       </button>
                     </div>
                   </div>
