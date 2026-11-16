@@ -1,4 +1,5 @@
 import { useBranding } from '../../../utils/branding';
+import BrandLogo from '../../../components/common/BrandLogo';
 import React from 'react';
 import {
   Building2,
@@ -16,12 +17,30 @@ function LandingFooter({ onLoginClick, onRegisterClick, onNavigateLegal, onScrol
       <div className="cb-container">
         <div className="cb-footer-grid">
           {/* Column 1: Company Brand */}
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1rem' }}>
-              <img src={logoUrl || "/logo.png"} alt={appName} style={{ width: "36px", height: "36px", borderRadius: "50%", objectFit: "contain" }} onError={(e) => { e.target.src = "/logo.png"; }} />
-              <span style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0F4C81', letterSpacing: '-0.02em', fontFamily: 'Poppins, sans-serif' }}>
-                {appName || 'Vyapar AdNET'}
-              </span>
+          <div className="cb-footer-brand-col">
+            <div
+              className="cb-footer-brand-logo-wrap"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                marginBottom: '1.25rem',
+              }}
+            >
+              <BrandLogo
+                size={90}
+                mobileSize={72}
+                alt={appName || 'Vyapar AdNET'}
+                onClick={() => {
+                  if (onScrollToSection) {
+                    onScrollToSection('hero');
+                  } else {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }
+                }}
+                style={{ cursor: 'pointer' }}
+                className="cb-footer-brand-logo"
+              />
             </div>
 
             <p style={{ fontSize: '0.85rem', color: '#64748b', lineHeight: 1.6, marginBottom: '1.25rem' }}>

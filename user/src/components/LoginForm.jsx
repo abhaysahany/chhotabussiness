@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import './auth.css';
 import { initiateGoogleCodePopup } from '../utils/googleOAuth';
+import BrandLogo from './common/BrandLogo';
 import { getExpiredNotice } from '../utils/sessionManager';
 import {
   authenticateWithGoogle,
@@ -427,17 +428,9 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
           {/* Right Column: Sign In Form Box */}
           <div className="cb-auth-form-panel">
             
-            {/* Brand Logo Header */}
-            <div className="cb-auth-brand-header">
-              <div className="cb-auth-logo-badge" style={{ background: "transparent", padding: 0 }}><img src={logoUrl || "/logo.png"} alt={appName} style={{ width: "36px", height: "36px", borderRadius: "50%", objectFit: "contain" }} onError={(e) => { e.target.src = "/logo.png"; }} /></div>
-              <div>
-                <div className="cb-auth-logo-text-title">
-                  {appName}
-                </div>
-                <span className="cb-auth-logo-text-sub">
-                  Business Promoter Network
-                </span>
-              </div>
+            {/* Brand Logo Header (Logo-Only Presentation, Horizontally Centered) */}
+            <div className="cb-auth-brand-header" style={{ marginBottom: '1.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+              <BrandLogo size={96} mobileSize={80} onClick={onBackToHome} style={{ cursor: onBackToHome ? 'pointer' : 'default' }} />
             </div>
 
             {/* Switch Tabs (Login vs Register) */}

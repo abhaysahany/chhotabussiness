@@ -1,14 +1,28 @@
 import axios from 'axios';
 import { handleSessionExpired, TOKEN_KEY } from '../utils/sessionManager';
 
-// Detect production domain fallback dynamically so localhost is not hardcoded on production
-const getApiBaseUrl = () => {
-  if (import.meta.env.VITE_API_BASE_URL) return import.meta.env.VITE_API_BASE_URL;
-  if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
-  if (typeof window !== 'undefined' && window.location.origin.includes('vyaparadnet.com')) {
-    return 'https://vyaparadnet.com/api';
+/**
+ * Authoritative API Base URL Resolver for Admin Panel
+ */
+export const getApiBaseUrl = () => {
+  if (typeof window !== 'undefined' && window.location && window.location.hostname) {
+    const host = window.location.hostname.toLowerCase();
+    const isLocalhost =
+      host === 'localhost' ||
+      host === '127.0.0.1' ||
+      host === '0.0.0.0' ||
+      host.endsWith('.local') ||
+      window.location.port === '5173' ||
+      window.location.port === '5174' ||
+      window.location.port === '5175' ||
+      window.location.port === '3000';
+
+    if (!isLocalhost) {
+      return `${window.location.origin}/api`;
+    }
   }
-  return 'http://127.0.0.1:8000/api';
+
+  return import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
 };
 
 export const API_BASE_URL = getApiBaseUrl();
@@ -19,12 +33,29 @@ const api = axios.create({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
-  timeout: 10000,
+  timeout: 30000,
 });
 
-// Interceptor to attach Bearer token to requests
+// Interceptor to attach Bearer token to requests and enforce production URL safety
 api.interceptors.request.use(
   (config) => {
+    if (typeof window !== 'undefined' && window.location && window.location.hostname) {
+      const host = window.location.hostname.toLowerCase();
+      const isLocalhost =
+        host === 'localhost' ||
+        host === '127.0.0.1' ||
+        host === '0.0.0.0' ||
+        host.endsWith('.local') ||
+        window.location.port === '5173' ||
+        window.location.port === '5174' ||
+        window.location.port === '5175' ||
+        window.location.port === '3000';
+
+      if (!isLocalhost && (config.baseURL?.includes('127.0.0.1') || config.baseURL?.includes('localhost'))) {
+        config.baseURL = `${window.location.origin}/api`;
+      }
+    }
+
     const token = localStorage.getItem(TOKEN_KEY);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -34,23 +65,23 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Interceptor to handle HTTP 401 Unauthorized responses
+// Interceptor to handle session expiration
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
-      const url = error.config?.url || '';
-      // Auth endpoints where 401 is an expected credential error, not an expired session
-      const isAuthEndpoint =
-        url.includes('/admin/login') ||
-        url.includes('/admin/forgot-password') ||
-        url.includes('/admin/verify-otp') ||
-        url.includes('/admin/reset-password');
+    const requestUrl = error.config?.url || '';
+    const isAuthRequest =
+      requestUrl.includes('/admin/login') ||
+      requestUrl.includes('/login') ||
+      requestUrl.includes('/forgot-password') ||
+      requestUrl.includes('/reset-password');
 
-      if (!isAuthEndpoint) {
-        const expiryType = error.response.data?.expiry_type || 'idle';
-        handleSessionExpired(expiryType, true);
-      }
+    const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+    const isAuthPage = currentPath.includes('/login') || currentPath.includes('/forgot-password');
+
+    if (error.response?.status === 401 && !isAuthRequest && !isAuthPage) {
+      const expiryType = error.response.data?.expiry_type || 'idle';
+      handleSessionExpired(expiryType, true);
     }
     return Promise.reject(error);
   }

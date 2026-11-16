@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { verifySponsor, sendOtp, verifyOtp, authenticateWithGoogle } from '../api/userService';
 import { initiateGoogleCodePopup } from '../utils/googleOAuth';
+import BrandLogo from './common/BrandLogo';
 import { useBranding } from '../utils/branding';
 import './auth.css';
 
@@ -53,12 +54,23 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
   // OTP State
   const [otpStep, setOtpStep] = useState(false);
   const [otpCode, setOtpCode] = useState('');
-  const [sentOtpDemo, setSentOtpDemo] = useState('');
   const [sendingOtp, setSendingOtp] = useState(false);
   const [verifyingOtp, setVerifyingOtp] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [maskedEmail, setMaskedEmail] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [googleLoading, setGoogleLoading] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+
+  // Resend OTP countdown timer
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = setInterval(() => {
+      setResendCooldown((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [resendCooldown]);
 
   // Helper to clear a field's validation error on user input
   const clearFieldError = (field) => {
@@ -167,8 +179,10 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
       });
 
       if (res.status === 'success') {
-        setSentOtpDemo(res.otp || '');
         setOtpStep(true);
+        setMaskedEmail(res.masked_email || trimmedEmail);
+        setSuccessMessage(res.message || `Verification code sent to ${trimmedEmail}. Please check your inbox.`);
+        setResendCooldown(res.cooldown || 60);
         setFieldErrors({});
         setErrorMessage('');
       }
@@ -182,6 +196,39 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
       setErrorMessage(msg);
       if (data?.requires_login || msg.toLowerCase().includes('already registered') || msg.toLowerCase().includes('login')) {
         setShowLoginPrompt(true);
+      }
+    } finally {
+      setSendingOtp(false);
+    }
+  };
+
+  // Step 2 Handler: Resend OTP Code
+  const handleResendOtp = async () => {
+    if (resendCooldown > 0 || sendingOtp || verifyingOtp) return;
+
+    setSendingOtp(true);
+    setErrorMessage('');
+    setFieldErrors({});
+    try {
+      const res = await sendOtp({
+        name: name.trim(),
+        email: email.trim(),
+        password,
+        sponsor_id: (sponsorStatus?.user_code || sponsorId || '').trim(),
+        terms_accepted: termsAccepted,
+      });
+
+      if (res.status === 'success') {
+        setSuccessMessage(res.message || `A new verification code has been sent to ${maskedEmail || email.trim()}.`);
+        setResendCooldown(res.cooldown || 60);
+      }
+    } catch (err) {
+      console.error('Resend OTP error:', err);
+      const data = err.response?.data;
+      const msg = data?.message || err.message || 'Failed to resend verification OTP.';
+      setErrorMessage(msg);
+      if (data?.cooldown_remaining) {
+        setResendCooldown(data.cooldown_remaining);
       }
     } finally {
       setSendingOtp(false);
@@ -393,17 +440,9 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
           {/* Right Column: Registration Form Panel */}
           <div className="cb-auth-form-panel">
             
-            {/* Brand Logo Header */}
-            <div className="cb-auth-brand-header">
-              <div className="cb-auth-logo-badge" style={{ background: "transparent", padding: 0 }}><img src={logoUrl || "/logo.png"} alt={appName} style={{ width: "36px", height: "36px", borderRadius: "50%", objectFit: "contain" }} onError={(e) => { e.target.src = "/logo.png"; }} /></div>
-              <div>
-                <div className="cb-auth-logo-text-title">
-                  {appName}
-                </div>
-                <span className="cb-auth-logo-text-sub">
-                  Business Promoter Network
-                </span>
-              </div>
+            {/* Brand Logo Header (Logo-Only Presentation, Horizontally Centered) */}
+            <div className="cb-auth-brand-header" style={{ marginBottom: '1.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+              <BrandLogo size={96} mobileSize={80} onClick={onBackToHome} style={{ cursor: onBackToHome ? 'pointer' : 'default' }} />
             </div>
 
             {/* Switch Tabs (Login vs Register) */}
@@ -432,7 +471,7 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
               </h1>
               <p className="cb-form-subtitle">
                 {otpStep
-                  ? `Enter the 6-digit verification code sent to ${email}`
+                  ? `Enter the 6-digit verification code sent to ${maskedEmail || email}`
                   : 'Enter your details and verified Sponsor ID to activate your partner portal.'}
               </p>
             </div>
@@ -699,12 +738,10 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
             ) : (
               /* STEP 2: EMAIL OTP VERIFICATION & REGISTRATION */
               <form onSubmit={handleCompleteRegistration} noValidate>
-                {sentOtpDemo && (
-                  <div className="cb-alert-info">
-                    <Info size={18} style={{ flexShrink: 0 }} />
-                    <span>
-                      Demo OTP Code: <strong>{sentOtpDemo}</strong> (Use this to verify instantly)
-                    </span>
+                {successMessage && (
+                  <div className="cb-alert-info" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.25rem', background: '#F0F9FF', border: '1px solid #BAE6FD', color: '#0369A1', borderRadius: '8px', padding: '0.75rem 1rem', fontSize: '0.85rem' }}>
+                    <Mail size={18} style={{ flexShrink: 0 }} />
+                    <span>{successMessage}</span>
                   </div>
                 )}
 
@@ -740,11 +777,10 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
                   )}
                 </div>
 
-                <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.25rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.75rem', marginBottom: '1.25rem', fontSize: '0.84rem' }}>
                   <button
                     type="button"
-                    className="cb-btn-ghost"
-                    style={{ flex: 1 }}
+                    style={{ background: 'none', border: 'none', padding: 0, color: '#64748B', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 500 }}
                     onClick={() => {
                       setOtpStep(false);
                       setFieldErrors({});
@@ -752,27 +788,59 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
                     }}
                     disabled={verifyingOtp}
                   >
-                    ← Back
+                    <ArrowLeft size={14} /> Back to details
                   </button>
+
                   <button
-                    type="submit"
-                    className="cb-submit-btn"
-                    style={{ flex: 2 }}
-                    disabled={verifyingOtp}
+                    type="button"
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      padding: 0,
+                      color: resendCooldown > 0 ? '#94A3B8' : 'var(--cb-primary, #0F4C81)',
+                      fontWeight: 600,
+                      cursor: resendCooldown > 0 || sendingOtp ? 'not-allowed' : 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                    }}
+                    onClick={handleResendOtp}
+                    disabled={resendCooldown > 0 || sendingOtp || verifyingOtp}
                   >
-                    {verifyingOtp ? (
+                    {sendingOtp ? (
                       <>
-                        <Loader2 size={18} className="spin" style={{ animation: 'spin 1s linear infinite' }} />
-                        <span>Verifying...</span>
+                        <Loader2 size={13} className="spin" style={{ animation: 'spin 1s linear infinite' }} />
+                        <span>Sending code...</span>
                       </>
+                    ) : resendCooldown > 0 ? (
+                      <span>Resend code in {resendCooldown}s</span>
                     ) : (
-                      <>
-                        <span>Complete Registration</span>
-                        <ArrowRight size={18} />
-                      </>
+                      <span>Resend Code</span>
                     )}
                   </button>
                 </div>
+
+                <button
+                  type="submit"
+                  className="cb-submit-btn"
+                  disabled={verifyingOtp}
+                >
+                  {verifyingOtp ? (
+                    <>
+                      <Loader2 size={18} className="spin" style={{ animation: 'spin 1s linear infinite' }} />
+                      <span>Verifying & Completing Registration...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Complete Registration</span>
+                      <ArrowRight size={18} />
+                    </>
+                  )}
+                </button>
+
+                <p style={{ textAlign: 'center', fontSize: '0.78rem', color: '#64748B', marginTop: '1rem', lineHeight: 1.4 }}>
+                  Did not receive the code? Please check your <strong>Spam / Junk</strong> folder or wait for the cooldown to resend.
+                </p>
               </form>
             )}
 

@@ -23,6 +23,8 @@ import PayoutHistory from './components/payouts/PayoutHistory';
 import RequestWithdrawal from './components/payouts/RequestWithdrawal';
 import TdsTaxSummary from './components/payouts/TdsTaxSummary';
 import RewardDetails from './components/payments/RewardDetails';
+import AvailableRewards from './components/payments/AvailableRewards';
+import RewardItemDetailPage from './components/payments/RewardItemDetailPage';
 import RewardsClaimed from './components/payments/RewardsClaimed';
 import BaseCommission from './components/payments/BaseCommission';
 import TeamCommission from './components/payments/TeamCommission';
@@ -45,7 +47,6 @@ import DirectIncomePage from './pages/income/DirectIncomePage';
 import MemberDirectIncomeDetailsPage from './pages/income/MemberDirectIncomeDetailsPage';
 import LevelIncomePage from './pages/income/LevelIncomePage';
 import LevelIncomeDetailsPage from './pages/income/LevelIncomeDetailsPage';
-import MyIncomePage from './pages/income/MyIncomePage';
 import SponsorOnboardingPage from './pages/SponsorOnboardingPage';
 import {
   getSystemStatus,
@@ -75,10 +76,10 @@ export const pageToRouteMap = {
   sales: '/dashboard',
 
   // Income
-  'my-income': '/my-income',
-  income: '/my-income',
-  'income-overview': '/my-income',
-  'income-all': '/my-income',
+  'my-income': '/direct-income',
+  income: '/direct-income',
+  'income-overview': '/direct-income',
+  'income-all': '/direct-income',
   'direct-income': '/direct-income',
   'income-direct': '/direct-income',
   'user-income-direct': '/direct-income',
@@ -130,8 +131,13 @@ export const pageToRouteMap = {
 
   // Payments & Rewards
   'payments/rewards': '/payments/rewards',
+  'reward-overview': '/payments/rewards',
   'reward-details': '/payments/rewards',
+  'payments/rewards/available': '/payments/rewards/available',
+  'available-rewards': '/payments/rewards/available',
+  'payments-rewards-available': '/payments/rewards/available',
   'payments/rewards-claimed': '/payments/rewards-claimed',
+  'payments/rewards/claimed': '/payments/rewards-claimed',
   'rewards-claimed': '/payments/rewards-claimed',
   'payments/base-commission': '/payments/base-commission',
   'base-commission': '/payments/base-commission',
@@ -597,10 +603,10 @@ function AppContent() {
           <Route path="/sales" element={<Navigate to="/dashboard" replace />} />
 
           {/* 2. My Income Suite */}
-          <Route path="/my-income" element={<MyIncomePage user={user} onNavigate={handleNavigate} />} />
-          <Route path="/income" element={<Navigate to="/my-income" replace />} />
-          <Route path="/income-overview" element={<Navigate to="/my-income" replace />} />
-          <Route path="/income-all" element={<Navigate to="/my-income" replace />} />
+          <Route path="/my-income" element={<Navigate to="/direct-income" replace />} />
+          <Route path="/income" element={<Navigate to="/direct-income" replace />} />
+          <Route path="/income-overview" element={<Navigate to="/direct-income" replace />} />
+          <Route path="/income-all" element={<Navigate to="/direct-income" replace />} />
 
           <Route path="/direct-income" element={<DirectIncomePage user={user} onNavigate={handleNavigate} />} />
           <Route path="/direct-income/:orderId" element={<MemberDirectIncomeDetailsPage user={user} onNavigate={handleNavigate} />} />
@@ -664,10 +670,14 @@ function AppContent() {
           <Route path="/payout-tds" element={<Navigate to="/payouts/tds" replace />} />
 
           {/* 6. Payments & Earnings */}
-          <Route path="/payments/rewards" element={<RewardDetails user={user} />} />
+          <Route path="/payments/rewards" element={<RewardDetails user={user} onNavigate={handleNavigate} />} />
+          <Route path="/payments/rewards/available" element={<AvailableRewards user={user} onNavigate={handleNavigate} />} />
+          <Route path="/available-rewards" element={<Navigate to="/payments/rewards/available" replace />} />
+          <Route path="/payments/rewards/:rewardId" element={<RewardItemDetailPage user={user} onNavigate={handleNavigate} />} />
           <Route path="/reward-details" element={<Navigate to="/payments/rewards" replace />} />
 
           <Route path="/payments/rewards-claimed" element={<RewardsClaimed user={user} />} />
+          <Route path="/payments/rewards/claimed" element={<Navigate to="/payments/rewards-claimed" replace />} />
           <Route path="/rewards-claimed" element={<Navigate to="/payments/rewards-claimed" replace />} />
 
           <Route path="/payments/base-commission" element={<BaseCommission user={user} />} />

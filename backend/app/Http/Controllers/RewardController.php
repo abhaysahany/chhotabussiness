@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Reward;
 use App\Models\RewardClaim;
 use App\Models\User;
+use App\Models\DiamondWallet;
+use App\Models\DiamondTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -236,13 +238,18 @@ class RewardController extends Controller
             $courier = $request->input('courier_partner') ?: $claim->courier_partner;
             $notes = $request->input('admin_notes') ?: $claim->admin_notes;
 
-            // If rejecting a pending claim, refund Business Points (BP) back to member wallet
+            // If rejecting a pending claim, refund Business Points (BP) / Diamonds back to member wallet
             if ($newStatus === 'rejected' && $claim->status !== 'rejected') {
                 if ($claim->user_id) {
                     $user = User::find($claim->user_id);
                     if ($user) {
                         $user->bp_balance = (float) $user->bp_balance + (float) $claim->points_deducted;
                         $user->save();
+                    }
+                    $diamondWallet = DiamondWallet::where('user_id', $claim->user_id)->first();
+                    if ($diamondWallet) {
+                        $diamondWallet->diamond_balance = (float) $diamondWallet->diamond_balance + (float) $claim->points_deducted;
+                        $diamondWallet->save();
                     }
                 }
             }
@@ -298,6 +305,25 @@ class RewardController extends Controller
     }
 
     /**
+     * User: Get details of a single active reward
+     */
+    public function showUserReward(Request $request, $id)
+    {
+        $reward = Reward::where('status', 'active')->find($id);
+        if (!$reward) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Reward item not found or is currently inactive.',
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'reward' => $reward,
+        ]);
+    }
+
+    /**
      * User: List all claims by a user directly from database
      */
     public function indexUserClaims(Request $request)
@@ -306,7 +332,7 @@ class RewardController extends Controller
         $userCode = $request->input('user_code') ?: $user?->user_code;
         $userId = $user?->id ?: $request->input('user_id');
 
-        $query = RewardClaim::query();
+        $query = RewardClaim::with('reward:id,title,category,reward_value_inr,required_bp,description,image');
         if ($userId && $userCode) {
             $query->where(function ($q) use ($userId, $userCode) {
                 $q->where('user_id', $userId)->orWhere('user_code', $userCode);
@@ -326,7 +352,7 @@ class RewardController extends Controller
     }
 
     /**
-     * User: Claim reward using Business Points (BP) wallet balance and save directly to database
+     * User: Claim reward using Diamond balance and save directly to database
      */
     public function claimReward(Request $request)
     {
@@ -352,29 +378,67 @@ class RewardController extends Controller
                 return response()->json(['status' => 'error', 'message' => 'User account not found in database.'], 404);
             }
 
-            $currentBp = (float) $user->bp_balance;
-            $requiredBp = (float) $reward->required_bp;
+            // Duplicate claim rapid protection (prevent double-clicks within 10 seconds for the same user and reward)
+            $recentDuplicate = RewardClaim::where('user_id', $user->id)
+                ->where('reward_id', $reward->id)
+                ->where('created_at', '>=', now()->subSeconds(10))
+                ->first();
 
-            // Check if user has enough Business Points balance in database
-            if ($currentBp < $requiredBp) {
-                $deficit = $requiredBp - $currentBp;
+            if ($recentDuplicate) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => "Insufficient Business Points (BP)! You have {$currentBp} BP but need {$requiredBp} BP to claim this reward (Short by {$deficit} BP).",
-                    'current_bp' => $currentBp,
-                    'required_bp' => $requiredBp,
+                    'message' => 'A claim for this reward was just submitted. Please check Rewards Claimed history to avoid duplicate redemptions.',
+                ], 429);
+            }
+
+            // Pessimistic row-level lock on diamond wallet and user
+            $diamondWallet = DiamondWallet::where('user_id', $user->id)->lockForUpdate()->first();
+            $lockedUser = User::where('id', $user->id)->lockForUpdate()->first() ?? $user;
+
+            $currentDiamonds = $diamondWallet ? (float) $diamondWallet->diamond_balance : (float) $lockedUser->bp_balance;
+            if ($diamondWallet && (float) $lockedUser->bp_balance > (float) $diamondWallet->diamond_balance) {
+                $currentDiamonds = (float) $lockedUser->bp_balance;
+            }
+            $requiredDiamonds = (float) $reward->required_bp;
+
+            // Check if user has enough Diamond balance in database
+            if ($currentDiamonds < $requiredDiamonds) {
+                $deficit = $requiredDiamonds - $currentDiamonds;
+                return response()->json([
+                    'status' => 'error',
+                    'message' => "Insufficient Diamond Balance! You have {$currentDiamonds} Diamonds but need {$requiredDiamonds} Diamonds to claim this reward (Short by {$deficit} Diamonds).",
+                    'current_diamonds' => $currentDiamonds,
+                    'required_diamonds' => $requiredDiamonds,
                 ], 422);
             }
 
-            // Deduct Business Points in database
-            $bpBefore = $currentBp;
-            $bpAfter = $currentBp - $requiredBp;
-            $user->bp_balance = $bpAfter;
-            $user->save();
+            // Deduct Diamond balance in database
+            $balanceBefore = $currentDiamonds;
+            $balanceAfter = $currentDiamonds - $requiredDiamonds;
 
             $latestClaim = RewardClaim::latest('id')->first();
             $nextSeq = $latestClaim ? ($latestClaim->id + 101) : (RewardClaim::count() + 101);
             $claimCode = 'CLM-' . date('Y') . '-' . $nextSeq;
+
+            if ($diamondWallet) {
+                $diamondWallet->diamond_balance = $balanceAfter;
+                $diamondWallet->save();
+
+                DiamondTransaction::create([
+                    'user_id' => $user->id,
+                    'source_reference' => 'claim:' . $claimCode,
+                    'reward_level' => 0,
+                    'allocated_amount' => -($requiredDiamonds * 100),
+                    'conversion_rate' => 100,
+                    'diamond_quantity' => -$requiredDiamonds,
+                    'balance_after' => $balanceAfter,
+                    'transaction_type' => 'debit',
+                    'description' => "Redeemed {$requiredDiamonds} Diamonds for reward: {$reward->title}",
+                ]);
+            }
+
+            $lockedUser->bp_balance = $balanceAfter;
+            $lockedUser->save();
 
             $claim = RewardClaim::create([
                 'claim_code' => $claimCode,
@@ -386,9 +450,9 @@ class RewardController extends Controller
                 'reward_id' => $reward->id,
                 'reward_title' => $reward->title,
                 'reward_image' => $reward->image,
-                'points_deducted' => $requiredBp,
-                'bp_balance_before' => $bpBefore,
-                'bp_balance_after' => $bpAfter,
+                'points_deducted' => $requiredDiamonds,
+                'bp_balance_before' => $balanceBefore,
+                'bp_balance_after' => $balanceAfter,
                 'shipping_address' => $request->input('shipping_address') ?: ($user->location ?? 'Registered Profile Address'),
                 'shipping_city' => $request->input('shipping_city') ?: 'Registered City',
                 'shipping_state' => $request->input('shipping_state') ?: 'Registered State',
@@ -401,9 +465,10 @@ class RewardController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'message' => "🎉 Congratulations! Reward '{$reward->title}' claimed successfully! {$requiredBp} BP deducted from your wallet.",
-                'claim' => $claim,
-                'remaining_bp' => $bpAfter,
+                'message' => "🎉 Congratulations! Reward '{$reward->title}' claimed successfully! {$requiredDiamonds} Diamonds deducted from your wallet.",
+                'claim' => $claim->load('reward:id,title,category,reward_value_inr,required_bp,description,image'),
+                'remaining_diamonds' => $balanceAfter,
+                'remaining_bp' => $balanceAfter,
             ]);
         } catch (\Exception $e) {
             DB::rollBack();

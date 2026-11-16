@@ -14,6 +14,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { useBranding } from '../utils/branding';
+import BrandLogo from '../components/common/BrandLogo';
 import { verifySponsor, completeSponsorOnboarding, skipSponsorOnboarding } from '../api/userService';
 import '../components/auth.css';
 
@@ -144,21 +145,7 @@ export default function SponsorOnboardingPage({ user, onComplete, onLogout }) {
       {/* 1. Top Navigation Bar (Matches Login Page Topbar) */}
       <header className="cb-auth-topbar">
         <div className="cb-topbar-brand">
-          {logoUrl ? (
-            <img
-              src={logoUrl}
-              alt={appName}
-              className="cb-topbar-brand-logo"
-              onError={(e) => { e.target.style.display = 'none'; }}
-            />
-          ) : (
-            <div className="cb-topbar-brand-badge">
-              <Building2 size={20} />
-            </div>
-          )}
-          <span className="cb-topbar-brand-name">
-            {appName}
-          </span>
+          <BrandLogo size={42} alt={appName} />
         </div>
 
         <button
@@ -247,24 +234,9 @@ export default function SponsorOnboardingPage({ user, onComplete, onLogout }) {
           {/* Right Column: Onboarding Form Panel */}
           <div className="cb-auth-form-panel">
 
-            {/* Brand Logo Header (Identical to LoginForm) */}
-            <div className="cb-auth-brand-header">
-              <div className="cb-auth-logo-badge" style={{ background: 'transparent', padding: 0 }}>
-                <img
-                  src={logoUrl || '/logo.png'}
-                  alt={appName}
-                  style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'contain' }}
-                  onError={(e) => { e.target.src = '/logo.png'; }}
-                />
-              </div>
-              <div>
-                <div className="cb-auth-logo-text-title">
-                  {appName}
-                </div>
-                <span className="cb-auth-logo-text-sub">
-                  Business Promoter Network
-                </span>
-              </div>
+            {/* Brand Logo Header (Logo-Only Presentation, Horizontally Centered) */}
+            <div className="cb-auth-brand-header" style={{ marginBottom: '1.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+              <BrandLogo size={96} mobileSize={80} alt={appName} />
             </div>
 
             {/* Step Badge */}

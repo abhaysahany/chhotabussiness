@@ -83,10 +83,10 @@ class UserDashboardController extends Controller
         $totalIncomeFromTables = round($directIncomeTotal + $levelIncomeTotal, 2);
         $todayIncomeFromTables = round($todayDirectIncome + $todayLevelIncome, 2);
 
-        // 3. Team Network Numbers from `users` Database Table
+        // 3. Team Network Numbers from `users` Database Table (Group Network Volume strictly from group_pv)
         $directMembersCount = 0;
         $totalTeamCount = 0;
-        $teamVolumeBv = (int) ($user ? ($user->group_pv ?: ($user->personal_pv ?: 0)) : 0);
+        $teamVolumeBv = (int) ($user ? ($user->group_pv ?: 0) : 0);
 
         if ($user && $userCode) {
             $directMembersCount = User::where('sponsor_id', $userCode)

@@ -1,4 +1,5 @@
 import { useBranding } from '../../../utils/branding';
+import BrandLogo from '../../../components/common/BrandLogo';
 import React, { useState } from 'react';
 import {
   Building2,
@@ -43,6 +44,22 @@ function LandingNavbar({ onLoginClick, onRegisterClick, onNavigateSection }) {
         /* Scoped responsive styles for navbar */
         .cb-nav-top-row {
           display: contents;
+        }
+
+        .cb-nav-logo {
+          display: flex;
+          align-items: center;
+          text-decoration: none;
+          cursor: pointer;
+          flex-shrink: 0;
+          height: 100%;
+        }
+
+        .cb-nav-logo img {
+          width: 70px;
+          height: 70px;
+          object-fit: contain;
+          flex-shrink: 0;
         }
 
         .cb-header-login-btn {
@@ -110,8 +127,8 @@ function LandingNavbar({ onLoginClick, onRegisterClick, onNavigateSection }) {
           }
 
           .cb-nav-logo img {
-            width: 36px !important;
-            height: 36px !important;
+            width: 58px !important;
+            height: 58px !important;
             flex-shrink: 0;
           }
 
@@ -188,8 +205,8 @@ function LandingNavbar({ onLoginClick, onRegisterClick, onNavigateSection }) {
           }
 
           .cb-nav-logo img {
-            width: 32px !important;
-            height: 32px !important;
+            width: 48px !important;
+            height: 48px !important;
           }
 
           .cb-brand-title {
@@ -239,22 +256,7 @@ function LandingNavbar({ onLoginClick, onRegisterClick, onNavigateSection }) {
         {/* Brand Logo & Mobile Toggle Row */}
         <div className="cb-nav-top-row">
           <div className="cb-nav-logo" onClick={() => handleScrollTo('hero')}>
-            <img
-              src={logoUrl || "/logo.png"}
-              alt={appName}
-              style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "contain" }}
-              onError={(e) => { e.target.src = "/logo.png"; }}
-            />
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                <span className="cb-brand-title">
-                  {appName || 'Vyapar AdNET'}
-                </span>
-              </div>
-              <span className="cb-brand-subtitle">
-                Business Promoter Network
-              </span>
-            </div>
+            <BrandLogo size={70} mobileSize={58} alt={appName} />
           </div>
 
           {/* Mobile Hamburger Toggle (placed in top row on mobile, styled via CSS) */}

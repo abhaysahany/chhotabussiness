@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\RegistrationOtpMail;
+use App\Models\EmailOtp;
 use App\Models\User;
 use App\Services\GoogleAuthService;
 use App\Services\MemberIdGeneratorService;
@@ -12,6 +14,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use RuntimeException;
@@ -144,6 +148,7 @@ class AuthController extends Controller
         }
 
         $email = $data['email'];
+        $name = $data['name'];
         $sponsorId = $data['sponsor_id'];
 
         // 1. Check if email already registered
@@ -178,11 +183,13 @@ class AuthController extends Controller
         $isTesting = app()->environment('testing');
         $cooldownKey = 'otp_cooldown_' . $email;
         if (!$isTesting && Cache::has($cooldownKey)) {
-            $remaining = Cache::get($cooldownKey) - now()->timestamp;
+            $remaining = (int) Cache::get($cooldownKey) - now()->timestamp;
             if ($remaining > 0) {
                 return response()->json([
                     'status' => 'error',
                     'message' => "Please wait {$remaining} seconds before requesting a new OTP.",
+                    'retry_after' => $remaining,
+                    'cooldown_remaining' => $remaining,
                 ], 429);
             }
         }
@@ -197,20 +204,78 @@ class AuthController extends Controller
         }
         Cache::put($attemptsKey, $attempts + 1, now()->addMinutes(10));
 
-        // 4. Generate 6-digit OTP
-        $otp = (string) rand(100000, 999999);
+        // 4. Generate cryptographically secure 6-digit OTP
+        $otp = (string) random_int(100000, 999999);
+        $hashedOtp = Hash::make($otp);
+
+        $challengeKey = 'reg_otp_challenge_' . $email;
+        $challengeData = [
+            'otp_hash' => $hashedOtp,
+            'email' => $email,
+            'name' => $name,
+            'attempts' => 0,
+            'created_at' => now()->timestamp,
+        ];
 
         // Store OTP in cache for 10 minutes
+        Cache::put($challengeKey, $challengeData, now()->addMinutes(10));
         Cache::put('otp_' . $email, $otp, now()->addMinutes(10));
+
+        // Invalidate prior unused OTP records and record in email_otps table
+        try {
+            EmailOtp::where('email', $email)
+                ->where('action', 'register')
+                ->where('is_used', false)
+                ->update(['is_used' => true]);
+
+            EmailOtp::create([
+                'email' => $email,
+                'action' => 'register',
+                'otp' => $otp,
+                'expires_at' => now()->addMinutes(10),
+                'is_used' => false,
+            ]);
+        } catch (\Throwable $dbEx) {
+            Log::warning("Could not persist EmailOtp record: " . $dbEx->getMessage());
+        }
+
+        // 5. Synchronous Email Dispatch via Hostinger SMTP
+        try {
+            Mail::to($email)->send(new RegistrationOtpMail(
+                recipientName: $name,
+                otp: $otp,
+                expiresInMinutes: 10
+            ));
+        } catch (\Throwable $mailEx) {
+            // Revert newly issued challenge on mail dispatch failure
+            Cache::forget($challengeKey);
+            Cache::forget('otp_' . $email);
+            Cache::forget($cooldownKey);
+
+            Log::error("Registration OTP email dispatch failed [{$email}]: " . $mailEx->getMessage());
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unable to dispatch verification email at this moment. Please check your email or contact support.',
+            ], 500);
+        }
+
+        // 6. Set 60-second cooldown after successful dispatch
         Cache::put($cooldownKey, now()->addSeconds(60)->timestamp, now()->addSeconds(60));
+
+        $maskedEmail = PasswordResetOtpService::maskEmail($email);
 
         $response = [
             'status' => 'success',
-            'message' => "Verification OTP sent to {$email} successfully!",
+            'message' => "Verification code sent to {$maskedEmail} successfully!",
+            'masked_email' => $maskedEmail,
+            'cooldown' => 60,
+            'cooldown_seconds' => 60,
+            'expires_in_minutes' => 10,
         ];
 
-        // Production security: never expose raw OTP in production environment
-        if (app()->environment('local', 'testing')) {
+        // Only expose OTP during testing
+        if ($isTesting) {
             $response['otp'] = $otp;
         }
 
@@ -242,9 +307,56 @@ class AuthController extends Controller
         }
 
         $email = strtolower(trim($request->email));
+        $submittedOtp = (string) $request->otp;
+
+        $challengeKey = 'reg_otp_challenge_' . $email;
+        $challenge = Cache::get($challengeKey);
         $cachedOtp = Cache::get('otp_' . $email);
 
-        if (!$cachedOtp || $cachedOtp !== (string) $request->otp) {
+        if (!$challenge && !$cachedOtp) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid or expired OTP verification code. Please request a new code.',
+                'errors' => [
+                    'otp' => ['Invalid or expired OTP verification code.'],
+                ],
+                'verified' => false,
+            ], 422);
+        }
+
+        // Track attempts if challenge exists
+        if ($challenge && is_array($challenge)) {
+            $attempts = (int) ($challenge['attempts'] ?? 0) + 1;
+            $challenge['attempts'] = $attempts;
+
+            if ($attempts > 5) {
+                Cache::forget($challengeKey);
+                Cache::forget('otp_' . $email);
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Maximum verification attempts exceeded. For security, this verification code has been invalidated. Please request a new code.',
+                    'errors' => [
+                        'otp' => ['Maximum verification attempts exceeded.'],
+                    ],
+                    'verified' => false,
+                ], 429);
+            }
+
+            if (!Hash::check($submittedOtp, $challenge['otp_hash'])) {
+                Cache::put($challengeKey, $challenge, now()->addMinutes(10));
+                $remainingAttempts = max(0, 5 - $attempts);
+
+                return response()->json([
+                    'status' => 'error',
+                    'message' => "Incorrect verification code. {$remainingAttempts} attempt(s) remaining.",
+                    'errors' => [
+                        'otp' => ["Incorrect verification code. {$remainingAttempts} attempt(s) remaining."],
+                    ],
+                    'verified' => false,
+                    'remaining_attempts' => $remainingAttempts,
+                ], 422);
+            }
+        } elseif ($cachedOtp !== $submittedOtp) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Invalid or expired OTP verification code.',
@@ -382,9 +494,39 @@ class AuthController extends Controller
         }
 
         // 2. Verify Email OTP
+        $challengeKey = 'reg_otp_challenge_' . $email;
+        $challenge = Cache::get($challengeKey);
         $cachedOtp = Cache::get('otp_' . $email);
+        $submittedOtp = (string) $request->otp;
 
-        if (!$cachedOtp || $cachedOtp !== (string) $request->otp) {
+        $isValidOtp = false;
+
+        if ($challenge && is_array($challenge)) {
+            $attempts = (int) ($challenge['attempts'] ?? 0) + 1;
+            $challenge['attempts'] = $attempts;
+
+            if ($attempts > 5) {
+                Cache::forget($challengeKey);
+                Cache::forget('otp_' . $email);
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Maximum verification attempts exceeded. Please request a new verification code.',
+                    'errors' => [
+                        'otp' => ['Maximum verification attempts exceeded.'],
+                    ],
+                ], 429);
+            }
+
+            if (Hash::check($submittedOtp, $challenge['otp_hash'])) {
+                $isValidOtp = true;
+            } else {
+                Cache::put($challengeKey, $challenge, now()->addMinutes(10));
+            }
+        } elseif ($cachedOtp && $cachedOtp === $submittedOtp) {
+            $isValidOtp = true;
+        }
+
+        if (!$isValidOtp) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Invalid or expired OTP verification code.',
@@ -395,8 +537,19 @@ class AuthController extends Controller
         }
 
         // OTP verified - clear from cache immediately to prevent replay/reuse!
+        Cache::forget($challengeKey);
         Cache::forget('otp_' . $email);
         Cache::forget('otp_cooldown_' . $email);
+
+        // Mark EmailOtp audit record as used
+        try {
+            EmailOtp::where('email', $email)
+                ->where('action', 'register')
+                ->where('is_used', false)
+                ->update(['is_used' => true]);
+        } catch (\Throwable $e) {
+            // Non-blocking
+        }
 
         // 3. Create MLM Member Account in Transaction with unique random Member ID
         $userOrResponse = $this->persistNewMember([
