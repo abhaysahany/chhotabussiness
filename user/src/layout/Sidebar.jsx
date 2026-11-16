@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useBranding } from '../utils/branding';
+import BrandLogo from '../components/common/BrandLogo';
 
 function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
   const { appName, logoUrl } = useBranding();
@@ -38,7 +39,7 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
     if (currentPath?.includes('income') || activePage?.startsWith('income-') || activePage?.startsWith('user-income-') || activePage === 'my-income') {
       setOpenMenus((prev) => ({ ...prev, income: true }));
     }
-    if (currentPath?.startsWith('/payments/reward') || activePage?.startsWith('reward') || activePage === 'rewards' || activePage === 'reward-details' || activePage === 'rewards-claimed') {
+    if (currentPath?.startsWith('/payments/reward') || currentPath?.startsWith('/available-rewards') || activePage?.startsWith('reward') || activePage === 'rewards' || activePage === 'reward-details' || activePage === 'rewards-claimed' || activePage === 'available-rewards') {
       setOpenMenus((prev) => ({ ...prev, rewards: true }));
     }
     if (currentPath?.startsWith('/payments/transaction') || currentPath === '/payments' || activePage?.startsWith('payment-transaction') || activePage === 'payment-transactions') {
@@ -98,15 +99,10 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
 
   return (
     <aside className={`pro-sidebar ${collapsed ? 'collapsed' : ''}`}>
-      {/* Brand & System Logo Header */}
+      {/* Brand & System Logo Header (Logo-Only Presentation) */}
       <div className="van-sidebar-header">
         <div className="van-sidebar-brand" onClick={() => handleNav('/dashboard')} title={`${appName} Dashboard`} style={{ cursor: 'pointer' }}>
-          <img
-            src={logoUrl || '/logo.png'}
-            alt={`${appName} Logo`}
-            className="van-sidebar-logo-img"
-            onError={(e) => { e.target.src = '/logo.png'; }}
-          />
+          <BrandLogo size={52} alt={`${appName} Logo`} className="van-sidebar-logo-img" />
         </div>
       </div>
 
@@ -346,13 +342,6 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
           {!collapsed && openMenus.income && (
             <div className="sub-nav-list">
               <button
-                className={`sub-nav-link ${isPathActive('/my-income', ['my-income', 'income', 'income-overview']) ? 'active' : ''}`}
-                onClick={() => handleNav('/my-income')}
-              >
-                <span className="sub-icon"><SubDot /></span>
-                <span className="sub-text">Income Overview (Both)</span>
-              </button>
-              <button
                 className={`sub-nav-link ${isPathActive('/direct-income', ['income-direct', '/user/income/direct', 'direct-income']) ? 'active' : ''}`}
                 onClick={() => handleNav('/direct-income')}
               >
@@ -392,14 +381,21 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
           {!collapsed && openMenus.rewards && (
             <div className="sub-nav-list">
               <button
-                className={`sub-nav-link ${isPathActive('/payments/rewards', ['reward-details', 'rewards']) ? 'active' : ''}`}
+                className={`sub-nav-link ${isPathActive('/payments/rewards', ['reward-details', 'rewards', 'reward-overview']) && currentPath !== '/payments/rewards/available' && currentPath !== '/payments/rewards-claimed' ? 'active' : ''}`}
                 onClick={() => handleNav('/payments/rewards')}
               >
                 <span className="sub-icon"><SubDot /></span>
-                <span className="sub-text">Reward Details</span>
+                <span className="sub-text">Reward Overview</span>
               </button>
               <button
-                className={`sub-nav-link ${isPathActive('/payments/rewards-claimed', ['rewards-claimed']) ? 'active' : ''}`}
+                className={`sub-nav-link ${isPathActive('/payments/rewards/available', ['available-rewards', 'rewards-available']) ? 'active' : ''}`}
+                onClick={() => handleNav('/payments/rewards/available')}
+              >
+                <span className="sub-icon"><SubDot /></span>
+                <span className="sub-text">Available Rewards</span>
+              </button>
+              <button
+                className={`sub-nav-link ${isPathActive('/payments/rewards-claimed', ['rewards-claimed', 'payments/rewards/claimed']) ? 'active' : ''}`}
                 onClick={() => handleNav('/payments/rewards-claimed')}
               >
                 <span className="sub-icon"><SubDot /></span>

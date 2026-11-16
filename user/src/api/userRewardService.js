@@ -17,6 +17,28 @@ export const getUserRewards = async () => {
 };
 
 /**
+ * Fetch a single active reward by ID from database catalog
+ */
+export const getUserRewardById = async (id) => {
+  try {
+    const res = await api.get(`/user/rewards/${id}`);
+    if (res.data?.status === 'success') {
+      return res.data.reward;
+    }
+    return null;
+  } catch (err) {
+    console.warn(`Direct fetch for reward #${id} returned error, falling back to catalog search:`, err);
+    try {
+      const all = await getUserRewards();
+      return all.find((r) => String(r.id) === String(id)) || null;
+    } catch (fallbackErr) {
+      console.error(`Fallback failed for reward #${id}:`, fallbackErr);
+      throw err;
+    }
+  }
+};
+
+/**
  * Fetch reward claims for a user directly from database
  */
 export const getUserClaims = async (userCode) => {

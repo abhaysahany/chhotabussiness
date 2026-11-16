@@ -277,13 +277,21 @@
   box-sizing: border-box;
 }
 
-/* Mobile Brand Header (shows logo nicely on small devices) */
+/* Brand Header (Logo-only Presentation, Horizontally Centered) */
 .cb-auth-brand-header {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 1.75rem;
   text-decoration: none;
+}
+
+.cb-auth-brand-header .brand-logo-img,
+.cb-auth-brand-header .brand-logo-fallback-text {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
 }
 
 .cb-auth-logo-badge {

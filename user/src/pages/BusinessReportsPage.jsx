@@ -24,6 +24,28 @@ function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
   // Detailed Entity Modal
   const [selectedReportEntity, setSelectedReportEntity] = useState(null);
 
+  // Prevent background scrolling while modal is open & restore on close
+  useEffect(() => {
+    if (selectedReportEntity) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [selectedReportEntity]);
+
+  // Close modal on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && selectedReportEntity) {
+        setSelectedReportEntity(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedReportEntity]);
+
   useEffect(() => {
     if (initialTypeFilter) {
       setEntityTypeFilter(initialTypeFilter);
@@ -372,7 +394,7 @@ function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
                 padding: '1.5rem',
                 display: 'flex',
                 flexDirection: 'column',
-                justify: 'space-between',
+                justifyContent: 'space-between',
                 transition: 'transform 0.15s ease, box-shadow 0.15s ease',
               }}
             >
@@ -559,55 +581,140 @@ function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
       {/* DETAILED ENTITY REPORT MODAL DRAWER */}
       {selectedReportEntity && (
         <div
+          className="business-details-overlay"
+          onClick={() => setSelectedReportEntity(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="business-details-title"
           style={{
             position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
+            inset: 0,
             backgroundColor: 'rgba(15, 23, 42, 0.65)',
             backdropFilter: 'blur(6px)',
+            WebkitBackdropFilter: 'blur(6px)',
             display: 'flex',
             alignItems: 'center',
-            justify: 'center',
-            zIndex: 1000,
-            padding: '1rem',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '24px',
+            overflow: 'hidden',
           }}
         >
           <div
+            className="business-details-modal"
+            onClick={(e) => e.stopPropagation()}
             style={{
+              position: 'relative',
               background: '#ffffff',
               borderRadius: '16px',
               boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.25)',
               border: '1px solid #e2e8f0',
-              width: '100%',
-              maxWidth: '680px',
-              maxHeight: '90vh',
-              overflowY: 'auto',
+              width: 'min(900px, 100%)',
+              maxHeight: 'calc(100dvh - 48px)',
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
             }}
           >
-            {/* Modal Header */}
-            <div style={{ background: 'linear-gradient(135deg, var(--brand-primary-dark) 0%, var(--brand-primary) 100%)', padding: '1.5rem 2rem', color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                <img
-                  src={selectedReportEntity.display_image}
-                  alt={selectedReportEntity.display_title}
-                  style={{ width: '56px', height: '56px', borderRadius: selectedReportEntity.entity_type === 'freelancer' ? '50%' : '12px', objectFit: 'cover', border: '2px solid rgba(255,255,255,0.2)' }}
-                />
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <h3 style={{ fontSize: '1.25rem', fontWeight: '800', margin: 0 }}>{selectedReportEntity.display_title}</h3>
-                    <span style={{ background: '#10b981', color: '#fff', fontSize: '0.7rem', fontWeight: '800', padding: '0.15rem 0.45rem', borderRadius: '10px' }}>✓ VERIFIED REPORT</span>
+            {/* Modal Header — Fixed / Sticky */}
+            <div
+              className="business-details-header"
+              style={{
+                flexShrink: 0,
+                background: 'linear-gradient(135deg, var(--brand-primary-dark) 0%, var(--brand-primary) 100%)',
+                padding: '1.25rem 1.75rem',
+                color: '#fff',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: '1rem',
+              }}
+            >
+              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', minWidth: 0 }}>
+                {selectedReportEntity.display_image ? (
+                  <img
+                    src={selectedReportEntity.display_image}
+                    alt={selectedReportEntity.display_title}
+                    style={{
+                      width: '56px',
+                      height: '56px',
+                      borderRadius: selectedReportEntity.entity_type === 'freelancer' ? '50%' : '12px',
+                      objectFit: 'cover',
+                      border: '2px solid rgba(255,255,255,0.2)',
+                      flexShrink: 0,
+                    }}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      width: '56px',
+                      height: '56px',
+                      borderRadius: selectedReportEntity.entity_type === 'freelancer' ? '50%' : '12px',
+                      background: 'rgba(255,255,255,0.15)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '1.5rem',
+                      flexShrink: 0,
+                    }}
+                  >
+                    🏢
                   </div>
-                  <div style={{ fontSize: '0.835rem', color: '#cbd5e1', marginTop: '0.2rem' }}>{selectedReportEntity.display_subtitle}</div>
+                )}
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <h3
+                      id="business-details-title"
+                      style={{
+                        fontSize: '1.25rem',
+                        fontWeight: '800',
+                        margin: 0,
+                        wordBreak: 'break-word',
+                      }}
+                    >
+                      {selectedReportEntity.display_title}
+                    </h3>
+                    <span style={{ background: '#10b981', color: '#fff', fontSize: '0.7rem', fontWeight: '800', padding: '0.15rem 0.45rem', borderRadius: '10px', whiteSpace: 'nowrap' }}>
+                      ✓ VERIFIED REPORT
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '0.835rem', color: '#cbd5e1', marginTop: '0.2rem', wordBreak: 'break-word' }}>
+                    {selectedReportEntity.display_subtitle}
+                  </div>
                 </div>
               </div>
 
-              <button onClick={() => setSelectedReportEntity(null)} style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '1.5rem', cursor: 'pointer', lineHeight: 1 }}>×</button>
+              <button
+                type="button"
+                className="business-details-close-btn"
+                onClick={() => setSelectedReportEntity(null)}
+                aria-label="Close Business Details Modal"
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#94a3b8',
+                  fontSize: '1.75rem',
+                  cursor: 'pointer',
+                  lineHeight: 1,
+                  padding: '0.25rem',
+                  flexShrink: 0,
+                }}
+              >
+                ×
+              </button>
             </div>
 
-            {/* Modal Body */}
-            <div style={{ padding: '1.5rem 2rem' }}>
+            {/* Modal Body — Independently Scrollable */}
+            <div
+              className="business-details-body"
+              style={{
+                flex: '1 1 auto',
+                minHeight: 0,
+                overflowY: 'auto',
+                WebkitOverflowScrolling: 'touch',
+                padding: '1.5rem 1.75rem',
+              }}
+            >
               {/* Category & Status Badges */}
               <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1.25rem' }}>
                 <span style={{ background: `${selectedReportEntity.category?.badge_color || '#6366f1'}18`, color: selectedReportEntity.category?.badge_color || '#6366f1', padding: '0.3rem 0.75rem', borderRadius: '16px', fontWeight: '700', fontSize: '0.8rem' }}>
@@ -633,39 +740,39 @@ function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
 
               {/* Compliance & Registration Info Grid */}
               <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0f172a', margin: '0 0 0.65rem 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Registration & Compliance Audit</h4>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem', marginBottom: '1.5rem' }}>
+              <div className="business-details-compliance-grid">
                 <div style={{ background: '#fff', padding: '0.85rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                   <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: '700' }}>REGISTRATION / GST NO.</div>
-                  <div style={{ fontSize: '0.9rem', fontWeight: '800', color: '#0f172a', marginTop: '0.2rem' }}>{selectedReportEntity.reg_identifier}</div>
+                  <div style={{ fontSize: '0.9rem', fontWeight: '800', color: '#0f172a', marginTop: '0.2rem', wordBreak: 'break-all' }}>{selectedReportEntity.reg_identifier}</div>
                 </div>
 
                 <div style={{ background: '#fff', padding: '0.85rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                   <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: '700' }}>EMAIL ADDRESS (PROTECTED)</div>
-                  <div style={{ fontSize: '0.875rem', fontWeight: '700', color: '#4f46e5', marginTop: '0.2rem' }}>{maskEmail(selectedReportEntity.email)}</div>
+                  <div style={{ fontSize: '0.875rem', fontWeight: '700', color: '#4f46e5', marginTop: '0.2rem', wordBreak: 'break-all' }}>{maskEmail(selectedReportEntity.email)}</div>
                 </div>
 
                 <div style={{ background: '#fff', padding: '0.85rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                   <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: '700' }}>PHONE CONTACT (PROTECTED)</div>
-                  <div style={{ fontSize: '0.875rem', fontWeight: '700', color: '#0f172a', marginTop: '0.2rem' }}>{maskPhone(selectedReportEntity.phone)}</div>
+                  <div style={{ fontSize: '0.875rem', fontWeight: '700', color: '#0f172a', marginTop: '0.2rem', wordBreak: 'break-all' }}>{maskPhone(selectedReportEntity.phone)}</div>
                 </div>
 
                 <div style={{ background: '#fff', padding: '0.85rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                   <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: '700' }}>WEBSITE / PORTFOLIO</div>
-                  <div style={{ fontSize: '0.875rem', fontWeight: '700', color: '#0284c7', marginTop: '0.2rem' }}>{selectedReportEntity.website || selectedReportEntity.portfolio_link || 'N/A'}</div>
+                  <div style={{ fontSize: '0.875rem', fontWeight: '700', color: '#0284c7', marginTop: '0.2rem', wordBreak: 'break-all' }}>{selectedReportEntity.website || selectedReportEntity.portfolio_link || 'N/A'}</div>
                 </div>
               </div>
 
               {/* Verified Documents Audit Trail */}
               <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0f172a', margin: '0 0 0.65rem 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Verified Document Attachments</h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.5rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1rem' }}>
                 {selectedReportEntity.documents && selectedReportEntity.documents.length > 0 ? (
                   selectedReportEntity.documents.map((doc, idx) => (
-                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem 1rem', background: '#ecfdf5', borderRadius: '8px', border: '1px solid #a7f3d0' }}>
+                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem 1rem', background: '#ecfdf5', borderRadius: '8px', border: '1px solid #a7f3d0', flexWrap: 'wrap', gap: '0.5rem' }}>
                       <div>
                         <div style={{ fontWeight: '700', color: '#065f46', fontSize: '0.835rem' }}>📄 {doc.title}</div>
                         <div style={{ fontSize: '0.75rem', color: '#047857', marginTop: '0.1rem' }}>File Record: {doc.file_name}</div>
                       </div>
-                      <span style={{ background: '#10b981', color: '#fff', padding: '0.15rem 0.55rem', borderRadius: '10px', fontSize: '0.725rem', fontWeight: '800' }}>
+                      <span style={{ background: '#10b981', color: '#fff', padding: '0.15rem 0.55rem', borderRadius: '10px', fontSize: '0.725rem', fontWeight: '800', whiteSpace: 'nowrap' }}>
                         ✓ VERIFIED AUDITED
                       </span>
                     </div>
@@ -678,15 +785,39 @@ function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
               </div>
             </div>
 
-            {/* Modal Footer Actions */}
-            <div style={{ padding: '1rem 2rem', background: '#f8fafc', borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+            {/* Modal Footer Actions — Pinned / Fixed */}
+            <div
+              className="business-details-footer"
+              style={{
+                flexShrink: 0,
+                padding: '1rem 1.75rem',
+                background: '#f8fafc',
+                borderTop: '1px solid #f1f5f9',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: '0.65rem',
+                flexWrap: 'wrap',
+              }}
+            >
               <div style={{ fontSize: '0.78rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: '600' }}>
                 <span>🛡️</span>
                 <span>Direct contact is masked for platform safety and privacy.</span>
               </div>
               <button
+                type="button"
                 onClick={() => setSelectedReportEntity(null)}
-                style={{ background: '#ffffff', color: '#475569', border: '1px solid #cbd5e1', padding: '0.55rem 1.15rem', borderRadius: '8px', fontWeight: '700', fontSize: '0.825rem', cursor: 'pointer' }}
+                style={{
+                  background: '#ffffff',
+                  color: '#475569',
+                  border: '1px solid #cbd5e1',
+                  padding: '0.55rem 1.15rem',
+                  borderRadius: '8px',
+                  fontWeight: '700',
+                  fontSize: '0.825rem',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.15s ease, border-color 0.15s ease',
+                }}
               >
                 Close Report
               </button>

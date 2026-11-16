@@ -251,7 +251,9 @@ Route::post('/admin/reward-claims/{id}/status', [RewardController::class, 'updat
 
 // User Panel Reward Endpoints
 Route::get('/user/rewards', [RewardController::class, 'indexUserRewards']);
+Route::get('/user/rewards/{id}', [RewardController::class, 'showUserReward']);
 Route::get('/user/reward-claims', [RewardController::class, 'indexUserClaims']);
+Route::get('/user/claims', [RewardController::class, 'indexUserClaims']);
 Route::post('/user/rewards/claim', [RewardController::class, 'claimReward']);
 
 // Notification System Endpoints (Targeted & Broadcast)

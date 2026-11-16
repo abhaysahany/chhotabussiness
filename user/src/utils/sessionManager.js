@@ -39,8 +39,21 @@ if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
  * Get dynamic API Base URL
  */
 const getApiBaseUrl = () => {
-  if (typeof window !== 'undefined' && window.location.origin.includes('vyaparadnet.com')) {
-    return 'https://vyaparadnet.com/api';
+  if (typeof window !== 'undefined' && window.location && window.location.hostname) {
+    const host = window.location.hostname.toLowerCase();
+    const isLocalhost =
+      host === 'localhost' ||
+      host === '127.0.0.1' ||
+      host === '0.0.0.0' ||
+      host.endsWith('.local') ||
+      window.location.port === '5173' ||
+      window.location.port === '5174' ||
+      window.location.port === '5175' ||
+      window.location.port === '3000';
+
+    if (!isLocalhost) {
+      return `${window.location.origin}/api`;
+    }
   }
   return 'http://127.0.0.1:8000/api';
 };
