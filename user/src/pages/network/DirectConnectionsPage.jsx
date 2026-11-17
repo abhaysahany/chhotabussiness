@@ -132,7 +132,7 @@ function DirectConnectionsPage({ user, onNavigate }) {
   // DataTable Column Definitions
   const columns = [
     {
-      header: 'Direct Partner & Code',
+      header: 'Partner & ID',
       accessor: 'name',
       render: (val, row) => (
         <div className="user-profile-cell">
@@ -209,7 +209,7 @@ function DirectConnectionsPage({ user, onNavigate }) {
       ),
     },
     {
-      header: 'Downline Turnover (BV)',
+      header: 'Downline BV',
       accessor: 'groupPv',
       align: 'right',
       render: (val, row) => (
@@ -220,7 +220,7 @@ function DirectConnectionsPage({ user, onNavigate }) {
       ),
     },
     {
-      header: 'L2 Downlines',
+      header: 'L2 Team',
       accessor: 'level2Count',
       align: 'center',
       render: (val) => (
@@ -230,7 +230,7 @@ function DirectConnectionsPage({ user, onNavigate }) {
       ),
     },
     {
-      header: '10% Direct Bonus',
+      header: '10% Bonus',
       accessor: 'level1Bonus',
       align: 'right',
       render: (val) => (
@@ -633,85 +633,123 @@ function DirectConnectionsPage({ user, onNavigate }) {
         </div>
       </div>
 
-      {/* DataTable */}
-      <DataTable
-        columns={columns}
-        data={filteredMembers}
-        defaultPageSize={10}
-        searchPlaceholder="Search direct member by name, code, phone..."
-        loading={loading}
-        emptyMessage={
-          <div style={{ padding: '3.5rem 1.5rem', textAlign: 'center' }}>
-            <div
+      {/* Content Area: Standalone Full-Width 3D Empty Card (Zero Horizontal Overflow) OR Active DataTable */}
+      {loading ? (
+        <div
+          style={{
+            background: '#FFFFFF',
+            borderRadius: '20px',
+            border: '1px solid #E2E8F0',
+            padding: '4rem 2rem',
+            textAlign: 'center',
+            boxShadow: '0 4px 16px -2px rgba(15, 23, 42, 0.04)',
+          }}
+        >
+          <div
+            style={{
+              width: '46px',
+              height: '46px',
+              borderRadius: '50%',
+              border: '3.5px solid #E2E8F0',
+              borderTopColor: '#2563EB',
+              animation: 'spin 1s linear infinite',
+              margin: '0 auto 1.25rem auto',
+            }}
+          />
+          <h4 style={{ margin: '0 0 0.35rem 0', fontSize: '1.05rem', fontWeight: 800, color: '#0F172A' }}>
+            Loading Network Data...
+          </h4>
+          <p style={{ margin: 0, fontSize: '0.86rem', color: '#64748B' }}>
+            Fetching verified Level 1 direct sponsors from database.
+          </p>
+        </div>
+      ) : filteredMembers.length === 0 ? (
+        <div
+          style={{
+            background: '#FFFFFF',
+            borderRadius: '20px',
+            border: '1px solid #E2E8F0',
+            padding: '4.5rem 2rem',
+            textAlign: 'center',
+            boxShadow: '0 6px 24px -3px rgba(15, 23, 42, 0.05)',
+            width: '100%',
+            boxSizing: 'border-box',
+          }}
+        >
+          <div
+            className="van-3d-kpi-icon van-3d-icon-blue"
+            style={{
+              width: '68px',
+              height: '68px',
+              borderRadius: '22px',
+              margin: '0 auto 1.5rem auto',
+              boxShadow: '0 12px 30px -4px rgba(37, 99, 235, 0.42), inset 0 2px 2px rgba(255, 255, 255, 0.65)',
+            }}
+          >
+            <Users size={32} strokeWidth={2.4} />
+          </div>
+          <h3 style={{ margin: '0 0 0.65rem 0', fontSize: '1.35rem', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.01em' }}>
+            No Direct Connections Found
+          </h3>
+          <p style={{ margin: '0 auto 1.85rem auto', maxWidth: '520px', fontSize: '0.92rem', color: '#64748B', lineHeight: 1.6 }}>
+            {directMembers.length === 0
+              ? "You haven't directly sponsored any partners yet. Share your personal sponsor registration link with your network to start growing your Level 1 direct team and earning instant commissions!"
+              : "No direct team members match your current rank or status filter. Try clearing your filters to view all partners."}
+          </p>
+          {directMembers.length === 0 ? (
+            <button
+              type="button"
+              onClick={copySponsorLink}
+              className="van-btn-share-3d"
               style={{
-                width: '64px',
-                height: '64px',
-                borderRadius: '20px',
-                background: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)',
-                color: '#2563EB',
-                display: 'flex',
+                padding: '0.75rem 1.75rem',
+                display: 'inline-flex',
                 alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto 1.25rem auto',
-                boxShadow: '0 8px 20px -3px rgba(37, 99, 235, 0.25)',
+                gap: '0.55rem',
+                fontSize: '0.88rem',
+                fontWeight: 800,
+                borderRadius: '14px',
+                background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                borderBottom: '3px solid #1E40AF',
+                color: '#FFFFFF',
+                boxShadow: '0 8px 20px -3px rgba(37, 99, 235, 0.45)',
+                cursor: 'pointer',
+                margin: '0 auto',
               }}
             >
-              <Users size={28} />
-            </div>
-            <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '1.2rem', fontWeight: 800, color: '#0F172A' }}>
-              No Direct Connections Found
-            </h4>
-            <p style={{ margin: '0 auto 1.5rem auto', maxWidth: '440px', fontSize: '0.88rem', color: '#64748B', lineHeight: 1.5 }}>
-              {directMembers.length === 0
-                ? "You haven't directly sponsored any partners yet. Copy and share your sponsor registration link to start growing your Level 1 direct team!"
-                : "No direct team members match your current rank or status filter. Try clearing the filters to view all partners."}
-            </p>
-            {directMembers.length === 0 ? (
-              <button
-                type="button"
-                onClick={copySponsorLink}
-                className="van-btn-share-3d"
-                style={{
-                  padding: '0.65rem 1.35rem',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  fontSize: '0.85rem',
-                  fontWeight: 700,
-                  borderRadius: '12px',
-                  background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
-                  borderBottom: '2.5px solid #1E40AF',
-                  color: '#FFFFFF',
-                  cursor: 'pointer',
-                  margin: '0 auto',
-                }}
-              >
-                <Copy size={14} />
-                <span>Copy Sponsor Link</span>
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => { setRankFilter('all'); setStatusFilter('all'); }}
-                className="van-btn-details-3d"
-                style={{
-                  padding: '0.65rem 1.35rem',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  fontSize: '0.85rem',
-                  fontWeight: 700,
-                  borderRadius: '12px',
-                  margin: '0 auto',
-                }}
-              >
-                <RotateCcw size={14} />
-                <span>Reset All Filters</span>
-              </button>
-            )}
-          </div>
-        }
-      />
+              {copiedLink ? <Check size={16} strokeWidth={3} /> : <Copy size={16} />}
+              <span>{copiedLink ? 'Copied Link!' : 'Copy Sponsor Link'}</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => { setRankFilter('all'); setStatusFilter('all'); }}
+              className="van-btn-details-3d"
+              style={{
+                padding: '0.7rem 1.5rem',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                fontSize: '0.86rem',
+                fontWeight: 700,
+                borderRadius: '12px',
+                margin: '0 auto',
+              }}
+            >
+              <RotateCcw size={15} />
+              <span>Reset All Filters</span>
+            </button>
+          )}
+        </div>
+      ) : (
+        <DataTable
+          columns={columns}
+          data={filteredMembers}
+          defaultPageSize={10}
+          searchPlaceholder="Search direct member by name, code, phone..."
+          loading={loading}
+        />
+      )}
 
       {/* Member Dossier Modal */}
       {selectedMember && (
