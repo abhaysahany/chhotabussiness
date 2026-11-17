@@ -12,9 +12,9 @@ export const REMEMBER_KEY = `${PANEL_PREFIX}_remember`;
 export const EXPIRED_NOTICE_KEY = `${PANEL_PREFIX}_session_expired_notice`;
 export const CHANNEL_NAME = `vyapar_${PANEL_PREFIX}_auth_channel`;
 
-// Default policy constants (matches backend config)
-export const IDLE_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
-export const ABSOLUTE_TIMEOUT_MS = 12 * 60 * 60 * 1000; // 12 hours
+// Default policy constants (matches backend config: 0 = disabled)
+export const IDLE_TIMEOUT_MS = 0; // Disabled: sessions do not expire due to inactivity
+export const ABSOLUTE_TIMEOUT_MS = 0; // Disabled: sessions do not expire due to absolute duration
 const PING_THROTTLE_MS = 60 * 1000; // Ping backend at most once every 60s when active
 const LOCAL_TOUCH_THROTTLE_MS = 2 * 1000; // Throttle writing to localStorage to every 2s
 
@@ -84,16 +84,16 @@ export const isSessionExpired = () => {
   const sessionStartStr = localStorage.getItem(SESSION_START_KEY);
   const lastActivityStr = localStorage.getItem(LAST_ACTIVITY_KEY);
 
-  // 1. Check Absolute Session Lifetime (12 Hours)
-  if (sessionStartStr) {
+  // 1. Check Absolute Session Lifetime (if configured > 0)
+  if (ABSOLUTE_TIMEOUT_MS > 0 && sessionStartStr) {
     const sessionStart = parseInt(sessionStartStr, 10);
     if (!isNaN(sessionStart) && now - sessionStart >= ABSOLUTE_TIMEOUT_MS) {
       return { expired: true, reason: 'absolute' };
     }
   }
 
-  // 2. Check Inactivity / Idle Timeout (30 Minutes)
-  if (lastActivityStr) {
+  // 2. Check Inactivity / Idle Timeout (if configured > 0)
+  if (IDLE_TIMEOUT_MS > 0 && lastActivityStr) {
     const lastActivity = parseInt(lastActivityStr, 10);
     if (!isNaN(lastActivity) && now - lastActivity >= IDLE_TIMEOUT_MS) {
       return { expired: true, reason: 'idle' };

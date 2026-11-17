@@ -32,8 +32,21 @@ class EnforceSessionExpiry
             return $next($request);
         }
 
-        // 1. Authoritative Absolute Session Lifetime Check (Default: 12 Hours)
-        if ($token->isAbsoluteExpired()) {
+        // Mobile App requests and persistent sessions must NEVER expire due to inactivity or absolute timeouts
+        $isMobileApp = $request->header('X-Client-Type') === 'mobile-app'
+            || $request->header('X-Mobile-App') === '1'
+            || ($token->name ?? '') === 'mobile_auth_token'
+            || str_contains(strtolower($request->userAgent() ?? ''), 'dart')
+            || str_contains(strtolower($request->userAgent() ?? ''), 'flutter');
+
+        if ($isMobileApp) {
+            $token->touchActivity();
+            return $next($request);
+        }
+
+        $absoluteLimit = (int) config('session_timeout.absolute_timeout_hours', 0);
+        // 1. Authoritative Absolute Session Lifetime Check (Disabled if <= 0)
+        if ($absoluteLimit > 0 && $token->isAbsoluteExpired($absoluteLimit)) {
             $token->delete();
 
             return response()->json([
@@ -44,8 +57,9 @@ class EnforceSessionExpiry
             ], 401);
         }
 
-        // 2. Authoritative Inactivity Timeout Check (Default: 30 Minutes)
-        if ($token->isIdleExpired()) {
+        $idleLimit = (int) config('session_timeout.idle_timeout_minutes', 0);
+        // 2. Authoritative Inactivity Timeout Check (Disabled if <= 0)
+        if ($idleLimit > 0 && $token->isIdleExpired($idleLimit)) {
             $token->delete();
 
             return response()->json([
