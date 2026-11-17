@@ -1,0 +1,91 @@
+# ==============================================================================
+# VYAPAR AdNET — CENTRALIZED APPLICATION ROUTING & SECURITY ARCHITECTURE
+# Target: public_html/.htaccess (Single Central Configuration)
+# Domain: https://vyaparadnet.com
+# Architecture: User Panel (Root SPA) + Admin SPA + Entity SPA + Laravel 12 API
+# ==============================================================================
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # --------------------------------------------------------------------------
+    # 0. FastCGI & PHP-FPM Authorization Header Forwarding
+    # --------------------------------------------------------------------------
+    # Ensure Authorization and X-XSRF-Token headers reach Laravel controllers
+    SetEnvIfNoCase ^Authorization$ "(.+)" HTTP_AUTHORIZATION=$1
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    RewriteCond %{HTTP:x-xsrf-token} .
+    RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
+
+    # --------------------------------------------------------------------------
+    # 1. Security Denial Rules (Protection of Source Code, Config & Backups)
+    # --------------------------------------------------------------------------
+    # Block direct download of archives, backups, dumps, logs, and config files
+    RewriteRule \.(zip|tar|gz|rar|7z|bak|sql|log|env|ini|conf|sh|ps1)$ - [F,L,NC]
+
+    # Block access to hidden files and dotfiles (e.g. .env, .git), except ACME challenge
+    RewriteRule (^|/)\.(?!well-known/) - [F,L]
+
+    # Block direct public access to private Laravel backend directories and .env
+    RewriteRule ^backend/\.env - [F,L]
+    RewriteRule ^backend/(app|bootstrap|config|database|resources|routes|storage|tests|vendor)(/.*)?$ - [F,L,NC]
+    RewriteRule ^backend/?$ - [F,L,NC]
+
+    # --------------------------------------------------------------------------
+    # 2. Public Static Media & Storage Mappings
+    # --------------------------------------------------------------------------
+    # Route public uploaded files to backend/public/uploads/
+    RewriteCond %{DOCUMENT_ROOT}/backend/public/uploads/$1 -f
+    RewriteRule ^uploads/(.*)$ backend/public/uploads/$1 [L]
+
+    # Route public storage files to backend/public/storage/
+    RewriteCond %{DOCUMENT_ROOT}/backend/public/storage/$1 -f
+    RewriteRule ^storage/(.*)$ backend/public/storage/$1 [L]
+
+    # Allow direct access to real files and directories across all panels & assets
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # --------------------------------------------------------------------------
+    # 3. Laravel API Routing
+    # --------------------------------------------------------------------------
+    # Direct all /api and /api/* requests directly to Laravel entrypoint
+    # Preserves HTTP method, headers, request body, and query strings [QSA]
+    RewriteRule ^api(/.*)?$ backend/public/index.php [L,QSA]
+
+    # --------------------------------------------------------------------------
+    # 4. Admin Panel SPA Routing (/admin/*)
+    # --------------------------------------------------------------------------
+    # Route non-existent files under /admin/* to admin/index.html
+    RewriteCond %{REQUEST_URI} ^/admin
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^admin(/.*)?$ admin/index.html [L]
+
+    # --------------------------------------------------------------------------
+    # 5. Entity Panel SPA Routing (/entity/*)
+    # --------------------------------------------------------------------------
+    # Route non-existent files under /entity/* to entity/index.html
+    RewriteCond %{REQUEST_URI} ^/entity
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^entity(/.*)?$ entity/index.html [L]
+
+    # --------------------------------------------------------------------------
+    # 6. Backend Public Assets Direct Passthrough
+    # --------------------------------------------------------------------------
+    # Allow direct access only to backend/public/ assets if explicitly addressed
+    RewriteCond %{REQUEST_URI} ^/backend/public(/.*)?$
+    RewriteRule ^ - [L]
+
+    # --------------------------------------------------------------------------
+    # 7. User Panel SPA Routing (Root Fallback)
+    # --------------------------------------------------------------------------
+    # Fallback for all other non-existent paths to root User index.html
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.html [L]
+</IfModule>
