@@ -220,86 +220,25 @@ function DirectIncomePage({ user, onNavigate }) {
           </div>
         </div>
 
-        {/* Right Stats Chips & Action Button Area */}
+        {/* Right Stats Chips Area */}
         <div
           className="van-directs-hero-action-col"
           style={{
             display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-end',
-            gap: '1.15rem',
+            alignItems: 'center',
+            gap: '0.75rem',
             flexShrink: 0,
           }}
         >
-          {/* Top Row: Quick Stats Chips */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-            <div className="van-catalog-stat-chip">
-              <div className="van-catalog-stat-chip-val">{formatNumberIN(totalOrders)}</div>
-              <div className="van-catalog-stat-chip-lbl">Eligible Orders</div>
-            </div>
-            <div className="van-catalog-stat-chip">
-              <div className="van-catalog-stat-chip-val" style={{ color: '#34D399' }}>
-                {completionPercentage}%
-              </div>
-              <div className="van-catalog-stat-chip-lbl">Realized</div>
-            </div>
+          <div className="van-catalog-stat-chip">
+            <div className="van-catalog-stat-chip-val">{formatNumberIN(totalOrders)}</div>
+            <div className="van-catalog-stat-chip-lbl">Eligible Orders</div>
           </div>
-
-          {/* Bottom Row: Actions */}
-          <div style={{ display: 'flex', gap: '0.65rem', alignItems: 'center', flexWrap: 'wrap' }}>
-            {onNavigate && (
-              <button
-                type="button"
-                onClick={() => onNavigate('my-income')}
-                style={{
-                  padding: '0.68rem 1.15rem',
-                  background: 'rgba(255, 255, 255, 0.12)',
-                  color: '#FFFFFF',
-                  border: '1px solid rgba(255, 255, 255, 0.25)',
-                  borderRadius: '12px',
-                  fontSize: '0.84rem',
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.45rem',
-                  transition: 'all 0.15s ease',
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.22)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)'; }}
-              >
-                <ArrowLeft size={15} />
-                <span>My Income Overview</span>
-              </button>
-            )}
-
-            <button
-              type="button"
-              onClick={loadSummaries}
-              disabled={loading}
-              className="van-btn-share-3d"
-              style={{
-                padding: '0.72rem 1.45rem',
-                height: 'auto',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.65rem',
-                fontSize: '0.86rem',
-                fontWeight: 800,
-                borderRadius: '12px',
-                background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
-                borderBottom: '3px solid #1E40AF',
-                color: '#FFFFFF',
-                boxShadow: '0 8px 24px -3px rgba(37, 99, 235, 0.45)',
-                cursor: loading ? 'not-allowed' : 'pointer',
-                whiteSpace: 'nowrap',
-                transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
-              }}
-              title="Refresh direct income records from database"
-            >
-              <RotateCcw size={16} strokeWidth={2.4} className={loading ? 'animate-spin' : ''} />
-              <span>{loading ? 'Refreshing...' : 'Refresh'}</span>
-            </button>
+          <div className="van-catalog-stat-chip">
+            <div className="van-catalog-stat-chip-val" style={{ color: '#34D399' }}>
+              {completionPercentage}%
+            </div>
+            <div className="van-catalog-stat-chip-lbl">Realized</div>
           </div>
         </div>
       </div>
@@ -742,6 +681,21 @@ function DirectIncomePage({ user, onNavigate }) {
 
           {/* Right: Actions Cluster */}
           <div className="van-dir-actions-cluster">
+            <button
+              type="button"
+              onClick={loadSummaries}
+              disabled={loading}
+              className="van-dir-reset-btn"
+              style={{
+                background: '#EFF6FF',
+                borderColor: '#BFDBFE',
+                color: '#1D4ED8',
+              }}
+              title="Refresh direct income records from database"
+            >
+              <RotateCcw size={13} strokeWidth={2.4} className={loading ? 'animate-spin' : ''} />
+              <span>Refresh</span>
+            </button>
             <div className="van-dir-count-pill">
               <span style={{ color: '#0F172A', fontWeight: 800 }}>{orders.length}</span>
               <span>{orders.length === 1 ? 'order displayed' : 'orders displayed'}</span>
