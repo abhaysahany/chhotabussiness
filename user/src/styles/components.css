@@ -3046,6 +3046,113 @@
   box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
 }
 
+/* -------------------------------------------------------------------------- */
+/* Industry Sectors 3D Exploration Cards Grid                                */
+/* -------------------------------------------------------------------------- */
+.van-sector-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.95rem;
+  margin-bottom: 2rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1200px) {
+  .van-sector-cards-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.9rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .van-sector-cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+}
+
+.van-sector-card-3d {
+  background: #FFFFFF;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 16px;
+  padding: 1.05rem 0.95rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04), inset 0 1px 0 #FFFFFF;
+  min-height: 110px;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.van-sector-card-3d:hover {
+  transform: translateY(-4px);
+  border-color: #93C5FD;
+  box-shadow: 0 12px 24px -4px rgba(37, 99, 235, 0.15), 0 4px 8px rgba(15, 23, 42, 0.04), inset 0 1px 0 #FFFFFF;
+}
+
+.van-sector-card-3d.active {
+  background: linear-gradient(180deg, #F0F7FF 0%, #FFFFFF 100%);
+  border-color: #2563EB;
+  box-shadow: 0 10px 24px -4px rgba(37, 99, 235, 0.25), 0 2px 6px rgba(15, 23, 42, 0.04), inset 0 1px 0 #FFFFFF;
+  transform: translateY(-3px);
+}
+
+.van-sector-card-top-shimmer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #2563EB 0%, #60A5FA 100%);
+}
+
+.van-sector-icon-pod {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  animation: van-sector-icon-float 4s ease-in-out infinite;
+  transform-origin: center center;
+  will-change: transform, box-shadow;
+  flex-shrink: 0;
+}
+
+@keyframes van-sector-icon-float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-3px) rotate(1deg);
+  }
+}
+
+.van-sector-count-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 0.15rem 0.55rem;
+  border-radius: 9999px;
+  background: #F1F5F9;
+  color: #475569;
+  border: 1px solid #E2E8F0;
+  line-height: 1.2;
+}
+
+.van-sector-card-3d.active .van-sector-count-badge {
+  background: #DBEAFE;
+  color: #1D4ED8;
+  border-color: #BFDBFE;
+}
+
 
 
 

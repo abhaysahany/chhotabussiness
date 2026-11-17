@@ -21,7 +21,10 @@ import {
   ChevronRight,
   Eye,
   Check,
-  RotateCcw
+  RotateCcw,
+  Cpu,
+  Scale,
+  Calculator
 } from 'lucide-react';
 import {
   getPublicCategories,
@@ -164,6 +167,50 @@ function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
   const totalFreelancersCount = freelancers.length;
   const totalVerifiedCount = combinedEntities.filter((e) => e.verification_status === 'verified').length;
 
+  const getCategoryIconMeta = (catName = '') => {
+    const lower = catName.toLowerCase();
+    if (lower.includes('financial') || lower.includes('consulting')) {
+      return {
+        icon: <Briefcase size={18} strokeWidth={2.4} />,
+        bg: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+        shadow: '0 6px 14px -2px rgba(16, 185, 129, 0.45)',
+      };
+    }
+    if (lower.includes('marketing') || lower.includes('ad')) {
+      return {
+        icon: <Sparkles size={18} strokeWidth={2.4} />,
+        bg: 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)',
+        shadow: '0 6px 14px -2px rgba(139, 92, 246, 0.45)',
+      };
+    }
+    if (lower.includes('it') || lower.includes('software') || lower.includes('dev')) {
+      return {
+        icon: <Cpu size={18} strokeWidth={2.4} />,
+        bg: 'linear-gradient(135deg, #06B6D4 0%, #0284C7 100%)',
+        shadow: '0 6px 14px -2px rgba(6, 182, 212, 0.45)',
+      };
+    }
+    if (lower.includes('legal') || lower.includes('corporate')) {
+      return {
+        icon: <Scale size={18} strokeWidth={2.4} />,
+        bg: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+        shadow: '0 6px 14px -2px rgba(245, 158, 11, 0.45)',
+      };
+    }
+    if (lower.includes('tax') || lower.includes('accounting')) {
+      return {
+        icon: <Calculator size={18} strokeWidth={2.4} />,
+        bg: 'linear-gradient(135deg, #F43F5E 0%, #E11D48 100%)',
+        shadow: '0 6px 14px -2px rgba(244, 63, 94, 0.45)',
+      };
+    }
+    return {
+      icon: <FolderKanban size={18} strokeWidth={2.4} />,
+      bg: 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)',
+      shadow: '0 6px 14px -2px rgba(37, 99, 235, 0.45)',
+    };
+  };
+
   return (
     <div className="page-container" style={{ maxWidth: '1400px', margin: '0 auto', paddingBottom: '3.5rem' }}>
       
@@ -252,119 +299,96 @@ function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
         </div>
       </div>
 
-      {/* Category Domain Filter Bar (Dedicated Clean Floating Bar) */}
-      <div
-        style={{
-          background: '#FFFFFF',
-          borderRadius: '16px',
-          padding: '0.85rem 1.35rem',
-          border: '1px solid #E2E8F0',
-          boxShadow: '0 4px 14px -2px rgba(15, 23, 42, 0.04)',
-          marginBottom: '1.75rem',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.65rem',
-          flexWrap: 'wrap',
-        }}
-      >
-        <span
-          style={{
-            fontSize: '0.78rem',
-            fontWeight: 800,
-            color: '#64748B',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            marginRight: '0.35rem',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          <FolderKanban size={15} color="#2563EB" />
-          <span>Domain Sectors:</span>
-        </span>
-
-        <button
-          type="button"
-          onClick={() => setCategoryFilter('')}
-          style={{
-            background: categoryFilter === ''
-              ? 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)'
-              : '#F8FAFC',
-            border: categoryFilter === '' ? '1.5px solid #2563EB' : '1.5px solid #E2E8F0',
-            color: categoryFilter === '' ? '#FFFFFF' : '#475569',
-            padding: '0.38rem 0.95rem',
-            borderRadius: '20px',
-            fontSize: '0.78rem',
-            fontWeight: 800,
-            cursor: 'pointer',
-            transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
-            boxShadow: categoryFilter === '' ? '0 4px 12px rgba(37, 99, 235, 0.35)' : 'none',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-          }}
-        >
-          <span>All Categories</span>
-          <span
-            style={{
-              background: categoryFilter === '' ? 'rgba(255, 255, 255, 0.25)' : '#E2E8F0',
-              color: categoryFilter === '' ? '#FFFFFF' : '#334155',
-              padding: '0.1rem 0.45rem',
-              borderRadius: '10px',
-              fontSize: '0.72rem',
-              fontWeight: 800,
-            }}
-          >
-            {combinedEntities.length}
+      {/* Industry Domains & Specialized Sectors (3D Exploration Grid) */}
+      <div style={{ marginBottom: '2.25rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.9rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem' }}>
+            <div style={{ width: '30px', height: '30px', borderRadius: '10px', background: '#EFF6FF', color: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <FolderKanban size={17} strokeWidth={2.4} />
+            </div>
+            <strong style={{ fontSize: '1.02rem', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.01em' }}>
+              Industry Domains & Specialized Sectors
+            </strong>
+          </div>
+          <span style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: 600 }}>
+            Select any industry sector to filter enterprise business listings and freelance experts
           </span>
-        </button>
+        </div>
 
-        {categories.map((cat) => {
-          const isSelected = String(categoryFilter) === String(cat.id);
-          const catCount = combinedEntities.filter((e) => String(e.entity_category_id) === String(cat.id)).length;
-          return (
-            <button
-              type="button"
-              key={cat.id}
-              onClick={() => setCategoryFilter(String(cat.id))}
-              style={{
-                background: isSelected
-                  ? 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)'
-                  : '#F8FAFC',
-                border: isSelected ? '1.5px solid #2563EB' : '1.5px solid #E2E8F0',
-                color: isSelected ? '#FFFFFF' : '#475569',
-                padding: '0.38rem 0.95rem',
-                borderRadius: '20px',
-                fontSize: '0.78rem',
-                fontWeight: 800,
-                cursor: 'pointer',
-                transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
-                boxShadow: isSelected ? '0 4px 12px rgba(37, 99, 235, 0.35)' : 'none',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-              }}
-            >
-              <span>{cat.name}</span>
-              {catCount > 0 && (
-                <span
-                  style={{
-                    background: isSelected ? 'rgba(255, 255, 255, 0.25)' : '#E2E8F0',
-                    color: isSelected ? '#FFFFFF' : '#334155',
-                    padding: '0.1rem 0.45rem',
-                    borderRadius: '10px',
-                    fontSize: '0.72rem',
-                    fontWeight: 800,
-                  }}
-                >
-                  {catCount}
-                </span>
-              )}
-            </button>
-          );
-        })}
+        <div className="van-sector-cards-grid">
+          {/* Card: All Categories */}
+          <div
+            onClick={() => setCategoryFilter('')}
+            className={`van-sector-card-3d ${categoryFilter === '' ? 'active' : ''}`}
+            title="Show all domains & sectors"
+          >
+            {categoryFilter === '' && <div className="van-sector-card-top-shimmer" />}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+              <div
+                className="van-sector-icon-pod"
+                style={{
+                  background: 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)',
+                  boxShadow: '0 6px 14px -2px rgba(37, 99, 235, 0.45)',
+                  animationDelay: '0s',
+                }}
+              >
+                <Layers size={18} strokeWidth={2.4} />
+              </div>
+              <span className="van-sector-count-badge">
+                {combinedEntities.length}
+              </span>
+            </div>
+            <div>
+              <strong style={{ fontSize: '0.86rem', fontWeight: 800, color: '#0F172A', display: 'block', lineHeight: 1.25 }}>
+                All Categories
+              </strong>
+              <span style={{ fontSize: '0.72rem', color: categoryFilter === '' ? '#2563EB' : '#94A3B8', fontWeight: 750, marginTop: '0.2rem', display: 'block' }}>
+                {categoryFilter === '' ? '● Active Filter' : 'All Listings'}
+              </span>
+            </div>
+          </div>
+
+          {/* Dynamic Category Cards */}
+          {categories.map((cat, idx) => {
+            const isSelected = String(categoryFilter) === String(cat.id);
+            const catCount = combinedEntities.filter((e) => String(e.entity_category_id) === String(cat.id)).length;
+            const meta = getCategoryIconMeta(cat.name);
+
+            return (
+              <div
+                key={cat.id}
+                onClick={() => setCategoryFilter(String(cat.id))}
+                className={`van-sector-card-3d ${isSelected ? 'active' : ''}`}
+                title={`Filter by ${cat.name}`}
+              >
+                {isSelected && <div className="van-sector-card-top-shimmer" />}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+                  <div
+                    className="van-sector-icon-pod"
+                    style={{
+                      background: meta.bg,
+                      boxShadow: meta.shadow,
+                      animationDelay: `${(idx + 1) * 0.25}s`,
+                    }}
+                  >
+                    {meta.icon}
+                  </div>
+                  <span className="van-sector-count-badge">
+                    {catCount}
+                  </span>
+                </div>
+                <div>
+                  <strong style={{ fontSize: '0.86rem', fontWeight: 800, color: '#0F172A', display: 'block', lineHeight: 1.25 }}>
+                    {cat.name}
+                  </strong>
+                  <span style={{ fontSize: '0.72rem', color: isSelected ? '#2563EB' : '#94A3B8', fontWeight: 750, marginTop: '0.2rem', display: 'block' }}>
+                    {isSelected ? '● Active Filter' : 'Filter Sector'}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* 4 Signature 3D KPI Cards Grid (4 in a row Desktop, 2x2 Tablet, 1 col Mobile) */}
