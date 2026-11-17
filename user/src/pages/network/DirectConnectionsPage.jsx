@@ -312,51 +312,102 @@ function DirectConnectionsPage({ user, onNavigate }) {
           </div>
         </div>
 
-        {/* Right Action & Stats Chips */}
-        <div className="van-catalog-hero-stats" style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
-          <div className="van-catalog-stat-chip">
-            <div className="van-catalog-stat-chip-val">{stats.totalCount}</div>
-            <div className="van-catalog-stat-chip-lbl">Total Directs</div>
-          </div>
-          <div className="van-catalog-stat-chip">
-            <div className="van-catalog-stat-chip-val" style={{ color: '#34D399' }}>
-              {stats.totalCount > 0 ? Math.round((stats.activeCount / stats.totalCount) * 100) : 0}%
+        {/* Right Action & Stats Area (Stacked: Chips on Top, Premium 3D Copy Bar on Bottom) */}
+        <div
+          className="van-directs-hero-action-col"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-end',
+            gap: '0.85rem',
+            flexShrink: 0,
+          }}
+        >
+          {/* Top Row: Stats Chips */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+            <div className="van-catalog-stat-chip">
+              <div className="van-catalog-stat-chip-val">{stats.totalCount}</div>
+              <div className="van-catalog-stat-chip-lbl">Total Directs</div>
             </div>
-            <div className="van-catalog-stat-chip-lbl">Active Ratio</div>
-          </div>
-          <div className="van-catalog-stat-chip">
-            <div className="van-catalog-stat-chip-val" style={{ color: '#FBBF24' }}>
-              {formatINR(stats.totalBonus)}
+            <div className="van-catalog-stat-chip">
+              <div className="van-catalog-stat-chip-val" style={{ color: '#34D399' }}>
+                {stats.totalCount > 0 ? Math.round((stats.activeCount / stats.totalCount) * 100) : 0}%
+              </div>
+              <div className="van-catalog-stat-chip-lbl">Active Ratio</div>
             </div>
-            <div className="van-catalog-stat-chip-lbl">10% Bonus</div>
+            <div className="van-catalog-stat-chip">
+              <div className="van-catalog-stat-chip-val" style={{ color: '#FBBF24' }}>
+                {formatINR(stats.totalBonus)}
+              </div>
+              <div className="van-catalog-stat-chip-lbl">10% Bonus</div>
+            </div>
           </div>
 
-          <button
-            type="button"
-            onClick={copySponsorLink}
-            className="van-btn-share-3d"
+          {/* Bottom Row: Premium 3D Copy Sponsor Link Bar */}
+          <div
             style={{
-              padding: '0.75rem 1.35rem',
-              height: 'auto',
-              textDecoration: 'none',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '0.55rem',
-              fontSize: '0.88rem',
-              fontWeight: 800,
-              borderRadius: '14px',
-              background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
-              borderBottom: '3px solid #1E40AF',
-              color: '#FFFFFF',
-              boxShadow: '0 8px 20px -3px rgba(37, 99, 235, 0.45)',
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
+              background: 'rgba(15, 23, 42, 0.45)',
+              border: '1px solid rgba(255, 255, 255, 0.22)',
+              backdropFilter: 'blur(10px)',
+              borderRadius: '16px',
+              padding: '0.35rem 0.4rem 0.35rem 1rem',
+              boxShadow: '0 8px 24px -4px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.25)',
+              gap: '0.85rem',
             }}
-            title="Copy your personal sponsor registration link"
           >
-            {copiedLink ? <Check size={16} strokeWidth={3} /> : <Copy size={16} />}
-            <span>{copiedLink ? 'Copied Link!' : 'Copy Sponsor Link'}</span>
-          </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.8)', fontWeight: 600 }}>
+                Sponsor ID:
+              </span>
+              <span
+                style={{
+                  fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+                  fontSize: '0.84rem',
+                  fontWeight: 800,
+                  color: '#38BDF8',
+                  letterSpacing: '0.04em',
+                  background: 'rgba(56, 189, 248, 0.12)',
+                  padding: '0.15rem 0.55rem',
+                  borderRadius: '6px',
+                  border: '1px solid rgba(56, 189, 248, 0.25)',
+                }}
+              >
+                {user?.user_code || 'CB100001'}
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={copySponsorLink}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.62rem 1.25rem',
+                borderRadius: '12px',
+                background: copiedLink 
+                  ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)' 
+                  : 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)',
+                border: '1px solid rgba(255, 255, 255, 0.35)',
+                borderBottom: copiedLink ? '3px solid #047857' : '3px solid #1E40AF',
+                color: '#FFFFFF',
+                fontSize: '0.86rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                boxShadow: copiedLink
+                  ? '0 6px 18px rgba(16, 185, 129, 0.45)'
+                  : '0 6px 18px rgba(37, 99, 235, 0.45)',
+                transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                whiteSpace: 'nowrap',
+              }}
+              title="Copy your personal sponsor registration link"
+            >
+              {copiedLink ? <Check size={15} strokeWidth={3} /> : <Copy size={15} />}
+              <span>{copiedLink ? 'Copied Link!' : 'Copy Sponsor Link'}</span>
+            </button>
+          </div>
         </div>
       </div>
 

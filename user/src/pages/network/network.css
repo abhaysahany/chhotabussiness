@@ -1457,3 +1457,10 @@
     line-height: 1.2;
   }
 }
+
+@media (max-width: 960px) {
+  .van-directs-hero-action-col {
+    align-items: flex-start !important;
+    width: 100%;
+  }
+}
