@@ -580,31 +580,80 @@ function DirectIncomePage({ user, onNavigate }) {
 
       {/* Advanced 3D Filter & Search Command Toolbar */}
       <div className="van-dir-toolbar-3d" style={{ marginBottom: '1.75rem' }}>
+        {/* Tier 1: Search Bar & Quick Action Status */}
+        <div className="van-dir-toolbar-top">
+          {/* Expanded Search Bar with 3D Pod */}
+          <div className="van-dir-search-wrap">
+            <div className="van-dir-search-icon-pod">
+              <Search size={16} color="#2563EB" strokeWidth={2.4} />
+            </div>
+            <input
+              type="text"
+              className="van-dir-search-input"
+              placeholder="Search by Invoice, Order ID, Customer, Item..."
+              value={search}
+              onChange={handleSearchChange}
+            />
+            {search && (
+              <button
+                type="button"
+                className="van-dir-search-clear"
+                onClick={handleClearSearch}
+                title="Clear search"
+              >
+                <X size={14} strokeWidth={2.5} />
+              </button>
+            )}
+          </div>
+
+          {/* Right: Quick Refresh & Order Count Display */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            <button
+              type="button"
+              onClick={loadSummaries}
+              disabled={loading}
+              className="van-dir-reset-btn"
+              style={{
+                background: '#EFF6FF',
+                borderColor: '#BFDBFE',
+                color: '#1D4ED8',
+                padding: '0.52rem 1rem',
+              }}
+              title="Refresh direct income records from database"
+            >
+              <RotateCcw size={14} strokeWidth={2.4} className={loading ? 'animate-spin' : ''} />
+              <span>{loading ? 'Refreshing...' : 'Refresh'}</span>
+            </button>
+
+            <div className="van-dir-count-pill" style={{ padding: '0.5rem 0.95rem' }}>
+              <span style={{ color: '#0F172A', fontWeight: 800 }}>{orders.length}</span>
+              <span>{orders.length === 1 ? 'order displayed' : 'orders displayed'}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Subtle Horizontal Divider */}
+        <div className="van-dir-toolbar-divider" />
+
+        {/* Tier 2: Filter Capsules Cluster & Reset Button */}
         <div className="van-dir-toolbar-bottom">
-          {/* Left: Search & Filter Capsules Cluster */}
+          {/* Left: Filter Capsules Cluster */}
           <div className="van-dir-filters-cluster">
-            {/* Search Box */}
-            <div className="van-dir-search-wrap" style={{ minWidth: '280px', flex: '1 1 320px' }}>
-              <div className="van-dir-search-icon-pod">
-                <Search size={16} color="#2563EB" strokeWidth={2.4} />
-              </div>
-              <input
-                type="text"
-                className="van-dir-search-input"
-                placeholder="Search by Invoice, Order ID, Customer, Item..."
-                value={search}
-                onChange={handleSearchChange}
-              />
-              {search && (
-                <button
-                  type="button"
-                  className="van-dir-search-clear"
-                  onClick={handleClearSearch}
-                  title="Clear search"
-                >
-                  <X size={14} strokeWidth={2.5} />
-                </button>
-              )}
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.45rem',
+                fontSize: '0.78rem',
+                fontWeight: 850,
+                color: '#64748B',
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+                marginRight: '0.2rem',
+              }}
+            >
+              <Filter size={14} color="#2563EB" strokeWidth={2.5} />
+              <span>Filters</span>
             </div>
 
             {/* Status Filter */}
@@ -674,32 +723,15 @@ function DirectIncomePage({ user, onNavigate }) {
                 title="Reset all search & filter parameters"
               >
                 <RotateCcw size={13} strokeWidth={2.4} />
-                <span>Reset</span>
+                <span>Reset Filters</span>
               </button>
             )}
           </div>
 
-          {/* Right: Actions Cluster */}
-          <div className="van-dir-actions-cluster">
-            <button
-              type="button"
-              onClick={loadSummaries}
-              disabled={loading}
-              className="van-dir-reset-btn"
-              style={{
-                background: '#EFF6FF',
-                borderColor: '#BFDBFE',
-                color: '#1D4ED8',
-              }}
-              title="Refresh direct income records from database"
-            >
-              <RotateCcw size={13} strokeWidth={2.4} className={loading ? 'animate-spin' : ''} />
-              <span>Refresh</span>
-            </button>
-            <div className="van-dir-count-pill">
-              <span style={{ color: '#0F172A', fontWeight: 800 }}>{orders.length}</span>
-              <span>{orders.length === 1 ? 'order displayed' : 'orders displayed'}</span>
-            </div>
+          {/* Right: Quick Entitlement Note */}
+          <div style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: 650 }}>
+            <span>Real-time calculation: </span>
+            <strong style={{ color: '#2563EB' }}>40% Commission Cut</strong>
           </div>
         </div>
       </div>
