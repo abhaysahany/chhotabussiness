@@ -81,51 +81,69 @@ function GenealogyTreePage({ user, onNavigate }) {
           className={`tree-node-card ${node.status} ${isMatchSearch ? 'search-highlight' : ''}`}
           onClick={() => setActiveNodeModal(node)}
         >
+          {/* Top accent tier bar */}
+          <div className="node-top-shimmer" />
+
           {node.level > 0 && (
             <span className={`gen-level-badge level-${node.level}`}>
               Gen L{node.level} ({node.overridePct || '2%'})
             </span>
           )}
 
+          {/* 3D Floating Avatar Pod with Smoother Animation */}
           <div className="node-avatar-container">
-            {node.avatar && node.avatar !== '/logo.png' ? (
-              <img
-                src={node.avatar}
-                alt={node.name}
-                className="node-avatar-img"
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                  if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
+            <div className="node-avatar-orb-glow" />
+            <div className="node-avatar-orb">
+              {node.avatar && node.avatar !== '/logo.png' ? (
+                <img
+                  src={node.avatar}
+                  alt={node.name}
+                  className="node-avatar-img"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
+                  }}
+                />
+              ) : null}
+              <div
+                className="node-avatar-img node-avatar-fallback"
+                style={{
+                  display: (node.avatar && node.avatar !== '/logo.png') ? 'none' : 'flex',
                 }}
-              />
-            ) : null}
-            <div
-              className="node-avatar-img"
-              style={{
-                display: (node.avatar && node.avatar !== '/logo.png') ? 'none' : 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
-                color: '#ffffff',
-                fontWeight: 800,
-                fontSize: '0.95rem',
-                boxShadow: '0 4px 10px rgba(37, 99, 235, 0.3)',
-              }}
-            >
-              {node.name ? node.name.charAt(0).toUpperCase() : 'U'}
+              >
+                {node.name ? node.name.charAt(0).toUpperCase() : 'U'}
+              </div>
             </div>
-            <span className={`status-dot ${node.status}`} title={`Status: ${node.status}`}></span>
+            <span className={`status-dot ${node.status}`} title={`Status: ${node.status}`}>
+              {node.status === 'active' && <span className="status-dot-pulse" />}
+            </span>
           </div>
 
           <div className="node-details">
-            <span className={`rank-badge ${node.rankClass || 'rank-bronze'}`}>{node.rank || 'Member'}</span>
-            <strong className="node-user-name">{node.name}</strong>
+            <span className={`rank-badge node-rank-badge ${node.rankClass || 'rank-bronze'}`}>
+              <Award size={11} className="node-rank-icon" />
+              {node.rank || 'Member'}
+            </span>
+            <strong className="node-user-name" title={node.name}>{node.name}</strong>
             <span className="node-user-id">{node.id}</span>
           </div>
 
+          {/* Dual 3D Metric Capsules (Spacious & Khula-Khula) */}
           <div className="node-pv-row">
-            <span className="pv-badge left-pv" title="Personal Business Volume">BV: {formatNumberIN(node.personalPv || node.personalBv || 0)}</span>
-            <span className="pv-badge right-pv" title="Team Business Volume">Team: {formatINR(node.groupPv || node.groupBv || 0)}</span>
+            <div className="node-metric-box left-pv-box" title="Personal Business Volume">
+              <span className="node-metric-label">SELF BV</span>
+              <span className="node-metric-val">{formatNumberIN(node.personalPv || node.personalBv || 0)}</span>
+            </div>
+            <div className="node-metric-box right-pv-box" title="Team Business Volume">
+              <span className="node-metric-label">TEAM BV</span>
+              <span className="node-metric-val">{formatINR(node.groupPv || node.groupBv || 0)}</span>
+            </div>
+          </div>
+
+          {/* Subtle click indicator */}
+          <div className="node-card-footer-cue">
+            <span>View Dossier</span>
+            <ArrowRight size={10} />
           </div>
         </div>
 
