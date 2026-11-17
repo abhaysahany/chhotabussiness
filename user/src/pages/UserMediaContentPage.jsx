@@ -311,76 +311,71 @@ function UserMediaContentPage({ user }) {
         </div>
       </div>
 
-      {/* Filter and Search Bar */}
-      <div className="van-catalog-filter-bar">
-        {/* Media Type Tabs */}
-        <div className="van-catalog-segmented-switch">
-          <button
-            type="button"
-            onClick={() => setActiveTab('all')}
-            className={`van-catalog-tab-btn ${activeTab === 'all' ? 'active' : ''}`}
-          >
-            <Layers size={15} />
-            <span>All Content</span>
-            <span className="van-catalog-tab-count">{counts.all}</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('image')}
-            className={`van-catalog-tab-btn ${activeTab === 'image' ? 'active' : ''}`}
-          >
-            <ImageIcon size={15} />
-            <span>Banners</span>
-            <span className="van-catalog-tab-count">{counts.image}</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('video')}
-            className={`van-catalog-tab-btn ${activeTab === 'video' ? 'active' : ''}`}
-          >
-            <Video size={15} />
-            <span>Videos</span>
-            <span className="van-catalog-tab-count">{counts.video}</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('audio')}
-            className={`van-catalog-tab-btn ${activeTab === 'audio' ? 'active' : ''}`}
-          >
-            <Music size={15} />
-            <span>Sounds</span>
-            <span className="van-catalog-tab-count">{counts.audio}</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('pdf')}
-            className={`van-catalog-tab-btn ${activeTab === 'pdf' ? 'active' : ''}`}
-          >
-            <FileText size={15} />
-            <span>Flyers</span>
-            <span className="van-catalog-tab-count">{counts.pdf}</span>
-          </button>
-        </div>
-
-        {/* Search & Entity Filter */}
-        <div style={{ display: 'flex', gap: '0.75rem', flex: 1, minWidth: '300px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-          {/* Entity Dropdown */}
-          <div className="van-catalog-select-wrap">
-            <Filter size={14} className="van-catalog-select-icon" />
-            <select
-              value={entityTab}
-              onChange={(e) => setEntityTab(e.target.value)}
-              className="van-catalog-select"
+      {/* 2-Tier Structured Filter & Search Toolbar */}
+      <div className="van-library-toolbar-3d">
+        {/* Tier 1: Media Type Tabs + Results Status */}
+        <div className="van-library-toolbar-top">
+          <div className="van-catalog-segmented-switch">
+            <button
+              type="button"
+              onClick={() => setActiveTab('all')}
+              className={`van-catalog-tab-btn ${activeTab === 'all' ? 'active' : ''}`}
             >
-              <option value="all">All Entities</option>
-              <option value="chhota_business">AddNet Platform</option>
-              <option value="business">Business Entities</option>
-              <option value="freelance">Freelancers</option>
-            </select>
+              <Layers size={15} />
+              <span>All Content</span>
+              <span className="van-catalog-tab-count">{counts.all}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('image')}
+              className={`van-catalog-tab-btn ${activeTab === 'image' ? 'active' : ''}`}
+            >
+              <ImageIcon size={15} />
+              <span>Banners</span>
+              <span className="van-catalog-tab-count">{counts.image}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('video')}
+              className={`van-catalog-tab-btn ${activeTab === 'video' ? 'active' : ''}`}
+            >
+              <Video size={15} />
+              <span>Videos</span>
+              <span className="van-catalog-tab-count">{counts.video}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('audio')}
+              className={`van-catalog-tab-btn ${activeTab === 'audio' ? 'active' : ''}`}
+            >
+              <Music size={15} />
+              <span>Sounds</span>
+              <span className="van-catalog-tab-count">{counts.audio}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('pdf')}
+              className={`van-catalog-tab-btn ${activeTab === 'pdf' ? 'active' : ''}`}
+            >
+              <FileText size={15} />
+              <span>Flyers</span>
+              <span className="van-catalog-tab-count">{counts.pdf}</span>
+            </button>
           </div>
 
+          <div className="van-library-status-pill">
+            <Sparkles size={12} color="#2563EB" />
+            <span>Showing <strong>{filteredAssets.length}</strong> of <strong>{assets.length}</strong> Assets</span>
+          </div>
+        </div>
+
+        {/* Hairline Divider */}
+        <div className="van-library-divider" />
+
+        {/* Tier 2: Search Input & Entity Filter (Side-by-Side Unified) */}
+        <div className="van-library-toolbar-bottom">
           {/* Search Input */}
-          <div className="van-catalog-search-wrap" style={{ flex: 1, minWidth: '220px' }}>
+          <div className="van-catalog-search-wrap" style={{ flex: 1 }}>
             <Search size={16} className="van-catalog-search-icon" />
             <input
               type="text"
@@ -408,6 +403,22 @@ function UserMediaContentPage({ user }) {
                 <X size={14} />
               </button>
             )}
+          </div>
+
+          {/* Entity Dropdown */}
+          <div className="van-catalog-select-wrap" style={{ width: '220px', flexShrink: 0 }}>
+            <Filter size={14} className="van-catalog-select-icon" />
+            <select
+              value={entityTab}
+              onChange={(e) => setEntityTab(e.target.value)}
+              className="van-catalog-select"
+              style={{ width: '100%', boxSizing: 'border-box' }}
+            >
+              <option value="all">All Entities</option>
+              <option value="chhota_business">AddNet Platform</option>
+              <option value="business">Business Entities</option>
+              <option value="freelance">Freelancers</option>
+            </select>
           </div>
         </div>
       </div>
