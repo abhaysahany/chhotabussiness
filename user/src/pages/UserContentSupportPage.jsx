@@ -30,12 +30,12 @@ import {
 
 const CATEGORY_TABS = [
   { id: 'all', label: 'All Topics', icon: Layers },
-  { id: 'Download Content', label: 'Download Content', icon: Download },
-  { id: 'Customise Content', label: 'Customise Content', icon: Palette },
-  { id: 'Share Content', label: 'Share Content', icon: Share2 },
-  { id: 'Entity Content', label: 'Entity Content', icon: Building2 },
+  { id: 'Download Content', label: 'Downloads', icon: Download },
+  { id: 'Customise Content', label: 'Customizing', icon: Palette },
+  { id: 'Share Content', label: 'Sharing', icon: Share2 },
+  { id: 'Entity Content', label: 'Entities', icon: Building2 },
   { id: 'General Help', label: 'General Help', icon: Lightbulb },
-  { id: 'Troubleshooting', label: 'Troubleshooting', icon: Wrench },
+  { id: 'Troubleshooting', label: 'Troubleshoot', icon: Wrench },
 ];
 
 function UserContentSupportPage({ user, onNavigate }) {
@@ -180,9 +180,9 @@ function UserContentSupportPage({ user, onNavigate }) {
 
       {/* 2-Tier Structured Filter & Search Toolbar */}
       <div className="van-library-toolbar-3d">
-        {/* Tier 1: Category Tabs + Total Counter */}
-        <div className="van-library-toolbar-top">
-          <div className="van-catalog-segmented-switch" style={{ flexWrap: 'wrap' }}>
+        {/* Tier 1: Category Tabs + Total Counter (Clean Single-Line Alignment) */}
+        <div className="van-library-toolbar-top" style={{ flexWrap: 'nowrap', gap: '1rem' }}>
+          <div className="van-catalog-segmented-switch" style={{ flex: 1, minWidth: 0 }}>
             {CATEGORY_TABS.map((tab) => {
               const IconComp = tab.icon;
               const isActive = activeCategory === tab.id;
@@ -204,7 +204,7 @@ function UserContentSupportPage({ user, onNavigate }) {
             })}
           </div>
 
-          <div className="van-library-status-pill">
+          <div className="van-library-status-pill" style={{ flexShrink: 0 }}>
             <Sparkles size={12} color="#2563EB" />
             <span>Showing <strong>{supportTopics.length}</strong> Topics</span>
           </div>
