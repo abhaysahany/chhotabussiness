@@ -286,28 +286,20 @@ function UserMediaContentPage({ user }) {
           </div>
         </div>
 
-        {/* Right Actions & Stats */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexShrink: 0 }}>
-          <div className="van-catalog-hero-stats">
-            <div className="van-catalog-stat-chip">
-              <div className="van-catalog-stat-chip-val">{counts.all}</div>
-              <div className="van-catalog-stat-chip-lbl">Media Files</div>
-            </div>
-            <div className="van-catalog-stat-chip">
-              <div className="van-catalog-stat-chip-val" style={{ color: '#34D399' }}>100%</div>
-              <div className="van-catalog-stat-chip-lbl">Free Download</div>
-            </div>
+        {/* Right Summary Counters */}
+        <div className="van-catalog-hero-stats">
+          <div className="van-catalog-stat-chip">
+            <div className="van-catalog-stat-chip-val">{counts.all}</div>
+            <div className="van-catalog-stat-chip-lbl">Media Files</div>
           </div>
-
-          <button
-            type="button"
-            onClick={() => fetchDatabaseAssets()}
-            className="van-btn-hero-refresh"
-            title="Refresh library from database"
-          >
-            <RefreshCw size={15} className={refreshing ? 'van-spin' : ''} />
-            <span>Refresh</span>
-          </button>
+          <div className="van-catalog-stat-chip">
+            <div className="van-catalog-stat-chip-val" style={{ color: '#34D399' }}>100%</div>
+            <div className="van-catalog-stat-chip-lbl">Free Download</div>
+          </div>
+          <div className="van-catalog-stat-chip">
+            <div className="van-catalog-stat-chip-val" style={{ color: '#93C5FD' }}>HQ</div>
+            <div className="van-catalog-stat-chip-lbl">Verified Assets</div>
+          </div>
         </div>
       </div>
 
