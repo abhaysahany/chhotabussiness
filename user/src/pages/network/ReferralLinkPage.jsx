@@ -392,21 +392,21 @@ function ReferralLinkPage({ user }) {
                 <div className="van-channel-card-top-shimmer" />
                 <div className="van-channel-card-head">
                   <div className="van-channel-3d-pod whatsapp">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.634.055-1.047-.077-.428-.136-1.03-.333-1.782-.992-.937-.822-1.545-1.859-1.708-2.083-.162-.224-.43-.574-.43-1.096 0-.521.272-.778.369-.884.097-.107.213-.133.284-.133.072 0 .144 0 .208.005.068.005.159-.026.248.187.092.221.314.767.342.823.028.057.047.123.009.199-.037.076-.056.123-.112.188-.056.066-.118.147-.168.198-.057.057-.116.119-.05.233.066.113.294.484.63 0.783.433.385.798.504.911.56.113.057.18.047.247-.029.067-.075.283-.33.359-.443.075-.113.151-.095.255-.057.103.038.658.311.771.368.113.057.189.085.217.132.028.047.028.274-.116.679z"/>
                     </svg>
                   </div>
                   <span className="van-channel-tag-pill whatsapp">
-                    Instant Chat
+                    Chat
                   </span>
                 </div>
                 <div className="van-channel-card-body">
-                  <strong className="van-channel-card-title">WhatsApp Share</strong>
-                  <p className="van-channel-card-desc">Send invitation link directly to personal contacts & business groups.</p>
+                  <strong className="van-channel-card-title">WhatsApp</strong>
+                  <p className="van-channel-card-desc">Direct personal & group chat</p>
                 </div>
                 <div className="van-channel-action-btn whatsapp">
-                  <span>Share on WhatsApp</span>
-                  <ArrowRight size={14} />
+                  <span>Share Now</span>
+                  <ArrowRight size={13} />
                 </div>
               </a>
 
@@ -421,19 +421,19 @@ function ReferralLinkPage({ user }) {
                 <div className="van-channel-card-top-shimmer" />
                 <div className="van-channel-card-head">
                   <div className="van-channel-3d-pod telegram">
-                    <Send size={22} strokeWidth={2.4} />
+                    <Send size={18} strokeWidth={2.4} />
                   </div>
                   <span className="van-channel-tag-pill telegram">
-                    Community
+                    Broadcast
                   </span>
                 </div>
                 <div className="van-channel-card-body">
-                  <strong className="van-channel-card-title">Telegram Broadcast</strong>
-                  <p className="van-channel-card-desc">Broadcast your link instantly across channels, groups, and direct chats.</p>
+                  <strong className="van-channel-card-title">Telegram</strong>
+                  <p className="van-channel-card-desc">Community & channel broadcast</p>
                 </div>
                 <div className="van-channel-action-btn telegram">
-                  <span>Share on Telegram</span>
-                  <ArrowRight size={14} />
+                  <span>Share Now</span>
+                  <ArrowRight size={13} />
                 </div>
               </a>
 
@@ -446,19 +446,19 @@ function ReferralLinkPage({ user }) {
                 <div className="van-channel-card-top-shimmer" />
                 <div className="van-channel-card-head">
                   <div className="van-channel-3d-pod email">
-                    <Mail size={22} strokeWidth={2.4} />
+                    <Mail size={18} strokeWidth={2.4} />
                   </div>
                   <span className="van-channel-tag-pill email">
-                    Direct Mail
+                    Email
                   </span>
                 </div>
                 <div className="van-channel-card-body">
-                  <strong className="van-channel-card-title">Email Invitation</strong>
-                  <p className="van-channel-card-desc">Send formal business onboarding invitations with pre-drafted message.</p>
+                  <strong className="van-channel-card-title">Email Invite</strong>
+                  <p className="van-channel-card-desc">Formal promoter invitation</p>
                 </div>
                 <div className="van-channel-action-btn email">
-                  <span>Email Invitation</span>
-                  <ArrowRight size={14} />
+                  <span>Send Invite</span>
+                  <ArrowRight size={13} />
                 </div>
               </a>
             </div>
