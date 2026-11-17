@@ -1,18 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import {
+  Layers,
+  Download,
+  Palette,
+  Share2,
+  Building2,
+  Lightbulb,
+  Wrench,
+  Search,
+  X,
+  Play,
+  Eye,
+  ThumbsUp,
+  Check,
+  CheckCircle2,
+  MessageSquare,
+  BookOpen,
+  FileText,
+  Sparkles,
+  HelpCircle,
+  Video,
+  ArrowRight,
+} from 'lucide-react';
+import {
   getUserSupportTopics,
   trackSupportTopicView,
   voteSupportTopicHelpful,
 } from '../api/userSupportTopicService';
 
 const CATEGORY_TABS = [
-  { id: 'all', label: 'All Topics', icon: '📚' },
-  { id: 'Download Content', label: 'Download Content', icon: '📥' },
-  { id: 'Customise Content', label: 'Customise Content', icon: '🎨' },
-  { id: 'Share Content', label: 'Share Content', icon: '📲' },
-  { id: 'Entity Content', label: 'Entity Content', icon: '🏢' },
-  { id: 'General Help', label: 'General Help', icon: '💡' },
-  { id: 'Troubleshooting', label: 'Troubleshooting', icon: '🛠️' },
+  { id: 'all', label: 'All Topics', icon: Layers },
+  { id: 'Download Content', label: 'Download Content', icon: Download },
+  { id: 'Customise Content', label: 'Customise Content', icon: Palette },
+  { id: 'Share Content', label: 'Share Content', icon: Share2 },
+  { id: 'Entity Content', label: 'Entity Content', icon: Building2 },
+  { id: 'General Help', label: 'General Help', icon: Lightbulb },
+  { id: 'Troubleshooting', label: 'Troubleshooting', icon: Wrench },
 ];
 
 function UserContentSupportPage({ user, onNavigate }) {
@@ -55,7 +78,6 @@ function UserContentSupportPage({ user, onNavigate }) {
 
   const handleOpenTopic = async (topic) => {
     setActiveTopic(topic);
-    // Track view count in MySQL database
     try {
       await trackSupportTopicView(topic.id);
       setSupportTopics((prev) =>
@@ -78,141 +100,420 @@ function UserContentSupportPage({ user, onNavigate }) {
             : t
         )
       );
-      setToastMsg('👍 Thank you for your feedback! Recorded in database.');
+      setToastMsg('Thank you for your feedback! Recorded.');
     } catch (err) {
       console.error('Error voting helpful:', err);
-      setToastMsg('👍 Thank you for your feedback!');
+      setToastMsg('Thank you for your feedback!');
     } finally {
       setTimeout(() => setToastMsg(''), 3000);
     }
   };
 
   return (
-    <div className="page-container">
+    <div className="page-container" style={{ maxWidth: '1400px', margin: '0 auto', paddingBottom: '3.5rem' }}>
       {/* Toast Alert */}
       {toastMsg && (
-        <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', backgroundColor: '#059669', color: '#fff', padding: '0.85rem 1.35rem', borderRadius: '10px', fontWeight: '700', boxShadow: '0 10px 25px -5px rgba(5,150,105,0.4)', zIndex: 2000, fontSize: '0.875rem' }}>
-          {toastMsg}
+        <div
+          style={{
+            position: 'fixed',
+            top: '24px',
+            right: '24px',
+            background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
+            color: '#FFFFFF',
+            padding: '0.85rem 1.35rem',
+            borderRadius: '14px',
+            zIndex: 99999,
+            boxShadow: '0 20px 35px -5px rgba(15, 23, 42, 0.35)',
+            fontSize: '0.86rem',
+            fontWeight: 600,
+            border: '1px solid rgba(255, 255, 255, 0.12)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.65rem',
+            animation: 'van-scale-pulse 0.25s ease-out',
+          }}
+        >
+          <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Check size={13} color="#FFFFFF" strokeWidth={3} />
+          </div>
+          <span>{toastMsg}</span>
         </div>
       )}
 
-      {/* Hero Banner Header */}
-      <div style={{ background: 'linear-gradient(135deg, #312e81 0%, #4338ca 50%, #0f172a 100%)', borderRadius: '16px', padding: '2rem 2.25rem', color: '#ffffff', marginBottom: '2rem', boxShadow: '0 10px 30px -5px rgba(49, 46, 129, 0.3)' }}>
-        <div>
-          <span style={{ background: 'rgba(255,255,255,0.12)', padding: '0.25rem 0.85rem', borderRadius: '20px', fontSize: '0.78rem', fontWeight: '700', color: '#c7d2fe', display: 'inline-block', marginBottom: '0.75rem' }}>
-            🎧 Official Content Support & Video Tutorials • Live Helpdesk
-          </span>
-          <h1 style={{ fontSize: '1.85rem', fontWeight: '800', margin: '0 0 0.4rem 0', color: '#ffffff' }}>Content Support & Help Center</h1>
-          <p style={{ color: '#94a3b8', fontSize: '0.925rem', maxWidth: '650px', margin: 0, lineHeight: '1.5' }}>
-            Watch official YouTube video guides, read step-by-step help articles on downloading, customising, and sharing marketing content.
-          </p>
+      {/* Hero Header Banner (2-Color Gradient with 3D Depth) */}
+      <div className="van-catalog-hero-3d">
+        <div className="van-catalog-hero-content">
+          <div className="van-catalog-hero-icon-orb">
+            <BookOpen size={30} strokeWidth={2.2} />
+          </div>
+          <div>
+            <div className="van-catalog-hero-badge">
+              <span className="van-live-pulse-dot" style={{ width: '7px', height: '7px', background: '#38BDF8', boxShadow: '0 0 8px #38BDF8' }} />
+              <Sparkles size={13} />
+              <span>Official Content Support & Video Masterclasses</span>
+            </div>
+            <h1 className="van-catalog-hero-title">
+              Content Support & Help Center
+            </h1>
+            <p className="van-catalog-hero-desc">
+              Watch certified video masterclasses, browse step-by-step guides, and troubleshoot questions on downloading, customizing, and sharing marketing materials.
+            </p>
+          </div>
+        </div>
+
+        {/* Right Summary Counters */}
+        <div className="van-catalog-hero-stats">
+          <div className="van-catalog-stat-chip">
+            <div className="van-catalog-stat-chip-val">{supportTopics.length}</div>
+            <div className="van-catalog-stat-chip-lbl">Help Topics</div>
+          </div>
+          <div className="van-catalog-stat-chip">
+            <div className="van-catalog-stat-chip-val" style={{ color: '#34D399' }}>Free</div>
+            <div className="van-catalog-stat-chip-lbl">Video Guides</div>
+          </div>
+          <div className="van-catalog-stat-chip">
+            <div className="van-catalog-stat-chip-val" style={{ color: '#93C5FD' }}>24/7</div>
+            <div className="van-catalog-stat-chip-lbl">Support Hub</div>
+          </div>
         </div>
       </div>
 
-      {/* Category Pills */}
-      <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '2px solid #e2e8f0', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-        {CATEGORY_TABS.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveCategory(tab.id)}
+      {/* 2-Tier Structured Filter & Search Toolbar */}
+      <div className="van-library-toolbar-3d">
+        {/* Tier 1: Category Tabs + Total Counter */}
+        <div className="van-library-toolbar-top">
+          <div className="van-catalog-segmented-switch" style={{ flexWrap: 'wrap' }}>
+            {CATEGORY_TABS.map((tab) => {
+              const IconComp = tab.icon;
+              const isActive = activeCategory === tab.id;
+
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveCategory(tab.id)}
+                  className={`van-catalog-tab-btn ${isActive ? 'active' : ''}`}
+                >
+                  <IconComp size={15} />
+                  <span>{tab.label}</span>
+                  {tab.id === 'all' && (
+                    <span className="van-catalog-tab-count">{supportTopics.length}</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="van-library-status-pill">
+            <Sparkles size={12} color="#2563EB" />
+            <span>Showing <strong>{supportTopics.length}</strong> Topics</span>
+          </div>
+        </div>
+
+        {/* Hairline Divider */}
+        <div className="van-library-divider" />
+
+        {/* Tier 2: Search Input & Quick Help Action */}
+        <div className="van-library-toolbar-bottom">
+          <div className="van-catalog-search-wrap" style={{ flex: 1 }}>
+            <Search size={16} className="van-catalog-search-icon" />
+            <input
+              type="text"
+              placeholder="Search help topics, tutorials, or articles..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="van-catalog-search-input"
+            />
+            {searchTerm && (
+              <button
+                type="button"
+                onClick={() => setSearchTerm('')}
+                style={{
+                  position: 'absolute',
+                  right: '12px',
+                  background: 'none',
+                  border: 'none',
+                  color: '#94A3B8',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '4px',
+                }}
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
+
+          {onNavigate && (
+            <button
+              type="button"
+              onClick={() => onNavigate('support-live')}
+              className="van-btn-details-3d"
+              style={{
+                width: 'auto',
+                padding: '0 1.15rem',
+                flex: 'none',
+                height: '42px',
+                background: '#FFFFFF',
+              }}
+              title="Need dedicated assistance? Open a direct live ticket"
+            >
+              <MessageSquare size={15} color="#2563EB" />
+              <span>Need Help? Open Ticket</span>
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Loading Skeleton */}
+      {loading && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              style={{
+                background: '#FFFFFF',
+                borderRadius: '22px',
+                border: '1px solid #E2E8F0',
+                height: '390px',
+                animation: 'pulse 1.5s infinite ease-in-out',
+                display: 'flex',
+                flexDirection: 'column',
+                overflow: 'hidden',
+              }}
+            >
+              <div style={{ height: '185px', background: '#F1F5F9' }} />
+              <div style={{ padding: '1.35rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div style={{ width: '35%', height: '18px', background: '#F1F5F9', borderRadius: '6px' }} />
+                <div style={{ width: '85%', height: '24px', background: '#F1F5F9', borderRadius: '6px' }} />
+                <div style={{ width: '100%', height: '36px', background: '#F1F5F9', borderRadius: '6px' }} />
+                <div style={{ marginTop: 'auto', height: '42px', background: '#F1F5F9', borderRadius: '12px' }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!loading && supportTopics.length === 0 && (
+        <div
+          style={{
+            background: '#FFFFFF',
+            borderRadius: '22px',
+            border: '1px solid #E2E8F0',
+            padding: '4rem 2rem',
+            textAlign: 'center',
+            marginBottom: '2.5rem',
+            boxShadow: '0 4px 14px -2px rgba(15, 23, 42, 0.04)',
+          }}
+        >
+          <div
             style={{
-              padding: '0.75rem 1.25rem',
-              border: 'none',
-              background: 'none',
-              fontSize: '0.875rem',
-              fontWeight: '800',
-              cursor: 'pointer',
-              color: activeCategory === tab.id ? '#4338ca' : '#64748b',
-              borderBottom: activeCategory === tab.id ? '3px solid #4338ca' : '3px solid transparent',
-              marginBottom: '-2px',
-              display: 'inline-flex',
+              width: '64px',
+              height: '64px',
+              borderRadius: '20px',
+              background: '#EFF6FF',
+              color: '#2563EB',
+              display: 'flex',
               alignItems: 'center',
-              gap: '0.4rem',
+              justifyContent: 'center',
+              margin: '0 auto 1.25rem auto',
             }}
           >
-            <span>{tab.icon}</span>
-            <span>{tab.label}</span>
-            {tab.id === 'all' && ` (${supportTopics.length})`}
+            <HelpCircle size={28} />
+          </div>
+          <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', margin: '0 0 0.5rem 0' }}>
+            No Support Topics Found
+          </h3>
+          <p style={{ color: '#64748B', fontSize: '0.9rem', maxWidth: '460px', margin: '0 auto 1.5rem auto' }}>
+            {searchTerm || activeCategory !== 'all'
+              ? 'No tutorials or articles match your current search term. Try resetting your search filters.'
+              : 'Certified help guides and tutorial masterclasses will appear here as soon as they are published.'}
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setActiveCategory('all');
+              setSearchTerm('');
+            }}
+            style={{
+              padding: '0.65rem 1.4rem',
+              background: '#2563EB',
+              color: '#FFFFFF',
+              border: 'none',
+              borderRadius: '10px',
+              fontWeight: 700,
+              fontSize: '0.85rem',
+              cursor: 'pointer',
+              boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)',
+            }}
+          >
+            Reset All Filters
           </button>
-        ))}
-      </div>
-
-      {/* Search Toolbar */}
-      <div style={{ background: '#fff', borderRadius: '14px', padding: '1.25rem 1.5rem', border: '1px solid #e2e8f0', marginBottom: '1.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-        <input
-          type="text"
-          placeholder="Search help topics, tutorials or articles..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ width: '100%', maxWidth: '420px', padding: '0.55rem 0.85rem', fontSize: '0.835rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }}
-        />
-        <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: '700' }}>
-          Showing {supportTopics.length} Help Topics in Database
-        </div>
-      </div>
-
-      {/* LOADING STATE */}
-      {loading && (
-        <div style={{ textAlign: 'center', padding: '3rem', background: '#fff', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
-          <div style={{ fontSize: '1.1rem', fontWeight: '700', color: '#4338ca' }}>⏳ Loading Tutorials & Help Articles...</div>
-        </div>
-      )}
-
-      {/* EMPTY STATE */}
-      {!loading && supportTopics.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '3.5rem 1rem', background: '#fff', borderRadius: '14px', border: '1px dashed #cbd5e1' }}>
-          <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>📹</div>
-          <h3 style={{ fontSize: '1.2rem', fontWeight: '800', color: '#1e293b' }}>No Support Topics Found</h3>
-          <p style={{ color: '#64748b', fontSize: '0.875rem' }}>Try searching with a different keyword or category.</p>
         </div>
       )}
 
       {/* Support Topic Cards Grid */}
       {!loading && supportTopics.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
           {supportTopics.map((topic) => (
-            <div key={topic.id} style={{ background: '#fff', borderRadius: '14px', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 2px 10px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column' }}>
+            <div key={topic.id} className="van-product-card-3d">
               {/* Video Thumbnail Header */}
-              <div style={{ height: '175px', backgroundColor: '#0f172a', position: 'relative', overflow: 'hidden', cursor: 'pointer' }} onClick={() => handleOpenTopic(topic)}>
-                <img src={topic.thumbnail || '/logo.png'} alt={topic.title} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85 }} />
-                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: 'rgba(239, 68, 68, 0.95)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.5rem', boxShadow: '0 4px 14px rgba(0,0,0,0.4)' }}>
-                    ▶
-                  </div>
+              <div
+                className="van-media-preview-container"
+                onClick={() => handleOpenTopic(topic)}
+                title="Click to watch video guide"
+              >
+                <img
+                  src={topic.thumbnail || '/logo.png'}
+                  alt={topic.title}
+                  className="van-media-preview-img"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = '/logo.png';
+                  }}
+                />
+                <div className="van-product-media-scrim" />
+
+                {/* 3D Glowing Red Play Button Orb */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '54px',
+                    height: '54px',
+                    borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#FFFFFF',
+                    boxShadow: '0 10px 24px rgba(239, 68, 68, 0.45), inset 0 2px 2px rgba(255,255,255,0.4)',
+                    transition: 'transform 0.25s ease',
+                  }}
+                >
+                  <Play size={22} fill="#FFFFFF" style={{ marginLeft: '3px' }} />
                 </div>
-                <span style={{ position: 'absolute', top: '0.75rem', left: '0.75rem', background: '#4338ca', color: '#fff', padding: '0.2rem 0.65rem', borderRadius: '12px', fontSize: '0.72rem', fontWeight: '800' }}>
-                  {topic.category}
-                </span>
+
+                {/* Top-Left Category Badge */}
+                <div style={{ position: 'absolute', top: '12px', left: '12px', zIndex: 2 }}>
+                  <span className="van-badge-pill-3d van-badge-service">
+                    <Video size={11} strokeWidth={2.5} />
+                    <span>{topic.category}</span>
+                  </span>
+                </div>
+
+                {/* Top-Right Video Guide Badge */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '12px',
+                    right: '12px',
+                    background: 'rgba(15, 23, 42, 0.75)',
+                    backdropFilter: 'blur(8px)',
+                    color: '#FFFFFF',
+                    padding: '0.28rem 0.65rem',
+                    borderRadius: '8px',
+                    fontSize: '0.7rem',
+                    fontWeight: 700,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                    zIndex: 2,
+                  }}
+                >
+                  <BookOpen size={11} />
+                  <span>Guide</span>
+                </div>
               </div>
 
-              {/* Content Details */}
-              <div style={{ padding: '1.25rem', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <div>
-                  <h3 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', margin: '0 0 0.4rem 0', lineHeight: '1.3' }}>{topic.title}</h3>
-                  <p style={{ fontSize: '0.8rem', color: '#64748b', margin: '0 0 0.75rem 0', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{topic.summary}</p>
+              {/* Card Body */}
+              <div className="van-product-card-body">
+                {/* Category & Status */}
+                <div className="van-product-category-row">
+                  <span className="van-product-category-chip" title={topic.category}>
+                    {topic.category}
+                  </span>
+                  <span className="van-product-vendor-text">
+                    Official Tutorial
+                  </span>
                 </div>
 
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: '#64748b', padding: '0.5rem 0', borderTop: '1px solid #f1f5f9', borderBottom: '1px solid #f1f5f9', marginBottom: '1rem' }}>
-                    <span>👁️ <strong>{topic.views || 0}</strong> Views</span>
-                    <span>👍 <strong>{topic.helpful_count || topic.helpfulCount || 0}</strong> Helpful</span>
-                  </div>
+                {/* Title & Summary */}
+                <h3 className="van-product-title" title={topic.title}>
+                  {topic.title}
+                </h3>
+                <p className="van-product-desc" title={topic.summary}>
+                  {topic.summary || 'Step-by-step masterclass with practical visual demonstration.'}
+                </p>
 
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    <button
-                      onClick={() => handleOpenTopic(topic)}
-                      style={{ flex: 1, background: 'linear-gradient(135deg, #4338ca 0%, #312e81 100%)', color: '#fff', border: 'none', padding: '0.55rem', borderRadius: '8px', fontSize: '0.78rem', fontWeight: '800', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.3rem' }}
-                    >
-                      ▶️ Watch Video & Guide
-                    </button>
-                    <button
-                      onClick={() => handleVoteHelpful(topic.id)}
-                      disabled={helpfulVotes[topic.id]}
-                      style={{ background: helpfulVotes[topic.id] ? '#dcfce7' : '#f1f5f9', color: helpfulVotes[topic.id] ? '#15803d' : '#334155', border: 'none', padding: '0.55rem 0.75rem', borderRadius: '8px', fontSize: '0.78rem', fontWeight: '800', cursor: helpfulVotes[topic.id] ? 'default' : 'pointer' }}
-                    >
-                      {helpfulVotes[topic.id] ? '✓ Helpful' : '👍'}
-                    </button>
-                  </div>
+                {/* Stats & Views Row */}
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '0.65rem 0.85rem',
+                    background: '#F8FAFC',
+                    border: '1px solid #E2E8F0',
+                    borderRadius: '12px',
+                    fontSize: '0.76rem',
+                    color: '#64748B',
+                    fontWeight: 600,
+                    marginBottom: '1.15rem',
+                  }}
+                >
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <Eye size={13} color="#2563EB" />
+                    <span><strong>{topic.views || 0}</strong> Views</span>
+                  </span>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <ThumbsUp size={13} color="#10B981" />
+                    <span><strong>{topic.helpful_count || topic.helpfulCount || 0}</strong> Helpful</span>
+                  </span>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="van-product-actions">
+                  <button
+                    type="button"
+                    onClick={() => handleOpenTopic(topic)}
+                    className="van-btn-share-3d"
+                    style={{ flex: 1.4 }}
+                  >
+                    <Play size={14} fill="currentColor" />
+                    <span>Watch Video & Guide</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleVoteHelpful(topic.id)}
+                    disabled={helpfulVotes[topic.id]}
+                    className="van-btn-details-3d"
+                    style={{
+                      flex: 0.9,
+                      background: helpfulVotes[topic.id] ? '#ECFDF5' : '#F8FAFC',
+                      color: helpfulVotes[topic.id] ? '#047857' : '#334155',
+                      borderColor: helpfulVotes[topic.id] ? '#A7F3D0' : '#E2E8F0',
+                      cursor: helpfulVotes[topic.id] ? 'default' : 'pointer',
+                    }}
+                    title="Vote this guide as helpful"
+                  >
+                    {helpfulVotes[topic.id] ? (
+                      <>
+                        <Check size={14} color="#10B981" strokeWidth={2.5} />
+                        <span>Helpful</span>
+                      </>
+                    ) : (
+                      <>
+                        <ThumbsUp size={14} />
+                        <span>Helpful</span>
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
             </div>
@@ -222,22 +523,90 @@ function UserContentSupportPage({ user, onNavigate }) {
 
       {/* YOUTUBE VIDEO & HELP ARTICLE LIGHTBOX MODAL */}
       {activeTopic && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000, padding: '1rem' }}>
-          <div style={{ background: '#fff', borderRadius: '16px', width: '100%', maxWidth: '720px', overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }}>
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.75)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 99999,
+            padding: '1.25rem',
+            animation: 'fadeIn 0.2s ease',
+          }}
+        >
+          <div
+            style={{
+              background: '#FFFFFF',
+              borderRadius: '22px',
+              width: '100%',
+              maxWidth: '740px',
+              overflow: 'hidden',
+              boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.5)',
+              border: '1px solid #E2E8F0',
+            }}
+          >
             {/* Modal Header */}
-            <div style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', padding: '1.25rem 1.5rem', color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div
+              style={{
+                background: 'linear-gradient(135deg, #0B1727 0%, #1E3A8A 100%)',
+                padding: '1.25rem 1.5rem',
+                color: '#FFFFFF',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.12)',
+              }}
+            >
               <div>
-                <span style={{ fontSize: '0.75rem', color: '#818cf8', fontWeight: '800', textTransform: 'uppercase' }}>{activeTopic.category}</span>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: '800', margin: '0.2rem 0 0 0', color: '#fff' }}>{activeTopic.title}</h3>
+                <span style={{ fontSize: '0.72rem', color: '#BAE6FD', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  {activeTopic.category} • Official Guide
+                </span>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 800, margin: '0.2rem 0 0 0', color: '#FFFFFF' }}>
+                  {activeTopic.title}
+                </h3>
               </div>
-              <button onClick={() => setActiveTopic(null)} style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '1.5rem', cursor: 'pointer' }}>×</button>
+              <button
+                type="button"
+                onClick={() => setActiveTopic(null)}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.12)',
+                  border: 'none',
+                  borderRadius: '10px',
+                  width: '32px',
+                  height: '32px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#FFFFFF',
+                  cursor: 'pointer',
+                }}
+              >
+                <X size={16} />
+              </button>
             </div>
 
             {/* Modal Body with YouTube Player & Guide */}
-            <div style={{ padding: '1.5rem', maxHeight: '75vh', overflowY: 'auto' }}>
+            <div style={{ padding: '1.75rem', maxHeight: '70vh', overflowY: 'auto' }}>
               {/* Responsive YouTube Player */}
               {activeTopic.youtube_url && (
-                <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, borderRadius: '12px', overflow: 'hidden', marginBottom: '1.5rem', backgroundColor: '#000' }}>
+                <div
+                  style={{
+                    position: 'relative',
+                    paddingBottom: '56.25%',
+                    height: 0,
+                    borderRadius: '14px',
+                    overflow: 'hidden',
+                    marginBottom: '1.5rem',
+                    backgroundColor: '#0F172A',
+                    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
+                  }}
+                >
                   <iframe
                     src={activeTopic.youtube_url}
                     title={activeTopic.title}
@@ -249,32 +618,102 @@ function UserContentSupportPage({ user, onNavigate }) {
               )}
 
               {/* Step-by-Step Article Guide */}
-              <h4 style={{ fontSize: '1rem', fontWeight: '800', color: '#0f172a', marginBottom: '0.6rem' }}>📄 Step-by-Step Help Guide</h4>
-              <div style={{ fontSize: '0.875rem', color: '#334155', lineHeight: '1.6', whiteSpace: 'pre-wrap', background: '#f8fafc', padding: '1.25rem', borderRadius: '10px', border: '1px solid #e2e8f0', marginBottom: '1.5rem' }}>
-                {activeTopic.article_body || 'No written guide provided for this topic.'}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.75rem' }}>
+                <FileText size={18} color="#2563EB" />
+                <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>
+                  Step-by-Step Help Guide
+                </h4>
+              </div>
+              <div
+                style={{
+                  fontSize: '0.88rem',
+                  color: '#334155',
+                  lineHeight: '1.65',
+                  whiteSpace: 'pre-wrap',
+                  background: '#F8FAFC',
+                  padding: '1.35rem',
+                  borderRadius: '14px',
+                  border: '1px solid #E2E8F0',
+                  marginBottom: '1.5rem',
+                }}
+              >
+                {activeTopic.article_body || 'No written step-by-step documentation provided for this topic.'}
               </div>
 
               {/* FAQ Q&A Box */}
               {activeTopic.faq_question && (
-                <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '10px', padding: '1rem 1.25rem' }}>
-                  <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#1e40af', marginBottom: '0.35rem' }}>❓ FAQ: {activeTopic.faq_question}</div>
-                  <div style={{ fontSize: '0.825rem', color: '#1e3a8a', lineHeight: '1.5' }}>💡 {activeTopic.faq_answer}</div>
+                <div
+                  style={{
+                    background: 'linear-gradient(135deg, #EFF6FF 0%, #F5F3FF 100%)',
+                    border: '1px solid #DBEAFE',
+                    borderRadius: '14px',
+                    padding: '1.15rem 1.35rem',
+                  }}
+                >
+                  <div style={{ fontSize: '0.86rem', fontWeight: 800, color: '#1E40AF', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <HelpCircle size={15} />
+                    <span>FAQ: {activeTopic.faq_question}</span>
+                  </div>
+                  <div style={{ fontSize: '0.84rem', color: '#1E3A8A', lineHeight: '1.55' }}>
+                    {activeTopic.faq_answer}
+                  </div>
                 </div>
               )}
             </div>
 
             {/* Modal Footer Controls */}
-            <div style={{ background: '#f8fafc', padding: '1rem 1.5rem', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div
+              style={{
+                background: '#FFFFFF',
+                padding: '1rem 1.5rem',
+                borderTop: '1px solid #E2E8F0',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: '0.75rem',
+              }}
+            >
               <button
+                type="button"
                 onClick={() => {
                   setActiveTopic(null);
                   if (onNavigate) onNavigate('support-live');
                 }}
-                style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '0.5rem 1rem', borderRadius: '8px', fontSize: '0.8rem', fontWeight: '700', color: '#334155', cursor: 'pointer' }}
+                style={{
+                  background: '#F8FAFC',
+                  border: '1.5px solid #E2E8F0',
+                  padding: '0.65rem 1.15rem',
+                  borderRadius: '12px',
+                  fontSize: '0.84rem',
+                  fontWeight: 700,
+                  color: '#334155',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                }}
               >
-                💬 Need More Help? Open Live Ticket
+                <MessageSquare size={14} color="#2563EB" />
+                <span>Need Live Help? Open Ticket</span>
               </button>
-              <button onClick={() => setActiveTopic(null)} style={{ background: '#4338ca', color: '#fff', border: 'none', padding: '0.55rem 1.25rem', borderRadius: '8px', fontWeight: '800', cursor: 'pointer' }}>Close Guide</button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTopic(null)}
+                style={{
+                  background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  padding: '0.65rem 1.4rem',
+                  borderRadius: '12px',
+                  fontWeight: 800,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)',
+                }}
+              >
+                Close Guide
+              </button>
             </div>
           </div>
         </div>
