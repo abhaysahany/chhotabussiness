@@ -292,13 +292,13 @@ function MyIncomePage({ user, onNavigate }) {
         </div>
       )}
 
-      {/* Executive 5-Card 3D KPI Grid */}
+      {/* Row 1: Primary Income Overview (3 Cards) */}
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: '1.15rem',
-          marginBottom: '1.75rem',
+          marginBottom: '1.15rem',
         }}
       >
         {/* KPI Card 1: Today's Income */}
@@ -337,7 +337,7 @@ function MyIncomePage({ user, onNavigate }) {
           </div>
         </div>
 
-        {/* KPI Card 2: Total Income */}
+        {/* KPI Card 2: Total Cumulative Income */}
         <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #3B82F6, #1D4ED8)' }} />
           <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
@@ -373,7 +373,53 @@ function MyIncomePage({ user, onNavigate }) {
           </div>
         </div>
 
-        {/* KPI Card 3: Direct Income */}
+        {/* KPI Card 3: Available Balance */}
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #F59E0B, #D97706)' }} />
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
+              style={{
+                color: '#D97706',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
+              }}
+            >
+              Available Balance
+            </span>
+            <div
+              className="van-3d-kpi-icon van-3d-icon-amber"
+              style={{ animationDelay: '0.8s' }}
+              title="Available balance for withdrawal / payout"
+            >
+              <Clock size={22} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div className="van-stat-card-value" style={{ color: cards.balance_amount > 0 ? '#B45309' : '#0F172A' }}>
+            {formatINR(cards.balance_amount)}
+          </div>
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+              Available for Payout
+            </span>
+            <span className="van-card-badge-pill amber">
+              Available
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Row 2: Stream Allocations - Direct & Level Income (Full Width 2-Column Row) */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          gap: '1.15rem',
+          marginBottom: '1.75rem',
+        }}
+      >
+        {/* KPI Card 4: Direct Income */}
         <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #0284C7, #0369A1)' }} />
           <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
@@ -390,7 +436,7 @@ function MyIncomePage({ user, onNavigate }) {
             </span>
             <div
               className="van-3d-kpi-icon van-3d-icon-cyan"
-              style={{ animationDelay: '0.8s' }}
+              style={{ animationDelay: '1.2s' }}
               title="40% Direct Referral Account Cut"
             >
               <Coins size={22} strokeWidth={2.4} />
@@ -409,7 +455,7 @@ function MyIncomePage({ user, onNavigate }) {
           </div>
         </div>
 
-        {/* KPI Card 4: Level Income */}
+        {/* KPI Card 5: Level Income */}
         <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #8B5CF6, #6D28D9)' }} />
           <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
@@ -426,7 +472,7 @@ function MyIncomePage({ user, onNavigate }) {
             </span>
             <div
               className="van-3d-kpi-icon van-3d-icon-purple"
-              style={{ animationDelay: '1.2s' }}
+              style={{ animationDelay: '1.6s' }}
               title="Indirect Level 2 to 5 Allocations"
             >
               <Layers size={22} strokeWidth={2.4} />
@@ -441,42 +487,6 @@ function MyIncomePage({ user, onNavigate }) {
             </span>
             <span className="van-card-badge-pill purple">
               Level 40%
-            </span>
-          </div>
-        </div>
-
-        {/* KPI Card 5: Available Balance */}
-        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #F59E0B, #D97706)' }} />
-          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
-            <span
-              className="van-stat-card-title"
-              style={{
-                color: '#D97706',
-                whiteSpace: 'normal',
-                lineHeight: 1.3,
-                fontSize: '0.78rem',
-              }}
-            >
-              Available Balance
-            </span>
-            <div
-              className="van-3d-kpi-icon van-3d-icon-amber"
-              style={{ animationDelay: '1.6s' }}
-              title="Available balance for withdrawal / payout"
-            >
-              <Clock size={22} strokeWidth={2.4} />
-            </div>
-          </div>
-          <div className="van-stat-card-value" style={{ color: cards.balance_amount > 0 ? '#B45309' : '#0F172A' }}>
-            {formatINR(cards.balance_amount)}
-          </div>
-          <div className="van-stat-card-bottom">
-            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
-              Available for Payout
-            </span>
-            <span className="van-card-badge-pill amber">
-              Available
             </span>
           </div>
         </div>
