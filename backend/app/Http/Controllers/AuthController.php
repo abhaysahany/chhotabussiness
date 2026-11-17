@@ -36,10 +36,22 @@ class AuthController extends Controller
             ], 422);
         }
 
-        $sponsor = User::whereRaw('LOWER(user_code) = ?', [strtolower($sponsorId)])
-            ->orWhere('email', $sponsorId)
-            ->orWhere('id', $sponsorId)
-            ->first();
+        try {
+            $sponsor = User::whereRaw('LOWER(user_code) = ?', [strtolower($sponsorId)])
+                ->orWhere('email', $sponsorId)
+                ->orWhere('id', $sponsorId)
+                ->first();
+        } catch (\Throwable $e) {
+            Log::error("Sponsor verification database exception [ID: {$sponsorId}]: " . $e->getMessage(), [
+                'exception' => get_class($e),
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Service temporarily unavailable. Please try again shortly.',
+                'verified' => false,
+            ], 503);
+        }
 
         if (!$sponsor) {
             return response()->json([
@@ -76,10 +88,22 @@ class AuthController extends Controller
             ], 422);
         }
 
-        $member = User::whereRaw('LOWER(user_code) = ?', [strtolower($memberId)])
-            ->orWhere('email', $memberId)
-            ->orWhere('id', $memberId)
-            ->first();
+        try {
+            $member = User::whereRaw('LOWER(user_code) = ?', [strtolower($memberId)])
+                ->orWhere('email', $memberId)
+                ->orWhere('id', $memberId)
+                ->first();
+        } catch (\Throwable $e) {
+            Log::error("Member verification database exception [ID: {$memberId}]: " . $e->getMessage(), [
+                'exception' => get_class($e),
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Service temporarily unavailable. Please try again shortly.',
+                'verified' => false,
+            ], 503);
+        }
 
         if (!$member) {
             return response()->json([
@@ -164,10 +188,22 @@ class AuthController extends Controller
         }
 
         // 2. Verify Sponsor ID against Database
-        $sponsor = User::whereRaw('LOWER(user_code) = ?', [strtolower($sponsorId)])
-            ->orWhere('email', $sponsorId)
-            ->orWhere('id', $sponsorId)
-            ->first();
+        try {
+            $sponsor = User::whereRaw('LOWER(user_code) = ?', [strtolower($sponsorId)])
+                ->orWhere('email', $sponsorId)
+                ->orWhere('id', $sponsorId)
+                ->first();
+        } catch (\Throwable $e) {
+            Log::error("Sponsor verification database exception [ID: {$sponsorId}]: " . $e->getMessage(), [
+                'exception' => get_class($e),
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Service temporarily unavailable. Please try again shortly.',
+                'verified' => false,
+            ], 503);
+        }
 
         if (!$sponsor) {
             return response()->json([
@@ -478,10 +514,22 @@ class AuthController extends Controller
         $sponsorId = $data['sponsor_id'];
 
         // 1. Verify Sponsor ID from database
-        $sponsor = User::whereRaw('LOWER(user_code) = ?', [strtolower($sponsorId)])
-            ->orWhere('email', $sponsorId)
-            ->orWhere('id', $sponsorId)
-            ->first();
+        try {
+            $sponsor = User::whereRaw('LOWER(user_code) = ?', [strtolower($sponsorId)])
+                ->orWhere('email', $sponsorId)
+                ->orWhere('id', $sponsorId)
+                ->first();
+        } catch (\Throwable $e) {
+            Log::error("Sponsor verification database exception [ID: {$sponsorId}]: " . $e->getMessage(), [
+                'exception' => get_class($e),
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Service temporarily unavailable. Please try again shortly.',
+                'verified' => false,
+            ], 503);
+        }
 
         if (!$sponsor) {
             return response()->json([

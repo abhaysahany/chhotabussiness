@@ -130,7 +130,7 @@ class IncomeAllocationController extends Controller
             \Illuminate\Support\Facades\Log::error('allocatePayment error: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
             return response()->json([
                 'status' => 'error',
-                'message' => 'Failed to process payment income allocation: ' . $e->getMessage(),
+                'message' => 'Failed to process payment income allocation. Please try again shortly.',
             ], 500);
         }
     }
@@ -272,9 +272,10 @@ class IncomeAllocationController extends Controller
                 'message' => $e->getMessage(),
             ], 422);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('process income allocation error: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
             return response()->json([
                 'status' => 'error',
-                'message' => 'Failed to process income allocation: ' . $e->getMessage(),
+                'message' => 'Failed to process income allocation. Please try again shortly.',
             ], 500);
         }
     }

@@ -133,9 +133,10 @@ class SupportTicketController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
+            \Illuminate\Support\Facades\Log::error('Failed to create support ticket: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return response()->json([
                 'status' => 'error',
-                'message' => 'Failed to create support ticket: ' . $e->getMessage(),
+                'message' => 'Failed to create support ticket. Please try again shortly.',
             ], 500);
         }
     }

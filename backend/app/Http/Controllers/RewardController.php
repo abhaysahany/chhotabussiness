@@ -271,7 +271,8 @@ class RewardController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['status' => 'error', 'message' => 'Failed to update claim: ' . $e->getMessage()], 500);
+            \Illuminate\Support\Facades\Log::error('Failed to update claim: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return response()->json(['status' => 'error', 'message' => 'Failed to update claim. Please try again shortly.'], 500);
         }
     }
 
@@ -472,7 +473,8 @@ class RewardController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['status' => 'error', 'message' => 'Failed to claim reward: ' . $e->getMessage()], 500);
+            \Illuminate\Support\Facades\Log::error('Failed to claim reward: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return response()->json(['status' => 'error', 'message' => 'Failed to claim reward. Please try again shortly.'], 500);
         }
     }
 }

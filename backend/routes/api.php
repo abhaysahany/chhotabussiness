@@ -17,27 +17,37 @@ Route::get('/session/config', [SessionController::class, 'config']);
 
 // Health & Database Connection Status Check
 Route::get('/status', function () {
+    $dbName = null;
+    $connected = false;
+    $dbStatus = "Database connection unavailable. Please check system logs.";
+
     try {
-        $dbName = DB::connection()->getDatabaseName();
         $pdo = DB::connection()->getPdo();
+        $dbName = DB::connection()->getDatabaseName();
         $dbStatus = "Connected to database [{$dbName}] successfully!";
         $connected = true;
-    } catch (\Exception $e) {
-        $dbStatus = "Database connection error: " . $e->getMessage();
-        $connected = false;
+    } catch (\Throwable $e) {
+        \Illuminate\Support\Facades\Log::error("Database connection check failed: " . $e->getMessage());
     }
 
-    $appName = \App\Models\SystemSetting::get('app_name', config('app.name', 'AddNet'));
+    $appName = config('app.name', 'Vyapar AdNET');
+    if ($connected) {
+        try {
+            $appName = \App\Models\SystemSetting::get('app_name', $appName) ?: $appName;
+        } catch (\Throwable $e) {
+            // Keep default appName
+        }
+    }
 
     return response()->json([
-        'status' => 'success',
-        'app_name' => $appName ?: 'AddNet',
+        'status' => $connected ? 'success' : 'degraded',
+        'app_name' => $appName ?: 'Vyapar AdNET',
         'environment' => config('app.env'),
         'database_status' => $dbStatus,
         'database_connected' => $connected,
         'database_name' => $dbName ?? 'N/A',
         'timestamp' => now()->toIso8601String(),
-    ]);
+    ], $connected ? 200 : 503);
 });
 
 // Admin Panel API Endpoint

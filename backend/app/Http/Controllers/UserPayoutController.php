@@ -213,9 +213,10 @@ class UserPayoutController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
+            \Illuminate\Support\Facades\Log::error('Failed to generate weekly payouts batch: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return response()->json([
                 'status' => 'error',
-                'message' => 'Failed to generate weekly payouts batch: ' . $e->getMessage(),
+                'message' => 'Failed to generate weekly payouts batch. Please try again shortly.',
             ], 500);
         }
     }
@@ -341,9 +342,10 @@ class UserPayoutController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
+            \Illuminate\Support\Facades\Log::error('Failed to reject payout: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return response()->json([
                 'status' => 'error',
-                'message' => 'Failed to reject payout: ' . $e->getMessage(),
+                'message' => 'Failed to reject payout. Please try again shortly.',
             ], 500);
         }
     }
@@ -688,9 +690,10 @@ class UserPayoutController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
+            \Illuminate\Support\Facades\Log::error('Failed to process withdrawal request: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return response()->json([
                 'status' => 'error',
-                'message' => 'Failed to process withdrawal request: ' . $e->getMessage(),
+                'message' => 'Failed to process withdrawal request. Please try again shortly.',
             ], 500);
         }
     }

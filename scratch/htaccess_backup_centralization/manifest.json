@@ -1,0 +1,72 @@
+[
+  {
+    "original_path": ".htaccess",
+    "backup_file": ".htaccess",
+    "size": 1733,
+    "mtime": 1794909074.398632,
+    "mtime_readable": "2026-11-17 15:21:14"
+  },
+  {
+    "original_path": "admin\\dist\\.htaccess",
+    "backup_file": "admin_dist_.htaccess",
+    "size": 346,
+    "mtime": 1793787823.611699,
+    "mtime_readable": "2026-11-04 15:53:43"
+  },
+  {
+    "original_path": "admin\\public\\.htaccess",
+    "backup_file": "admin_public_.htaccess",
+    "size": 346,
+    "mtime": 1793787823.611699,
+    "mtime_readable": "2026-11-04 15:53:43"
+  },
+  {
+    "original_path": "backend\\.htaccess",
+    "backup_file": "backend_.htaccess",
+    "size": 287,
+    "mtime": 1794901000.9829576,
+    "mtime_readable": "2026-11-17 13:06:40"
+  },
+  {
+    "original_path": "backend\\public\\.htaccess",
+    "backup_file": "backend_public_.htaccess",
+    "size": 805,
+    "mtime": 1794901008.682955,
+    "mtime_readable": "2026-11-17 13:06:48"
+  },
+  {
+    "original_path": "backend\\public\\admin\\.htaccess",
+    "backup_file": "backend_public_admin_.htaccess",
+    "size": 224,
+    "mtime": 1793777861.0231664,
+    "mtime_readable": "2026-11-04 13:07:41"
+  },
+  {
+    "original_path": "entity\\dist\\.htaccess",
+    "backup_file": "entity_dist_.htaccess",
+    "size": 349,
+    "mtime": 1793788661.2865555,
+    "mtime_readable": "2026-11-04 16:07:41"
+  },
+  {
+    "original_path": "entity\\public\\.htaccess",
+    "backup_file": "entity_public_.htaccess",
+    "size": 349,
+    "mtime": 1793788661.2865555,
+    "mtime_readable": "2026-11-04 16:07:41"
+  },
+  {
+    "original_path": "user\\dist\\.htaccess",
+    "backup_file": "user_dist_.htaccess",
+    "size": 936,
+    "mtime": 1794901040.1589148,
+    "mtime_readable": "2026-11-17 13:07:20"
+  },
+  {
+    "original_path": "user\\public\\.htaccess",
+    "backup_file": "user_public_.htaccess",
+    "size": 936,
+    "mtime": 1794901040.1589148,
+    "mtime_readable": "2026-11-17 13:07:20"
+  }
+]

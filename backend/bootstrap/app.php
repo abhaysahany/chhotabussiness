@@ -26,6 +26,36 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // Intercept and sanitize any database query exceptions across API & Entity endpoints
+        $exceptions->render(function (\Illuminate\Database\QueryException $e, \Illuminate\Http\Request $request) {
+            \Illuminate\Support\Facades\Log::error('Database QueryException encountered: ' . $e->getMessage(), [
+                'url' => $request->fullUrl(),
+                'method' => $request->method(),
+                'ip' => $request->ip(),
+            ]);
+
+            if ($request->is('api/*') || $request->is('entity/*') || $request->expectsJson()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Service temporarily unavailable. Please try again shortly.',
+                ], 503);
+            }
+        });
+
+        // Intercept and sanitize low-level PDO exceptions (e.g. MySQL connection failures / access denied)
+        $exceptions->render(function (\PDOException $e, \Illuminate\Http\Request $request) {
+            \Illuminate\Support\Facades\Log::error('Database PDOException encountered: ' . $e->getMessage(), [
+                'url' => $request->fullUrl(),
+                'method' => $request->method(),
+                'ip' => $request->ip(),
+            ]);
+
+            if ($request->is('api/*') || $request->is('entity/*') || $request->expectsJson()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Service temporarily unavailable. Please try again shortly.',
+                ], 503);
+            }
+        });
     })->create();
 
