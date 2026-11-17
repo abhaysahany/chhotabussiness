@@ -2651,6 +2651,103 @@
   }
 }
 
+/* ==========================================================================
+   VYAPAR ADNET — CONTENT & MEDIA LIBRARY (3D SAAS UPGRADE)
+   ========================================================================== */
+
+.van-media-preview-container {
+  height: 185px;
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #0B192C;
+}
+
+.van-media-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.van-product-card-3d:hover .van-media-preview-img {
+  transform: scale(1.06);
+}
+
+.van-media-3d-orb {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    0 12px 28px -4px rgba(0, 0, 0, 0.4),
+    inset 0 2px 3px rgba(255, 255, 255, 0.4);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+}
+
+.van-product-card-3d:hover .van-media-3d-orb {
+  transform: scale(1.1) translateZ(0);
+  box-shadow: 
+    0 16px 32px -4px rgba(0, 0, 0, 0.5),
+    inset 0 2px 4px rgba(255, 255, 255, 0.6);
+}
+
+.van-media-badge-image {
+  background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.van-media-badge-video {
+  background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.van-media-badge-audio {
+  background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.van-media-badge-pdf {
+  background: linear-gradient(135deg, #E11D48 0%, #BE123C 100%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.van-btn-hero-refresh {
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 0.65rem 1.25rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.84rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  white-space: nowrap;
+}
+
+.van-btn-hero-refresh:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.van-btn-hero-refresh:active {
+  transform: translateY(1px);
+}
+
+
 
 
 
