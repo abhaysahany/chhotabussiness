@@ -1334,6 +1334,277 @@
 .btn-telegram { background: #0088cc; color: #ffffff; }
 .btn-email { background: #475569; color: #ffffff; }
 
+/* -------------------------------------------------------------------------- */
+/* Modern 3D Referral & Onboarding Suite                                     */
+/* -------------------------------------------------------------------------- */
+.van-referral-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 992px) {
+  .van-referral-kpi-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+}
+
+.van-referral-layout-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 0.85fr;
+  gap: 1.5rem;
+  width: 100%;
+  align-items: stretch;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1024px) {
+  .van-referral-layout-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+}
+
+.van-ref-main-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 1.85rem 2rem;
+  box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.05), inset 0 1px 0 #ffffff;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.5rem;
+  box-sizing: border-box;
+}
+
+.van-ref-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.van-ref-card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #2563eb;
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  padding: 0.22rem 0.65rem;
+  border-radius: 9999px;
+  width: fit-content;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.van-ref-card-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.van-ref-card-desc {
+  font-size: 0.88rem;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Spacious 3D Copy Bar */
+.van-ref-link-box {
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 16px;
+  padding: 0.65rem 0.65rem 0.65rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+  transition: border-color 0.2s ease;
+}
+
+.van-ref-link-box:focus-within {
+  border-color: #3b82f6;
+  background: #ffffff;
+}
+
+.van-ref-url-text {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #1e293b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  user-select: all;
+}
+
+.van-btn-copy-link-3d {
+  padding: 0.72rem 1.5rem;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  flex-shrink: 0;
+}
+
+/* 3D Social Share Channels */
+.van-ref-channels-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  .van-ref-channels-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.van-channel-btn-3d {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.95rem 1.15rem;
+  border-radius: 14px;
+  text-decoration: none;
+  color: #ffffff;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.van-channel-btn-3d:hover {
+  transform: translateY(-3px);
+}
+
+.van-channel-whatsapp {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-bottom: 3.5px solid #047857;
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+}
+
+.van-channel-telegram {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  border-bottom: 3.5px solid #0369a1;
+  box-shadow: 0 6px 18px rgba(14, 165, 233, 0.35);
+}
+
+.van-channel-email {
+  background: linear-gradient(135deg, #475569 0%, #334155 100%);
+  border-bottom: 3.5px solid #1e293b;
+  box-shadow: 0 6px 18px rgba(71, 85, 105, 0.35);
+}
+
+.van-channel-icon-pod {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3);
+}
+
+.van-channel-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.van-channel-title {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.van-channel-sub {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 600;
+}
+
+/* 3D QR Code Pod */
+.van-qr-pod-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 1.85rem 1.75rem;
+  box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.05), inset 0 1px 0 #ffffff;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.van-qr-frame-3d {
+  position: relative;
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 22px;
+  padding: 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 16px 36px -6px rgba(15, 23, 42, 0.12), 0 4px 10px -2px rgba(15, 23, 42, 0.05), inset 0 1px 1px #ffffff;
+  transition: transform 0.3s ease;
+}
+
+.van-qr-frame-3d:hover {
+  transform: translateY(-4px) scale(1.02);
+}
+
+.van-btn-download-qr-3d {
+  width: 100%;
+  padding: 0.85rem 1.5rem;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-bottom: 3.5px solid #000000;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  cursor: pointer;
+  box-shadow: 0 8px 24px -3px rgba(15, 23, 42, 0.35);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.van-btn-download-qr-3d:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -3px rgba(15, 23, 42, 0.45);
+}
+
 .ref-tools-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
