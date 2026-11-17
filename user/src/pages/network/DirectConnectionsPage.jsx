@@ -1,10 +1,33 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { 
+  Users, 
+  Zap, 
+  Coins, 
+  TrendingUp, 
+  Copy, 
+  Check, 
+  Sparkles, 
+  Award, 
+  CheckCircle2, 
+  RotateCcw,
+  Eye,
+  Phone,
+  Mail,
+  MapPin,
+  Calendar,
+  ShieldCheck,
+  Globe,
+  Filter,
+  UserCheck
+} from 'lucide-react';
 import { getDirectConnections } from '../../api/userNetworkService';
 import { formatINR, formatNumberIN, formatBV } from '../../utils/formatters';
+import { useBranding } from '../../utils/branding';
 import DataTable from '../../components/common/DataTable';
 import './network.css';
 
 function DirectConnectionsPage({ user, onNavigate }) {
+  const { appName } = useBranding();
   const [directMembers, setDirectMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,6 +35,7 @@ function DirectConnectionsPage({ user, onNavigate }) {
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedMember, setSelectedMember] = useState(null);
   const [toastMessage, setToastMessage] = useState('');
+  const [copiedLink, setCopiedLink] = useState(false);
 
   const fetchDirects = async () => {
     try {
@@ -38,6 +62,37 @@ function DirectConnectionsPage({ user, onNavigate }) {
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(''), 3000);
+  };
+
+  const copySponsorLink = () => {
+    const link = `${window.location.origin}/register?ref=${user?.user_code || 'CB100001'}`;
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2500);
+
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(link)
+        .then(() => showToast('Sponsor referral link copied to clipboard!'))
+        .catch(() => fallbackCopy(link));
+    } else {
+      fallbackCopy(link);
+    }
+  };
+
+  const fallbackCopy = (text) => {
+    try {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-9999px';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      showToast('Sponsor referral link copied to clipboard!');
+    } catch (e) {
+      showToast(`Link: ${text}`);
+    }
   };
 
   // Filter Logic
@@ -98,10 +153,11 @@ function DirectConnectionsPage({ user, onNavigate }) {
               display: (row.avatar && row.avatar !== '/logo.png') ? 'none' : 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              background: '#0F4C81',
+              background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
               color: '#ffffff',
-              fontWeight: 700,
+              fontWeight: 800,
               fontSize: '0.85rem',
+              boxShadow: '0 2px 6px rgba(37, 99, 235, 0.25)',
             }}
           >
             {val ? val.charAt(0).toUpperCase() : 'U'}
@@ -191,118 +247,338 @@ function DirectConnectionsPage({ user, onNavigate }) {
       align: 'center',
       render: (val, row) => (
         <button
-          className="action-icon-btn"
+          type="button"
+          className="van-btn-details-3d"
+          style={{ height: '34px', padding: '0 0.85rem', fontSize: '0.8rem', borderRadius: '10px' }}
           title="View Complete Member Dossier"
           onClick={() => setSelectedMember(row)}
         >
-          👁️ View
+          <Eye size={13} />
+          <span>View</span>
         </button>
       ),
     },
   ];
 
   return (
-    <div className="network-page-container">
+    <div className="page-container" style={{ maxWidth: '1400px', margin: '0 auto', paddingBottom: '3.5rem' }}>
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="net-toast-alert">
+        <div
+          style={{
+            position: 'fixed',
+            top: '24px',
+            right: '24px',
+            background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
+            color: '#FFFFFF',
+            padding: '0.85rem 1.35rem',
+            borderRadius: '14px',
+            zIndex: 99999,
+            boxShadow: '0 20px 35px -5px rgba(15, 23, 42, 0.35)',
+            fontSize: '0.86rem',
+            fontWeight: 600,
+            border: '1px solid rgba(255, 255, 255, 0.12)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.65rem',
+            animation: 'van-scale-pulse 0.25s ease-out',
+          }}
+        >
+          <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Check size={13} color="#FFFFFF" strokeWidth={3} />
+          </div>
           <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Hero Header */}
-      <div className="net-hero-card">
-        <div className="net-hero-content">
-          <div className="net-hero-badge">
-            <span>🤝 Level 1 Direct Network (Unilevel Structure)</span>
+      {/* Hero Header Banner (2-Color Gradient with 3D Depth) */}
+      <div className="van-catalog-hero-3d">
+        <div className="van-catalog-hero-content">
+          <div className="van-catalog-hero-icon-orb">
+            <Users size={30} strokeWidth={2.2} />
           </div>
-          <h1 className="net-hero-title">Direct Connections</h1>
-          <p className="net-hero-subtitle">
-            All partners directly sponsored by you in the database. Filterable with DataTable sorting and pagination.
-          </p>
+          <div>
+            <div className="van-catalog-hero-badge">
+              <span className="van-live-pulse-dot" style={{ width: '7px', height: '7px', background: '#38BDF8', boxShadow: '0 0 8px #38BDF8' }} />
+              <Sparkles size={13} />
+              <span>Level 1 Direct Network • Unilevel Structure</span>
+            </div>
+            <h1 className="van-catalog-hero-title">
+              Direct Connections & Team Partners
+            </h1>
+            <p className="van-catalog-hero-desc">
+              All partners directly sponsored by you in the database. Filterable with multi-column sorting, active status indicators, and real-time bonus analytics.
+            </p>
+          </div>
         </div>
-        <div className="net-hero-actions">
+
+        {/* Right Action & Stats Chips */}
+        <div className="van-catalog-hero-stats" style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
+          <div className="van-catalog-stat-chip">
+            <div className="van-catalog-stat-chip-val">{stats.totalCount}</div>
+            <div className="van-catalog-stat-chip-lbl">Total Directs</div>
+          </div>
+          <div className="van-catalog-stat-chip">
+            <div className="van-catalog-stat-chip-val" style={{ color: '#34D399' }}>
+              {stats.totalCount > 0 ? Math.round((stats.activeCount / stats.totalCount) * 100) : 0}%
+            </div>
+            <div className="van-catalog-stat-chip-lbl">Active Ratio</div>
+          </div>
+          <div className="van-catalog-stat-chip">
+            <div className="van-catalog-stat-chip-val" style={{ color: '#FBBF24' }}>
+              {formatINR(stats.totalBonus)}
+            </div>
+            <div className="van-catalog-stat-chip-lbl">10% Bonus</div>
+          </div>
+
           <button
-            className="net-btn btn-secondary"
-            onClick={fetchDirects}
-          >
-            🔄 Refresh List
-          </button>
-          <button
-            className="net-btn btn-primary"
-            onClick={() => {
-              navigator.clipboard.writeText(window.location.origin + '/register?ref=' + (user?.user_code || 'CB100001'));
-              showToast('Referral link copied to clipboard!');
+            type="button"
+            onClick={copySponsorLink}
+            className="van-btn-share-3d"
+            style={{
+              padding: '0.75rem 1.35rem',
+              height: 'auto',
+              textDecoration: 'none',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.55rem',
+              fontSize: '0.88rem',
+              fontWeight: 800,
+              borderRadius: '14px',
+              background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+              borderBottom: '3px solid #1E40AF',
+              color: '#FFFFFF',
+              boxShadow: '0 8px 20px -3px rgba(37, 99, 235, 0.45)',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
             }}
+            title="Copy your personal sponsor registration link"
           >
-            📋 Copy Sponsor Link
+            {copiedLink ? <Check size={16} strokeWidth={3} /> : <Copy size={16} />}
+            <span>{copiedLink ? 'Copied Link!' : 'Copy Sponsor Link'}</span>
           </button>
         </div>
       </div>
 
-      {/* KPI Cards Grid */}
-      <div className="net-metrics-row">
-        <div className="metric-box box-purple">
-          <div className="metric-icon-wrap">👥</div>
-          <div className="metric-info">
-            <span className="metric-label">Total Direct Sponsors</span>
-            <h2 className="metric-value">{stats.totalCount}</h2>
-            <span className="metric-sub">Personal Level 1 Team</span>
+      {/* KPI Cards Grid (Upgraded to Signature 3D Premium Cards) */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+          gap: '1.25rem',
+          marginBottom: '1.75rem',
+        }}
+      >
+        {/* Card 1: Total Direct Sponsors */}
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #6366F1, #8B5CF6)' }} />
+          <div className="van-stat-card-top">
+            <span className="van-stat-card-title" style={{ color: '#6366F1' }}>Total Direct Sponsors</span>
+            <div
+              style={{
+                width: '42px',
+                height: '42px',
+                borderRadius: '12px',
+                background: 'linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#6366F1',
+                boxShadow: '0 4px 10px rgba(99, 102, 241, 0.15)',
+              }}
+            >
+              <Users size={20} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div className="van-stat-card-value">
+            {stats.totalCount}
+          </div>
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>Personal Level 1 Team</span>
+            <span className="van-card-badge-pill" style={{ background: '#EEF2FF', color: '#4F46E5', border: '1px solid #C7D2FE' }}>
+              Level 1
+            </span>
           </div>
         </div>
 
-        <div className="metric-box box-green">
-          <div className="metric-icon-wrap">⚡</div>
-          <div className="metric-info">
-            <span className="metric-label">Active Paying Members</span>
-            <h2 className="metric-value">{stats.activeCount}</h2>
-            <span className="metric-sub">{stats.totalCount > 0 ? Math.round((stats.activeCount / stats.totalCount) * 100) : 0}% Active Ratio</span>
+        {/* Card 2: Active Paying Members */}
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #10B981, #059669)' }} />
+          <div className="van-stat-card-top">
+            <span className="van-stat-card-title" style={{ color: '#10B981' }}>Active Paying Members</span>
+            <div
+              style={{
+                width: '42px',
+                height: '42px',
+                borderRadius: '12px',
+                background: 'linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#10B981',
+                boxShadow: '0 4px 10px rgba(16, 185, 129, 0.15)',
+              }}
+            >
+              <Zap size={20} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div className="van-stat-card-value">
+            {stats.activeCount}
+          </div>
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+              {stats.totalCount > 0 ? Math.round((stats.activeCount / stats.totalCount) * 100) : 0}% Active Ratio
+            </span>
+            <span className="van-card-badge-pill" style={{ background: '#ECFDF5', color: '#047857', border: '1px solid #A7F3D0' }}>
+              ⚡ Verified
+            </span>
           </div>
         </div>
 
-        <div className="metric-box box-orange">
-          <div className="metric-icon-wrap">💰</div>
-          <div className="metric-info">
-            <span className="metric-label">Total Direct Commissions</span>
-            <h2 className="metric-value">{formatINR(stats.totalBonus)}</h2>
-            <span className="metric-sub">10% Instant Referral Bonus</span>
+        {/* Card 3: Total Direct Commissions */}
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #F59E0B, #D97706)' }} />
+          <div className="van-stat-card-top">
+            <span className="van-stat-card-title" style={{ color: '#D97706' }}>Total Direct Commissions</span>
+            <div
+              style={{
+                width: '42px',
+                height: '42px',
+                borderRadius: '12px',
+                background: 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#D97706',
+                boxShadow: '0 4px 10px rgba(245, 158, 11, 0.15)',
+              }}
+            >
+              <Coins size={20} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div className="van-stat-card-value">
+            {formatINR(stats.totalBonus)}
+          </div>
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>10% Instant Referral Bonus</span>
+            <span className="van-card-badge-pill" style={{ background: '#FFFBEB', color: '#B45309', border: '1px solid #FDE68A' }}>
+              10% Instant
+            </span>
           </div>
         </div>
 
-        <div className="metric-box box-blue">
-          <div className="metric-icon-wrap">📈</div>
-          <div className="metric-info">
-            <span className="metric-label">L1 Group Volume (BV)</span>
-            <h2 className="metric-value">{formatINR(stats.totalTurnover)}</h2>
-            <span className="metric-sub">Total Downline Group Volume</span>
+        {/* Card 4: L1 Group Volume (BV) */}
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #2563EB, #0284C7)' }} />
+          <div className="van-stat-card-top">
+            <span className="van-stat-card-title" style={{ color: '#2563EB' }}>L1 Group Volume (BV)</span>
+            <div
+              style={{
+                width: '42px',
+                height: '42px',
+                borderRadius: '12px',
+                background: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#2563EB',
+                boxShadow: '0 4px 10px rgba(37, 99, 235, 0.15)',
+              }}
+            >
+              <TrendingUp size={20} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div className="van-stat-card-value">
+            {formatINR(stats.totalTurnover)}
+          </div>
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>Total Downline Group Volume</span>
+            <span className="van-card-badge-pill" style={{ background: '#EFF6FF', color: '#1D4ED8', border: '1px solid #BFDBFE' }}>
+              Group BV
+            </span>
           </div>
         </div>
       </div>
 
-      {/* Filter Bar */}
-      <div style={{ marginBottom: '1.25rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-        <select
-          value={rankFilter}
-          onChange={(e) => setRankFilter(e.target.value)}
-          style={{ padding: '0.55rem 0.95rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', cursor: 'pointer', background: '#fff' }}
-        >
-          <option value="all">All Achievement Ranks</option>
-          <option value="diamond">Diamond Director</option>
-          <option value="platinum">Platinum Pro</option>
-          <option value="gold">Gold Executive</option>
-          <option value="silver">Silver Leader</option>
-          <option value="bronze">Bronze Starter</option>
-        </select>
+      {/* Modern Filter Toolbar */}
+      <div
+        className="van-library-toolbar-3d"
+        style={{
+          marginBottom: '1.25rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '1rem',
+          flexWrap: 'wrap',
+          background: '#FFFFFF',
+          borderRadius: '16px',
+          padding: '0.85rem 1.25rem',
+          border: '1px solid #E2E8F0',
+          boxShadow: '0 4px 14px -2px rgba(15, 23, 42, 0.04)',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+          {/* Rank Filter */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', background: '#F8FAFC', border: '1.5px solid #E2E8F0', borderRadius: '12px', padding: '0.45rem 0.85rem' }}>
+            <Award size={15} color="#6366F1" />
+            <select
+              value={rankFilter}
+              onChange={(e) => setRankFilter(e.target.value)}
+              style={{ border: 'none', background: 'transparent', fontSize: '0.84rem', fontWeight: 600, color: '#1E293B', outline: 'none', cursor: 'pointer' }}
+            >
+              <option value="all">All Achievement Ranks</option>
+              <option value="diamond">Diamond Director</option>
+              <option value="platinum">Platinum Pro</option>
+              <option value="gold">Gold Executive</option>
+              <option value="silver">Silver Leader</option>
+              <option value="bronze">Bronze Starter</option>
+            </select>
+          </div>
 
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          style={{ padding: '0.55rem 0.95rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', cursor: 'pointer', background: '#fff' }}
-        >
-          <option value="all">All Statuses</option>
-          <option value="active">Active Only</option>
-          <option value="inactive">Inactive Only</option>
-        </select>
+          {/* Status Filter */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', background: '#F8FAFC', border: '1.5px solid #E2E8F0', borderRadius: '12px', padding: '0.45rem 0.85rem' }}>
+            <CheckCircle2 size={15} color="#10B981" />
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              style={{ border: 'none', background: 'transparent', fontSize: '0.84rem', fontWeight: 600, color: '#1E293B', outline: 'none', cursor: 'pointer' }}
+            >
+              <option value="all">All Statuses</option>
+              <option value="active">Active Only</option>
+              <option value="inactive">Inactive Only</option>
+            </select>
+          </div>
+
+          {/* Reset Filters button */}
+          {(rankFilter !== 'all' || statusFilter !== 'all') && (
+            <button
+              type="button"
+              onClick={() => { setRankFilter('all'); setStatusFilter('all'); }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                padding: '0.45rem 0.85rem',
+                borderRadius: '10px',
+                background: '#FEE2E2',
+                border: '1px solid #FECACA',
+                color: '#DC2626',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              <RotateCcw size={13} />
+              <span>Reset Filters</span>
+            </button>
+          )}
+        </div>
+
+        {/* Counter Pill */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', background: '#F1F5F9', padding: '0.45rem 0.95rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 700, color: '#475569' }}>
+          <Users size={14} color="#2563EB" />
+          <span>Showing {filteredMembers.length} of {directMembers.length} Direct Partners</span>
+        </div>
       </div>
 
       {/* DataTable */}
@@ -312,6 +588,77 @@ function DirectConnectionsPage({ user, onNavigate }) {
         defaultPageSize={10}
         searchPlaceholder="Search direct member by name, code, phone..."
         loading={loading}
+        emptyMessage={
+          <div style={{ padding: '3.5rem 1.5rem', textAlign: 'center' }}>
+            <div
+              style={{
+                width: '64px',
+                height: '64px',
+                borderRadius: '20px',
+                background: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)',
+                color: '#2563EB',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 1.25rem auto',
+                boxShadow: '0 8px 20px -3px rgba(37, 99, 235, 0.25)',
+              }}
+            >
+              <Users size={28} />
+            </div>
+            <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '1.2rem', fontWeight: 800, color: '#0F172A' }}>
+              No Direct Connections Found
+            </h4>
+            <p style={{ margin: '0 auto 1.5rem auto', maxWidth: '440px', fontSize: '0.88rem', color: '#64748B', lineHeight: 1.5 }}>
+              {directMembers.length === 0
+                ? "You haven't directly sponsored any partners yet. Copy and share your sponsor registration link to start growing your Level 1 direct team!"
+                : "No direct team members match your current rank or status filter. Try clearing the filters to view all partners."}
+            </p>
+            {directMembers.length === 0 ? (
+              <button
+                type="button"
+                onClick={copySponsorLink}
+                className="van-btn-share-3d"
+                style={{
+                  padding: '0.65rem 1.35rem',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  fontSize: '0.85rem',
+                  fontWeight: 700,
+                  borderRadius: '12px',
+                  background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                  borderBottom: '2.5px solid #1E40AF',
+                  color: '#FFFFFF',
+                  cursor: 'pointer',
+                  margin: '0 auto',
+                }}
+              >
+                <Copy size={14} />
+                <span>Copy Sponsor Link</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => { setRankFilter('all'); setStatusFilter('all'); }}
+                className="van-btn-details-3d"
+                style={{
+                  padding: '0.65rem 1.35rem',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  fontSize: '0.85rem',
+                  fontWeight: 700,
+                  borderRadius: '12px',
+                  margin: '0 auto',
+                }}
+              >
+                <RotateCcw size={14} />
+                <span>Reset All Filters</span>
+              </button>
+            )}
+          </div>
+        }
       />
 
       {/* Member Dossier Modal */}
@@ -346,10 +693,11 @@ function DirectConnectionsPage({ user, onNavigate }) {
                     display: (selectedMember.avatar && selectedMember.avatar !== '/logo.png') ? 'none' : 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    background: '#0F4C81',
+                    background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
                     color: '#ffffff',
-                    fontWeight: 800,
+                    fontWeight: 850,
                     fontSize: '1.4rem',
+                    boxShadow: '0 8px 18px -2px rgba(37, 99, 235, 0.35)',
                   }}
                 >
                   {selectedMember.name ? selectedMember.name.charAt(0).toUpperCase() : 'U'}
@@ -375,19 +723,19 @@ function DirectConnectionsPage({ user, onNavigate }) {
               <div className="modal-specs-grid">
                 <div className="spec-item">
                   <span className="spec-label">Email Address</span>
-                  <span className="spec-val">{selectedMember.email}</span>
+                  <span className="spec-val">{selectedMember.email || 'N/A'}</span>
                 </div>
                 <div className="spec-item">
                   <span className="spec-label">Mobile Number</span>
-                  <span className="spec-val">{selectedMember.phone}</span>
+                  <span className="spec-val">{selectedMember.phone || 'N/A'}</span>
                 </div>
                 <div className="spec-item">
                   <span className="spec-label">Location</span>
-                  <span className="spec-val">{selectedMember.location}</span>
+                  <span className="spec-val">{selectedMember.location || 'N/A'}</span>
                 </div>
                 <div className="spec-item">
                   <span className="spec-label">Enrolled Date</span>
-                  <span className="spec-val">{selectedMember.joiningDate}</span>
+                  <span className="spec-val">{selectedMember.joiningDate || 'N/A'}</span>
                 </div>
                 <div className="spec-item">
                   <span className="spec-label">Personal Sales BV</span>
@@ -399,7 +747,7 @@ function DirectConnectionsPage({ user, onNavigate }) {
                 </div>
                 <div className="spec-item">
                   <span className="spec-label">Level 2 Members Sponsored</span>
-                  <span className="spec-val text-blue">{selectedMember.level2Count} Members</span>
+                  <span className="spec-val text-blue">{selectedMember.level2Count || 0} Members</span>
                 </div>
                 <div className="spec-item">
                   <span className="spec-label">Level 1 Commission Received</span>
@@ -410,17 +758,21 @@ function DirectConnectionsPage({ user, onNavigate }) {
 
             <div className="modal-footer">
               <button
+                type="button"
                 className="net-btn btn-secondary"
                 onClick={() => setSelectedMember(null)}
               >
                 Close Dossier
               </button>
-              <a
-                href={`tel:${selectedMember.phone}`}
-                className="net-btn btn-primary"
-              >
-                📞 Call Member
-              </a>
+              {selectedMember.phone && (
+                <a
+                  href={`tel:${selectedMember.phone}`}
+                  className="net-btn btn-primary"
+                >
+                  <Phone size={14} />
+                  <span>Call Member</span>
+                </a>
+              )}
             </div>
           </div>
         </div>
