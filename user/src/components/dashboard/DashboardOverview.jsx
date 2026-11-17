@@ -15,6 +15,7 @@ import {
   RefreshCw,
   FileText,
   UserCheck,
+  Bell,
 } from 'lucide-react';
 import { getDashboardStats } from '../../api/userService';
 import { getUserDiamondRewards } from '../../api/userRewardService';
@@ -115,44 +116,86 @@ function DashboardOverview({ user, onNavigate }) {
         zoom: { enabled: false },
         fontFamily: 'Plus Jakarta Sans, sans-serif',
         background: 'transparent',
+        dropShadow: {
+          enabled: true,
+          top: 3,
+          left: 0,
+          blur: 6,
+          color: '#2563EB',
+          opacity: 0.16,
+        },
+        animations: {
+          enabled: true,
+          easing: 'easeinout',
+          speed: 800,
+          animateGradually: {
+            enabled: true,
+            delay: 150,
+          },
+          dynamicAnimation: {
+            enabled: true,
+            speed: 350,
+          },
+        },
       },
-      colors: ['#1E40AF', '#0284C7'],
+      colors: ['#2563EB', '#06B6D4'],
       fill: {
         type: 'gradient',
         gradient: {
           shadeIntensity: 1,
-          opacityFrom: 0.35,
-          opacityTo: 0.05,
-          stops: [0, 95, 100],
+          opacityFrom: 0.42,
+          opacityTo: 0.04,
+          stops: [0, 90, 100],
         },
       },
       dataLabels: { enabled: false },
-      stroke: { curve: 'smooth', width: 2.5 },
+      stroke: { curve: 'smooth', width: 2.8 },
       xaxis: {
         categories,
         labels: { style: { colors: '#64748B', fontSize: '11px', fontWeight: 600 } },
         axisBorder: { show: false },
         axisTicks: { show: false },
+        crosshairs: {
+          show: true,
+          stroke: { color: '#CBD5E1', width: 1, dashArray: 4 },
+        },
       },
       yaxis: {
+        min: 0,
+        forceNiceScale: true,
         labels: {
           style: { colors: '#64748B', fontSize: '11px', fontWeight: 600 },
-          formatter: (val) => `₹${val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val}`,
+          formatter: (val) => `₹${val >= 1000 ? `${(val / 1000).toFixed(0)}k` : Math.round(val)}`,
         },
       },
       grid: {
-        borderColor: '#E2E8F0',
+        borderColor: '#F1F5F9',
         strokeDashArray: 4,
+        padding: { top: 0, right: 12, bottom: 0, left: 10 },
+      },
+      legend: {
+        position: 'bottom',
+        horizontalAlign: 'center',
+        fontSize: '11px',
+        fontWeight: 700,
+        markers: { radius: 12, width: 10, height: 10 },
+        itemMargin: { horizontal: 12, vertical: 6 },
       },
       tooltip: {
         theme: 'light',
-        y: { formatter: (val) => `₹${val.toLocaleString('en-IN', { minimumFractionDigits: 2 })}` },
+        y: { formatter: (val) => `₹${Number(val || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}` },
       },
     };
-  }, [chartPeriod]);
+  }, [chartPeriod, data]);
 
   const revenueChartSeries = useMemo(() => {
     return data?.charts?.revenue?.series || [];
+  }, [data]);
+
+  // Check if user has active commission earnings
+  const hasCommissionData = useMemo(() => {
+    const s = data?.charts?.distribution?.series;
+    return Array.isArray(s) && s.some((v) => Number(v) > 0);
   }, [data]);
 
   // ApexCharts: Commission Breakdown Donut
@@ -162,49 +205,85 @@ function DashboardOverview({ user, onNavigate }) {
       height: 250,
       fontFamily: 'Plus Jakarta Sans, sans-serif',
       background: 'transparent',
+      dropShadow: {
+        enabled: hasCommissionData,
+        top: 2,
+        left: 0,
+        blur: 6,
+        color: '#0F172A',
+        opacity: 0.12,
+      },
+      animations: {
+        enabled: true,
+        easing: 'easeinout',
+        speed: 800,
+      },
     },
-    colors: ['#0B192C', '#1E40AF', '#0284C7', '#D97706'],
-    labels: data?.charts?.distribution?.labels || ['Direct Bonus', 'Team Match', 'Leadership Bonus', 'Rewards'],
+    colors: hasCommissionData
+      ? ['#0B192C', '#2563EB', '#06B6D4', '#F59E0B']
+      : ['#E2E8F0'],
+    labels: hasCommissionData
+      ? (data?.charts?.distribution?.labels || ['Direct Bonus', 'Team Match', 'Leadership Bonus', 'Rewards'])
+      : ['No Earnings Recorded'],
     legend: {
+      show: hasCommissionData,
       position: 'bottom',
       fontSize: '11px',
       fontWeight: 600,
-      itemMargin: { horizontal: 6, vertical: 4 },
+      itemMargin: { horizontal: 8, vertical: 4 },
+      markers: { radius: 12 },
     },
     dataLabels: { enabled: false },
+    stroke: {
+      width: hasCommissionData ? 2 : 1,
+      colors: ['#FFFFFF'],
+    },
     plotOptions: {
       pie: {
         donut: {
-          size: '70%',
+          size: '72%',
           labels: {
             show: true,
-            name: { show: true, fontSize: '12px', color: '#64748B', fontWeight: 600 },
+            name: {
+              show: true,
+              fontSize: '11px',
+              color: '#64748B',
+              fontWeight: 600,
+              offsetY: -4,
+            },
             value: {
               show: true,
               fontSize: '18px',
               fontWeight: 800,
               color: '#0F172A',
-              formatter: (val) => `${val}%`,
+              offsetY: 4,
+              formatter: (val) => (hasCommissionData ? `${val}%` : '₹0.00'),
             },
             total: {
               show: true,
-              label: 'Distribution',
+              label: hasCommissionData ? 'Distribution' : 'Total Earned',
               fontSize: '11px',
               fontWeight: 700,
               color: '#64748B',
-              formatter: () => '100%',
+              formatter: () => (hasCommissionData ? '100%' : '₹0.00'),
             },
           },
         },
       },
     },
     tooltip: {
+      enabled: hasCommissionData,
       theme: 'light',
       y: { formatter: (val) => `${val}% share` },
     },
-  }), []);
+  }), [hasCommissionData, data]);
 
-  const donutChartSeries = data?.charts?.distribution?.series || [0, 0, 0, 0];
+  const donutChartSeries = useMemo(() => {
+    if (hasCommissionData) {
+      return data?.charts?.distribution?.series || [0, 0, 0, 0];
+    }
+    return [100]; // Clean single ring placeholder
+  }, [hasCommissionData, data]);
 
   // Normalized safe list of transactions
   const recentTransactions = useMemo(() => {
@@ -268,13 +347,18 @@ function DashboardOverview({ user, onNavigate }) {
       )}
 
       {/* Top Header Row with System Title & Sync */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem', marginBottom: '0.4rem' }}>
         <div>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.25rem' }}>
-            <span className="van-badge van-badge-info">Vyapar AdNET Portal</span>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.45rem' }}>
+            <span className="van-badge-portal-3d">
+              <span className="van-badge-portal-dot" />
+              <span>Vyapar AdNET Portal</span>
+            </span>
           </div>
-          <h1 className="van-h1">Business Executive Dashboard</h1>
-          <p className="van-body" style={{ marginTop: '0.15rem' }}>
+          <h1 className="van-h1" style={{ fontSize: '1.85rem', fontWeight: 800, letterSpacing: '-0.02em', margin: 0 }}>
+            Business Executive Dashboard
+          </h1>
+          <p className="van-body" style={{ marginTop: '0.35rem', color: '#64748B', fontSize: '0.88rem' }}>
             Real-time analytics for earnings, network volume, payouts, and reward milestones.
           </p>
         </div>
@@ -282,114 +366,126 @@ function DashboardOverview({ user, onNavigate }) {
         <button
           type="button"
           onClick={fetchStats}
-          className="van-btn van-btn-outline van-btn-sm"
+          className="van-btn-sync-3d"
           title="Sync live stats"
         >
-          <RefreshCw size={13} className={loading ? 'animate-spin' : ''} />
+          <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
           <span>Sync Data</span>
         </button>
       </div>
 
-      {/* Corporate Executive Profile Summary Card (Calm Light Surface with Navy / Blue Highlights) */}
-      <div className="van-card" style={{ padding: '1.25rem 1.5rem', background: '#FFFFFF' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem' }}>
+      {/* Corporate Executive Profile Summary Card (Spacious 3D Banner) */}
+      <div className="van-executive-banner">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
           {/* User Profile Info */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div className="van-avatar" style={{ width: '56px', height: '56px', fontSize: '1.25rem', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              {userAvatarUrl ? (
-                <img
-                  src={userAvatarUrl}
-                  alt={userName}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  onError={(e) => { e.target.style.display = 'none'; }}
-                />
-              ) : (
-                userInitial
-              )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap' }}>
+            <div className="van-avatar-hero-container">
+              <div className="van-avatar-hero-ring">
+                <div className="van-avatar-hero-inner">
+                  {userAvatarUrl ? (
+                    <img
+                      src={userAvatarUrl}
+                      alt={userName}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      onError={(e) => { e.target.style.display = 'none'; }}
+                    />
+                  ) : (
+                    <span>{userInitial}</span>
+                  )}
+                </div>
+              </div>
             </div>
 
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                <span className="van-badge van-badge-neutral">{userCode}</span>
-                <span className="van-badge van-badge-warning">⭐ {userRank}</span>
-                <span className="van-badge van-badge-success">✓ KYC {kycStatus}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap', marginBottom: '0.35rem' }}>
+                <span className="van-badge-3d van-badge-3d-id">
+                  {userCode}
+                </span>
+                <span className="van-badge-3d van-badge-3d-rank">
+                  <span>⭐</span>
+                  <span>{userRank}</span>
+                </span>
+                <span className={`van-badge-3d ${kycStatus === 'verified' ? 'van-badge-3d-kyc-verified' : 'van-badge-3d-kyc-unverified'}`}>
+                  <span>✓</span>
+                  <span>KYC {kycStatus}</span>
+                </span>
               </div>
-              <h2 style={{ fontSize: '1.35rem', fontWeight: 800, margin: '0.25rem 0 0.1rem 0', color: 'var(--van-brand-navy)' }}>
+
+              <h2 style={{ fontSize: '1.45rem', fontWeight: 800, margin: '0.2rem 0 0.15rem 0', color: 'var(--van-brand-navy)', letterSpacing: '-0.02em' }}>
                 Welcome back, {userName}
               </h2>
-              <p className="van-text-xs van-text-muted" style={{ margin: 0 }}>
+              <p style={{ margin: 0, fontSize: '0.82rem', color: '#64748B' }}>
                 {userEmail}
               </p>
             </div>
           </div>
 
           {/* Quick Action Commands Toolbar */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
             <button
               type="button"
-              className="van-btn van-btn-cta van-btn-md"
+              className="van-btn-action-3d van-btn-action-amber"
               onClick={() => onNavigate && onNavigate('payout-withdraw')}
+              title="Request a withdrawal to your bank"
             >
-              <Wallet size={15} />
+              <Wallet size={16} />
               <span>Request Payout</span>
             </button>
 
             <button
               type="button"
-              className="van-btn van-btn-primary van-btn-md"
+              className="van-btn-action-3d van-btn-action-navy"
               onClick={() => onNavigate && onNavigate('network-genealogy')}
+              title="Explore team network and binary tree"
             >
-              <Users size={15} />
+              <Users size={16} />
               <span>Genealogy Tree</span>
             </button>
 
             <button
               type="button"
-              className="van-btn van-btn-secondary van-btn-md"
+              className="van-btn-action-3d van-btn-action-blue"
               onClick={() => onNavigate && onNavigate('reward-details')}
+              title="Check milestone badges & car/house rewards"
             >
-              <Award size={15} />
+              <Award size={16} />
               <span>Rewards</span>
             </button>
           </div>
         </div>
 
         {/* Live Referral Link Copier Toolbar */}
-        <div
-          style={{
-            marginTop: '1.15rem',
-            background: 'var(--van-bg-surface)',
-            border: '1px solid var(--van-border-subtle)',
-            borderRadius: 'var(--van-radius-button)',
-            padding: '0.55rem 0.85rem',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '0.6rem',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1, minWidth: '220px' }}>
-            <Share2 size={15} color="var(--van-brand-blue)" />
-            <span className="van-text-xs van-text-muted van-text-bold">Official Sponsor URL:</span>
-            <span style={{ fontSize: '0.8rem', fontFamily: 'monospace', color: 'var(--van-brand-navy)', fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {referralUrl}
-            </span>
+        <div className="van-sponsor-bar-3d">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flex: 1, minWidth: '300px' }}>
+            <div className="van-share-3d-badge" title="Official Referral Sponsor Link">
+              <Share2 size={17} />
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--van-brand-navy)', whiteSpace: 'nowrap' }}>
+                Official Sponsor URL:
+              </span>
+              <div className="van-sponsor-pill-url" style={{ flex: 1, minWidth: '220px' }}>
+                <span className="van-sponsor-dot-live" title="Active Sponsor Link" />
+                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {referralUrl}
+                </span>
+              </div>
+            </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
             <button
               type="button"
-              className={`van-btn van-btn-sm ${copiedLink ? 'van-btn-cta' : 'van-btn-primary'}`}
+              className={`van-sponsor-copy-btn ${copiedLink ? 'copied' : 'default'}`}
               onClick={copyReferralLink}
             >
-              {copiedLink ? <CheckCircle2 size={13} /> : <Copy size={13} />}
+              {copiedLink ? <CheckCircle2 size={14} /> : <Copy size={14} />}
               <span>{copiedLink ? 'Copied Link!' : 'Copy Link'}</span>
             </button>
 
             <button
               type="button"
-              className="van-btn van-btn-sm van-btn-outline"
+              className="van-sponsor-qr-btn"
               onClick={() => onNavigate && onNavigate('network-referral')}
             >
               <span>QR Card →</span>
@@ -420,90 +516,107 @@ function DashboardOverview({ user, onNavigate }) {
           </button>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem', marginBottom: '1.25rem' }}>
           {/* Income Card 1: Today's Income */}
-          <div className="van-stat-card" style={{ borderLeft: '4px solid #10b981' }}>
-            <div className="van-stat-header">
-              <span className="van-stat-label" style={{ color: '#047857', fontWeight: 700 }}>Today's Income</span>
-              <div className="van-stat-icon-wrapper" style={{ color: '#059669', background: '#ecfdf5' }}>
-                <Zap size={16} />
+          <div className="van-stat-card-premium" style={{ borderTop: '3.5px solid #10b981' }}>
+            <div className="van-stat-card-top">
+              <span className="van-stat-card-title" style={{ color: '#047857' }}>Today's Income</span>
+              <div className="van-3d-kpi-icon van-3d-icon-emerald">
+                <Zap size={22} strokeWidth={2.4} />
               </div>
             </div>
-            <div className="van-stat-value" style={{ color: '#065f46' }}>
+            <div className="van-stat-card-value" style={{ color: '#065f46' }}>
               ₹{kpis.todayIncome.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
             </div>
-            <div className="van-stat-footer">
-              <span className="van-badge van-badge-success" style={{ background: '#d1fae5', color: '#065f46', border: 'none' }}>
-                ● Today's Payout
+            <div className="van-stat-card-bottom">
+              <span className="van-card-badge-pill emerald">
+                ● Daily Payout
               </span>
+              <button
+                type="button"
+                className="van-card-action-pill"
+                onClick={() => onNavigate && onNavigate('direct-income')}
+                style={{ color: '#047857' }}
+              >
+                <span>Details →</span>
+              </button>
             </div>
           </div>
 
           {/* Income Card 2: Total Income */}
-          <div className="van-stat-card" style={{ borderLeft: '4px solid #1e40af' }}>
-            <div className="van-stat-header">
-              <span className="van-stat-label" style={{ color: '#1e40af', fontWeight: 700 }}>Total Income</span>
-              <div className="van-stat-icon-wrapper" style={{ color: '#1e40af', background: '#eff6ff' }}>
-                <Wallet size={16} />
+          <div className="van-stat-card-premium" style={{ borderTop: '3.5px solid #1e40af' }}>
+            <div className="van-stat-card-top">
+              <span className="van-stat-card-title" style={{ color: '#1e40af' }}>Total Income</span>
+              <div className="van-3d-kpi-icon van-3d-icon-blue">
+                <Wallet size={22} strokeWidth={2.4} />
               </div>
             </div>
-            <div className="van-stat-value" style={{ color: '#1e3a8a' }}>
+            <div className="van-stat-card-value" style={{ color: '#1e3a8a' }}>
               ₹{kpis.totalIncome.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
             </div>
-            <div className="van-stat-footer" style={{ justifyContent: 'space-between' }}>
-              <span className="van-badge van-badge-info">Direct + Level</span>
+            <div className="van-stat-card-bottom">
+              <span className="van-card-badge-pill blue">
+                Direct + Level
+              </span>
               <button
                 type="button"
+                className="van-card-action-pill"
                 onClick={() => onNavigate && onNavigate('direct-income')}
-                style={{ background: 'none', border: 'none', color: '#1e40af', fontWeight: 700, fontSize: '0.74rem', cursor: 'pointer', padding: 0 }}
+                style={{ color: '#1e40af' }}
               >
-                Ledger →
+                <span>Ledger →</span>
               </button>
             </div>
           </div>
 
           {/* Income Card 3: Direct Income */}
-          <div className="van-stat-card" style={{ borderLeft: '4px solid #0284c7' }}>
-            <div className="van-stat-header">
-              <span className="van-stat-label" style={{ color: '#0284c7', fontWeight: 700 }}>Direct Income</span>
-              <div className="van-stat-icon-wrapper" style={{ color: '#0284c7', background: '#f0f9ff' }}>
-                <Users size={16} />
+          <div className="van-stat-card-premium" style={{ borderTop: '3.5px solid #0284c7' }}>
+            <div className="van-stat-card-top">
+              <span className="van-stat-card-title" style={{ color: '#0284c7' }}>Direct Income</span>
+              <div className="van-3d-kpi-icon van-3d-icon-cyan">
+                <Users size={22} strokeWidth={2.4} />
               </div>
             </div>
-            <div className="van-stat-value" style={{ color: '#0369a1' }}>
+            <div className="van-stat-card-value" style={{ color: '#0369a1' }}>
               ₹{kpis.directIncome.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
             </div>
-            <div className="van-stat-footer" style={{ justifyContent: 'space-between' }}>
-              <span className="van-text-xs van-text-muted">40% Sponsor Cut</span>
+            <div className="van-stat-card-bottom">
+              <span className="van-card-badge-pill cyan">
+                40% Sponsor Cut
+              </span>
               <button
                 type="button"
+                className="van-card-action-pill"
                 onClick={() => onNavigate && onNavigate('income-direct')}
-                style={{ background: 'none', border: 'none', color: '#0284c7', fontWeight: 700, fontSize: '0.74rem', cursor: 'pointer', padding: 0 }}
+                style={{ color: '#0284c7' }}
               >
-                Table →
+                <span>Table →</span>
               </button>
             </div>
           </div>
 
           {/* Income Card 4: Level Income */}
-          <div className="van-stat-card" style={{ borderLeft: '4px solid #7c3aed' }}>
-            <div className="van-stat-header">
-              <span className="van-stat-label" style={{ color: '#7c3aed', fontWeight: 700 }}>Level Income</span>
-              <div className="van-stat-icon-wrapper" style={{ color: '#7c3aed', background: '#faf5ff' }}>
-                <BarChart3 size={16} />
+          <div className="van-stat-card-premium" style={{ borderTop: '3.5px solid #7c3aed' }}>
+            <div className="van-stat-card-top">
+              <span className="van-stat-card-title" style={{ color: '#7c3aed' }}>Level Income</span>
+              <div className="van-3d-kpi-icon van-3d-icon-purple">
+                <BarChart3 size={22} strokeWidth={2.4} />
               </div>
             </div>
-            <div className="van-stat-value" style={{ color: '#6d28d9' }}>
+            <div className="van-stat-card-value" style={{ color: '#6d28d9' }}>
               ₹{kpis.levelIncome.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
             </div>
-            <div className="van-stat-footer" style={{ justifyContent: 'space-between' }}>
-              <span className="van-text-xs van-text-muted">Levels 2–5 Team</span>
+            <div className="van-stat-card-bottom">
+              <span className="van-card-badge-pill purple">
+                Levels 2–5 Team
+              </span>
               <button
                 type="button"
+                className="van-card-action-pill"
                 onClick={() => onNavigate && onNavigate('income-levels')}
-                style={{ background: 'none', border: 'none', color: '#7c3aed', fontWeight: 700, fontSize: '0.74rem', cursor: 'pointer', padding: 0 }}
+                style={{ color: '#7c3aed' }}
               >
-                Table →
+                <span>Table →</span>
               </button>
             </div>
           </div>
@@ -511,103 +624,136 @@ function DashboardOverview({ user, onNavigate }) {
       </div>
 
       {/* 4 Core KPI Metric Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
         {/* Core KPI 1: Available Wallet Balance */}
-        <div className="van-stat-card" style={{ borderLeft: '3px solid var(--van-brand-blue)' }}>
-          <div className="van-stat-header">
-            <span className="van-stat-label" style={{ color: 'var(--van-brand-blue)' }}>Available Wallet Balance</span>
-            <div className="van-stat-icon-wrapper" style={{ color: 'var(--van-brand-blue)' }}>
-              <Wallet size={16} />
+        <div className="van-stat-card-premium" style={{ borderTop: '3.5px solid #0284c7' }}>
+          <div className="van-stat-card-top">
+            <span className="van-stat-card-title" style={{ color: '#0284c7' }}>Wallet Balance</span>
+            <div className="van-3d-kpi-icon van-3d-icon-sky">
+              <Wallet size={22} strokeWidth={2.4} />
             </div>
           </div>
-          <div className="van-stat-value" style={{ color: 'var(--van-brand-navy)' }}>
+          <div className="van-stat-card-value" style={{ color: '#0c4a6e' }}>
             ₹{kpis.commissionBalance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
           </div>
-          <div className="van-stat-footer" style={{ justifyContent: 'space-between' }}>
-            <span className="van-text-xs van-text-muted">Available to withdraw</span>
+          <div className="van-stat-card-bottom">
+            <span className="van-card-badge-pill sky">
+              Withdrawable
+            </span>
             <button
               type="button"
+              className="van-card-action-pill"
               onClick={() => onNavigate && onNavigate('payout-withdraw')}
-              style={{ background: 'none', border: 'none', color: 'var(--van-brand-blue)', fontWeight: 700, fontSize: '0.74rem', cursor: 'pointer' }}
+              style={{ color: '#0284c7' }}
             >
-              Withdraw →
+              <span>Withdraw →</span>
             </button>
           </div>
         </div>
 
         {/* Core KPI 2: Group Network Volume (BV) */}
-        <div className="van-stat-card" title="Business volume generated by your downline network.">
-          <div className="van-stat-header">
-            <span className="van-stat-label" title="Business volume generated by your downline network.">Group Network Volume</span>
-            <div className="van-stat-icon-wrapper" title="Business volume generated by your downline network.">
-              <BarChart3 size={16} />
+        <div className="van-stat-card-premium" style={{ borderTop: '3.5px solid #4f46e5' }}>
+          <div className="van-stat-card-top">
+            <span className="van-stat-card-title" style={{ color: '#4f46e5' }}>Network Volume</span>
+            <div className="van-3d-kpi-icon van-3d-icon-indigo">
+              <BarChart3 size={22} strokeWidth={2.4} />
             </div>
           </div>
-          <div className="van-stat-value">
-            {kpis.teamVolumeBv.toLocaleString('en-IN')}{' '}
-            <span style={{ fontSize: '0.85rem', color: 'var(--van-text-muted)', fontWeight: 600 }}>BV</span>
+          <div className="van-stat-card-value" style={{ color: '#312e81' }}>
+            <span>{kpis.teamVolumeBv.toLocaleString('en-IN')}</span>
+            <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 700 }}>BV</span>
           </div>
-          <div className="van-stat-footer" style={{ justifyContent: 'space-between' }} title="Business volume generated by your downline network.">
-            <span className="van-badge van-badge-info" style={{ flexShrink: 0 }}>Group BV</span>
-            <span className="van-text-xs van-text-muted" style={{ fontSize: '0.72rem' }}>
-              Business volume generated by your downline network.
+          <div className="van-stat-card-bottom">
+            <span className="van-card-badge-pill indigo">
+              Downline Team BV
             </span>
+            <button
+              type="button"
+              className="van-card-action-pill"
+              onClick={() => onNavigate && onNavigate('network-genealogy')}
+              style={{ color: '#4f46e5' }}
+            >
+              <span>Tree →</span>
+            </button>
           </div>
         </div>
 
         {/* Core KPI 3: Direct Referrals */}
-        <div className="van-stat-card">
-          <div className="van-stat-header">
-            <span className="van-stat-label">Direct Referrals</span>
-            <div className="van-stat-icon-wrapper">
-              <Users size={16} />
+        <div className="van-stat-card-premium" style={{ borderTop: '3.5px solid #0d9488' }}>
+          <div className="van-stat-card-top">
+            <span className="van-stat-card-title" style={{ color: '#0d9488' }}>Direct Referrals</span>
+            <div className="van-3d-kpi-icon van-3d-icon-teal">
+              <Users size={22} strokeWidth={2.4} />
             </div>
           </div>
-          <div className="van-stat-value">
-            {kpis.directMembers}{' '}
-            <span style={{ fontSize: '0.82rem', color: 'var(--van-text-muted)', fontWeight: 500 }}>
-              ({kpis.totalTeamMembers} Team)
-            </span>
+          <div className="van-stat-card-value" style={{ color: '#134e4a' }}>
+            <span>{kpis.directMembers}</span>
+            <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>({kpis.totalTeamMembers} Team)</span>
           </div>
-          <div className="van-stat-footer">
-            <span className="van-text-xs van-text-muted">Direct Sponsees</span>
+          <div className="van-stat-card-bottom">
+            <span className="van-card-badge-pill teal">
+              Direct Sponsees
+            </span>
+            <button
+              type="button"
+              className="van-card-action-pill"
+              onClick={() => onNavigate && onNavigate('network-direct')}
+              style={{ color: '#0d9488' }}
+            >
+              <span>Team →</span>
+            </button>
           </div>
         </div>
 
         {/* Core KPI 4: Diamond Balance */}
-        <div className="van-stat-card">
-          <div className="van-stat-header">
-            <span className="van-stat-label">Diamond Balance</span>
-            <div className="van-stat-icon-wrapper">
-              <Zap size={16} />
+        <div className="van-stat-card-premium" style={{ borderTop: '3.5px solid #d97706' }}>
+          <div className="van-stat-card-top">
+            <span className="van-stat-card-title" style={{ color: '#d97706' }}>Diamond Balance</span>
+            <div className="van-3d-kpi-icon van-3d-icon-amber">
+              <Zap size={22} strokeWidth={2.4} />
             </div>
           </div>
-          <div className="van-stat-value">
-            {diamondBalance.toLocaleString('en-IN')}{' '}
-            <span style={{ fontSize: '0.85rem', color: 'var(--van-text-muted)', fontWeight: 600 }}>Diamonds</span>
+          <div className="van-stat-card-value" style={{ color: '#78350f' }}>
+            <span>{diamondBalance.toLocaleString('en-IN')}</span>
+            <span style={{ fontSize: '0.9rem', color: '#d97706' }}>💎</span>
           </div>
-          <div className="van-stat-footer">
-            <span className="van-badge van-badge-warning">Accumulated Diamonds</span>
+          <div className="van-stat-card-bottom">
+            <span className="van-card-badge-pill amber">
+              Reward Points
+            </span>
+            <button
+              type="button"
+              className="van-card-action-pill"
+              onClick={() => onNavigate && onNavigate('reward-details')}
+              style={{ color: '#d97706' }}
+            >
+              <span>Rewards →</span>
+            </button>
           </div>
         </div>
       </div>
 
       {/* Main Visualizations: Revenue Area Chart (ApexCharts) & Commission Distribution */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.25rem' }}>
+      <div className="van-charts-grid-3d">
         {/* Revenue Growth Area Chart Card */}
-        <div className="van-card" style={{ flex: '2 1 540px' }}>
-          <div className="van-card-header">
-            <div>
-              <h3 className="van-card-title">
-                <span>📈 Revenue & Commission Growth</span>
-              </h3>
-              <p className="van-card-subtitle">
-                Direct referral earnings vs team binary matching bonus
-              </p>
+        <div className="van-chart-card-3d">
+          <div className="van-chart-header-3d">
+            <div className="van-chart-title-group">
+              <div className="van-chart-badge-3d van-chart-badge-blue">
+                <BarChart3 size={18} strokeWidth={2.4} />
+              </div>
+              <div>
+                <h3 className="van-chart-heading">
+                  Revenue & Commission Growth
+                </h3>
+                <p className="van-chart-subheading">
+                  Direct referral earnings vs team binary matching bonus
+                </p>
+              </div>
             </div>
 
-            {/* Time Toggle Pills */}
-            <div style={{ display: 'flex', background: 'var(--van-bg-surface)', padding: '2px', borderRadius: 'var(--van-radius-input)', gap: '2px', border: '1px solid var(--van-border-subtle)' }}>
+            {/* 3D Time Period Toggle Pills */}
+            <div className="van-chart-period-group">
               {[
                 { id: '7d', label: '7D' },
                 { id: '30d', label: '30D' },
@@ -617,17 +763,7 @@ function DashboardOverview({ user, onNavigate }) {
                   key={t.id}
                   type="button"
                   onClick={() => setChartPeriod(t.id)}
-                  style={{
-                    border: 'none',
-                    background: chartPeriod === t.id ? '#ffffff' : 'transparent',
-                    color: chartPeriod === t.id ? 'var(--van-brand-navy)' : 'var(--van-text-muted)',
-                    padding: '0.2rem 0.6rem',
-                    borderRadius: '4px',
-                    fontSize: '0.74rem',
-                    fontWeight: chartPeriod === t.id ? 700 : 500,
-                    cursor: 'pointer',
-                    boxShadow: chartPeriod === t.id ? 'var(--van-shadow-xs)' : 'none',
-                  }}
+                  className={`van-chart-period-btn ${chartPeriod === t.id ? 'active' : ''}`}
                 >
                   {t.label}
                 </button>
@@ -635,7 +771,7 @@ function DashboardOverview({ user, onNavigate }) {
             </div>
           </div>
 
-          <div className="van-card-body" style={{ minHeight: '300px' }}>
+          <div className="van-chart-body-3d">
             <Chart
               options={revenueChartOptions}
               series={revenueChartSeries}
@@ -646,20 +782,24 @@ function DashboardOverview({ user, onNavigate }) {
         </div>
 
         {/* Commission Streams Donut Card */}
-        <div className="van-card" style={{ flex: '1 1 320px', display: 'flex', flexDirection: 'column' }}>
-          <div className="van-card-header">
-            <div>
-              <h3 className="van-card-title">
-                <PieIcon size={16} color="var(--van-brand-blue)" />
-                <span>Commission Streams</span>
-              </h3>
-              <p className="van-card-subtitle">
-                Channel breakdown of earnings
-              </p>
+        <div className="van-chart-card-3d">
+          <div className="van-chart-header-3d">
+            <div className="van-chart-title-group">
+              <div className="van-chart-badge-3d van-chart-badge-cyan">
+                <PieIcon size={18} strokeWidth={2.4} />
+              </div>
+              <div>
+                <h3 className="van-chart-heading">
+                  Commission Streams
+                </h3>
+                <p className="van-chart-subheading">
+                  Channel breakdown of earnings
+                </p>
+              </div>
             </div>
           </div>
 
-          <div className="van-card-body" style={{ minHeight: '260px', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+          <div className="van-chart-body-3d" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Chart
               options={donutChartOptions}
               series={donutChartSeries}
@@ -668,248 +808,391 @@ function DashboardOverview({ user, onNavigate }) {
             />
           </div>
 
-          <div className="van-card-footer">
-            <span className="van-text-xs van-text-muted">Channel: Direct + Team Matching</span>
+          <div className="van-chart-footer-3d">
+            <span className="van-text-xs van-text-muted" style={{ fontWeight: 600 }}>
+              Channel: Direct + Team Matching
+            </span>
             <button
               type="button"
+              className="van-action-link-3d"
               onClick={() => onNavigate && onNavigate('base-commission')}
-              style={{ background: 'none', border: 'none', color: 'var(--van-brand-blue)', fontSize: '0.76rem', fontWeight: 700, cursor: 'pointer' }}
+              style={{ color: 'var(--van-brand-blue)' }}
             >
-              Commission Ledger →
+              <span>Commission Ledger →</span>
             </button>
           </div>
         </div>
       </div>
 
       {/* Row: Quick Links & Top Team Leaders */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
+      <div className="van-utilities-grid-3d">
         {/* Quick Utilities Hub */}
-        <div className="van-card">
-          <div className="van-card-header">
-            <h3 className="van-card-title">
-              <span>⚡ Fast Navigation</span>
-            </h3>
+        <div className="van-chart-card-3d">
+          <div className="van-chart-header-3d">
+            <div className="van-chart-title-group">
+              <div className="van-chart-badge-3d van-chart-badge-amber">
+                <Zap size={18} strokeWidth={2.4} />
+              </div>
+              <div>
+                <h3 className="van-chart-heading">
+                  Fast Navigation
+                </h3>
+                <p className="van-chart-subheading">
+                  Instant access to critical operations
+                </p>
+              </div>
+            </div>
           </div>
 
-          <div className="van-card-body" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+          <div className="van-fast-nav-grid-3d">
             <button
               type="button"
-              className="van-btn van-btn-outline van-btn-md"
-              style={{ justifyContent: 'flex-start', height: 'auto', padding: '0.75rem' }}
+              className="van-fast-action-card-3d"
               onClick={() => onNavigate && onNavigate('payout-withdraw')}
+              title="Request a payout withdrawal"
             >
-              <Wallet size={18} color="var(--van-brand-blue)" />
-              <div style={{ textAlign: 'left' }}>
-                <div style={{ fontWeight: 700, fontSize: '0.82rem' }}>Withdraw</div>
-                <div className="van-text-xs van-text-muted">Payout Request</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.95rem', minWidth: 0 }}>
+                <div className="van-fast-icon-hero van-3d-icon-blue">
+                  <Wallet size={20} strokeWidth={2.4} />
+                </div>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--van-brand-navy)', marginBottom: '0.15rem' }}>
+                    Withdraw
+                  </div>
+                  <div className="van-text-xs van-text-muted" style={{ marginBottom: '0.35rem' }}>
+                    Payout Request
+                  </div>
+                  <span className="van-badge-3d" style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', color: '#1E40AF', fontSize: '0.68rem', padding: '0.15rem 0.5rem' }}>
+                    Instant Payout
+                  </span>
+                </div>
+              </div>
+              <div className="van-fast-arrow-chip">
+                <ArrowUpRight size={15} strokeWidth={2.4} />
               </div>
             </button>
 
             <button
               type="button"
-              className="van-btn van-btn-outline van-btn-md"
-              style={{ justifyContent: 'flex-start', height: 'auto', padding: '0.75rem' }}
+              className="van-fast-action-card-3d"
               onClick={() => onNavigate && onNavigate('network-direct')}
+              title="View your direct downline members"
             >
-              <UserCheck size={18} color="var(--van-brand-cyan)" />
-              <div style={{ textAlign: 'left' }}>
-                <div style={{ fontWeight: 700, fontSize: '0.82rem' }}>Direct Team</div>
-                <div className="van-text-xs van-text-muted">{kpis.directMembers} Members</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.95rem', minWidth: 0 }}>
+                <div className="van-fast-icon-hero van-3d-icon-cyan">
+                  <UserCheck size={20} strokeWidth={2.4} />
+                </div>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--van-brand-navy)', marginBottom: '0.15rem' }}>
+                    Direct Team
+                  </div>
+                  <div className="van-text-xs van-text-muted" style={{ marginBottom: '0.35rem' }}>
+                    {kpis.directMembers} Active Members
+                  </div>
+                  <span className="van-badge-3d" style={{ background: '#ECFEFF', border: '1px solid #A5F3FC', color: '#0E7490', fontSize: '0.68rem', padding: '0.15rem 0.5rem' }}>
+                    Network Tree
+                  </span>
+                </div>
+              </div>
+              <div className="van-fast-arrow-chip">
+                <ArrowUpRight size={15} strokeWidth={2.4} />
               </div>
             </button>
 
             <button
               type="button"
-              className="van-btn van-btn-outline van-btn-md"
-              style={{ justifyContent: 'flex-start', height: 'auto', padding: '0.75rem' }}
+              className="van-fast-action-card-3d"
               onClick={() => onNavigate && onNavigate('reports-sales')}
+              title="Audit reports and invoices"
             >
-              <FileText size={18} color="var(--van-accent-amber)" />
-              <div style={{ textAlign: 'left' }}>
-                <div style={{ fontWeight: 700, fontSize: '0.82rem' }}>Sales Reports</div>
-                <div className="van-text-xs van-text-muted">Audit & Invoices</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.95rem', minWidth: 0 }}>
+                <div className="van-fast-icon-hero van-3d-icon-amber">
+                  <FileText size={20} strokeWidth={2.4} />
+                </div>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--van-brand-navy)', marginBottom: '0.15rem' }}>
+                    Sales Reports
+                  </div>
+                  <div className="van-text-xs van-text-muted" style={{ marginBottom: '0.35rem' }}>
+                    Audit & Invoices
+                  </div>
+                  <span className="van-badge-3d" style={{ background: '#FFFBEB', border: '1px solid #FDE68A', color: '#B45309', fontSize: '0.68rem', padding: '0.15rem 0.5rem' }}>
+                    Ledger & GST
+                  </span>
+                </div>
+              </div>
+              <div className="van-fast-arrow-chip">
+                <ArrowUpRight size={15} strokeWidth={2.4} />
               </div>
             </button>
 
             <button
               type="button"
-              className="van-btn van-btn-outline van-btn-md"
-              style={{ justifyContent: 'flex-start', height: 'auto', padding: '0.75rem' }}
+              className="van-fast-action-card-3d"
               onClick={() => onNavigate && onNavigate('profile-kyc')}
+              title="Verify KYC and bank credentials"
             >
-              <ShieldCheck size={18} color="var(--van-brand-navy)" />
-              <div style={{ textAlign: 'left' }}>
-                <div style={{ fontWeight: 700, fontSize: '0.82rem' }}>KYC Security</div>
-                <div className="van-text-xs van-text-muted">Verification</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.95rem', minWidth: 0 }}>
+                <div className="van-fast-icon-hero van-3d-icon-navy">
+                  <ShieldCheck size={20} strokeWidth={2.4} />
+                </div>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--van-brand-navy)', marginBottom: '0.15rem' }}>
+                    KYC Security
+                  </div>
+                  <div className="van-text-xs van-text-muted" style={{ marginBottom: '0.35rem' }}>
+                    Verification Center
+                  </div>
+                  <span className="van-badge-3d" style={{ background: '#F8FAFC', border: '1px solid #CBD5E1', color: '#334155', fontSize: '0.68rem', padding: '0.15rem 0.5rem' }}>
+                    Bank & Aadhaar
+                  </span>
+                </div>
+              </div>
+              <div className="van-fast-arrow-chip">
+                <ArrowUpRight size={15} strokeWidth={2.4} />
               </div>
             </button>
           </div>
         </div>
 
         {/* Top Performers Leaderboard */}
-        <div className="van-card">
-          <div className="van-card-header">
-            <h3 className="van-card-title">
-              <span>🏆 Top Team Leaders</span>
-            </h3>
+        <div className="van-chart-card-3d">
+          <div className="van-chart-header-3d">
+            <div className="van-chart-title-group">
+              <div className="van-chart-badge-3d van-chart-badge-gold">
+                <Award size={18} strokeWidth={2.4} />
+              </div>
+              <div>
+                <h3 className="van-chart-heading">
+                  Top Team Leaders
+                </h3>
+                <p className="van-chart-subheading">
+                  Highest network volume performers
+                </p>
+              </div>
+            </div>
             <button
               type="button"
+              className="van-action-link-3d"
               onClick={() => onNavigate && onNavigate('network-team')}
-              style={{ background: 'none', border: 'none', color: 'var(--van-brand-blue)', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
+              style={{ color: 'var(--van-brand-blue)' }}
             >
-              View All →
+              <span>View All →</span>
             </button>
           </div>
 
-          <div className="van-card-body" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <div className="van-leaders-list-3d">
             {leaderboard.length === 0 ? (
-              <div style={{ padding: '2rem 1rem', textAlign: 'center', color: 'var(--van-text-muted)' }}>
-                <div style={{ fontSize: '1.8rem', marginBottom: '0.4rem' }}>🏆</div>
-                <div style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--van-text-primary)' }}>No leader rankings yet</div>
-                <div className="van-text-xs">Top performers will appear here once network volume generates.</div>
+              <div style={{ padding: '2.5rem 1rem', textAlign: 'center', color: 'var(--van-text-muted)' }}>
+                <div style={{ fontSize: '2rem', marginBottom: '0.4rem' }}>🏆</div>
+                <div style={{ fontWeight: 800, fontSize: '0.88rem', color: 'var(--van-brand-navy)' }}>No leader rankings yet</div>
+                <div className="van-text-xs" style={{ marginTop: '0.2rem' }}>Top performers will appear here once network volume generates.</div>
               </div>
             ) : (
-              leaderboard.map((item, idx) => (
-              <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.35rem 0', borderBottom: idx < leaderboard.length - 1 ? '1px solid var(--van-border-subtle)' : 'none' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                  <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: item.color, color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.74rem' }}>
-                    {item.avatar}
+              leaderboard.map((item, idx) => {
+                const rankClass = idx === 0 ? 'van-leader-rank-1' : idx === 1 ? 'van-leader-rank-2' : idx === 2 ? 'van-leader-rank-3' : 'van-leader-rank-other';
+                return (
+                  <div key={idx} className="van-leader-row-3d">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: 0 }}>
+                      <div className={`van-leader-rank-badge ${rankClass}`}>
+                        {idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`}
+                      </div>
+                      <div
+                        className="van-leader-avatar-3d"
+                        style={{ background: item.color || '#1E40AF' }}
+                      >
+                        {item.avatar}
+                      </div>
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ fontWeight: 800, fontSize: '0.84rem', color: 'var(--van-brand-navy)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {item.name}
+                        </div>
+                        <div className="van-text-xs van-text-muted" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginTop: '0.1rem' }}>
+                          <span style={{ fontFamily: 'monospace', fontWeight: 600 }}>{item.code}</span>
+                          <span>•</span>
+                          <span>⭐ {item.rank}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                      <div className="van-leader-volume-chip">
+                        <span>{item.volumeBv.toLocaleString('en-IN')}</span>
+                        <span style={{ fontSize: '0.7rem', color: '#64748B' }}>BV</span>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: '0.82rem', color: 'var(--van-text-primary)' }}>{item.name}</div>
-                    <div className="van-text-xs van-text-muted">{item.code} • {item.rank}</div>
-                  </div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.84rem', color: 'var(--van-text-primary)' }}>
-                    {item.volumeBv.toLocaleString('en-IN')} BV
-                  </div>
-                </div>
-              </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>
       </div>
 
       {/* Row: Recent Transactions Table & Activity Feed */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.25rem' }}>
-        {/* Recent Transactions Table */}
-        <div className="van-card" style={{ flex: '2 1 540px' }}>
-          <div className="van-card-header">
-            <div>
-              <h3 className="van-card-title">
-                <span>Recent Transactions & Settlements</span>
-              </h3>
-              <p className="van-card-subtitle">
-                Automated ledger of bonuses, withdrawals, and commissions
-              </p>
+      <div className="van-tables-grid-3d">
+        {/* Recent Transactions Table Card */}
+        <div className="van-chart-card-3d">
+          <div className="van-chart-header-3d">
+            <div className="van-chart-title-group">
+              <div className="van-chart-badge-3d van-chart-badge-blue">
+                <FileText size={18} strokeWidth={2.4} />
+              </div>
+              <div>
+                <h3 className="van-chart-heading">
+                  Recent Transactions & Settlements
+                </h3>
+                <p className="van-chart-subheading">
+                  Automated ledger of bonuses, withdrawals, and commissions
+                </p>
+              </div>
             </div>
             <button
               type="button"
-              className="van-btn van-btn-sm van-btn-outline"
+              className="van-action-link-3d"
               onClick={() => onNavigate && onNavigate('payout-history')}
+              style={{ color: 'var(--van-brand-blue)', whiteSpace: 'nowrap' }}
             >
-              All Payouts →
+              <span>All Payouts →</span>
             </button>
           </div>
 
-          <div className="van-table-container" style={{ border: 'none', borderRadius: 0, boxShadow: 'none' }}>
-            <table className="van-table">
-              <thead>
-                <tr>
-                  <th>Transaction / ID</th>
-                  <th>Mode</th>
-                  <th className="van-table-num">Gross</th>
-                  <th className="van-table-num">Net</th>
-                  <th>Status</th>
-                  <th className="van-table-center">Slip</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentTransactions.length === 0 ? (
-                  <tr>
-                    <td colSpan="6" style={{ padding: '2.5rem 1rem', textAlign: 'center', color: 'var(--van-text-muted)' }}>
-                      <div style={{ fontSize: '1.8rem', marginBottom: '0.4rem' }}>💳</div>
-                      <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--van-text-primary)' }}>No recent transactions</div>
-                      <div className="van-text-xs">Payout requests and commission credits will appear here once processed.</div>
-                    </td>
-                  </tr>
-                ) : (
-                  recentTransactions.map((txn, idx) => (
-                  <tr key={txn.id || idx}>
-                    <td>
-                      <div className="van-table-cell-bold">{txn.type}</div>
-                      <div className="van-text-xs van-text-muted" style={{ fontFamily: 'monospace' }}>
-                        {txn.id} • {txn.date}
-                      </div>
-                    </td>
-                    <td>
-                      <span className="van-badge van-badge-neutral">{txn.method}</span>
-                    </td>
-                    <td className="van-table-num">
-                      ₹{txn.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                    </td>
-                    <td className="van-table-num" style={{ fontWeight: 700, color: 'var(--van-status-success-text)' }}>
-                      ₹{txn.net.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                    </td>
-                    <td>
-                      <span className="van-badge van-badge-success">{txn.status}</span>
-                    </td>
-                    <td className="van-table-center">
-                      <button
-                        type="button"
-                        className="van-btn van-btn-sm van-btn-outline"
-                        onClick={() => setSelectedTxn(txn)}
-                      >
-                        Receipt
-                      </button>
-                    </td>
-                  </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            {recentTransactions.length === 0 ? (
+              <div style={{ padding: '3.2rem 1.5rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+                <div className="van-3d-empty-icon-badge van-3d-icon-blue" style={{ width: '56px', height: '56px', borderRadius: '16px', marginBottom: '1rem' }}>
+                  <Wallet size={26} strokeWidth={2.2} />
+                </div>
+                <div style={{ fontWeight: 800, fontSize: '0.98rem', color: 'var(--van-brand-navy)', marginBottom: '0.25rem' }}>
+                  No Recent Transactions
+                </div>
+                <p style={{ fontSize: '0.8rem', color: '#64748B', maxWidth: '340px', margin: '0 0 1.25rem 0', lineHeight: 1.5 }}>
+                  Payout requests and dynamic commission credits will automatically stream here once processed.
+                </p>
+                <button
+                  type="button"
+                  className="van-btn-action-3d van-btn-action-amber"
+                  style={{ height: '36px', padding: '0 1.15rem', fontSize: '0.8rem' }}
+                  onClick={() => onNavigate && onNavigate('payout-withdraw')}
+                >
+                  <Wallet size={14} />
+                  <span>Request First Payout</span>
+                </button>
+              </div>
+            ) : (
+              <div className="van-table-container-3d">
+                <table className="van-table" style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0 }}>
+                  <thead>
+                    <tr>
+                      <th style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', padding: '0.75rem 1rem' }}>Transaction / ID</th>
+                      <th style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', padding: '0.75rem 1rem' }}>Mode</th>
+                      <th className="van-table-num" style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', padding: '0.75rem 1rem' }}>Gross</th>
+                      <th className="van-table-num" style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', padding: '0.75rem 1rem' }}>Net</th>
+                      <th style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', padding: '0.75rem 1rem' }}>Status</th>
+                      <th className="van-table-center" style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', padding: '0.75rem 1rem' }}>Slip</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recentTransactions.map((txn, idx) => (
+                      <tr key={txn.id || idx}>
+                        <td style={{ padding: '0.85rem 1rem' }}>
+                          <div className="van-table-cell-bold">{txn.type}</div>
+                          <div className="van-text-xs van-text-muted" style={{ fontFamily: 'monospace' }}>
+                            {txn.id} • {txn.date}
+                          </div>
+                        </td>
+                        <td style={{ padding: '0.85rem 1rem' }}>
+                          <span className="van-badge van-badge-neutral">{txn.method}</span>
+                        </td>
+                        <td className="van-table-num" style={{ padding: '0.85rem 1rem' }}>
+                          ₹{txn.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                        </td>
+                        <td className="van-table-num" style={{ padding: '0.85rem 1rem', fontWeight: 700, color: 'var(--van-status-success-text)' }}>
+                          ₹{txn.net.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                        </td>
+                        <td style={{ padding: '0.85rem 1rem' }}>
+                          <span className="van-badge van-badge-success">{txn.status}</span>
+                        </td>
+                        <td className="van-table-center" style={{ padding: '0.85rem 1rem' }}>
+                          <button
+                            type="button"
+                            className="van-btn van-btn-sm van-btn-outline"
+                            onClick={() => setSelectedTxn(txn)}
+                          >
+                            Receipt
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Activity Feed */}
-        <div className="van-card" style={{ flex: '1 1 300px' }}>
-          <div className="van-card-header">
-            <h3 className="van-card-title">
-              <span>🔔 Real-time Activity</span>
-            </h3>
-            <span className="van-badge van-badge-success">Live</span>
+        {/* Real-time Activity Card */}
+        <div className="van-chart-card-3d">
+          <div className="van-chart-header-3d">
+            <div className="van-chart-title-group">
+              <div className="van-chart-badge-3d van-chart-badge-amber">
+                <Bell size={18} strokeWidth={2.4} />
+              </div>
+              <div>
+                <h3 className="van-chart-heading">
+                  Real-time Activity
+                </h3>
+                <p className="van-chart-subheading">
+                  System notices & network updates
+                </p>
+              </div>
+            </div>
+            <div className="van-badge-portal-3d" style={{ padding: '0.2rem 0.6rem', fontSize: '0.72rem' }}>
+              <span className="van-badge-portal-dot" style={{ background: '#10B981', boxShadow: '0 0 0 2px rgba(16, 185, 129, 0.35)' }} />
+              <span>Live</span>
+            </div>
           </div>
 
-          <div className="van-card-body" style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+          <div style={{ padding: '1.25rem 1.4rem', flex: 1, display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
             {activityFeed.length === 0 ? (
-              <div style={{ padding: '2rem 1rem', textAlign: 'center', color: 'var(--van-text-muted)' }}>
-                <div style={{ fontSize: '1.8rem', marginBottom: '0.4rem' }}>🔔</div>
-                <div style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--van-text-primary)' }}>No recent activity</div>
-                <div className="van-text-xs">System notices and network updates will stream here.</div>
+              <div style={{ padding: '2.5rem 1rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+                <div className="van-3d-empty-icon-badge van-3d-icon-amber" style={{ width: '56px', height: '56px', borderRadius: '16px', marginBottom: '1rem' }}>
+                  <Bell size={26} strokeWidth={2.2} />
+                </div>
+                <div style={{ fontWeight: 800, fontSize: '0.98rem', color: 'var(--van-brand-navy)', marginBottom: '0.25rem' }}>
+                  All Caught Up!
+                </div>
+                <p style={{ fontSize: '0.8rem', color: '#64748B', maxWidth: '280px', margin: '0 0 1.25rem 0', lineHeight: 1.5 }}>
+                  System notices, bonus alerts, and network updates will stream here live.
+                </p>
+                <span className="van-badge-3d" style={{ background: '#F0FDF4', border: '1px solid #86EFAC', color: '#166534', fontSize: '0.74rem', padding: '0.25rem 0.75rem' }}>
+                  ✓ Feed Connected & Active
+                </span>
               </div>
             ) : (
-              activityFeed.map((act) => (
-              <div key={act.id} style={{ display: 'flex', gap: '0.65rem' }}>
-                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--van-brand-blue)', marginTop: '5px', flexShrink: 0 }} />
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 700, fontSize: '0.82rem', color: 'var(--van-text-primary)' }}>{act.title}</div>
-                  <div className="van-text-xs van-text-muted" style={{ marginTop: '0.1rem' }}>{act.desc}</div>
-                  <div className="van-text-xs van-text-muted" style={{ marginTop: '0.15rem' }}>{act.time}</div>
-                </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {activityFeed.map((act) => (
+                  <div key={act.id} className="van-activity-tile-3d">
+                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--van-brand-blue)', marginTop: '6px', flexShrink: 0, boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.2)' }} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 800, fontSize: '0.84rem', color: 'var(--van-brand-navy)' }}>{act.title}</div>
+                      <div className="van-text-xs van-text-muted" style={{ marginTop: '0.15rem' }}>{act.desc}</div>
+                      <div className="van-text-xs van-text-muted" style={{ marginTop: '0.25rem', fontWeight: 600, color: '#94A3B8' }}>{act.time}</div>
+                    </div>
+                  </div>
+                ))}
               </div>
-              ))
             )}
           </div>
 
-          <div className="van-card-footer">
+          <div className="van-chart-footer-3d" style={{ padding: '0.85rem 1.4rem' }}>
             <button
               type="button"
-              className="van-btn van-btn-outline van-btn-sm van-btn-block"
+              className="van-btn-sync-3d"
+              style={{ width: '100%', justifyContent: 'center' }}
               onClick={() => onNavigate && onNavigate('support-notifications')}
             >
-              Notification Center →
+              <span>Notification Center →</span>
             </button>
           </div>
         </div>
