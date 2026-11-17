@@ -421,78 +421,146 @@ function LevelIncomeDetailsPage({ user, onNavigate }) {
       <div className="van-business-kpi-grid" style={{ marginBottom: '1.75rem' }}>
         
         {/* KPI Card 1: Total Level Income */}
-        <div className="van-stat-card-premium" style={{ borderTop: '3.5px solid #6366f1' }}>
-          <div className="van-stat-header-row">
-            <span className="van-stat-label">TOTAL LEVEL INCOME</span>
-            <div className="van-3d-kpi-icon van-3d-icon-indigo">
-              <Layers size={20} />
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #6366F1, #4F46E5)' }} />
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
+              style={{
+                color: '#4F46E5',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
+              }}
+            >
+              Total Level Income
+            </span>
+            <div
+              className="van-3d-kpi-icon van-3d-icon-indigo"
+              style={{ animationDelay: '0s' }}
+              title="Cumulative indirect team allocations"
+            >
+              <Layers size={22} strokeWidth={2.4} />
             </div>
           </div>
-          <div className="van-stat-value" style={{ color: '#312e81' }}>
+          <div className="van-stat-card-value" style={{ color: '#312E81' }}>
             {formatINR(totalLevelIncome)}
           </div>
-          <div className="van-stat-footer-row">
-            <span className="van-stat-footer-sub" style={{ color: '#4f46e5' }}>
-              Cumulative indirect team allocations
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+              Cumulative team allocations
             </span>
-            <span className="van-stat-badge van-badge-indigo">Gross Pool</span>
+            <span className="van-card-badge-pill indigo">
+              40% Pool
+            </span>
           </div>
         </div>
 
         {/* KPI Card 2: Remaining Balance */}
-        <div className="van-stat-card-premium" style={{ borderTop: '3.5px solid #f59e0b' }}>
-          <div className="van-stat-header-row">
-            <span className="van-stat-label">REMAINING BALANCE</span>
-            <div className="van-3d-kpi-icon van-3d-icon-amber">
-              <Wallet size={20} />
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #F59E0B, #D97706)' }} />
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
+              style={{
+                color: '#D97706',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
+              }}
+            >
+              Remaining Balance
+            </span>
+            <div
+              className="van-3d-kpi-icon van-3d-icon-amber"
+              style={{ animationDelay: '0.4s' }}
+              title="Available for withdrawal / payout"
+            >
+              <Wallet size={22} strokeWidth={2.4} />
             </div>
           </div>
-          <div className="van-stat-value" style={{ color: remainingBalance > 0 ? '#b45309' : '#0f172a' }}>
+          <div className="van-stat-card-value" style={{ color: remainingBalance > 0 ? '#B45309' : '#0F172A' }}>
             {formatINR(remainingBalance)}
           </div>
-          <div className="van-stat-footer-row">
-            <span className="van-stat-footer-sub" style={{ color: '#b45309' }}>
-              Available balance for withdrawal / payout
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+              Available for withdrawal
             </span>
-            <span className="van-stat-badge van-badge-amber">Available</span>
+            <span className="van-card-badge-pill amber">
+              Available
+            </span>
           </div>
         </div>
 
         {/* KPI Card 3: Realized / Credited to Wallet */}
-        <div className="van-stat-card-premium" style={{ borderTop: '3.5px solid #10b981' }}>
-          <div className="van-stat-header-row">
-            <span className="van-stat-label">CREDITED TO WALLET</span>
-            <div className="van-3d-kpi-icon van-3d-icon-emerald">
-              <CheckCircle2 size={20} />
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #10B981, #059669)' }} />
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
+              style={{
+                color: '#059669',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
+              }}
+            >
+              Credited To Wallet
+            </span>
+            <div
+              className="van-3d-kpi-icon van-3d-icon-emerald"
+              style={{ animationDelay: '0.8s' }}
+              title="Realized income credited to wallet"
+            >
+              <CheckCircle2 size={22} strokeWidth={2.4} />
             </div>
           </div>
-          <div className="van-stat-value" style={{ color: '#065f46' }}>
+          <div className="van-stat-card-value" style={{ color: '#047857' }}>
             {formatINR(totalPaid)}
           </div>
-          <div className="van-stat-footer-row">
-            <span className="van-stat-footer-sub" style={{ color: '#059669' }}>
-              Realized income credited to wallet
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+              Realized wallet credits
             </span>
-            <span className="van-stat-badge van-badge-emerald">Realized</span>
+            <span className="van-card-badge-pill emerald">
+              In Wallet
+            </span>
           </div>
         </div>
 
         {/* KPI Card 4: Total Entries Recorded */}
-        <div className="van-stat-card-premium" style={{ borderTop: '3.5px solid #8b5cf6' }}>
-          <div className="van-stat-header-row">
-            <span className="van-stat-label">TOTAL ENTRIES RECORDED</span>
-            <div className="van-3d-kpi-icon van-3d-icon-purple">
-              <Sparkles size={20} />
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #8B5CF6, #6D28D9)' }} />
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
+              style={{
+                color: '#7C3AED',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
+              }}
+            >
+              Total Entries Recorded
+            </span>
+            <div
+              className="van-3d-kpi-icon van-3d-icon-purple"
+              style={{ animationDelay: '1.2s' }}
+              title="Across Levels 2 through 5 allocations"
+            >
+              <Sparkles size={22} strokeWidth={2.4} />
             </div>
           </div>
-          <div className="van-stat-value" style={{ color: '#5b21b6' }}>
+          <div className="van-stat-card-value" style={{ color: '#5B21B6' }}>
             {formatNumberIN(allRecords.length)}
           </div>
-          <div className="van-stat-footer-row">
-            <span className="van-stat-footer-sub" style={{ color: '#7c3aed' }}>
-              Across Levels 2 through 5 allocations
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+              Across Level 2 to 5 pools
             </span>
-            <span className="van-stat-badge van-badge-purple">L2–L5 Pools</span>
+            <span className="van-card-badge-pill purple">
+              L2–L5 Pools
+            </span>
           </div>
         </div>
 
