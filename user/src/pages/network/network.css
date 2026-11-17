@@ -612,6 +612,25 @@
    5. GENEALOGY TREE & VOLUME SUMMARY BAR
    ========================================================= */
 
+/* -------------------------------------------------------------------------- */
+/* Spacious 3-Card Summary Grid for Genealogy Tree Page                      */
+/* -------------------------------------------------------------------------- */
+.van-genealogy-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.35rem;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 992px) {
+  .van-genealogy-summary-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+}
+
 /* Binary Volume / 10-Level Summary Bar */
 .binary-volume-card,
 .unilevel-summary-bar {

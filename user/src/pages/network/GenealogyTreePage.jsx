@@ -289,93 +289,143 @@ function GenealogyTreePage({ user, onNavigate }) {
         </div>
       </div>
 
-      {/* 10-Level Network Generation Volume Bar (Upgraded 3D Glassmorphic Bar) */}
-      <div
-        className="unilevel-summary-bar"
-        style={{
-          background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
-          border: '1px solid rgba(255, 255, 255, 0.12)',
-          borderRadius: '20px',
-          padding: '1.4rem 2rem',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '1.5rem',
-          boxShadow: '0 12px 30px -5px rgba(15, 23, 42, 0.4)',
-          marginBottom: '1.5rem',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <div
-            className="van-3d-kpi-icon van-3d-icon-amber"
-            style={{ width: '48px', height: '48px', borderRadius: '14px', animationDelay: '0s' }}
-          >
-            <Crown size={24} strokeWidth={2.4} />
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#94A3B8', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-              Your Total 10-Level Network
+      {/* 10-Level Network Generation Summary (Spacious 3-Card Grid) */}
+      <div className="van-genealogy-summary-grid">
+        {/* Card 1: Total 10-Level Network */}
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #F59E0B, #EA580C)' }} />
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
+              style={{
+                color: '#D97706',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
+              }}
+            >
+              Total 10-Level Network
             </span>
-            <strong style={{ fontSize: '1.35rem', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.01em' }}>
-              {formatNumberIN(totalMembersCount)} Downline Members
-            </strong>
-            <span style={{ fontSize: '0.8rem', color: '#CBD5E1', fontWeight: 600 }}>
+            <div
+              className="van-3d-kpi-icon van-3d-icon-amber"
+              style={{ animationDelay: '0s' }}
+              title="10-Level Network Hierarchy"
+            >
+              <Crown size={22} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div className="van-stat-card-value">
+            {formatNumberIN(totalMembersCount)}
+            <span style={{ fontSize: '0.9rem', fontWeight: 700, color: '#64748B', marginLeft: '0.4rem' }}>
+              Members
+            </span>
+          </div>
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: 600 }}>
               {formatNumberIN(directCount)} Direct Sponsored Legs
             </span>
+            <span className="van-card-badge-pill amber" style={{ background: '#FEF3C7', color: '#92400E', border: '1px solid #FDE68A' }}>
+              10 Levels
+            </span>
           </div>
         </div>
 
-        <div style={{ flex: 1, minWidth: '280px', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.82rem', fontWeight: 700, color: '#CBD5E1' }}>
-            <span>COMBINED 10-LEVEL BUSINESS VOLUME</span>
-            <strong style={{ color: '#38BDF8', fontWeight: 800, fontSize: '0.95rem' }}>
-              {formatINR(treeData?.groupPv || treeData?.groupBv || 0)} Total BV
-            </strong>
+        {/* Card 2: Combined 10-Level Business Volume */}
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #06B6D4, #10B981)' }} />
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
+              style={{
+                color: '#0D9488',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
+              }}
+            >
+              Combined 10-Level Volume
+            </span>
+            <div
+              className="van-3d-kpi-icon van-3d-icon-emerald"
+              style={{ animationDelay: '0.4s' }}
+              title="Combined Group Volume (BV)"
+            >
+              <Layers size={22} strokeWidth={2.4} />
+            </div>
           </div>
-          <div
-            style={{
-              width: '100%',
-              height: '8px',
-              background: 'rgba(255, 255, 255, 0.15)',
-              borderRadius: '9999px',
-              overflow: 'hidden',
-            }}
-          >
+          <div className="van-stat-card-value" style={{ color: '#047857' }}>
+            {formatINR(treeData?.groupPv || treeData?.groupBv || 0)}
+            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#059669', marginLeft: '0.4rem' }}>
+              Total BV
+            </span>
+          </div>
+          <div style={{ margin: '0.15rem 0 0.55rem 0' }}>
             <div
               style={{
-                width: '92%',
-                height: '100%',
-                background: 'linear-gradient(90deg, #38BDF8 0%, #34D399 100%)',
+                width: '100%',
+                height: '7px',
+                background: '#E2E8F0',
                 borderRadius: '9999px',
-                boxShadow: '0 0 10px rgba(56, 189, 248, 0.5)',
+                overflow: 'hidden',
               }}
-              title="10-Level Commission Payout Ratio"
-            />
+            >
+              <div
+                style={{
+                  width: '92%',
+                  height: '100%',
+                  background: 'linear-gradient(90deg, #06B6D4 0%, #10B981 100%)',
+                  borderRadius: '9999px',
+                  boxShadow: '0 0 8px rgba(16, 185, 129, 0.4)',
+                }}
+              />
+            </div>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.76rem', color: '#94A3B8' }}>
-            <span>Level Override Schedule: <strong style={{ color: '#34D399', fontWeight: 700 }}>2% Equal on 10 Levels</strong></span>
-            <span>20% Total Override Pool</span>
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+              Level Override: <strong style={{ color: '#059669' }}>2% / Level</strong>
+            </span>
+            <span className="van-card-badge-pill emerald">
+              20% Pool
+            </span>
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'right' }}>
-            <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#94A3B8', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+        {/* Card 3: Equal Level Override */}
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #3B82F6, #6366F1)' }} />
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
+              style={{
+                color: '#2563EB',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
+              }}
+            >
               Equal Level Override
             </span>
-            <strong style={{ fontSize: '1.35rem', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.01em' }}>
-              2% (All 10 Levels)
-            </strong>
-            <span style={{ fontSize: '0.8rem', color: '#38BDF8', fontWeight: 700 }}>
-              Level 1 to 10 Unlocked
+            <div
+              className="van-3d-kpi-icon van-3d-icon-blue"
+              style={{ animationDelay: '0.8s' }}
+              title="2% Equal Distribution Across 10 Levels"
+            >
+              <TrendingUp size={22} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div className="van-stat-card-value" style={{ color: '#1E40AF' }}>
+            2.0%
+            <span style={{ fontSize: '0.88rem', fontWeight: 700, color: '#3B82F6', marginLeft: '0.4rem' }}>
+              (All 10 Levels)
             </span>
           </div>
-          <div
-            className="van-3d-kpi-icon van-3d-icon-blue"
-            style={{ width: '48px', height: '48px', borderRadius: '14px', animationDelay: '0.8s' }}
-          >
-            <TrendingUp size={24} strokeWidth={2.4} />
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.78rem', color: '#2563EB', fontWeight: 700 }}>
+              Level 1 to 10 Unlocked
+            </span>
+            <span className="van-card-badge-pill blue">
+              Equal Split
+            </span>
           </div>
         </div>
       </div>
