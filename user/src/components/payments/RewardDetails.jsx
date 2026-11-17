@@ -1,5 +1,25 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Gem,
+  Sparkles,
+  RotateCcw,
+  ArrowRight,
+  ShieldCheck,
+  CheckCircle2,
+  Clock,
+  Package,
+  Gift,
+  Award,
+  ExternalLink,
+  Calendar,
+  User,
+  Layers,
+  TrendingUp,
+  Wallet,
+  ChevronRight,
+  Coins,
+} from 'lucide-react';
 import { getUserRewards, getUserFreshProfile, getUserDiamondRewards } from '../../api/userRewardService';
 import { formatDateTime } from '../../utils/timezone';
 
@@ -55,7 +75,7 @@ function RewardDetails({ user, onNavigate }) {
       }
 
       if (showToastNotice) {
-        showToast('✓ Synced with MySQL database successfully!');
+        showToast('✓ Synced with database successfully!');
       }
     } catch (err) {
       console.error('Error fetching database rewards:', err);
@@ -64,7 +84,7 @@ function RewardDetails({ user, onNavigate }) {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [user]);
+  }, []);
 
   useEffect(() => {
     loadDatabaseData();
@@ -87,212 +107,454 @@ function RewardDetails({ user, onNavigate }) {
   const nextMilestone = lockedRewards[0] || null;
 
   return (
-    <div className="page-container">
+    <div className="page-container" style={{ maxWidth: '1400px', margin: '0 auto', paddingBottom: '3.5rem' }}>
+      
       {/* Toast Alert */}
       {toastMessage && (
         <div
           style={{
             position: 'fixed',
-            top: '20px',
-            right: '20px',
+            top: '24px',
+            right: '24px',
             background: '#0f172a',
             color: '#ffffff',
-            padding: '0.85rem 1.35rem',
-            borderRadius: '10px',
+            padding: '0.9rem 1.4rem',
+            borderRadius: '12px',
             zIndex: 99999,
-            boxShadow: '0 10px 25px -5px rgba(0,0,0,0.3)',
-            fontSize: '0.875rem',
-            fontWeight: 700,
+            boxShadow: '0 12px 28px -4px rgba(0,0,0,0.3)',
+            fontSize: '0.86rem',
+            fontWeight: 800,
             border: '1px solid #334155',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
           }}
         >
-          {toastMessage}
+          <CheckCircle2 size={16} color="#34d399" />
+          <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Header Banner */}
-      <div style={{ background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)', borderRadius: '16px', padding: '2rem 2.25rem', color: '#ffffff', marginBottom: '2rem', boxShadow: '0 10px 25px -5px rgba(49, 46, 129, 0.25)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
+      {/* Signature 2-Color Gradient Hero Header Banner with 3D Depth */}
+      <div className="van-catalog-hero-3d">
+        <div className="van-catalog-hero-content">
+          <div className="van-catalog-hero-icon-orb">
+            <Gem size={32} strokeWidth={2.2} />
+          </div>
           <div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.12)', padding: '0.25rem 0.85rem', borderRadius: '20px', fontSize: '0.78rem', fontWeight: '700', color: '#c7d2fe', marginBottom: '0.75rem' }}>
-              <span>💎 Reward Overview Hub</span>
+            <div className="van-catalog-hero-badge">
+              <span
+                className="van-live-pulse-dot"
+                style={{ width: '7px', height: '7px', background: '#38BDF8', boxShadow: '0 0 8px #38BDF8' }}
+              />
+              <Sparkles size={13} />
+              <span>Finance • Diamond Rewards & Milestone Dossier</span>
             </div>
-            <h1 style={{ fontSize: '1.85rem', fontWeight: '800', margin: '0 0 0.4rem 0', color: '#ffffff' }}>
+            <h1 className="van-catalog-hero-title">
               Diamond Wallet & Reward Overview
             </h1>
-            <p style={{ color: '#cbd5e1', fontSize: '0.925rem', maxWidth: '720px', margin: 0 }}>
+            <p className="van-catalog-hero-desc">
               Track your 2-Level Diamond accumulations, conversion rate, wallet transaction history, and milestone progress.
             </p>
           </div>
+        </div>
 
-          {/* User Diamond Wallet Pill & Database Sync */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-            <div style={{ background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: '16px', padding: '1.25rem 1.75rem', textAlign: 'center', minWidth: '220px' }}>
-              <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#c7d2fe', fontWeight: 700 }}>
-                Your Diamond Balance
-              </span>
-              <div style={{ fontSize: '2.2rem', fontWeight: 800, color: '#fbbf24', marginTop: '0.25rem' }}>
-                💎 {formatDiamonds(diamondWallet.diamond_balance)} <span style={{ fontSize: '1rem', color: '#ffffff' }}>Diamonds</span>
-              </div>
-              <span style={{ fontSize: '0.72rem', color: '#e2e8f0', display: 'block', marginTop: '0.2rem' }}>
-                Member: {currentUser?.user_code || userCode || 'Database User'}
-              </span>
-            </div>
-            <button
-              type="button"
-              onClick={() => loadDatabaseData(true)}
-              disabled={refreshing}
+        {/* Right Diamond Wallet Pod & Actions */}
+        <div
+          className="van-directs-hero-action-col"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-end',
+            gap: '0.85rem',
+            flexShrink: 0,
+          }}
+        >
+          {/* Diamond Balance Glass Pod */}
+          <div
+            style={{
+              background: 'rgba(255, 255, 255, 0.12)',
+              backdropFilter: 'blur(16px)',
+              border: '1px solid rgba(255, 255, 255, 0.25)',
+              borderRadius: '16px',
+              padding: '1rem 1.5rem',
+              textAlign: 'center',
+              minWidth: '220px',
+              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)',
+            }}
+          >
+            <span
               style={{
-                background: 'rgba(255,255,255,0.15)',
-                color: '#ffffff',
-                border: '1px solid rgba(255,255,255,0.3)',
-                padding: '0.35rem 0.85rem',
-                borderRadius: '8px',
-                fontSize: '0.75rem',
-                fontWeight: 700,
-                cursor: refreshing ? 'not-allowed' : 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.35rem',
+                fontSize: '0.74rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+                color: '#c7d2fe',
+                fontWeight: 800,
+                display: 'block',
               }}
             >
-              🔄 {refreshing ? 'Syncing...' : 'Sync Database Wallet'}
-            </button>
+              Your Diamond Balance
+            </span>
+            <div
+              style={{
+                fontSize: '2rem',
+                fontWeight: 900,
+                color: '#fbbf24',
+                marginTop: '0.2rem',
+                textShadow: '0 2px 10px rgba(251, 191, 36, 0.35)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.4rem',
+              }}
+            >
+              <span>💎</span>
+              <span>{formatDiamonds(diamondWallet.diamond_balance)}</span>
+              <span style={{ fontSize: '0.9rem', color: '#ffffff', fontWeight: 700 }}>Diamonds</span>
+            </div>
+            <span style={{ fontSize: '0.74rem', color: '#e2e8f0', display: 'block', marginTop: '0.25rem', fontWeight: 600 }}>
+              Member: <strong style={{ color: '#38bdf8' }}>{currentUser?.user_code || userCode || 'Database User'}</strong>
+            </span>
           </div>
+
+          {/* Sync Button */}
+          <button
+            type="button"
+            onClick={() => loadDatabaseData(true)}
+            disabled={refreshing}
+            style={{
+              background: 'rgba(255, 255, 255, 0.15)',
+              color: '#ffffff',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
+              padding: '0.55rem 1.15rem',
+              borderRadius: '10px',
+              fontSize: '0.8rem',
+              fontWeight: 800,
+              cursor: refreshing ? 'not-allowed' : 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+              backdropFilter: 'blur(12px)',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.25)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)'; }}
+          >
+            <RotateCcw size={14} className={refreshing ? 'spin-anim' : ''} />
+            <span>{refreshing ? 'Syncing...' : 'Sync Database Wallet'}</span>
+          </button>
         </div>
       </div>
 
-      {/* My Diamond Rewards Section (Two-Level Sponsor Reward System) */}
+      {/* SECTION 1: My Diamond Rewards (Two-Level Sponsor Reward System) */}
       <section
         aria-label="My Diamond Rewards"
         style={{
           background: '#ffffff',
-          border: '1px solid #cbd5e1',
+          border: '1px solid #e2e8f0',
           borderRadius: '16px',
-          padding: '1.5rem',
+          padding: '1.75rem',
           marginBottom: '2rem',
-          boxShadow: '0 4px 15px rgba(15, 23, 42, 0.04)',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.25rem' }}>
-          <div>
-            <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0f172a', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span>💎</span> My Diamond Rewards
-            </h2>
-            <p style={{ fontSize: '0.84rem', color: '#64748b', margin: '0.25rem 0 0 0' }}>
-              Non-cash sponsor reward Diamonds earned from Level 1 (Direct Sponsor) and Level 2 (Sponsor's Sponsor) reward allocations. Separate from cash wallet and payouts.
-            </p>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '1rem',
+            marginBottom: '1.5rem',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+            <div
+              style={{
+                width: '42px',
+                height: '42px',
+                borderRadius: '12px',
+                background: 'linear-gradient(135deg, #06b6d4, #0891b2)',
+                color: '#ffffff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 4px 12px rgba(6, 182, 212, 0.35)',
+              }}
+            >
+              <Gem size={22} strokeWidth={2.4} />
+            </div>
+            <div>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-0.01em' }}>
+                My Diamond Rewards
+              </h2>
+              <p style={{ fontSize: '0.82rem', color: '#64748b', margin: '0.2rem 0 0 0' }}>
+                Non-cash sponsor reward Diamonds earned from Level 1 (Direct Sponsor) and Level 2 (Sponsor's Sponsor) reward allocations.
+              </p>
+            </div>
           </div>
+
           <span
             style={{
               background: '#ecfeff',
               border: '1px solid #a5f3fc',
-              color: '#0e7490',
-              padding: '0.35rem 0.85rem',
-              borderRadius: '999px',
-              fontSize: '0.76rem',
-              fontWeight: 700,
+              color: '#0891b2',
+              padding: '0.45rem 1rem',
+              borderRadius: '9999px',
+              fontSize: '0.8rem',
+              fontWeight: 800,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              boxShadow: '0 2px 6px rgba(8, 145, 178, 0.15)',
             }}
           >
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#06b6d4' }} />
             Conversion Rate: ₹{Number(diamondWallet.conversion_rate_inr || 100)} = 1 Diamond
           </span>
         </div>
 
-        {/* Diamond Summary Cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.35rem' }}>
-          <div style={{ background: 'linear-gradient(135deg, #ecfeff 0%, #cffafe 100%)', border: '1px solid #67e8f9', borderRadius: '12px', padding: '1rem 1.25rem' }}>
-            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0e7490', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Total Diamond Balance
+        {/* 3 Signature 3D Diamond Summary Cards */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: '1.15rem',
+            marginBottom: '1.75rem',
+          }}
+        >
+          {/* Card 1: Total Diamond Balance */}
+          <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #06B6D4, #0891B2)' }} />
+            <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+              <span
+                className="van-stat-card-title"
+                style={{
+                  color: '#0891B2',
+                  whiteSpace: 'normal',
+                  lineHeight: 1.3,
+                  fontSize: '0.78rem',
+                }}
+              >
+                Total Diamond Balance
+              </span>
+              <div
+                className="van-3d-kpi-icon van-3d-icon-cyan"
+                style={{ animationDelay: '0s' }}
+                title="Non-cash reward balance"
+              >
+                <Gem size={22} strokeWidth={2.4} />
+              </div>
             </div>
-            <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#155e75', marginTop: '0.25rem' }}>
+            <div className="van-stat-card-value" style={{ color: '#155E75' }}>
               💎 {formatDiamonds(diamondWallet.diamond_balance)}
             </div>
-            <div style={{ fontSize: '0.74rem', color: '#0e7490', marginTop: '0.15rem' }}>
-              Non-cash reward balance
+            <div className="van-stat-card-bottom">
+              <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+                Non-cash reward balance
+              </span>
+              <span className="van-card-badge-pill cyan">
+                Total Balance
+              </span>
             </div>
           </div>
 
-          <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem 1.25rem' }}>
-            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Reward Level 1 Diamonds
+          {/* Card 2: Reward Level 1 Diamonds */}
+          <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #3B82F6, #1D4ED8)' }} />
+            <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+              <span
+                className="van-stat-card-title"
+                style={{
+                  color: '#2563EB',
+                  whiteSpace: 'normal',
+                  lineHeight: 1.3,
+                  fontSize: '0.78rem',
+                }}
+              >
+                Reward Level 1 Diamonds
+              </span>
+              <div
+                className="van-3d-kpi-icon van-3d-icon-blue"
+                style={{ animationDelay: '0.4s' }}
+                title="Earned as Direct Sponsor"
+              >
+                <Sparkles size={22} strokeWidth={2.4} />
+              </div>
             </div>
-            <div style={{ fontSize: '1.65rem', fontWeight: 800, color: '#1d4ed8', marginTop: '0.25rem' }}>
+            <div className="van-stat-card-value" style={{ color: '#1D4ED8' }}>
               {formatDiamonds(diamondWallet.level_1_diamonds)} 💎
             </div>
-            <div style={{ fontSize: '0.74rem', color: '#64748b', marginTop: '0.15rem' }}>
-              Earned as Direct Sponsor
+            <div className="van-stat-card-bottom">
+              <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+                Earned as Direct Sponsor
+              </span>
+              <span className="van-card-badge-pill blue">
+                Level 1 Sponsor
+              </span>
             </div>
           </div>
 
-          <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem 1.25rem' }}>
-            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Reward Level 2 Diamonds
+          {/* Card 3: Reward Level 2 Diamonds */}
+          <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #8B5CF6, #6D28D9)' }} />
+            <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+              <span
+                className="van-stat-card-title"
+                style={{
+                  color: '#7C3AED',
+                  whiteSpace: 'normal',
+                  lineHeight: 1.3,
+                  fontSize: '0.78rem',
+                }}
+              >
+                Reward Level 2 Diamonds
+              </span>
+              <div
+                className="van-3d-kpi-icon van-3d-icon-purple"
+                style={{ animationDelay: '0.8s' }}
+                title="Earned as Sponsor's Sponsor"
+              >
+                <Layers size={22} strokeWidth={2.4} />
+              </div>
             </div>
-            <div style={{ fontSize: '1.65rem', fontWeight: 800, color: '#7c3aed', marginTop: '0.25rem' }}>
+            <div className="van-stat-card-value" style={{ color: '#6D28D9' }}>
               {formatDiamonds(diamondWallet.level_2_diamonds)} 💎
             </div>
-            <div style={{ fontSize: '0.74rem', color: '#64748b', marginTop: '0.15rem' }}>
-              Earned as Sponsor's Sponsor
+            <div className="van-stat-card-bottom">
+              <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+                Earned as Sponsor's Sponsor
+              </span>
+              <span className="van-card-badge-pill purple">
+                Level 2 Indirect
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Recent Diamond Transactions */}
-        <div>
-          <h3 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0f172a', margin: '0 0 0.75rem 0' }}>
-            Recent Diamond Transactions
-          </h3>
+        {/* Recent Diamond Transactions Table */}
+        <div
+          style={{
+            background: '#ffffff',
+            borderRadius: '14px',
+            border: '1px solid #e2e8f0',
+            overflow: 'hidden',
+          }}
+        >
+          <div
+            style={{
+              padding: '1.15rem 1.35rem',
+              borderBottom: '1px solid #e2e8f0',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '0.75rem',
+              background: 'linear-gradient(180deg, #f8fafc 0%, #ffffff 100%)',
+            }}
+          >
+            <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#0f172a' }}>
+              Recent Diamond Transactions
+            </h3>
+            <span
+              style={{
+                fontSize: '0.78rem',
+                background: '#eff6ff',
+                color: '#1e40af',
+                border: '1px solid #bfdbfe',
+                padding: '0.2rem 0.65rem',
+                borderRadius: '6px',
+                fontWeight: 700,
+              }}
+            >
+              {diamondTransactions.length} Transaction{diamondTransactions.length === 1 ? '' : 's'}
+            </span>
+          </div>
+
           {diamondTransactions.length === 0 ? (
-            <div style={{ padding: '1.25rem', textAlign: 'center', background: '#f8fafc', border: '1px dashed #cbd5e1', borderRadius: '10px', color: '#64748b', fontSize: '0.86rem' }}>
-              No Diamond reward transactions credited to your account yet.
+            <div style={{ padding: '3rem 1.5rem', textAlign: 'center', color: '#64748b' }}>
+              <div
+                style={{
+                  width: '52px',
+                  height: '52px',
+                  borderRadius: '50%',
+                  background: '#eff6ff',
+                  color: '#2563eb',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto 0.85rem auto',
+                }}
+              >
+                <Gem size={24} />
+              </div>
+              <div style={{ fontWeight: 800, color: '#0f172a', marginBottom: '0.3rem', fontSize: '1rem' }}>
+                No Diamond Transactions Recorded
+              </div>
+              <div style={{ fontSize: '0.82rem', color: '#64748b' }}>
+                Diamond reward distributions will appear here when direct downlines and level 2 members make eligible purchases.
+              </div>
             </div>
           ) : (
             <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.86rem' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
                 <thead>
-                  <tr style={{ background: '#f1f5f9', borderBottom: '2px solid #cbd5e1', textAlign: 'left' }}>
-                    <th style={{ padding: '0.75rem 0.9rem', fontWeight: 700, color: '#334155' }}>Source</th>
-                    <th style={{ padding: '0.75rem 0.9rem', fontWeight: 700, color: '#334155' }}>Reward Level</th>
-                    <th style={{ padding: '0.75rem 0.9rem', fontWeight: 700, color: '#334155', textAlign: 'right' }}>Reward Amount</th>
-                    <th style={{ padding: '0.75rem 0.9rem', fontWeight: 700, color: '#334155', textAlign: 'right' }}>Diamonds</th>
-                    <th style={{ padding: '0.75rem 0.9rem', fontWeight: 700, color: '#334155' }}>Credit Date</th>
+                  <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left', color: '#475569' }}>
+                    <th style={{ padding: '0.85rem 1rem', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Source</th>
+                    <th style={{ padding: '0.85rem 1rem', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Reward Level</th>
+                    <th style={{ padding: '0.85rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Reward Amount</th>
+                    <th style={{ padding: '0.85rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Diamonds</th>
+                    <th style={{ padding: '0.85rem 1rem', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Credit Date</th>
                   </tr>
                 </thead>
                 <tbody>
                   {diamondTransactions.map((tx) => {
                     const isReversal = tx.transaction_type === 'reversal' || tx.transaction_type === 'debit' || Number(tx.diamond_quantity) < 0;
                     return (
-                      <tr key={tx.id} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                        <td style={{ padding: '0.75rem 0.9rem', fontWeight: 700, color: '#0f172a' }}>
+                      <tr
+                        key={tx.id}
+                        style={{
+                          borderBottom: '1px solid #f1f5f9',
+                          transition: 'background-color 0.15s ease',
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f8fafc'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#ffffff'; }}
+                      >
+                        <td style={{ padding: '0.85rem 1rem', fontWeight: 700, color: '#0f172a' }}>
                           <div>{tx.source || tx.source_reference}</div>
                           {tx.source_member_code && (
-                            <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 500 }}>
-                              Member: {tx.source_member_code}
+                            <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 500, marginTop: '0.15rem' }}>
+                              Member: <span style={{ fontFamily: 'monospace', fontWeight: 700, color: '#1e40af' }}>{tx.source_member_code}</span>
                             </div>
                           )}
                         </td>
-                        <td style={{ padding: '0.75rem 0.9rem' }}>
+                        <td style={{ padding: '0.85rem 1rem' }}>
                           <span
                             style={{
                               padding: '0.2rem 0.6rem',
-                              borderRadius: '999px',
-                              fontSize: '0.75rem',
-                              fontWeight: 700,
+                              borderRadius: '9999px',
+                              fontSize: '0.74rem',
+                              fontWeight: 800,
                               background: Number(tx.reward_level) === 1 ? '#dbeafe' : '#f3e8ff',
                               color: Number(tx.reward_level) === 1 ? '#1d4ed8' : '#7c3aed',
+                              border: `1px solid ${Number(tx.reward_level) === 1 ? '#bfdbfe' : '#e9d5ff'}`,
                             }}
                           >
                             Level {tx.reward_level}
                           </span>
                         </td>
-                        <td style={{ padding: '0.75rem 0.9rem', textAlign: 'right', fontWeight: 700, color: isReversal ? '#dc2626' : '#0f172a' }}>
+                        <td style={{ padding: '0.85rem 1rem', textAlign: 'right', fontWeight: 800, color: isReversal ? '#dc2626' : '#0f172a' }}>
                           ₹{Math.abs(Number(tx.allocated_amount || 0)).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
                         </td>
-                        <td style={{ padding: '0.75rem 0.9rem', textAlign: 'right', fontWeight: 800, color: isReversal ? '#dc2626' : '#0891b2' }}>
+                        <td style={{ padding: '0.85rem 1rem', textAlign: 'right', fontWeight: 800, color: isReversal ? '#dc2626' : '#0891b2' }}>
                           {isReversal ? '-' : '+'}{formatDiamonds(Math.abs(Number(tx.diamond_quantity || 0)))} 💎
                         </td>
-                        <td style={{ padding: '0.75rem 0.9rem', color: '#64748b', fontSize: '0.8rem' }}>
-                          {formatDateTime(tx.created_at)}
+                        <td style={{ padding: '0.85rem 1rem', color: '#64748b', fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                            <Calendar size={13} color="#94a3b8" />
+                            <span>{formatDateTime(tx.created_at)}</span>
+                          </span>
                         </td>
                       </tr>
                     );
@@ -304,28 +566,50 @@ function RewardDetails({ user, onNavigate }) {
         </div>
       </section>
 
-      {/* Milestone Rewards Catalog Hub */}
+      {/* SECTION 2: Milestone Rewards Catalog Hub */}
       <section
         style={{
           background: '#ffffff',
           borderRadius: '16px',
           border: '1px solid #e2e8f0',
-          padding: '2rem',
-          boxShadow: '0 4px 15px rgba(0,0,0,0.03)',
-          marginBottom: '2.5rem',
+          padding: '1.75rem',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem', marginBottom: '1.75rem' }}>
-          <div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#eff6ff', color: '#1e40af', padding: '0.25rem 0.75rem', borderRadius: '14px', fontSize: '0.75rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-              <span>🎁 Official Catalog</span>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '1.25rem',
+            marginBottom: '1.75rem',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+            <div
+              style={{
+                width: '42px',
+                height: '42px',
+                borderRadius: '12px',
+                background: 'linear-gradient(135deg, #4f46e5, #4338ca)',
+                color: '#ffffff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 4px 12px rgba(79, 70, 229, 0.35)',
+              }}
+            >
+              <Gift size={22} strokeWidth={2.4} />
             </div>
-            <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0f172a', margin: '0 0 0.35rem 0' }}>
-              Milestone Rewards Catalog
-            </h2>
-            <p style={{ fontSize: '0.88rem', color: '#64748b', margin: 0, maxWidth: '650px', lineHeight: 1.5 }}>
-              All milestone physical products, gadgets, luxury tour packages, and automobile awards are organized in our dedicated <strong>Available Rewards</strong> table view.
-            </p>
+            <div>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-0.01em' }}>
+                Milestone Rewards Catalog
+              </h2>
+              <p style={{ fontSize: '0.82rem', color: '#64748b', margin: '0.2rem 0 0 0' }}>
+                Milestone physical products, electronic gadgets, luxury tours, and automobile awards organized by tier.
+              </p>
+            </div>
           </div>
 
           <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
@@ -337,18 +621,21 @@ function RewardDetails({ user, onNavigate }) {
                 color: '#ffffff',
                 border: 'none',
                 borderRadius: '10px',
-                padding: '0.75rem 1.4rem',
-                fontSize: '0.88rem',
-                fontWeight: 700,
+                padding: '0.65rem 1.25rem',
+                fontSize: '0.84rem',
+                fontWeight: 800,
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.5rem',
                 boxShadow: '0 4px 12px rgba(37, 99, 235, 0.25)',
+                transition: 'all 0.15s ease',
               }}
             >
-              <span>📋</span> Browse Available Rewards (Table View) →
+              <span>📋</span>
+              <span>Browse Available Rewards (Table View) →</span>
             </button>
+
             <button
               type="button"
               onClick={() => handleNavigate('/payments/rewards-claimed')}
@@ -357,55 +644,155 @@ function RewardDetails({ user, onNavigate }) {
                 color: '#334155',
                 border: '1px solid #cbd5e1',
                 borderRadius: '10px',
-                padding: '0.75rem 1.25rem',
-                fontSize: '0.88rem',
-                fontWeight: 700,
+                padding: '0.65rem 1.15rem',
+                fontSize: '0.84rem',
+                fontWeight: 800,
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '0.5rem',
+                gap: '0.45rem',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                transition: 'all 0.15s ease',
               }}
             >
-              <span>📦</span> View Claimed Rewards
+              <Package size={15} color="#64748b" />
+              <span>View Claimed Rewards</span>
             </button>
           </div>
         </div>
 
-        {/* Milestone Summary Cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.75rem' }}>
-          <div style={{ background: '#f8fafc', borderRadius: '12px', padding: '1.15rem 1.25rem', border: '1px solid #e2e8f0' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Catalog Items</span>
-            <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0f172a', marginTop: '0.25rem' }}>
+        {/* 3 Milestone Status KPI Cards */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: '1.15rem',
+            marginBottom: '1.75rem',
+          }}
+        >
+          {/* Card 1: Catalog Items */}
+          <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #3B82F6, #1D4ED8)' }} />
+            <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+              <span
+                className="van-stat-card-title"
+                style={{
+                  color: '#2563EB',
+                  whiteSpace: 'normal',
+                  lineHeight: 1.3,
+                  fontSize: '0.78rem',
+                }}
+              >
+                Catalog Items
+              </span>
+              <div
+                className="van-3d-kpi-icon van-3d-icon-blue"
+                style={{ animationDelay: '0s' }}
+                title="Active in milestone tiers"
+              >
+                <Package size={22} strokeWidth={2.4} />
+              </div>
+            </div>
+            <div className="van-stat-card-value" style={{ color: '#0F172A' }}>
               {rewards.length} Products
             </div>
-            <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Active in milestone tiers</span>
+            <div className="van-stat-card-bottom">
+              <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+                Active in milestone tiers
+              </span>
+              <span className="van-card-badge-pill blue">
+                Catalog
+              </span>
+            </div>
           </div>
 
-          <div style={{ background: '#f0fdf4', borderRadius: '12px', padding: '1.15rem 1.25rem', border: '1px solid #bbf7d0' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#166534', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Ready to Claim Now</span>
-            <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#15803d', marginTop: '0.25rem' }}>
+          {/* Card 2: Ready to Claim Now */}
+          <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #10B981, #059669)' }} />
+            <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+              <span
+                className="van-stat-card-title"
+                style={{
+                  color: '#059669',
+                  whiteSpace: 'normal',
+                  lineHeight: 1.3,
+                  fontSize: '0.78rem',
+                }}
+              >
+                Ready to Claim Now
+              </span>
+              <div
+                className="van-3d-kpi-icon van-3d-icon-emerald"
+                style={{ animationDelay: '0.4s' }}
+                title="Your Diamond balance qualifies!"
+              >
+                <CheckCircle2 size={22} strokeWidth={2.4} />
+              </div>
+            </div>
+            <div className="van-stat-card-value" style={{ color: '#15803D' }}>
               ✓ {eligibleRewards.length} Unlocked
             </div>
-            <span style={{ fontSize: '0.75rem', color: '#166534' }}>
-              {eligibleRewards.length > 0 ? 'Your Diamond balance qualifies!' : 'Accumulate more Diamonds to unlock'}
-            </span>
+            <div className="van-stat-card-bottom">
+              <span style={{ fontSize: '0.76rem', color: '#166534', fontWeight: 600 }}>
+                {eligibleRewards.length > 0 ? 'Your Diamond balance qualifies!' : 'Accumulate more Diamonds'}
+              </span>
+              <span className="van-card-badge-pill emerald">
+                Eligible
+              </span>
+            </div>
           </div>
 
-          <div style={{ background: '#fefce8', borderRadius: '12px', padding: '1.15rem 1.25rem', border: '1px solid #fef08a' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#854d0e', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Next Target Milestone</span>
-            <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#a16207', marginTop: '0.35rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {nextMilestone ? nextMilestone.title : 'All Milestones Achieved! 🎉'}
+          {/* Card 3: Next Target Milestone */}
+          <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #F59E0B, #D97706)' }} />
+            <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+              <span
+                className="van-stat-card-title"
+                style={{
+                  color: '#D97706',
+                  whiteSpace: 'normal',
+                  lineHeight: 1.3,
+                  fontSize: '0.78rem',
+                }}
+              >
+                Next Target Milestone
+              </span>
+              <div
+                className="van-3d-kpi-icon van-3d-icon-amber"
+                style={{ animationDelay: '0.8s' }}
+                title="Next tier milestone"
+              >
+                <Award size={22} strokeWidth={2.4} />
+              </div>
             </div>
-            <span style={{ fontSize: '0.75rem', color: '#854d0e' }}>
-              {nextMilestone ? `Requires ${nextMilestone.required_bp} 💎 (Need ${formatDiamonds(nextMilestone.required_bp - userDiamonds)} more)` : 'Outstanding achievement!'}
-            </span>
+            <div
+              className="van-stat-card-value"
+              style={{
+                color: '#A16207',
+                fontSize: '1.25rem',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+              title={nextMilestone ? nextMilestone.title : 'All Milestones Achieved!'}
+            >
+              {nextMilestone ? nextMilestone.title : 'All Achieved! 🎉'}
+            </div>
+            <div className="van-stat-card-bottom">
+              <span style={{ fontSize: '0.76rem', color: '#854D0E', fontWeight: 600 }}>
+                {nextMilestone ? `Requires ${nextMilestone.required_bp} 💎 (${formatDiamonds(nextMilestone.required_bp - userDiamonds)} to go)` : 'Congratulations!'}
+              </span>
+              <span className="van-card-badge-pill amber">
+                Target
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Catalog Preview Highlight Strip */}
+        {/* Featured Milestone Rewards Preview */}
         <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem' }}>
-            <h4 style={{ margin: 0, fontSize: '0.925rem', fontWeight: 800, color: '#1e293b' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#1e293b' }}>
               Featured Milestone Rewards Preview
             </h4>
             <button
@@ -416,16 +803,20 @@ function RewardDetails({ user, onNavigate }) {
                 border: 'none',
                 color: '#2563eb',
                 fontSize: '0.82rem',
-                fontWeight: 700,
+                fontWeight: 800,
                 cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.3rem',
                 padding: 0,
               }}
             >
-              Open Full Table View ({rewards.length} Items) →
+              <span>Open Full Table View ({rewards.length} Items)</span>
+              <ChevronRight size={14} />
             </button>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
             {rewards.slice(0, 3).map((r) => {
               const req = Number(r.required_bp) || 0;
               const ready = userDiamonds >= req;
@@ -436,32 +827,60 @@ function RewardDetails({ user, onNavigate }) {
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '0.85rem',
-                    padding: '0.85rem 1rem',
-                    background: '#f8fafc',
-                    borderRadius: '12px',
-                    border: ready ? '1px solid #86efac' : '1px solid #e2e8f0',
+                    gap: '1rem',
+                    padding: '1rem 1.15rem',
+                    background: '#ffffff',
+                    borderRadius: '14px',
+                    border: ready ? '1.5px solid #86efac' : '1px solid #e2e8f0',
                     cursor: 'pointer',
-                    transition: 'all 0.15s ease',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+                    transition: 'all 0.2s ease',
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#3b82f6'; e.currentTarget.style.backgroundColor = '#ffffff'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = ready ? '#86efac' : '#e2e8f0'; e.currentTarget.style.backgroundColor = '#f8fafc'; }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = '#3b82f6';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 6px 18px rgba(0,0,0,0.08)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = ready ? '#86efac' : '#e2e8f0';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.03)';
+                  }}
                 >
                   <img
                     src={r.image || '/logo.png'}
                     alt={r.title}
-                    style={{ width: '48px', height: '48px', borderRadius: '8px', objectFit: 'cover', flexShrink: 0 }}
+                    style={{
+                      width: '52px',
+                      height: '52px',
+                      borderRadius: '10px',
+                      objectFit: 'cover',
+                      flexShrink: 0,
+                      background: '#f1f5f9',
+                      border: '1px solid #e2e8f0',
+                    }}
                   />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <div style={{ fontWeight: 800, fontSize: '0.88rem', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {r.title}
                     </div>
-                    <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.15rem' }}>
-                      💎 {r.required_bp} Diamonds • {r.reward_value_inr ? `₹${Number(r.reward_value_inr).toLocaleString('en-IN')}` : r.category}
+                    <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '0.2rem' }}>
+                      💎 <strong>{r.required_bp}</strong> Diamonds • {r.reward_value_inr ? `₹${Number(r.reward_value_inr).toLocaleString('en-IN')}` : r.category}
                     </div>
                   </div>
-                  <span style={{ fontSize: '0.72rem', fontWeight: 800, color: ready ? '#16a34a' : '#64748b', flexShrink: 0 }}>
-                    {ready ? 'Ready →' : 'View →'}
+                  <span
+                    style={{
+                      fontSize: '0.74rem',
+                      fontWeight: 800,
+                      color: ready ? '#15803d' : '#2563eb',
+                      background: ready ? '#f0fdf4' : '#eff6ff',
+                      border: `1px solid ${ready ? '#bbf7d0' : '#bfdbfe'}`,
+                      padding: '0.25rem 0.65rem',
+                      borderRadius: '8px',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {ready ? 'Ready ✓' : 'View →'}
                   </span>
                 </div>
               );
