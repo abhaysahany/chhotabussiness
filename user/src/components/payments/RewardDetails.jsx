@@ -876,12 +876,12 @@ function RewardDetails({ user, onNavigate }) {
             </button>
           </div>
 
-          {/* Generous Product Cards Grid (Breathable & Khula-Khula) */}
+          {/* Compact Product Cards Grid (Short, Clean & Sleek) */}
           <div
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-              gap: '1.5rem',
+              gap: '1.15rem',
             }}
           >
             {rewards.slice(0, 3).map((r) => {
@@ -893,81 +893,45 @@ function RewardDetails({ user, onNavigate }) {
                   onClick={() => handleNavigateToReward(r.id)}
                   style={{
                     background: '#ffffff',
-                    borderRadius: '18px',
-                    border: ready ? '2px solid #86efac' : '1.5px solid #e2e8f0',
-                    padding: '1.5rem',
+                    borderRadius: '14px',
+                    border: ready ? '1.5px solid #86efac' : '1px solid #e2e8f0',
+                    padding: '1rem 1.15rem',
                     display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: '1rem',
                     cursor: 'pointer',
                     boxShadow: ready
-                      ? '0 10px 25px -5px rgba(16, 185, 129, 0.18)'
-                      : '0 4px 18px rgba(15, 23, 42, 0.05)',
-                    transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                      ? '0 6px 16px -2px rgba(16, 185, 129, 0.12)'
+                      : '0 2px 8px rgba(15, 23, 42, 0.04)',
+                    transition: 'all 0.2s ease',
                     position: 'relative',
-                    overflow: 'hidden',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-6px)';
-                    e.currentTarget.style.boxShadow = '0 18px 36px -8px rgba(15, 23, 42, 0.14)';
+                    e.currentTarget.style.transform = 'translateY(-3px)';
+                    e.currentTarget.style.boxShadow = '0 10px 22px -4px rgba(15, 23, 42, 0.1)';
                     e.currentTarget.style.borderColor = ready ? '#10b981' : '#3b82f6';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = 'translateY(0)';
                     e.currentTarget.style.boxShadow = ready
-                      ? '0 10px 25px -5px rgba(16, 185, 129, 0.18)'
-                      : '0 4px 18px rgba(15, 23, 42, 0.05)';
+                      ? '0 6px 16px -2px rgba(16, 185, 129, 0.12)'
+                      : '0 2px 8px rgba(15, 23, 42, 0.04)';
                     e.currentTarget.style.borderColor = ready ? '#86efac' : '#e2e8f0';
                   }}
                 >
-                  {/* Top Bar: Category & Status Badge */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.15rem' }}>
-                    <span
-                      style={{
-                        fontSize: '0.74rem',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.06em',
-                        color: '#64748b',
-                        fontWeight: 800,
-                        background: '#f8fafc',
-                        padding: '0.25rem 0.65rem',
-                        borderRadius: '6px',
-                        border: '1px solid #e2e8f0',
-                      }}
-                    >
-                      {r.category || 'Milestone Award'}
-                    </span>
-                    <span
-                      style={{
-                        fontSize: '0.74rem',
-                        fontWeight: 800,
-                        padding: '0.25rem 0.75rem',
-                        borderRadius: '9999px',
-                        background: ready ? '#ecfdf5' : '#f8fafc',
-                        color: ready ? '#059669' : '#64748b',
-                        border: `1px solid ${ready ? '#a7f3d0' : '#e2e8f0'}`,
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '0.35rem',
-                      }}
-                    >
-                      {ready ? <CheckCircle2 size={13} color="#059669" /> : <Clock size={13} color="#64748b" />}
-                      <span>{ready ? 'Unlocked & Ready' : 'In Progress'}</span>
-                    </span>
-                  </div>
-
-                  {/* Product Image Container */}
+                  {/* Thumbnail Image Container */}
                   <div
                     style={{
-                      height: '160px',
+                      width: '68px',
+                      height: '68px',
                       background: 'radial-gradient(circle, #f8fafc 0%, #f1f5f9 100%)',
-                      borderRadius: '14px',
+                      borderRadius: '12px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      padding: '1.25rem',
-                      marginBottom: '1.35rem',
-                      border: '1px solid #f1f5f9',
+                      padding: '0.4rem',
+                      flexShrink: 0,
+                      border: '1px solid #e2e8f0',
                     }}
                   >
                     <img
@@ -977,81 +941,107 @@ function RewardDetails({ user, onNavigate }) {
                         maxHeight: '100%',
                         maxWidth: '100%',
                         objectFit: 'contain',
-                        filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.08))',
-                        transition: 'transform 0.3s ease',
+                        filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.06))',
                       }}
                       onError={(e) => { e.currentTarget.src = '/logo.png'; }}
                     />
                   </div>
 
-                  {/* Title & Valuation */}
-                  <div style={{ marginBottom: '1.35rem' }}>
-                    <h5
-                      style={{
-                        fontSize: '1.05rem',
-                        fontWeight: 850,
-                        color: '#0f172a',
-                        margin: '0 0 0.65rem 0',
-                        lineHeight: 1.35,
-                      }}
-                    >
-                      {r.title}
-                    </h5>
-
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  {/* Middle Content */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    {/* Top Chips Row */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.25rem' }}>
                       <span
                         style={{
+                          fontSize: '0.68rem',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.04em',
+                          color: '#64748b',
+                          fontWeight: 800,
+                          background: '#f8fafc',
+                          padding: '0.15rem 0.5rem',
+                          borderRadius: '4px',
+                          border: '1px solid #e2e8f0',
+                        }}
+                      >
+                        {r.category || 'Reward'}
+                      </span>
+                      <span
+                        style={{
+                          fontSize: '0.68rem',
+                          fontWeight: 700,
+                          color: ready ? '#15803d' : '#64748b',
                           display: 'inline-flex',
                           alignItems: 'center',
-                          gap: '0.35rem',
-                          fontSize: '0.88rem',
-                          fontWeight: 850,
+                          gap: '0.25rem',
+                        }}
+                      >
+                        {ready ? <CheckCircle2 size={11} color="#15803d" /> : <Clock size={11} color="#94a3b8" />}
+                        <span>{ready ? 'Ready' : 'In Progress'}</span>
+                      </span>
+                    </div>
+
+                    {/* Title */}
+                    <div
+                      style={{
+                        fontSize: '0.92rem',
+                        fontWeight: 800,
+                        color: '#0f172a',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        marginBottom: '0.35rem',
+                      }}
+                      title={r.title}
+                    >
+                      {r.title}
+                    </div>
+
+                    {/* Diamond & Valuation Row */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                      <span
+                        style={{
+                          fontSize: '0.78rem',
+                          fontWeight: 800,
                           color: '#0891b2',
                           background: '#ecfeff',
-                          padding: '0.35rem 0.85rem',
-                          borderRadius: '8px',
+                          padding: '0.15rem 0.55rem',
+                          borderRadius: '6px',
                           border: '1px solid #cffafe',
                         }}
                       >
-                        💎 {formatDiamonds(r.required_bp)} Diamonds
+                        💎 {formatDiamonds(r.required_bp)}
                       </span>
 
                       {r.reward_value_inr && (
-                        <span style={{ fontSize: '0.84rem', fontWeight: 800, color: '#475569' }}>
+                        <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#64748b' }}>
                           ₹{Number(r.reward_value_inr).toLocaleString('en-IN')} Value
                         </span>
                       )}
                     </div>
                   </div>
 
-                  {/* Wide Action Button */}
-                  <button
-                    type="button"
-                    style={{
-                      width: '100%',
-                      padding: '0.78rem',
-                      borderRadius: '12px',
-                      border: 'none',
-                      background: ready
-                        ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
-                        : 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-                      color: '#ffffff',
-                      fontSize: '0.85rem',
-                      fontWeight: 800,
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '0.5rem',
-                      boxShadow: ready
-                        ? '0 4px 14px rgba(16, 185, 129, 0.3)'
-                        : '0 4px 14px rgba(37, 99, 235, 0.3)',
-                      transition: 'all 0.2s ease',
-                    }}
-                  >
-                    <span>{ready ? 'Claim Milestone Award' : 'View Milestone Details'}</span>
-                    <ArrowRight size={15} />
-                  </button>
+                  {/* Compact Action Button on Right */}
+                  <div style={{ flexShrink: 0 }}>
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.35rem',
+                        padding: '0.45rem 0.85rem',
+                        borderRadius: '8px',
+                        fontSize: '0.78rem',
+                        fontWeight: 800,
+                        background: ready ? '#ecfdf5' : '#eff6ff',
+                        color: ready ? '#047857' : '#1d4ed8',
+                        border: `1px solid ${ready ? '#a7f3d0' : '#bfdbfe'}`,
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      <span>{ready ? 'Claim' : 'View'}</span>
+                      <ArrowRight size={13} />
+                    </span>
+                  </div>
                 </div>
               );
             })}
