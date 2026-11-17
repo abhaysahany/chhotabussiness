@@ -1978,6 +1978,567 @@
   box-shadow: 0 4px 10px rgba(15, 23, 42, 0.04);
 }
 
+/* ==========================================================================
+   VYAPAR ADNET — COMMERCIAL CATALOG & SERVICES (3D MODERN SAAS UPGRADE)
+   ========================================================================== */
+
+.van-catalog-hero-3d {
+  position: relative;
+  background: #FFFFFF;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 22px;
+  padding: 1.85rem 2.25rem;
+  margin-bottom: 2rem;
+  box-shadow: 
+    0 10px 30px -5px rgba(15, 23, 42, 0.05),
+    0 20px 40px -15px rgba(37, 99, 235, 0.05);
+  overflow: hidden;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.van-catalog-hero-3d::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3.5px;
+  background: linear-gradient(90deg, #2563EB 0%, #06B6D4 50%, #8B5CF6 100%);
+}
+
+.van-catalog-hero-content {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex: 1;
+}
+
+.van-catalog-hero-icon-orb {
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 60%, #1E40AF 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  flex-shrink: 0;
+  box-shadow: 
+    0 12px 24px -4px rgba(37, 99, 235, 0.38),
+    inset 0 2px 2px rgba(255, 255, 255, 0.7),
+    inset 0 -3px 4px rgba(15, 23, 42, 0.35);
+  animation: van-avatar-smooth-float 4.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  will-change: transform;
+}
+
+.van-catalog-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #EFF6FF;
+  border: 1px solid #DBEAFE;
+  padding: 0.3rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #1D4ED8;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.5rem;
+}
+
+.van-catalog-hero-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 0 0 0.35rem 0;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+}
+
+.van-catalog-hero-desc {
+  color: #64748B;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0;
+  max-width: 680px;
+}
+
+.van-catalog-hero-stats {
+  display: flex;
+  gap: 0.85rem;
+  flex-shrink: 0;
+}
+
+.van-catalog-stat-chip {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 0.85rem 1.15rem;
+  text-align: center;
+  min-width: 110px;
+  transition: all 0.25s ease;
+}
+
+.van-catalog-stat-chip:hover {
+  background: #FFFFFF;
+  border-color: #CBD5E1;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px -3px rgba(15, 23, 42, 0.06);
+}
+
+.van-catalog-stat-chip-val {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0F172A;
+  line-height: 1.2;
+}
+
+.van-catalog-stat-chip-lbl {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-top: 0.2rem;
+}
+
+/* Filter & Controls Bar */
+.van-catalog-filter-bar {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 18px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 14px -2px rgba(15, 23, 42, 0.03);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.van-catalog-segmented-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #F1F5F9;
+  padding: 0.3rem;
+  border-radius: 12px;
+}
+
+.van-catalog-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 9px;
+  border: none;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  color: #64748B;
+  background: transparent;
+}
+
+.van-catalog-tab-btn:hover:not(.active) {
+  color: #0F172A;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.van-catalog-tab-btn.active {
+  background: #FFFFFF;
+  color: #0F172A;
+  font-weight: 700;
+  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.1), 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.van-catalog-tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: #E2E8F0;
+  color: #334155;
+}
+
+.van-catalog-tab-btn.active .van-catalog-tab-count {
+  background: #EFF6FF;
+  color: #2563EB;
+}
+
+.van-catalog-search-wrap {
+  flex: 1;
+  min-width: 260px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.van-catalog-search-icon {
+  position: absolute;
+  left: 14px;
+  color: #94A3B8;
+  pointer-events: none;
+}
+
+.van-catalog-search-input {
+  width: 100%;
+  padding: 0.65rem 1rem 0.65rem 2.6rem;
+  border-radius: 12px;
+  border: 1.5px solid #E2E8F0;
+  font-size: 0.86rem;
+  color: #0F172A;
+  background: #F8FAFC;
+  transition: all 0.2s ease;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.van-catalog-search-input:focus {
+  background: #FFFFFF;
+  border-color: #3B82F6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.van-catalog-select-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.van-catalog-select-icon {
+  position: absolute;
+  left: 12px;
+  color: #64748B;
+  pointer-events: none;
+}
+
+.van-catalog-select {
+  padding: 0.65rem 1.1rem 0.65rem 2.3rem;
+  border-radius: 12px;
+  border: 1.5px solid #E2E8F0;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #334155;
+  background: #F8FAFC;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.van-catalog-select:focus {
+  background: #FFFFFF;
+  border-color: #3B82F6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* Catalog Card 3D */
+.van-product-card-3d {
+  background: #FFFFFF;
+  border-radius: 20px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  overflow: hidden;
+  box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.04), 0 2px 4px rgba(15, 23, 42, 0.02);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s ease;
+  transform: translateZ(0);
+}
+
+.van-product-card-3d:hover {
+  transform: translateY(-6px) translateZ(0);
+  border-color: #CBD5E1;
+  box-shadow: 
+    0 20px 35px -8px rgba(15, 23, 42, 0.11),
+    0 6px 14px -3px rgba(37, 99, 235, 0.06);
+}
+
+.van-product-media {
+  position: relative;
+  height: 185px;
+  overflow: hidden;
+  background: #F1F5F9;
+}
+
+.van-product-media-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.van-product-card-3d:hover .van-product-media-img {
+  transform: scale(1.05);
+}
+
+.van-badge-pill-3d {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #FFFFFF;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.van-badge-product {
+  background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+}
+
+.van-badge-service {
+  background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
+}
+
+.van-badge-feature {
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(8px);
+  color: #F8FAFC;
+  padding: 0.3rem 0.65rem;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.van-product-card-body {
+  padding: 1.35rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.van-product-category-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.van-product-category-chip {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #2563EB;
+  background: #EFF6FF;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.van-product-vendor-text {
+  font-size: 0.75rem;
+  color: #64748B;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.van-product-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0F172A;
+  line-height: 1.35;
+  margin: 0 0 0.45rem 0;
+}
+
+.van-product-desc {
+  font-size: 0.82rem;
+  color: #64748B;
+  line-height: 1.5;
+  margin: 0 0 1.15rem 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 38px;
+}
+
+/* Premium Earnings Split Box */
+.van-product-earnings-box {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 0.9rem 1rem;
+  margin-bottom: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.van-product-price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.van-product-price-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748B;
+}
+
+.van-product-price-amount {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #0F172A;
+  letter-spacing: -0.02em;
+}
+
+.van-product-incentive-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  padding-top: 0.55rem;
+  border-top: 1px dashed #CBD5E1;
+}
+
+.van-product-incentive-pill {
+  padding: 0.5rem 0.65rem;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.van-product-incentive-pill.bonus {
+  background: #ECFDF5;
+  border: 1px solid #A7F3D0;
+}
+
+.van-product-incentive-pill.diamonds {
+  background: #F5F3FF;
+  border: 1px solid #DDD6FE;
+}
+
+.van-incentive-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.van-product-incentive-pill.bonus .van-incentive-title {
+  color: #047857;
+}
+
+.van-product-incentive-pill.diamonds .van-incentive-title {
+  color: #6D28D9;
+}
+
+.van-incentive-val {
+  font-size: 0.86rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.van-product-incentive-pill.bonus .van-incentive-val {
+  color: #065F46;
+}
+
+.van-product-incentive-pill.diamonds .van-incentive-val {
+  color: #5B21B6;
+}
+
+/* Card Button Actions */
+.van-product-actions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: auto;
+}
+
+.van-btn-details-3d {
+  flex: 1;
+  padding: 0.6rem 0.85rem;
+  background: #FFFFFF;
+  color: #334155;
+  border: 1px solid #CBD5E1;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.van-btn-details-3d:hover {
+  background: #F8FAFC;
+  border-color: #94A3B8;
+  color: #0F172A;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(15, 23, 42, 0.06);
+}
+
+.van-btn-share-3d {
+  flex: 1.35;
+  padding: 0.6rem 0.85rem;
+  background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+  color: #FFFFFF;
+  border: none;
+  border-bottom: 2.5px solid #1E40AF;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  box-shadow: 0 4px 12px -2px rgba(37, 99, 235, 0.35);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.van-btn-share-3d:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px -2px rgba(37, 99, 235, 0.45);
+}
+
+.van-btn-share-3d:active {
+  transform: translateY(1px);
+  border-bottom-width: 1px;
+}
+
+@media (max-width: 900px) {
+  .van-catalog-hero-3d {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.5rem;
+  }
+  .van-catalog-hero-stats {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .van-catalog-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .van-catalog-segmented-switch {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+
 
 
 
