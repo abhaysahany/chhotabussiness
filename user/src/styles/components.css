@@ -715,11 +715,13 @@
 }
 
 .van-stat-card:hover .van-3d-kpi-icon,
+.van-stat-card-premium:hover .van-3d-kpi-icon,
 .van-3d-kpi-icon:hover {
   transform: translateY(-6px) scale(1.15) rotate(6deg) !important;
 }
 
-.van-stat-card:hover .van-3d-kpi-icon svg {
+.van-stat-card:hover .van-3d-kpi-icon svg,
+.van-stat-card-premium:hover .van-3d-kpi-icon svg {
   transform: scale(1.18);
 }
 

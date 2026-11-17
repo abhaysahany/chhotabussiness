@@ -411,11 +411,11 @@ function DirectConnectionsPage({ user, onNavigate }) {
         </div>
       </div>
 
-      {/* KPI Cards Grid (Upgraded to Signature 3D Premium Cards) */}
+      {/* KPI Cards Grid (Upgraded to Signature 3D Premium Cards with Animated 3D Floating Orbs) */}
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
           gap: '1.25rem',
           marginBottom: '1.75rem',
         }}
@@ -423,22 +423,24 @@ function DirectConnectionsPage({ user, onNavigate }) {
         {/* Card 1: Total Direct Sponsors */}
         <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #6366F1, #8B5CF6)' }} />
-          <div className="van-stat-card-top">
-            <span className="van-stat-card-title" style={{ color: '#6366F1' }}>Total Direct Sponsors</span>
-            <div
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
               style={{
-                width: '42px',
-                height: '42px',
-                borderRadius: '12px',
-                background: 'linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
                 color: '#6366F1',
-                boxShadow: '0 4px 10px rgba(99, 102, 241, 0.15)',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
               }}
             >
-              <Users size={20} strokeWidth={2.4} />
+              Total Direct Sponsors
+            </span>
+            <div
+              className="van-3d-kpi-icon van-3d-icon-purple"
+              style={{ animationDelay: '0s' }}
+              title="Level 1 Direct Team"
+            >
+              <Users size={22} strokeWidth={2.4} />
             </div>
           </div>
           <div className="van-stat-card-value">
@@ -455,22 +457,24 @@ function DirectConnectionsPage({ user, onNavigate }) {
         {/* Card 2: Active Paying Members */}
         <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #10B981, #059669)' }} />
-          <div className="van-stat-card-top">
-            <span className="van-stat-card-title" style={{ color: '#10B981' }}>Active Paying Members</span>
-            <div
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
               style={{
-                width: '42px',
-                height: '42px',
-                borderRadius: '12px',
-                background: 'linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
                 color: '#10B981',
-                boxShadow: '0 4px 10px rgba(16, 185, 129, 0.15)',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
               }}
             >
-              <Zap size={20} strokeWidth={2.4} />
+              Active Paying Members
+            </span>
+            <div
+              className="van-3d-kpi-icon van-3d-icon-emerald"
+              style={{ animationDelay: '0.5s' }}
+              title="Active Downline Ratio"
+            >
+              <Zap size={22} strokeWidth={2.4} />
             </div>
           </div>
           <div className="van-stat-card-value">
@@ -489,22 +493,24 @@ function DirectConnectionsPage({ user, onNavigate }) {
         {/* Card 3: Total Direct Commissions */}
         <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #F59E0B, #D97706)' }} />
-          <div className="van-stat-card-top">
-            <span className="van-stat-card-title" style={{ color: '#D97706' }}>Total Direct Commissions</span>
-            <div
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
               style={{
-                width: '42px',
-                height: '42px',
-                borderRadius: '12px',
-                background: 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
                 color: '#D97706',
-                boxShadow: '0 4px 10px rgba(245, 158, 11, 0.15)',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
               }}
             >
-              <Coins size={20} strokeWidth={2.4} />
+              Total Direct Commissions
+            </span>
+            <div
+              className="van-3d-kpi-icon van-3d-icon-amber"
+              style={{ animationDelay: '1.0s' }}
+              title="Direct Bonus Earnings"
+            >
+              <Coins size={22} strokeWidth={2.4} />
             </div>
           </div>
           <div className="van-stat-card-value">
@@ -521,22 +527,24 @@ function DirectConnectionsPage({ user, onNavigate }) {
         {/* Card 4: L1 Group Volume (BV) */}
         <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #2563EB, #0284C7)' }} />
-          <div className="van-stat-card-top">
-            <span className="van-stat-card-title" style={{ color: '#2563EB' }}>L1 Group Volume (BV)</span>
-            <div
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
               style={{
-                width: '42px',
-                height: '42px',
-                borderRadius: '12px',
-                background: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
                 color: '#2563EB',
-                boxShadow: '0 4px 10px rgba(37, 99, 235, 0.15)',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
               }}
             >
-              <TrendingUp size={20} strokeWidth={2.4} />
+              L1 Group Volume (BV)
+            </span>
+            <div
+              className="van-3d-kpi-icon van-3d-icon-blue"
+              style={{ animationDelay: '1.5s' }}
+              title="Total Downline Group Turnover"
+            >
+              <TrendingUp size={22} strokeWidth={2.4} />
             </div>
           </div>
           <div className="van-stat-card-value">
@@ -555,22 +563,22 @@ function DirectConnectionsPage({ user, onNavigate }) {
       <div
         className="van-library-toolbar-3d"
         style={{
-          marginBottom: '1.25rem',
+          marginBottom: '1.5rem',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          gap: '1rem',
+          gap: '1.25rem',
           flexWrap: 'wrap',
           background: '#FFFFFF',
           borderRadius: '16px',
-          padding: '0.85rem 1.25rem',
+          padding: '1rem 1.4rem',
           border: '1px solid #E2E8F0',
-          boxShadow: '0 4px 14px -2px rgba(15, 23, 42, 0.04)',
+          boxShadow: '0 4px 16px -2px rgba(15, 23, 42, 0.05)',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
           {/* Rank Filter */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', background: '#F8FAFC', border: '1.5px solid #E2E8F0', borderRadius: '12px', padding: '0.45rem 0.85rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#F8FAFC', border: '1.5px solid #E2E8F0', borderRadius: '12px', padding: '0.5rem 0.95rem' }}>
             <Award size={15} color="#6366F1" />
             <select
               value={rankFilter}
@@ -587,7 +595,7 @@ function DirectConnectionsPage({ user, onNavigate }) {
           </div>
 
           {/* Status Filter */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', background: '#F8FAFC', border: '1.5px solid #E2E8F0', borderRadius: '12px', padding: '0.45rem 0.85rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#F8FAFC', border: '1.5px solid #E2E8F0', borderRadius: '12px', padding: '0.5rem 0.95rem' }}>
             <CheckCircle2 size={15} color="#10B981" />
             <select
               value={statusFilter}
@@ -608,8 +616,8 @@ function DirectConnectionsPage({ user, onNavigate }) {
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '0.35rem',
-                padding: '0.45rem 0.85rem',
+                gap: '0.4rem',
+                padding: '0.5rem 0.95rem',
                 borderRadius: '10px',
                 background: '#FEE2E2',
                 border: '1px solid #FECACA',
@@ -626,8 +634,8 @@ function DirectConnectionsPage({ user, onNavigate }) {
         </div>
 
         {/* Counter Pill */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', background: '#F1F5F9', padding: '0.45rem 0.95rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 700, color: '#475569' }}>
-          <Users size={14} color="#2563EB" />
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: '#F1F5F9', padding: '0.5rem 1.1rem', borderRadius: '9999px', fontSize: '0.82rem', fontWeight: 700, color: '#475569', border: '1px solid #E2E8F0' }}>
+          <Users size={15} color="#2563EB" />
           <span>Showing {filteredMembers.length} of {directMembers.length} Direct Partners</span>
         </div>
       </div>
