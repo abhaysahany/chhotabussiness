@@ -412,14 +412,7 @@ function DirectConnectionsPage({ user, onNavigate }) {
       </div>
 
       {/* KPI Cards Grid (Upgraded to Signature 3D Premium Cards with Animated 3D Floating Orbs) */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-          gap: '1.25rem',
-          marginBottom: '1.75rem',
-        }}
-      >
+      <div className="van-directs-kpi-grid">
         {/* Card 1: Total Direct Sponsors */}
         <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #6366F1, #8B5CF6)' }} />
