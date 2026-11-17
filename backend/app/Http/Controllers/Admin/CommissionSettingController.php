@@ -214,9 +214,10 @@ class CommissionSettingController extends Controller
                 'data' => $setting->toNormalizedArray($levelColumns),
             ]);
         } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Failed to save Global Commission Settings: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return response()->json([
                 'status' => 'error',
-                'message' => 'Failed to save Global Commission Settings: ' . $e->getMessage(),
+                'message' => 'Failed to save Global Commission Settings. Please try again shortly.',
             ], 500);
         }
     }

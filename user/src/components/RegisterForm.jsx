@@ -105,9 +105,16 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
       } catch (err) {
         console.error('Real-time sponsor verify error:', err);
         setSponsorStatus(null);
-        setSponsorError(
-          err.response?.data?.message || 'Invalid Sponsor ID. Sponsor does not exist in our database.'
-        );
+        const status = err.response?.status;
+        const rawMsg = err.response?.data?.message || '';
+
+        if (status === 503 || /SQLSTATE|Access denied|database|connection|PDOException/i.test(rawMsg)) {
+          setSponsorError('Service temporarily unavailable. Please try again shortly.');
+        } else if (rawMsg) {
+          setSponsorError(rawMsg);
+        } else {
+          setSponsorError('Invalid Sponsor ID. Sponsor does not exist in our database.');
+        }
       } finally {
         setVerifyingSponsor(false);
       }
@@ -192,7 +199,10 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
       if (data?.errors) {
         setFieldErrors(data.errors);
       }
-      const msg = data?.message || err.message || 'Failed to send verification OTP to email.';
+      let msg = data?.message || err.message || 'Failed to send verification OTP to email.';
+      if (err.response?.status === 503 || /SQLSTATE|Access denied|database|connection|PDOException/i.test(msg)) {
+        msg = 'Service temporarily unavailable. Please try again shortly.';
+      }
       setErrorMessage(msg);
       if (data?.requires_login || msg.toLowerCase().includes('already registered') || msg.toLowerCase().includes('login')) {
         setShowLoginPrompt(true);
@@ -225,7 +235,10 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
     } catch (err) {
       console.error('Resend OTP error:', err);
       const data = err.response?.data;
-      const msg = data?.message || err.message || 'Failed to resend verification OTP.';
+      let msg = data?.message || err.message || 'Failed to resend verification OTP.';
+      if (err.response?.status === 503 || /SQLSTATE|Access denied|database|connection|PDOException/i.test(msg)) {
+        msg = 'Service temporarily unavailable. Please try again shortly.';
+      }
       setErrorMessage(msg);
       if (data?.cooldown_remaining) {
         setResendCooldown(data.cooldown_remaining);
@@ -270,7 +283,10 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
       if (data?.errors) {
         setFieldErrors(data.errors);
       }
-      const msg = data?.message || err.message || 'Registration failed. Please verify the OTP and try again.';
+      let msg = data?.message || err.message || 'Registration failed. Please verify the OTP and try again.';
+      if (err.response?.status === 503 || /SQLSTATE|Access denied|database|connection|PDOException/i.test(msg)) {
+        msg = 'Service temporarily unavailable. Please try again shortly.';
+      }
       setErrorMessage(msg);
       if (data?.requires_login || msg.toLowerCase().includes('already registered')) {
         setShowLoginPrompt(true);

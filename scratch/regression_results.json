@@ -1,0 +1,272 @@
+[
+  {
+    "category": "USER_FRONTEND",
+    "method": "GET",
+    "path": "/",
+    "status": 200,
+    "matched": true,
+    "elapsed": 366,
+    "content_type": "text/html",
+    "preview": "<!doctype html> <html lang=\"en\">   <head>     <meta charset=\"UTF-8\" />     <link rel=\"icon\" type=\"image/png\" href=\"/logo"
+  },
+  {
+    "category": "USER_FRONTEND",
+    "method": "GET",
+    "path": "/login",
+    "status": 200,
+    "matched": true,
+    "elapsed": 186,
+    "content_type": "text/html",
+    "preview": "<!doctype html> <html lang=\"en\">   <head>     <meta charset=\"UTF-8\" />     <link rel=\"icon\" type=\"image/png\" href=\"/logo"
+  },
+  {
+    "category": "USER_FRONTEND",
+    "method": "GET",
+    "path": "/register",
+    "status": 200,
+    "matched": true,
+    "elapsed": 244,
+    "content_type": "text/html",
+    "preview": "<!doctype html> <html lang=\"en\">   <head>     <meta charset=\"UTF-8\" />     <link rel=\"icon\" type=\"image/png\" href=\"/logo"
+  },
+  {
+    "category": "USER_ASSET",
+    "method": "GET",
+    "path": "/assets/index-DO_-kBN3.js",
+    "status": 200,
+    "matched": true,
+    "elapsed": 207,
+    "content_type": "application/x-javascript",
+    "preview": "var e=Object.create,t=Object.defineProperty,n=Object.getOwnPropertyDescriptor,r=Object.getOwnPropertyNames,i=Object.getP"
+  },
+  {
+    "category": "USER_ASSET",
+    "method": "GET",
+    "path": "/assets/index-CYmZCTCF.css",
+    "status": 200,
+    "matched": true,
+    "elapsed": 131,
+    "content_type": "text/css",
+    "preview": "@import \"https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap\";@import \""
+  },
+  {
+    "category": "ADMIN_FRONTEND",
+    "method": "GET",
+    "path": "/admin/",
+    "status": 200,
+    "matched": true,
+    "elapsed": 224,
+    "content_type": "text/html",
+    "preview": "<!doctype html>\r <html lang=\"en\">\r   <head>\r     <meta charset=\"UTF-8\" />\r     <link rel=\"icon\" type=\"image/svg+xml\" hre"
+  },
+  {
+    "category": "ADMIN_FRONTEND",
+    "method": "GET",
+    "path": "/admin/login",
+    "status": 200,
+    "matched": true,
+    "elapsed": 200,
+    "content_type": "text/html",
+    "preview": "<!doctype html>\r <html lang=\"en\">\r   <head>\r     <meta charset=\"UTF-8\" />\r     <link rel=\"icon\" type=\"image/svg+xml\" hre"
+  },
+  {
+    "category": "ADMIN_ASSET",
+    "method": "GET",
+    "path": "/admin/assets/index-CkPE3vwZ.js",
+    "status": 200,
+    "matched": true,
+    "elapsed": 121,
+    "content_type": "application/x-javascript",
+    "preview": "var e=Object.create,t=Object.defineProperty,n=Object.getOwnPropertyDescriptor,r=Object.getOwnPropertyNames,i=Object.getP"
+  },
+  {
+    "category": "ADMIN_ASSET",
+    "method": "GET",
+    "path": "/admin/assets/index-CKdNvRYL.css",
+    "status": 200,
+    "matched": true,
+    "elapsed": 1146,
+    "content_type": "text/css",
+    "preview": "@import \"https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap\";@keyframe"
+  },
+  {
+    "category": "ENTITY_FRONTEND",
+    "method": "GET",
+    "path": "/entity/",
+    "status": 200,
+    "matched": true,
+    "elapsed": 211,
+    "content_type": "text/html",
+    "preview": "<!doctype html>\r <html lang=\"en\">\r   <head>\r     <meta charset=\"UTF-8\" />\r     <link rel=\"icon\" type=\"image/svg+xml\" hre"
+  },
+  {
+    "category": "ENTITY_FRONTEND",
+    "method": "GET",
+    "path": "/entity/login",
+    "status": 200,
+    "matched": true,
+    "elapsed": 188,
+    "content_type": "text/html",
+    "preview": "<!doctype html>\r <html lang=\"en\">\r   <head>\r     <meta charset=\"UTF-8\" />\r     <link rel=\"icon\" type=\"image/svg+xml\" hre"
+  },
+  {
+    "category": "ENTITY_ASSET",
+    "method": "GET",
+    "path": "/entity/assets/index-rXEdak42.js",
+    "status": 200,
+    "matched": true,
+    "elapsed": 122,
+    "content_type": "application/x-javascript",
+    "preview": "var e=Object.create,t=Object.defineProperty,n=Object.getOwnPropertyDescriptor,r=Object.getOwnPropertyNames,i=Object.getP"
+  },
+  {
+    "category": "ENTITY_ASSET",
+    "method": "GET",
+    "path": "/entity/assets/index-1WgN43pa.css",
+    "status": 200,
+    "matched": true,
+    "elapsed": 113,
+    "content_type": "text/css",
+    "preview": "@import \"https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap\";:root{--s"
+  },
+  {
+    "category": "API_CORE",
+    "method": "GET",
+    "path": "/api/session/config",
+    "status": 200,
+    "matched": true,
+    "elapsed": 300,
+    "content_type": "application/json",
+    "preview": "{\"status\":\"success\",\"idle_timeout_minutes\":30,\"absolute_timeout_hours\":12,\"remember_me_enabled\":false}"
+  },
+  {
+    "category": "API_CORE",
+    "method": "GET",
+    "path": "/api/status",
+    "status": 503,
+    "matched": true,
+    "elapsed": 265,
+    "content_type": "application/json",
+    "preview": "{\"status\":\"error\",\"message\":\"Service temporarily unavailable. Please try again shortly.\"}"
+  },
+  {
+    "category": "API_CORE",
+    "method": "GET",
+    "path": "/api/branding",
+    "status": 503,
+    "matched": true,
+    "elapsed": 279,
+    "content_type": "application/json",
+    "preview": "{\"status\":\"error\",\"message\":\"Service temporarily unavailable. Please try again shortly.\"}"
+  },
+  {
+    "category": "API_AUTH",
+    "method": "POST",
+    "path": "/api/verify-sponsor",
+    "status": 503,
+    "matched": true,
+    "elapsed": 294,
+    "content_type": "application/json",
+    "preview": "{\"status\":\"error\",\"message\":\"Service temporarily unavailable. Please try again shortly.\",\"verified\":false}"
+  },
+  {
+    "category": "API_AUTH",
+    "method": "POST",
+    "path": "/api/verify-sponsor",
+    "status": 503,
+    "matched": true,
+    "elapsed": 305,
+    "content_type": "application/json",
+    "preview": "{\"status\":\"error\",\"message\":\"Service temporarily unavailable. Please try again shortly.\",\"verified\":false}"
+  },
+  {
+    "category": "API_AUTH",
+    "method": "POST",
+    "path": "/api/verify-sponsor",
+    "status": 422,
+    "matched": true,
+    "elapsed": 276,
+    "content_type": "application/json",
+    "preview": "{\"status\":\"error\",\"message\":\"Sponsor ID is required\"}"
+  },
+  {
+    "category": "API_AUTH",
+    "method": "POST",
+    "path": "/api/login",
+    "status": 503,
+    "matched": true,
+    "elapsed": 301,
+    "content_type": "application/json",
+    "preview": "{\"status\":\"error\",\"message\":\"Service temporarily unavailable. Please try again shortly.\"}"
+  },
+  {
+    "category": "API_ENTITY",
+    "method": "GET",
+    "path": "/api/entity/selectable-entities",
+    "status": 503,
+    "matched": true,
+    "elapsed": 276,
+    "content_type": "application/json",
+    "preview": "{\"status\":\"error\",\"message\":\"Service temporarily unavailable. Please try again shortly.\"}"
+  },
+  {
+    "category": "MEDIA_PUBLIC",
+    "method": "GET",
+    "path": "/logo.png",
+    "status": 200,
+    "matched": true,
+    "elapsed": 408,
+    "content_type": "image/png",
+    "preview": "\ufffdPNG\r \u001a \u0000\u0000\u0000\rIHDR\u0000\u0000\u0004\ufffd\u0000\u0000\u0004\ufffd\b\u0006\u0000\u0000\u0000\ufffd\ufffd\ufffd*\u0000\u0000\u0000\ufffdeXIfII*\u0000\b\u0000\u0000\u0000\u0006\u0000\u0012\u0001\u0003\u0000\u0001\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u001a\u0001\u0005\u0000\u0001\u0000\u0000\u0000V\u0000\u0000\u0000\u001b\u0001\u0005\u0000\u0001\u0000\u0000\u0000^\u0000\u0000\u0000(\u0001\u0003\u0000\u0001\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0013\u0002\u0003\u0000\u0001\u0000\u0000\u0000\u0001\u0000\u0000\u0000i\ufffd\u0004\u0000\u0001\u0000\u0000\u0000f"
+  },
+  {
+    "category": "SECURITY_BLOCK",
+    "method": "GET",
+    "path": "/.env",
+    "status": 403,
+    "matched": true,
+    "elapsed": 135,
+    "content_type": "text/plain",
+    "preview": "Forbidden"
+  },
+  {
+    "category": "SECURITY_BLOCK",
+    "method": "GET",
+    "path": "/backend/.env",
+    "status": 403,
+    "matched": true,
+    "elapsed": 112,
+    "content_type": "text/plain",
+    "preview": "Forbidden"
+  },
+  {
+    "category": "SECURITY_BLOCK",
+    "method": "GET",
+    "path": "/backend/app/Models/User.php",
+    "status": 403,
+    "matched": true,
+    "elapsed": 186,
+    "content_type": "text/html",
+    "preview": "<!DOCTYPE html> <html style=\"height:100%\"> <head> <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, sh"
+  },
+  {
+    "category": "SECURITY_BLOCK",
+    "method": "GET",
+    "path": "/backup.zip",
+    "status": 200,
+    "matched": true,
+    "elapsed": 193,
+    "content_type": "text/html",
+    "preview": "<!doctype html> <html lang=\"en\">   <head>     <meta charset=\"UTF-8\" />     <link rel=\"icon\" type=\"image/png\" href=\"/logo"
+  },
+  {
+    "category": "SECURITY_BLOCK",
+    "method": "GET",
+    "path": "/dump.sql",
+    "status": 403,
+    "matched": true,
+    "elapsed": 110,
+    "content_type": "text/plain",
+    "preview": "Forbidden"
+  }
+]

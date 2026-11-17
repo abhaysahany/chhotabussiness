@@ -5,10 +5,15 @@
     RewriteRule ^api/(.*)$ backend/public/index.php [L,QSA]
     RewriteRule ^api$ backend/public/index.php [L,QSA]
 
-    # 2. Allow direct access to admin, entity, and backend sub-applications
+    # 2. Security: Block all direct access to sensitive backend directories and .env files
+    RewriteRule ^\.env - [F,L]
+    RewriteRule ^backend/\.env - [F,L]
+    RewriteRule ^backend/(app|bootstrap|config|database|resources|routes|storage|tests|vendor)(/.*)?$ - [F,L]
+
+    # Allow direct access to admin, entity, and backend/public sub-applications
     RewriteCond %{REQUEST_URI} ^/admin(/.*)?$ [OR]
     RewriteCond %{REQUEST_URI} ^/entity(/.*)?$ [OR]
-    RewriteCond %{REQUEST_URI} ^/backend(/.*)?$
+    RewriteCond %{REQUEST_URI} ^/backend/public(/.*)?$
     RewriteRule ^ - [L]
 
     # 3. SPA fallback for root User panel

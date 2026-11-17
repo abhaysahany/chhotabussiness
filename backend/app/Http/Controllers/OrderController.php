@@ -523,9 +523,10 @@ class OrderController extends Controller
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
+            \Illuminate\Support\Facades\Log::error('Failed to create order record: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return response()->json([
                 'status' => 'error',
-                'message' => 'Failed to create order record: ' . $e->getMessage(),
+                'message' => 'Failed to create order record. Please try again shortly.',
             ], 500);
         }
     }
@@ -701,9 +702,10 @@ class OrderController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
+            \Illuminate\Support\Facades\Log::error('Failed to record balance payment: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return response()->json([
                 'status' => 'error',
-                'message' => 'Failed to record balance payment: ' . $e->getMessage(),
+                'message' => 'Failed to record balance payment. Please try again shortly.',
             ], 500);
         }
     }
