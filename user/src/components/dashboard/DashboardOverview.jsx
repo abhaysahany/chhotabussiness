@@ -432,14 +432,14 @@ function DashboardOverview({ user, onNavigate }) {
           </div>
 
           {/* Quick Action Commands Toolbar */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
             <button
               type="button"
               className="van-btn-action-3d van-btn-action-amber"
               onClick={() => onNavigate && onNavigate('payout-withdraw')}
               title="Request a withdrawal to your bank"
             >
-              <Wallet size={16} />
+              <Wallet size={14} />
               <span>Request Payout</span>
             </button>
 
@@ -449,7 +449,7 @@ function DashboardOverview({ user, onNavigate }) {
               onClick={() => onNavigate && onNavigate('network-genealogy')}
               title="Explore team network and binary tree"
             >
-              <Users size={16} />
+              <Users size={14} />
               <span>Genealogy Tree</span>
             </button>
 
@@ -459,7 +459,7 @@ function DashboardOverview({ user, onNavigate }) {
               onClick={() => onNavigate && onNavigate('reward-details')}
               title="Check milestone badges & car/house rewards"
             >
-              <Award size={16} />
+              <Award size={14} />
               <span>Rewards</span>
             </button>
           </div>
