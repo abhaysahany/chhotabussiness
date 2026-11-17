@@ -158,6 +158,14 @@ function DirectIncomePage({ user, onNavigate }) {
     setPage(1);
   };
 
+  const handleBackToOverview = () => {
+    if (typeof onNavigate === 'function') {
+      onNavigate('my-income');
+    } else {
+      navigate('/income');
+    }
+  };
+
   // Navigate to Dedicated Order Details Page
   const handleOpenDetails = (orderId) => {
     if (!orderId) return;
@@ -220,26 +228,57 @@ function DirectIncomePage({ user, onNavigate }) {
           </div>
         </div>
 
-        {/* Right Stats Chips Area */}
+        {/* Right Stats Chips & Navigation Action Area */}
         <div
           className="van-directs-hero-action-col"
           style={{
             display: 'flex',
-            alignItems: 'center',
-            gap: '0.75rem',
+            flexDirection: 'column',
+            alignItems: 'flex-end',
+            gap: '0.85rem',
             flexShrink: 0,
           }}
         >
-          <div className="van-catalog-stat-chip">
-            <div className="van-catalog-stat-chip-val">{formatNumberIN(totalOrders)}</div>
-            <div className="van-catalog-stat-chip-lbl">Eligible Orders</div>
-          </div>
-          <div className="van-catalog-stat-chip">
-            <div className="van-catalog-stat-chip-val" style={{ color: '#34D399' }}>
-              {completionPercentage}%
+          {/* Top: Quick Stats Chips */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <div className="van-catalog-stat-chip">
+              <div className="van-catalog-stat-chip-val">{formatNumberIN(totalOrders)}</div>
+              <div className="van-catalog-stat-chip-lbl">Eligible Orders</div>
             </div>
-            <div className="van-catalog-stat-chip-lbl">Realized</div>
+            <div className="van-catalog-stat-chip">
+              <div className="van-catalog-stat-chip-val" style={{ color: '#34D399' }}>
+                {completionPercentage}%
+              </div>
+              <div className="van-catalog-stat-chip-lbl">Realized</div>
+            </div>
           </div>
+
+          {/* Bottom: Back to My Income Overview */}
+          <button
+            type="button"
+            onClick={handleBackToOverview}
+            style={{
+              padding: '0.58rem 1.15rem',
+              background: 'rgba(255, 255, 255, 0.12)',
+              color: '#FFFFFF',
+              border: '1px solid rgba(255, 255, 255, 0.28)',
+              borderRadius: '10px',
+              fontSize: '0.82rem',
+              fontWeight: 800,
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+              backdropFilter: 'blur(12px)',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.22)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)'; }}
+          >
+            <ArrowLeft size={15} />
+            <span>My Income Overview</span>
+          </button>
         </div>
       </div>
 
