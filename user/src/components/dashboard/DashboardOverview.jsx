@@ -16,6 +16,7 @@ import {
   FileText,
   UserCheck,
   Bell,
+  TrendingUp,
 } from 'lucide-react';
 import { getDashboardStats } from '../../api/userService';
 import { getUserDiamondRewards } from '../../api/userRewardService';
@@ -510,22 +511,33 @@ function DashboardOverview({ user, onNavigate }) {
       </div>
 
       {/* Dynamic Member Income Cards (Direct & Level Tables Integration) */}
-      <div style={{ marginBottom: '0.25rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-          <div>
-            <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--van-brand-navy)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span>💰 Member Income Summary</span>
-              <span className="van-badge van-badge-info" style={{ fontSize: '0.68rem', padding: '0.15rem 0.5rem' }}>Dynamic Real-Time</span>
-            </h3>
-            <p className="van-text-xs van-text-muted" style={{ margin: '0.15rem 0 0 0' }}>
-              Dynamic calculations from your Direct Income and Level Income ledger records.
-            </p>
+      <div style={{ marginTop: '1.85rem', marginBottom: '0.25rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.15rem', flexWrap: 'wrap', gap: '0.85rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+            <div className="van-chart-badge-3d van-chart-badge-blue" style={{ width: '38px', height: '38px', borderRadius: '11px' }}>
+              <TrendingUp size={20} strokeWidth={2.4} />
+            </div>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+                <h3 style={{ fontSize: '1.18rem', fontWeight: 800, color: 'var(--van-brand-navy)', margin: 0, letterSpacing: '-0.02em' }}>
+                  Member Income Summary
+                </h3>
+                <span className="van-badge-portal-3d" style={{ padding: '0.18rem 0.55rem', fontSize: '0.7rem' }}>
+                  <span className="van-badge-portal-dot" style={{ background: '#10B981', boxShadow: '0 0 0 2px rgba(16, 185, 129, 0.35)' }} />
+                  <span>Dynamic Real-Time</span>
+                </span>
+              </div>
+              <p className="van-text-xs van-text-muted" style={{ margin: '0.2rem 0 0 0', fontSize: '0.8rem' }}>
+                Real-time income calculations streaming directly from your Direct and Level ledger records.
+              </p>
+            </div>
           </div>
+
           <button
             type="button"
-            className="van-btn van-btn-sm van-btn-outline"
+            className="van-btn-sync-3d"
             onClick={() => onNavigate && onNavigate('direct-income')}
-            style={{ fontSize: '0.75rem', fontWeight: 700 }}
+            title="Open comprehensive direct income report"
           >
             <span>View Direct Income →</span>
           </button>
