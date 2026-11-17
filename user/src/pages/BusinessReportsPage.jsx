@@ -24,7 +24,8 @@ import {
   RotateCcw,
   Cpu,
   Scale,
-  Calculator
+  Calculator,
+  SlidersHorizontal
 } from 'lucide-react';
 import {
   getPublicCategories,
@@ -162,6 +163,22 @@ function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
     }
     return (b.id || 0) - (a.id || 0); // Newest first
   });
+
+  const hasActiveFilters = Boolean(
+    searchTerm.trim() ||
+    categoryFilter ||
+    entityTypeFilter !== 'all' ||
+    statusFilter !== 'all' ||
+    sortBy !== 'newest'
+  );
+
+  const handleResetFilters = () => {
+    setSearchTerm('');
+    setCategoryFilter('');
+    setEntityTypeFilter('all');
+    setStatusFilter('all');
+    setSortBy('newest');
+  };
 
   const totalBusinessesCount = businesses.length;
   const totalFreelancersCount = freelancers.length;
@@ -530,194 +547,157 @@ function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
         </div>
       </div>
 
-      {/* Advanced Filter Toolbar (3D Design) */}
-      <div
-        style={{
-          background: '#FFFFFF',
-          borderRadius: '18px',
-          padding: '1.15rem 1.45rem',
-          border: '1px solid #E2E8F0',
-          boxShadow: '0 4px 16px -2px rgba(15, 23, 42, 0.04)',
-          marginBottom: '1.75rem',
-        }}
-      >
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
-          
-          {/* Search Box */}
-          <div style={{ position: 'relative', flex: '1 1 280px', maxWidth: '420px' }}>
+      {/* Advanced 3D Filter & View Command Toolbar */}
+      <div className="van-dir-toolbar-3d">
+        {/* Top Tier: Search Bar & View Mode Switcher */}
+        <div className="van-dir-toolbar-top">
+          {/* Expanded Search Bar with 3D Pod */}
+          <div className="van-dir-search-wrap">
+            <div className="van-dir-search-icon-pod">
+              <Search size={16} color="#2563EB" strokeWidth={2.4} />
+            </div>
             <input
               type="text"
+              className="van-dir-search-input"
               placeholder="Search entity name, owner, GSTIN, skill or category..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '0.62rem 0.85rem 0.62rem 2.45rem',
-                fontSize: '0.84rem',
-                borderRadius: '10px',
-                border: '1.5px solid #CBD5E1',
-                outline: 'none',
-                background: '#F8FAFC',
-                color: '#0F172A',
-                fontWeight: 600,
-                transition: 'all 0.2s ease',
-              }}
-              onFocus={(e) => { e.target.style.borderColor = '#3B82F6'; e.target.style.background = '#FFFFFF'; }}
-              onBlur={(e) => { e.target.style.borderColor = '#CBD5E1'; e.target.style.background = '#F8FAFC'; }}
             />
-            <Search
-              size={16}
-              color="#94A3B8"
-              strokeWidth={2.4}
-              style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)' }}
-            />
+            {searchTerm && (
+              <button
+                type="button"
+                className="van-dir-search-clear"
+                onClick={() => setSearchTerm('')}
+                title="Clear search"
+              >
+                <X size={14} strokeWidth={2.5} />
+              </button>
+            )}
           </div>
 
-          {/* Filter Selects Row */}
-          <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap', alignItems: 'center' }}>
-            {/* Entity Type Filter */}
-            <select
-              value={entityTypeFilter}
-              onChange={(e) => setEntityTypeFilter(e.target.value)}
-              style={{
-                padding: '0.6rem 0.95rem',
-                fontSize: '0.84rem',
-                borderRadius: '10px',
-                border: '1.5px solid #CBD5E1',
-                outline: 'none',
-                background: '#FFFFFF',
-                fontWeight: 700,
-                color: '#334155',
-                cursor: 'pointer',
-              }}
-            >
-              <option value="all">All Entity Types</option>
-              <option value="business">🏢 Businesses Only</option>
-              <option value="freelancer">👤 Freelancers Only</option>
-            </select>
-
-            {/* Category Filter */}
-            <select
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              style={{
-                padding: '0.6rem 0.95rem',
-                fontSize: '0.84rem',
-                borderRadius: '10px',
-                border: '1.5px solid #CBD5E1',
-                outline: 'none',
-                background: '#FFFFFF',
-                fontWeight: 700,
-                color: '#334155',
-                cursor: 'pointer',
-              }}
-            >
-              <option value="">All Categories</option>
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-
-            {/* Status Filter */}
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              style={{
-                padding: '0.6rem 0.95rem',
-                fontSize: '0.84rem',
-                borderRadius: '10px',
-                border: '1.5px solid #CBD5E1',
-                outline: 'none',
-                background: '#FFFFFF',
-                fontWeight: 700,
-                color: '#334155',
-                cursor: 'pointer',
-              }}
-            >
-              <option value="all">All Statuses</option>
-              <option value="verified">✓ Verified Only</option>
-              <option value="featured">🌟 Featured Only</option>
-            </select>
-
-            {/* Sorting */}
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              style={{
-                padding: '0.6rem 0.95rem',
-                fontSize: '0.84rem',
-                borderRadius: '10px',
-                border: '1.5px solid #CBD5E1',
-                outline: 'none',
-                background: '#FFFFFF',
-                fontWeight: 700,
-                color: '#334155',
-                cursor: 'pointer',
-              }}
-            >
-              <option value="newest">Sort: Newest First</option>
-              <option value="name_asc">Sort: Name (A-Z)</option>
-              <option value="rating">Sort: Highest Rated</option>
-            </select>
-          </div>
-
-          {/* View Switcher: 3D Toggle Pills */}
-          <div
-            style={{
-              display: 'inline-flex',
-              gap: '0.3rem',
-              background: '#F1F5F9',
-              padding: '0.28rem',
-              borderRadius: '12px',
-              border: '1px solid #CBD5E1',
-            }}
-          >
+          {/* 3D View Mode Switcher */}
+          <div className="van-dir-view-switcher">
             <button
               type="button"
+              className={`van-dir-view-btn ${viewMode === 'grid' ? 'active' : ''}`}
               onClick={() => setViewMode('grid')}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                padding: '0.42rem 0.85rem',
-                borderRadius: '8px',
-                border: 'none',
-                fontSize: '0.8rem',
-                fontWeight: 800,
-                cursor: 'pointer',
-                background: viewMode === 'grid' ? '#FFFFFF' : 'transparent',
-                color: viewMode === 'grid' ? '#2563EB' : '#64748B',
-                boxShadow: viewMode === 'grid' ? '0 2px 6px rgba(0, 0, 0, 0.08)' : 'none',
-                transition: 'all 0.15s ease',
-              }}
             >
-              <Grid size={14} />
+              <Grid size={15} strokeWidth={viewMode === 'grid' ? 2.4 : 2} />
               <span>Cards View</span>
             </button>
             <button
               type="button"
+              className={`van-dir-view-btn ${viewMode === 'table' ? 'active' : ''}`}
               onClick={() => setViewMode('table')}
+            >
+              <List size={15} strokeWidth={viewMode === 'table' ? 2.4 : 2} />
+              <span>Report Table</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Subtle Horizontal Divider */}
+        <div className="van-dir-toolbar-divider" />
+
+        {/* Bottom Tier: Filter Capsules & Action Stats */}
+        <div className="van-dir-toolbar-bottom">
+          {/* Left: Filter Capsules Cluster */}
+          <div className="van-dir-filters-cluster">
+            <div
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '0.4rem',
-                padding: '0.42rem 0.85rem',
-                borderRadius: '8px',
-                border: 'none',
-                fontSize: '0.8rem',
-                fontWeight: 800,
-                cursor: 'pointer',
-                background: viewMode === 'table' ? '#FFFFFF' : 'transparent',
-                color: viewMode === 'table' ? '#2563EB' : '#64748B',
-                boxShadow: viewMode === 'table' ? '0 2px 6px rgba(0, 0, 0, 0.08)' : 'none',
-                transition: 'all 0.15s ease',
+                gap: '0.45rem',
+                fontSize: '0.78rem',
+                fontWeight: 850,
+                color: '#64748B',
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+                marginRight: '0.2rem',
               }}
             >
-              <List size={14} />
-              <span>Report Table</span>
-            </button>
+              <Filter size={14} color="#2563EB" strokeWidth={2.5} />
+              <span>Filters</span>
+            </div>
+
+            {/* Entity Type Filter */}
+            <div className={`van-dir-filter-capsule ${entityTypeFilter !== 'all' ? 'active' : ''}`}>
+              <Building2 size={15} color="#2563EB" strokeWidth={2.2} />
+              <select
+                value={entityTypeFilter}
+                onChange={(e) => setEntityTypeFilter(e.target.value)}
+                aria-label="Filter by Entity Type"
+              >
+                <option value="all">All Entity Types</option>
+                <option value="business">🏢 Businesses Only</option>
+                <option value="freelancer">👤 Freelancers Only</option>
+              </select>
+            </div>
+
+            {/* Category Filter */}
+            <div className={`van-dir-filter-capsule ${categoryFilter !== '' ? 'active' : ''}`}>
+              <FolderKanban size={15} color="#7C3AED" strokeWidth={2.2} />
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                aria-label="Filter by Category"
+              >
+                <option value="">All Categories</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Status Filter */}
+            <div className={`van-dir-filter-capsule ${statusFilter !== 'all' ? 'active' : ''}`}>
+              <ShieldCheck size={15} color="#10B981" strokeWidth={2.2} />
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                aria-label="Filter by Status"
+              >
+                <option value="all">All Statuses</option>
+                <option value="verified">✓ Verified Only</option>
+                <option value="featured">🌟 Featured Only</option>
+              </select>
+            </div>
+
+            {/* Sorting Filter */}
+            <div className={`van-dir-filter-capsule ${sortBy !== 'newest' ? 'active' : ''}`}>
+              <SlidersHorizontal size={15} color="#D97706" strokeWidth={2.2} />
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                aria-label="Sort Entities"
+              >
+                <option value="newest">Sort: Newest First</option>
+                <option value="name_asc">Sort: Name (A-Z)</option>
+                <option value="rating">Sort: Highest Rated</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Right: Actions Cluster (Reset & Count) */}
+          <div className="van-dir-actions-cluster">
+            {hasActiveFilters && (
+              <button
+                type="button"
+                className="van-dir-reset-btn"
+                onClick={handleResetFilters}
+                title="Reset all active filters"
+              >
+                <RotateCcw size={13} strokeWidth={2.4} />
+                <span>Reset Filters</span>
+              </button>
+            )}
+
+            <div className="van-dir-count-pill">
+              <span style={{ color: '#0F172A', fontWeight: 800 }}>{sortedEntities.length}</span>
+              <span>{sortedEntities.length === 1 ? 'entity found' : 'entities found'}</span>
+            </div>
           </div>
         </div>
       </div>

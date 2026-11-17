@@ -3153,6 +3153,268 @@
   border-color: #BFDBFE;
 }
 
+/* ==========================================================================
+   VYAPAR ADNET — DIRECTORY 3D FILTER & VIEW COMMAND TOOLBAR
+   ========================================================================== */
+.van-dir-toolbar-3d {
+  background: #FFFFFF;
+  border-radius: 20px;
+  border: 1.5px solid #E2E8F0;
+  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.04), 0 2px 8px -2px rgba(15, 23, 42, 0.02);
+  padding: 1.25rem 1.45rem;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.van-dir-toolbar-3d::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3.5px;
+  background: linear-gradient(90deg, #2563EB, #7C3AED, #10B981);
+}
+
+.van-dir-toolbar-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.van-dir-search-wrap {
+  position: relative;
+  flex: 1 1 380px;
+  min-width: 260px;
+}
+
+.van-dir-search-icon-pod {
+  position: absolute;
+  left: 0.65rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #EFF6FF, #DBEAFE);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #BFDBFE;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.12);
+  pointer-events: none;
+}
+
+.van-dir-search-input {
+  width: 100%;
+  height: 46px;
+  padding: 0 2.6rem 0 3.35rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #0F172A;
+  background: #F8FAFC;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 12px;
+  outline: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.van-dir-search-input:focus {
+  background: #FFFFFF;
+  border-color: #2563EB;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.van-dir-search-clear {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #E2E8F0;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #475569;
+  transition: all 0.15s ease;
+}
+
+.van-dir-search-clear:hover {
+  background: #CBD5E1;
+  color: #0F172A;
+}
+
+.van-dir-view-switcher {
+  display: inline-flex;
+  gap: 0.35rem;
+  background: #F1F5F9;
+  padding: 0.3rem;
+  border-radius: 12px;
+  border: 1.5px solid #E2E8F0;
+}
+
+.van-dir-view-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.95rem;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #64748B;
+  background: transparent;
+}
+
+.van-dir-view-btn.active {
+  background: #FFFFFF;
+  color: #2563EB;
+  border-color: #DBEAFE;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.14), 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.van-dir-toolbar-divider {
+  height: 1px;
+  background: #F1F5F9;
+  margin: 1.1rem 0;
+}
+
+.van-dir-toolbar-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.van-dir-filters-cluster {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.van-dir-filter-capsule {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #F8FAFC;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 11px;
+  padding: 0 0.85rem 0 0.75rem;
+  height: 40px;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.van-dir-filter-capsule:hover {
+  background: #FFFFFF;
+  border-color: #CBD5E1;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+}
+
+.van-dir-filter-capsule.active {
+  background: #EFF6FF;
+  border-color: #93C5FD;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
+}
+
+.van-dir-filter-capsule select {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #1E293B;
+  cursor: pointer;
+  padding: 0;
+}
+
+.van-dir-actions-cluster {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.van-dir-count-pill {
+  font-size: 0.8rem;
+  font-weight: 750;
+  color: #475569;
+  background: #F8FAFC;
+  padding: 0.42rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid #E2E8F0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.van-dir-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 10px;
+  background: #FEF2F2;
+  border: 1.5px solid #FEE2E2;
+  color: #DC2626;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.van-dir-reset-btn:hover {
+  background: #FEE2E2;
+  color: #B91C1C;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .van-dir-toolbar-top {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .van-dir-search-wrap {
+    width: 100%;
+  }
+  .van-dir-view-switcher {
+    width: 100%;
+    justify-content: center;
+  }
+  .van-dir-view-btn {
+    flex: 1;
+    justify-content: center;
+  }
+  .van-dir-toolbar-bottom {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .van-dir-filters-cluster {
+    width: 100%;
+  }
+  .van-dir-filter-capsule {
+    flex: 1 1 calc(50% - 0.5rem);
+    min-width: 140px;
+  }
+  .van-dir-actions-cluster {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+
 
 
 
