@@ -1,4 +1,25 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import {
+  Crown,
+  Wallet,
+  Users2,
+  UserCheck,
+  Layers,
+  Network,
+  TrendingUp,
+  RotateCcw,
+  Sparkles,
+  Filter,
+  Calendar,
+  ShieldCheck,
+  Award,
+  Trophy,
+  Gem,
+  CheckCircle2,
+  Clock,
+  ArrowRight,
+  Gift
+} from 'lucide-react';
 import { getTeamConnections, getDirectConnections } from '../../api/userNetworkService';
 import { getUserRewards, getUserClaims, getUserFreshProfile, getUserDiamondRewards } from '../../api/userRewardService';
 import { formatINR, formatNumberIN } from '../../utils/formatters';
@@ -208,25 +229,75 @@ function MlmEarningsPage({ user }) {
     });
   }, [rewardsList, selectedRewardCategory]);
 
+  const hasActiveFilters = Boolean(
+    datePreset !== 'all' ||
+    selectedLevel !== 'all' ||
+    rankFilter !== 'all' ||
+    statusFilter !== 'all' ||
+    selectedRewardCategory !== 'all'
+  );
+
+  const resetAllFilters = () => {
+    setDatePreset('all');
+    setStartDate('');
+    setEndDate('');
+    setSelectedLevel('all');
+    setRankFilter('all');
+    setStatusFilter('all');
+    setSelectedRewardCategory('all');
+  };
+
+  const currentTabCount = useMemo(() => {
+    if (activeTab === 'base') return filteredBase.length;
+    if (activeTab === 'rewards') return filteredRewards.length;
+    return filteredTeam.length;
+  }, [activeTab, filteredBase, filteredRewards, filteredTeam]);
+
   // DataTable Columns: All / Combined Ledger
   const combinedColumns = [
     {
       header: 'Gen Level',
       accessor: 'level',
       render: (val) => (
-        <span style={{ fontWeight: 800, color: val === 1 ? '#2563eb' : '#7c3aed' }}>
+        <span
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            padding: '0.2rem 0.6rem',
+            borderRadius: '7px',
+            fontSize: '0.76rem',
+            fontWeight: 850,
+            background: val === 1 ? '#EFF6FF' : '#F5F3FF',
+            color: val === 1 ? '#1D4ED8' : '#7C3AED',
+            border: `1px solid ${val === 1 ? '#BFDBFE' : '#DDD6FE'}`,
+          }}
+        >
           Gen L{val}
         </span>
       ),
-      width: '100px',
+      width: '110px',
     },
     {
       header: 'Member & User ID',
       accessor: 'memberName',
       render: (val, row) => (
         <div>
-          <div style={{ fontWeight: 800, color: '#0f172a' }}>{val}</div>
-          <div style={{ fontSize: '0.75rem', color: '#2563eb', fontWeight: 700 }}>{row.memberId}</div>
+          <div style={{ fontWeight: 800, color: '#0F172A', fontSize: '0.86rem' }}>{val}</div>
+          <span
+            style={{
+              fontSize: '0.72rem',
+              color: '#2563EB',
+              fontWeight: 800,
+              background: '#EFF6FF',
+              padding: '0.1rem 0.4rem',
+              borderRadius: '4px',
+              display: 'inline-block',
+              marginTop: '0.15rem',
+              border: '1px solid #DBEAFE',
+            }}
+          >
+            {row.memberId}
+          </span>
         </div>
       ),
     },
@@ -234,7 +305,17 @@ function MlmEarningsPage({ user }) {
       header: 'Rank',
       accessor: 'rank',
       render: (val) => (
-        <span style={{ background: '#f1f5f9', padding: '0.2rem 0.55rem', borderRadius: '6px', fontSize: '0.74rem', fontWeight: 700 }}>
+        <span
+          style={{
+            background: '#F1F5F9',
+            color: '#334155',
+            padding: '0.22rem 0.6rem',
+            borderRadius: '6px',
+            fontSize: '0.74rem',
+            fontWeight: 750,
+            border: '1px solid #E2E8F0',
+          }}
+        >
           {val}
         </span>
       ),
@@ -242,33 +323,60 @@ function MlmEarningsPage({ user }) {
     {
       header: 'Immediate Sponsor',
       accessor: 'sponsorName',
-      render: (val) => <span style={{ color: '#475569' }}>{val}</span>,
+      render: (val) => <span style={{ color: '#475569', fontWeight: 650, fontSize: '0.82rem' }}>{val}</span>,
     },
     {
       header: 'Team Volume (BV)',
       accessor: 'groupPv',
       align: 'right',
-      render: (val) => <span style={{ fontWeight: 700, color: '#059669' }}>{formatINR(val)}</span>,
+      render: (val) => <span style={{ fontWeight: 800, color: '#047857', fontSize: '0.88rem' }}>{formatINR(val)}</span>,
     },
     {
       header: 'Rate',
       accessor: 'overrideRate',
       align: 'center',
-      render: (val) => <span style={{ fontWeight: 800, color: '#2563eb' }}>{val}</span>,
+      render: (val) => (
+        <span
+          style={{
+            fontWeight: 850,
+            color: '#2563EB',
+            background: '#EFF6FF',
+            padding: '0.15rem 0.5rem',
+            borderRadius: '6px',
+            fontSize: '0.78rem',
+          }}
+        >
+          {val}
+        </span>
+      ),
     },
     {
       header: 'Earned Commission',
       accessor: 'earnedCommission',
       align: 'right',
-      render: (val) => <span style={{ fontWeight: 800, color: '#0f172a' }}>{formatINR(val)}</span>,
+      render: (val) => <span style={{ fontWeight: 850, color: '#0F172A', fontSize: '0.9rem' }}>{formatINR(val)}</span>,
     },
     {
       header: 'Status',
       accessor: 'status',
       align: 'right',
       render: (val) => (
-        <span style={{ background: '#dcfce7', color: '#15803d', padding: '0.2rem 0.55rem', borderRadius: '12px', fontSize: '0.72rem', fontWeight: 800 }}>
-          ✓ {val}
+        <span
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.3rem',
+            background: '#ECFDF5',
+            color: '#065F46',
+            border: '1px solid #A7F3D0',
+            padding: '0.2rem 0.65rem',
+            borderRadius: '9999px',
+            fontSize: '0.74rem',
+            fontWeight: 800,
+          }}
+        >
+          <CheckCircle2 size={12} strokeWidth={2.6} />
+          <span>{val}</span>
         </span>
       ),
     },
@@ -281,8 +389,22 @@ function MlmEarningsPage({ user }) {
       accessor: 'memberName',
       render: (val, row) => (
         <div>
-          <div style={{ fontWeight: 800, color: '#0f172a' }}>{val}</div>
-          <div style={{ fontSize: '0.75rem', color: '#2563eb', fontWeight: 700 }}>{row.memberId}</div>
+          <div style={{ fontWeight: 800, color: '#0F172A', fontSize: '0.86rem' }}>{val}</div>
+          <span
+            style={{
+              fontSize: '0.72rem',
+              color: '#2563EB',
+              fontWeight: 800,
+              background: '#EFF6FF',
+              padding: '0.1rem 0.4rem',
+              borderRadius: '4px',
+              display: 'inline-block',
+              marginTop: '0.15rem',
+              border: '1px solid #DBEAFE',
+            }}
+          >
+            {row.memberId}
+          </span>
         </div>
       ),
     },
@@ -290,7 +412,17 @@ function MlmEarningsPage({ user }) {
       header: 'Rank',
       accessor: 'rank',
       render: (val) => (
-        <span style={{ background: '#eff6ff', color: '#1d4ed8', padding: '0.2rem 0.55rem', borderRadius: '6px', fontSize: '0.74rem', fontWeight: 700 }}>
+        <span
+          style={{
+            background: '#EFF6FF',
+            color: '#1D4ED8',
+            padding: '0.22rem 0.6rem',
+            borderRadius: '6px',
+            fontSize: '0.74rem',
+            fontWeight: 750,
+            border: '1px solid #BFDBFE',
+          }}
+        >
           {val}
         </span>
       ),
@@ -298,33 +430,65 @@ function MlmEarningsPage({ user }) {
     {
       header: 'Joining Date',
       accessor: 'joiningDate',
-      render: (val) => <span style={{ color: '#64748b' }}>{val}</span>,
+      render: (val) => (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#64748B', fontSize: '0.78rem', fontWeight: 650 }}>
+          <Calendar size={12} color="#94A3B8" />
+          <span>{val}</span>
+        </div>
+      ),
     },
     {
       header: 'Self Business (BV)',
       accessor: 'businessVolume',
       align: 'right',
-      render: (val) => <span style={{ fontWeight: 700, color: '#059669' }}>{formatINR(val)}</span>,
+      render: (val) => <span style={{ fontWeight: 800, color: '#047857', fontSize: '0.88rem' }}>{formatINR(val)}</span>,
     },
     {
       header: 'Rate',
       accessor: 'commPercent',
       align: 'center',
-      render: (val) => <span style={{ fontWeight: 800, color: '#2563eb' }}>{val}</span>,
+      render: (val) => (
+        <span
+          style={{
+            fontWeight: 850,
+            color: '#2563EB',
+            background: '#EFF6FF',
+            padding: '0.15rem 0.5rem',
+            borderRadius: '6px',
+            fontSize: '0.78rem',
+          }}
+        >
+          {val}
+        </span>
+      ),
     },
     {
       header: 'Earned Base Income',
       accessor: 'earnedCommission',
       align: 'right',
-      render: (val) => <span style={{ fontWeight: 800, color: '#0f172a' }}>{formatINR(val)}</span>,
+      render: (val) => <span style={{ fontWeight: 850, color: '#0F172A', fontSize: '0.9rem' }}>{formatINR(val)}</span>,
     },
     {
       header: 'Status',
       accessor: 'status',
       align: 'right',
       render: (val) => (
-        <span style={{ background: '#dcfce7', color: '#15803d', padding: '0.2rem 0.55rem', borderRadius: '12px', fontSize: '0.72rem', fontWeight: 800 }}>
-          ✓ {val}
+        <span
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.3rem',
+            background: '#ECFDF5',
+            color: '#065F46',
+            border: '1px solid #A7F3D0',
+            padding: '0.2rem 0.65rem',
+            borderRadius: '9999px',
+            fontSize: '0.74rem',
+            fontWeight: 800,
+          }}
+        >
+          <CheckCircle2 size={12} strokeWidth={2.6} />
+          <span>{val}</span>
         </span>
       ),
     },
@@ -335,16 +499,46 @@ function MlmEarningsPage({ user }) {
     {
       header: 'Generation',
       accessor: 'level',
-      render: (val) => <span style={{ fontWeight: 800, color: '#10b981' }}>Gen L{val}</span>,
-      width: '100px',
+      render: (val) => (
+        <span
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            padding: '0.2rem 0.6rem',
+            borderRadius: '7px',
+            fontSize: '0.76rem',
+            fontWeight: 850,
+            background: '#ECFDF5',
+            color: '#065F46',
+            border: '1px solid #A7F3D0',
+          }}
+        >
+          Gen L{val}
+        </span>
+      ),
+      width: '110px',
     },
     {
       header: 'Team Member',
       accessor: 'memberName',
       render: (val, row) => (
         <div>
-          <div style={{ fontWeight: 800, color: '#0f172a' }}>{val}</div>
-          <div style={{ fontSize: '0.75rem', color: '#2563eb', fontWeight: 700 }}>{row.memberId}</div>
+          <div style={{ fontWeight: 800, color: '#0F172A', fontSize: '0.86rem' }}>{val}</div>
+          <span
+            style={{
+              fontSize: '0.72rem',
+              color: '#2563EB',
+              fontWeight: 800,
+              background: '#EFF6FF',
+              padding: '0.1rem 0.4rem',
+              borderRadius: '4px',
+              display: 'inline-block',
+              marginTop: '0.15rem',
+              border: '1px solid #DBEAFE',
+            }}
+          >
+            {row.memberId}
+          </span>
         </div>
       ),
     },
@@ -352,7 +546,17 @@ function MlmEarningsPage({ user }) {
       header: 'Rank',
       accessor: 'rank',
       render: (val) => (
-        <span style={{ background: '#f1f5f9', padding: '0.2rem 0.55rem', borderRadius: '6px', fontSize: '0.74rem', fontWeight: 700 }}>
+        <span
+          style={{
+            background: '#F1F5F9',
+            color: '#334155',
+            padding: '0.22rem 0.6rem',
+            borderRadius: '6px',
+            fontSize: '0.74rem',
+            fontWeight: 750,
+            border: '1px solid #E2E8F0',
+          }}
+        >
           {val}
         </span>
       ),
@@ -360,374 +564,514 @@ function MlmEarningsPage({ user }) {
     {
       header: 'Immediate Sponsor',
       accessor: 'sponsorName',
-      render: (val) => <span style={{ color: '#475569' }}>{val}</span>,
+      render: (val) => <span style={{ color: '#475569', fontWeight: 650, fontSize: '0.82rem' }}>{val}</span>,
     },
     {
       header: 'Team Turnover (BV)',
       accessor: 'groupPv',
       align: 'right',
-      render: (val) => <span style={{ fontWeight: 700, color: '#059669' }}>{formatINR(val)}</span>,
+      render: (val) => <span style={{ fontWeight: 800, color: '#047857', fontSize: '0.88rem' }}>{formatINR(val)}</span>,
     },
     {
       header: 'Override Rate',
       accessor: 'overrideRate',
       align: 'center',
-      render: (val) => <span style={{ fontWeight: 800, color: '#10b981' }}>{val}</span>,
+      render: (val) => (
+        <span
+          style={{
+            fontWeight: 850,
+            color: '#059669',
+            background: '#ECFDF5',
+            padding: '0.15rem 0.5rem',
+            borderRadius: '6px',
+            fontSize: '0.78rem',
+          }}
+        >
+          {val}
+        </span>
+      ),
     },
     {
       header: 'Earned Override',
       accessor: 'earnedCommission',
       align: 'right',
-      render: (val) => <span style={{ fontWeight: 800, color: '#0f172a' }}>{formatINR(val)}</span>,
+      render: (val) => <span style={{ fontWeight: 850, color: '#0F172A', fontSize: '0.9rem' }}>{formatINR(val)}</span>,
     },
     {
       header: 'Status',
       accessor: 'status',
       align: 'right',
       render: (val) => (
-        <span style={{ background: '#dcfce7', color: '#15803d', padding: '0.2rem 0.55rem', borderRadius: '12px', fontSize: '0.72rem', fontWeight: 800 }}>
-          ✓ {val}
+        <span
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.3rem',
+            background: '#ECFDF5',
+            color: '#065F46',
+            border: '1px solid #A7F3D0',
+            padding: '0.2rem 0.65rem',
+            borderRadius: '9999px',
+            fontSize: '0.74rem',
+            fontWeight: 800,
+          }}
+        >
+          <CheckCircle2 size={12} strokeWidth={2.6} />
+          <span>{val}</span>
         </span>
       ),
     },
   ];
 
   return (
-    <div className="page-container">
-      {/* Hero Banner */}
-      <div
-        style={{
-          background: 'linear-gradient(135deg, #7c3aed 0%, #312e81 50%, #0f172a 100%)',
-          borderRadius: '16px',
-          padding: '2rem 2.25rem',
-          color: '#fff',
-          marginBottom: '2rem',
-          boxShadow: '0 10px 30px -5px rgba(124, 58, 237, 0.3)',
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem' }}>
+    <div className="page-container" style={{ maxWidth: '1400px', margin: '0 auto', paddingBottom: '3.5rem' }}>
+      
+      {/* Signature 2-Color Gradient Hero Header Banner with 3D Depth */}
+      <div className="van-catalog-hero-3d">
+        <div className="van-catalog-hero-content">
+          <div className="van-catalog-hero-icon-orb">
+            <Network size={32} strokeWidth={2.2} />
+          </div>
           <div>
-            <span
-              style={{
-                background: 'rgba(255,255,255,0.12)',
-                padding: '0.25rem 0.85rem',
-                borderRadius: '20px',
-                fontSize: '0.78rem',
-                fontWeight: '700',
-                color: '#ddd6fe',
-                display: 'inline-block',
-                marginBottom: '0.75rem',
-              }}
-            >
-              🤝 10-Level Database Commission & Rewards Engine
-            </span>
-            <h1 style={{ fontSize: '1.85rem', fontWeight: '800', margin: '0 0 0.4rem 0', color: '#fff' }}>
+            <div className="van-catalog-hero-badge">
+              <span
+                className="van-live-pulse-dot"
+                style={{ width: '7px', height: '7px', background: '#38BDF8', boxShadow: '0 0 8px #38BDF8' }}
+              />
+              <Sparkles size={13} />
+              <span>10-Level Database Commission & Rewards Engine</span>
+            </div>
+            <h1 className="van-catalog-hero-title">
               Network Income Overview
             </h1>
-            <p style={{ color: '#94a3b8', fontSize: '0.925rem', margin: 0 }}>
+            <p className="van-catalog-hero-desc">
               Live database audit with multi-column sorting, pagination DataTable, and 10-Level 2% overrides.
             </p>
           </div>
-          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
-            <div style={{ background: 'rgba(255,255,255,0.12)', padding: '0.75rem 1.25rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.2)', textAlign: 'right' }}>
-              <div style={{ fontSize: '0.74rem', color: '#cbd5e1', textTransform: 'uppercase', fontWeight: '700' }}>Available Diamond Balance</div>
-              <div style={{ fontSize: '1.35rem', fontWeight: '800', color: '#38bdf8' }}>💎 {diamondBalance} Diamonds</div>
-            </div>
-            <button
-              onClick={fetchAllData}
+        </div>
+
+        {/* Right Stats Chips & Action Button Area */}
+        <div
+          className="van-directs-hero-action-col"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-end',
+            gap: '1.15rem',
+            flexShrink: 0,
+          }}
+        >
+          {/* Top Row: Diamond Balance & Level Stat Chips */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <div
+              className="van-catalog-stat-chip"
               style={{
-                background: 'rgba(255,255,255,0.15)',
-                color: '#fff',
-                border: '1px solid rgba(255,255,255,0.3)',
-                padding: '0.75rem 1rem',
-                borderRadius: '12px',
-                fontSize: '0.85rem',
-                fontWeight: '700',
-                cursor: 'pointer',
+                background: 'rgba(56, 189, 248, 0.14)',
+                borderColor: 'rgba(56, 189, 248, 0.35)',
               }}
             >
-              🔄 Refresh
-            </button>
+              <div
+                className="van-catalog-stat-chip-val"
+                style={{ color: '#38BDF8', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+              >
+                <Gem size={16} />
+                <span>{diamondBalance} Diamonds</span>
+              </div>
+              <div className="van-catalog-stat-chip-lbl">Diamond Balance</div>
+            </div>
+
+            <div className="van-catalog-stat-chip">
+              <div className="van-catalog-stat-chip-val" style={{ color: '#34D399' }}>
+                10 Levels
+              </div>
+              <div className="van-catalog-stat-chip-lbl">2% Overrides</div>
+            </div>
           </div>
+
+          {/* Bottom Row: 3D Refresh Action Button */}
+          <button
+            type="button"
+            onClick={fetchAllData}
+            className="van-btn-share-3d"
+            style={{
+              padding: '0.72rem 1.6rem',
+              height: 'auto',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.65rem',
+              fontSize: '0.88rem',
+              fontWeight: 800,
+              borderRadius: '14px',
+              background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+              borderBottom: '3px solid #1E40AF',
+              color: '#FFFFFF',
+              boxShadow: '0 8px 24px -3px rgba(37, 99, 235, 0.45)',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+            title="Refresh live network commission records"
+          >
+            <RotateCcw size={16} strokeWidth={2.4} className={loading ? 'animate-spin' : ''} />
+            <span>{loading ? 'Refreshing...' : 'Refresh Network Data'}</span>
+          </button>
         </div>
       </div>
 
-      {/* KPI Overview Counters */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
-        {/* Total Combined Commissions */}
-        <div style={{ background: '#fff', borderRadius: '14px', padding: '1.25rem 1.5rem', border: '1px solid #e2e8f0', borderTop: '4px solid #7c3aed' }}>
-          <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>
-            Total Combined Commission
+      {/* 4 Signature 3D KPI Cards Grid (4 in a row Desktop, 2x2 Tablet, 1 col Mobile) */}
+      <div className="van-business-kpi-grid">
+        {/* Card 1: Total Combined Commission */}
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #7C3AED, #5B21B6)' }} />
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
+              style={{
+                color: '#7C3AED',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
+              }}
+            >
+              Total Combined Commission
+            </span>
+            <div
+              className="van-3d-kpi-icon van-3d-icon-purple"
+              style={{ animationDelay: '0s' }}
+              title="Combined Network Commission"
+            >
+              <Crown size={22} strokeWidth={2.4} />
+            </div>
           </div>
-          <div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', margin: '0.3rem 0' }}>
+          <div className="van-stat-card-value" style={{ color: '#4C1D95' }}>
             {formatINR(totalCombinedCommission)}
           </div>
-          <div style={{ fontSize: '0.78rem', color: '#7c3aed', fontWeight: '700' }}>
-            Base + 10-Level Overrides
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+              Base + 10-Level Overrides
+            </span>
+            <span className="van-card-badge-pill" style={{ background: '#F5F3FF', color: '#7C3AED', border: '1px solid #DDD6FE' }}>
+              Total Payout
+            </span>
           </div>
         </div>
 
-        {/* Base / Direct Commission */}
-        <div style={{ background: '#fff', borderRadius: '14px', padding: '1.25rem 1.5rem', border: '1px solid #e2e8f0', borderTop: '4px solid #2563eb' }}>
-          <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>
-            Base / Direct Commission
+        {/* Card 2: Base / Direct Commission */}
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #3B82F6, #1D4ED8)' }} />
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
+              style={{
+                color: '#2563EB',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
+              }}
+            >
+              Base / Direct Commission
+            </span>
+            <div
+              className="van-3d-kpi-icon van-3d-icon-blue"
+              style={{ animationDelay: '0.4s' }}
+              title="Direct Sponsored Leg Earnings"
+            >
+              <UserCheck size={22} strokeWidth={2.4} />
+            </div>
           </div>
-          <div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#2563eb', margin: '0.3rem 0' }}>
+          <div className="van-stat-card-value" style={{ color: '#1E3A8A' }}>
             {formatINR(totalBaseCommission)}
           </div>
-          <div style={{ fontSize: '0.78rem', color: '#2563eb', fontWeight: '700' }}>
-            {directMembers.length} Direct Sponsored Legs
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+              {directMembers.length} Direct Sponsored Legs
+            </span>
+            <span className="van-card-badge-pill blue">
+              10% Direct
+            </span>
           </div>
         </div>
 
-        {/* Team Commission (10-Level Overrides) */}
-        <div style={{ background: '#fff', borderRadius: '14px', padding: '1.25rem 1.5rem', border: '1px solid #e2e8f0', borderTop: '4px solid #10b981' }}>
-          <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>
-            10-Level Team Overrides
+        {/* Card 3: 10-Level Team Overrides */}
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #10B981, #059669)' }} />
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
+              style={{
+                color: '#059669',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
+              }}
+            >
+              10-Level Team Overrides
+            </span>
+            <div
+              className="van-3d-kpi-icon van-3d-icon-emerald"
+              style={{ animationDelay: '0.8s' }}
+              title="10-Generation Turnover Earnings"
+            >
+              <Layers size={22} strokeWidth={2.4} />
+            </div>
           </div>
-          <div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#15803d', margin: '0.3rem 0' }}>
+          <div className="van-stat-card-value" style={{ color: '#047857' }}>
             {formatINR(totalTeamCommission)}
           </div>
-          <div style={{ fontSize: '0.78rem', color: '#15803d', fontWeight: '700' }}>
-            2% Equal Split Per Level
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+              2% Equal Split Per Level
+            </span>
+            <span className="van-card-badge-pill emerald">
+              20% Pool
+            </span>
           </div>
         </div>
 
-        {/* Total Network Volume */}
-        <div style={{ background: '#fff', borderRadius: '14px', padding: '1.25rem 1.5rem', border: '1px solid #e2e8f0', borderTop: '4px solid #f59e0b' }}>
-          <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>
-            Total Network Volume (BV)
+        {/* Card 4: Total Network Volume (BV) */}
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #F59E0B, #D97706)' }} />
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
+              style={{
+                color: '#D97706',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
+              }}
+            >
+              Total Network Volume (BV)
+            </span>
+            <div
+              className="van-3d-kpi-icon van-3d-icon-amber"
+              style={{ animationDelay: '1.2s' }}
+              title="Total Downline Group Business Volume"
+            >
+              <TrendingUp size={22} strokeWidth={2.4} />
+            </div>
           </div>
-          <div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#b45309', margin: '0.3rem 0' }}>
+          <div className="van-stat-card-value" style={{ color: '#B45309' }}>
             {formatINR(totalNetworkVolume)}
           </div>
-          <div style={{ fontSize: '0.78rem', color: '#b45309', fontWeight: '700' }}>
-            {teamMembers.length} Total Downline Members
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+              {teamMembers.length} Total Downline Members
+            </span>
+            <span className="van-card-badge-pill amber" style={{ background: '#FEF3C7', color: '#92400E', border: '1px solid #FDE68A' }}>
+              Network BV
+            </span>
           </div>
         </div>
       </div>
 
-      {/* Navigation Sub-Tabs */}
-      <div
-        style={{
-          display: 'flex',
-          gap: '0.75rem',
-          borderBottom: '2px solid #e2e8f0',
-          paddingBottom: '0.75rem',
-          marginBottom: '1.5rem',
-          flexWrap: 'wrap',
-        }}
-      >
+      {/* 3D Segmented Navigation Sub-Tabs */}
+      <div className="van-mlm-tabs-container">
         <button
+          type="button"
           onClick={() => setActiveTab('all')}
-          style={{
-            padding: '0.65rem 1.25rem',
-            borderRadius: '10px',
-            border: 'none',
-            fontWeight: '700',
-            fontSize: '0.88rem',
-            cursor: 'pointer',
-            background: activeTab === 'all' ? '#7c3aed' : '#ffffff',
-            color: activeTab === 'all' ? '#ffffff' : '#475569',
-            boxShadow: activeTab === 'all' ? '0 4px 12px rgba(124, 58, 237, 0.25)' : 'none',
-          }}
+          className={`van-mlm-tab-btn ${activeTab === 'all' ? 'active purple' : ''}`}
         >
-          📊 All Network Commissions
+          <Layers size={15} />
+          <span>All Network Commissions</span>
         </button>
+
         <button
+          type="button"
           onClick={() => setActiveTab('base')}
-          style={{
-            padding: '0.65rem 1.25rem',
-            borderRadius: '10px',
-            border: 'none',
-            fontWeight: '700',
-            fontSize: '0.88rem',
-            cursor: 'pointer',
-            background: activeTab === 'base' ? '#2563eb' : '#ffffff',
-            color: activeTab === 'base' ? '#ffffff' : '#475569',
-            boxShadow: activeTab === 'base' ? '0 4px 12px rgba(37, 99, 235, 0.25)' : 'none',
-          }}
+          className={`van-mlm-tab-btn ${activeTab === 'base' ? 'active' : ''}`}
         >
-          💼 Base Commission (Direct)
+          <UserCheck size={15} />
+          <span>Base Commission (Direct)</span>
         </button>
+
         <button
+          type="button"
           onClick={() => setActiveTab('team')}
-          style={{
-            padding: '0.65rem 1.25rem',
-            borderRadius: '10px',
-            border: 'none',
-            fontWeight: '700',
-            fontSize: '0.88rem',
-            cursor: 'pointer',
-            background: activeTab === 'team' ? '#10b981' : '#ffffff',
-            color: activeTab === 'team' ? '#ffffff' : '#475569',
-            boxShadow: activeTab === 'team' ? '0 4px 12px rgba(16, 185, 129, 0.25)' : 'none',
-          }}
+          className={`van-mlm-tab-btn ${activeTab === 'team' ? 'active emerald' : ''}`}
         >
-          👥 10-Level Team Overrides
+          <Network size={15} />
+          <span>10-Level Team Overrides</span>
         </button>
+
         <button
+          type="button"
           onClick={() => setActiveTab('rewards')}
-          style={{
-            padding: '0.65rem 1.25rem',
-            borderRadius: '10px',
-            border: 'none',
-            fontWeight: '700',
-            fontSize: '0.88rem',
-            cursor: 'pointer',
-            background: activeTab === 'rewards' ? '#f59e0b' : '#ffffff',
-            color: activeTab === 'rewards' ? '#ffffff' : '#475569',
-            boxShadow: activeTab === 'rewards' ? '0 4px 12px rgba(245, 158, 11, 0.25)' : 'none',
-          }}
+          className={`van-mlm-tab-btn ${activeTab === 'rewards' ? 'active amber' : ''}`}
         >
-          🏆 Reward Statistics & Milestones
+          <Trophy size={15} />
+          <span>Reward Statistics & Milestones</span>
         </button>
       </div>
 
-      {/* Multiple Filter Toolbar */}
-      <div
-        style={{
-          background: '#fff',
-          borderRadius: '14px',
-          padding: '1.25rem 1.5rem',
-          border: '1px solid #e2e8f0',
-          marginBottom: '1.5rem',
-          display: 'flex',
-          gap: '1rem',
-          flexWrap: 'wrap',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
-          {/* Date Range Preset Selector */}
-          <select
-            value={datePreset}
-            onChange={(e) => setDatePreset(e.target.value)}
-            style={{
-              padding: '0.6rem 0.95rem',
-              fontSize: '0.85rem',
-              borderRadius: '8px',
-              border: '1px solid #cbd5e1',
-              cursor: 'pointer',
-              fontWeight: '600',
-              color: '#334155',
-              background: '#ffffff',
-            }}
-          >
-            <option value="all">📅 Date: All Time</option>
-            <option value="today">📅 Date: Today</option>
-            <option value="week">📅 Date: Last 7 Days</option>
-            <option value="month">📅 Date: Last 30 Days</option>
-            <option value="quarter">📅 Date: Last 90 Days</option>
-            <option value="year">📅 Date: Last 1 Year</option>
-            <option value="custom">📅 Date: Custom Range...</option>
-          </select>
-
-          {/* Custom Date Range Pickers */}
-          {datePreset === 'custom' && (
-            <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                style={{ padding: '0.55rem 0.75rem', fontSize: '0.82rem', borderRadius: '8px', border: '1px solid #cbd5e1' }}
-              />
-              <span style={{ fontSize: '0.8rem', color: '#64748b' }}>to</span>
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                style={{ padding: '0.55rem 0.75rem', fontSize: '0.82rem', borderRadius: '8px', border: '1px solid #cbd5e1' }}
-              />
-            </div>
-          )}
-        </div>
-
-        <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap', alignItems: 'center' }}>
-          {(activeTab === 'all' || activeTab === 'team') && (
-            <select
-              value={selectedLevel}
-              onChange={(e) => setSelectedLevel(e.target.value)}
-              style={{ padding: '0.6rem 0.95rem', fontSize: '0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', cursor: 'pointer' }}
-            >
-              <option value="all">All 10 Generation Levels</option>
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((lvl) => (
-                <option key={lvl} value={String(lvl)}>
-                  Generation Level {lvl} (2% Override)
-                </option>
-              ))}
-            </select>
-          )}
-
-          {activeTab !== 'rewards' && (
-            <select
-              value={rankFilter}
-              onChange={(e) => setRankFilter(e.target.value)}
-              style={{ padding: '0.6rem 0.95rem', fontSize: '0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', cursor: 'pointer' }}
-            >
-              <option value="all">All Ranks</option>
-              <option value="diamond">Diamond Director</option>
-              <option value="platinum">Platinum Pro</option>
-              <option value="gold">Gold Executive</option>
-              <option value="silver">Silver Leader</option>
-              <option value="bronze">Bronze Starter</option>
-            </select>
-          )}
-
-          {activeTab !== 'rewards' && (
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              style={{ padding: '0.6rem 0.95rem', fontSize: '0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', cursor: 'pointer' }}
-            >
-              <option value="all">All Statuses</option>
-              <option value="distributed">Distributed</option>
-              <option value="active">Active</option>
-            </select>
-          )}
-
-          {activeTab === 'rewards' && (
-            <select
-              value={selectedRewardCategory}
-              onChange={(e) => setSelectedRewardCategory(e.target.value)}
-              style={{ padding: '0.6rem 0.95rem', fontSize: '0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', cursor: 'pointer' }}
-            >
-              <option value="all">All Reward Categories</option>
-              <option value="welcome">Welcome</option>
-              <option value="gadgets">Gadgets</option>
-              <option value="electronics">Electronics</option>
-              <option value="travel">Travel</option>
-              <option value="international travel">International Travel</option>
-              <option value="automobile">Automobile</option>
-            </select>
-          )}
-
-          {(datePreset !== 'all' || selectedLevel !== 'all' || rankFilter !== 'all' || statusFilter !== 'all' || selectedRewardCategory !== 'all') && (
-            <button
-              onClick={() => {
-                setDatePreset('all');
-                setStartDate('');
-                setEndDate('');
-                setSelectedLevel('all');
-                setRankFilter('all');
-                setStatusFilter('all');
-                setSelectedRewardCategory('all');
-              }}
+      {/* Advanced Filter Toolbar (3D Capsule Design) */}
+      <div className="van-dir-toolbar-3d" style={{ marginBottom: '1.75rem' }}>
+        <div className="van-dir-toolbar-bottom">
+          {/* Left: Filter Capsules Cluster */}
+          <div className="van-dir-filters-cluster">
+            <div
               style={{
-                background: '#f1f5f9',
-                color: '#475569',
-                border: '1px solid #cbd5e1',
-                padding: '0.6rem 0.85rem',
-                borderRadius: '8px',
-                fontSize: '0.82rem',
-                fontWeight: '700',
-                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.45rem',
+                fontSize: '0.78rem',
+                fontWeight: 850,
+                color: '#64748B',
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+                marginRight: '0.2rem',
               }}
             >
-              Reset Filters
-            </button>
-          )}
+              <Filter size={14} color="#2563EB" strokeWidth={2.5} />
+              <span>Filters</span>
+            </div>
+
+            {/* Date Range Preset Selector */}
+            <div className={`van-dir-filter-capsule ${datePreset !== 'all' ? 'active' : ''}`}>
+              <Calendar size={15} color="#2563EB" strokeWidth={2.2} />
+              <select
+                value={datePreset}
+                onChange={(e) => setDatePreset(e.target.value)}
+                aria-label="Filter by Date Range"
+              >
+                <option value="all">Date: All Time</option>
+                <option value="today">Date: Today</option>
+                <option value="week">Date: Last 7 Days</option>
+                <option value="month">Date: Last 30 Days</option>
+                <option value="quarter">Date: Last 90 Days</option>
+                <option value="year">Date: Last 1 Year</option>
+                <option value="custom">Date: Custom Range...</option>
+              </select>
+            </div>
+
+            {/* Custom Date Pickers */}
+            {datePreset === 'custom' && (
+              <div style={{ display: 'inline-flex', gap: '0.4rem', alignItems: 'center' }}>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  style={{
+                    padding: '0.45rem 0.65rem',
+                    fontSize: '0.8rem',
+                    borderRadius: '9px',
+                    border: '1.5px solid #CBD5E1',
+                    background: '#FFFFFF',
+                    outline: 'none',
+                  }}
+                />
+                <span style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: 700 }}>to</span>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  style={{
+                    padding: '0.45rem 0.65rem',
+                    fontSize: '0.8rem',
+                    borderRadius: '9px',
+                    border: '1.5px solid #CBD5E1',
+                    background: '#FFFFFF',
+                    outline: 'none',
+                  }}
+                />
+              </div>
+            )}
+
+            {/* Generation Level Filter */}
+            {(activeTab === 'all' || activeTab === 'team') && (
+              <div className={`van-dir-filter-capsule ${selectedLevel !== 'all' ? 'active' : ''}`}>
+                <Layers size={15} color="#7C3AED" strokeWidth={2.2} />
+                <select
+                  value={selectedLevel}
+                  onChange={(e) => setSelectedLevel(e.target.value)}
+                  aria-label="Filter by Generation Level"
+                >
+                  <option value="all">All 10 Generations</option>
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((lvl) => (
+                    <option key={lvl} value={String(lvl)}>
+                      Generation Level {lvl} (2% Override)
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Rank Filter */}
+            {activeTab !== 'rewards' && (
+              <div className={`van-dir-filter-capsule ${rankFilter !== 'all' ? 'active' : ''}`}>
+                <Award size={15} color="#D97706" strokeWidth={2.2} />
+                <select
+                  value={rankFilter}
+                  onChange={(e) => setRankFilter(e.target.value)}
+                  aria-label="Filter by Rank"
+                >
+                  <option value="all">All Ranks</option>
+                  <option value="diamond">Diamond Director</option>
+                  <option value="platinum">Platinum Pro</option>
+                  <option value="gold">Gold Executive</option>
+                  <option value="silver">Silver Leader</option>
+                  <option value="bronze">Bronze Starter</option>
+                </select>
+              </div>
+            )}
+
+            {/* Status Filter */}
+            {activeTab !== 'rewards' && (
+              <div className={`van-dir-filter-capsule ${statusFilter !== 'all' ? 'active' : ''}`}>
+                <ShieldCheck size={15} color="#10B981" strokeWidth={2.2} />
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  aria-label="Filter by Status"
+                >
+                  <option value="all">All Statuses</option>
+                  <option value="distributed">Distributed</option>
+                  <option value="active">Active</option>
+                </select>
+              </div>
+            )}
+
+            {/* Reward Category Filter */}
+            {activeTab === 'rewards' && (
+              <div className={`van-dir-filter-capsule ${selectedRewardCategory !== 'all' ? 'active' : ''}`}>
+                <Trophy size={15} color="#7C3AED" strokeWidth={2.2} />
+                <select
+                  value={selectedRewardCategory}
+                  onChange={(e) => setSelectedRewardCategory(e.target.value)}
+                  aria-label="Filter by Reward Category"
+                >
+                  <option value="all">All Reward Categories</option>
+                  <option value="welcome">Welcome</option>
+                  <option value="gadgets">Gadgets</option>
+                  <option value="electronics">Electronics</option>
+                  <option value="travel">Travel</option>
+                  <option value="international travel">International Travel</option>
+                  <option value="automobile">Automobile</option>
+                </select>
+              </div>
+            )}
+
+            {/* Reset Button */}
+            {hasActiveFilters && (
+              <button
+                type="button"
+                className="van-dir-reset-btn"
+                onClick={resetAllFilters}
+                title="Reset all active filters"
+              >
+                <RotateCcw size={13} strokeWidth={2.4} />
+                <span>Reset Filters</span>
+              </button>
+            )}
+          </div>
+
+          {/* Right: Actions & Metric Chips */}
+          <div className="van-dir-actions-cluster">
+            <div className="van-dir-count-pill">
+              <span style={{ color: '#0F172A', fontWeight: 800 }}>{currentTabCount}</span>
+              <span>{currentTabCount === 1 ? 'record found' : 'records found'}</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -766,40 +1110,76 @@ function MlmEarningsPage({ user }) {
 
       {/* TAB 4: REWARDS STATISTICS & MILESTONES */}
       {!loading && activeTab === 'rewards' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {/* Diamond Wallet Status Card */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+          {/* Diamond Wallet Status Card (3D Glassmorphic Experience) */}
           <div
             style={{
-              background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)',
-              borderRadius: '14px',
-              padding: '1.5rem 2rem',
-              color: '#fff',
+              background: 'linear-gradient(135deg, #0F172A 0%, #1E1B4B 60%, #1E3A8A 100%)',
+              borderRadius: '20px',
+              padding: '1.75rem 2.25rem',
+              color: '#FFFFFF',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
               flexWrap: 'wrap',
-              gap: '1rem',
+              gap: '1.25rem',
+              boxShadow: '0 12px 32px -4px rgba(15, 23, 42, 0.25)',
+              position: 'relative',
+              overflow: 'hidden',
+              border: '1.5px solid rgba(255, 255, 255, 0.1)',
             }}
           >
-            <div>
-              <div style={{ fontSize: '0.8rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: '700' }}>
-                Your Rewards Diamond Wallet
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+              <div
+                style={{
+                  width: '54px',
+                  height: '54px',
+                  borderRadius: '16px',
+                  background: 'rgba(56, 189, 248, 0.15)',
+                  border: '1.5px solid rgba(56, 189, 248, 0.35)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#38BDF8',
+                  boxShadow: '0 8px 20px rgba(56, 189, 248, 0.2)',
+                  flexShrink: 0,
+                }}
+              >
+                <Gem size={28} />
               </div>
-              <div style={{ fontSize: '2rem', fontWeight: '800', color: '#38bdf8', marginTop: '0.2rem' }}>
-                💎 {diamondBalance} Diamonds Available
-              </div>
-              <div style={{ fontSize: '0.85rem', color: '#cbd5e1', marginTop: '0.2rem' }}>
-                Accumulated automatically from sponsor rewards and network sales.
+              <div>
+                <div style={{ fontSize: '0.78rem', color: '#94A3B8', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.04em' }}>
+                  Your Rewards Diamond Wallet
+                </div>
+                <div style={{ fontSize: '2rem', fontWeight: 900, color: '#38BDF8', marginTop: '0.2rem', letterSpacing: '-0.02em' }}>
+                  {diamondBalance} Diamonds Available
+                </div>
+                <div style={{ fontSize: '0.84rem', color: '#CBD5E1', marginTop: '0.15rem' }}>
+                  Accumulated automatically from sponsor rewards and network sales turnover.
+                </div>
               </div>
             </div>
-            <div style={{ background: 'rgba(255,255,255,0.1)', padding: '0.75rem 1.25rem', borderRadius: '10px', textAlign: 'center' }}>
-              <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Total Claims Done</div>
-              <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#4ade80' }}>{claimsList.length} Claims</div>
+
+            <div
+              style={{
+                background: 'rgba(255, 255, 255, 0.08)',
+                padding: '0.85rem 1.45rem',
+                borderRadius: '14px',
+                textAlign: 'center',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+              }}
+            >
+              <div style={{ fontSize: '0.74rem', color: '#94A3B8', textTransform: 'uppercase', fontWeight: 750 }}>
+                Total Claims Done
+              </div>
+              <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#4ADE80', marginTop: '0.2rem' }}>
+                {claimsList.length} Claims
+              </div>
             </div>
           </div>
 
           {/* Reward Milestone Cards Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
+          <div className="van-mlm-reward-grid">
             {filteredRewards.map((reward) => {
               const reqDiamonds = Number(reward.required_bp) || 100;
               const progressPct = Math.min(100, Math.round((diamondBalance / reqDiamonds) * 100));
@@ -808,71 +1188,100 @@ function MlmEarningsPage({ user }) {
               return (
                 <div
                   key={reward.id}
-                  style={{
-                    background: '#fff',
-                    borderRadius: '14px',
-                    border: '1px solid #e2e8f0',
-                    overflow: 'hidden',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                  }}
+                  className="van-mlm-reward-card"
                 >
-                  <img
-                    src={reward.image || '/logo.png'}
-                    alt={reward.title}
-                    style={{ width: '100%', height: '160px', objectFit: 'cover' }}
-                  />
-                  <div style={{ padding: '1.25rem', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <div style={{ position: 'relative', width: '100%', height: '170px', overflow: 'hidden', background: '#F8FAFC' }}>
+                    <img
+                      src={reward.image || '/logo.png'}
+                      alt={reward.title}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: '0.85rem',
+                        left: '0.85rem',
+                        background: 'rgba(15, 23, 42, 0.8)',
+                        backdropFilter: 'blur(4px)',
+                        color: '#FFFFFF',
+                        fontSize: '0.72rem',
+                        fontWeight: 800,
+                        padding: '0.2rem 0.6rem',
+                        borderRadius: '6px',
+                        textTransform: 'uppercase',
+                      }}
+                    >
+                      {reward.category}
+                    </div>
+                  </div>
+
+                  <div style={{ padding: '1.45rem', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '1.25rem' }}>
                     <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                        <span style={{ background: '#eff6ff', color: '#2563eb', fontSize: '0.72rem', fontWeight: '800', padding: '0.2rem 0.55rem', borderRadius: '6px' }}>
-                          {reward.category}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
+                        <span
+                          style={{
+                            background: '#F5F3FF',
+                            color: '#7C3AED',
+                            border: '1px solid #DDD6FE',
+                            fontSize: '0.74rem',
+                            fontWeight: 800,
+                            padding: '0.2rem 0.6rem',
+                            borderRadius: '6px',
+                          }}
+                        >
+                          Milestone Tier
                         </span>
-                        <strong style={{ fontSize: '1rem', color: '#7c3aed' }}>💎 {reqDiamonds} Diamonds</strong>
+                        <strong style={{ fontSize: '1.05rem', color: '#7C3AED', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                          <Gem size={15} /> {reqDiamonds} Diamonds
+                        </strong>
                       </div>
-                      <h4 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0f172a', margin: '0 0 0.35rem 0' }}>
+
+                      <h4 style={{ fontSize: '1.15rem', fontWeight: 850, color: '#0F172A', margin: '0 0 0.4rem 0', lineHeight: 1.3 }}>
                         {reward.title}
                       </h4>
-                      <p style={{ fontSize: '0.835rem', color: '#64748b', margin: '0 0 0.75rem 0', lineHeight: 1.4 }}>
+                      <p style={{ fontSize: '0.84rem', color: '#64748B', margin: '0 0 0.85rem 0', lineHeight: 1.45 }}>
                         {reward.description}
                       </p>
+
                       {reward.reward_value_inr && (
-                        <div style={{ fontSize: '0.85rem', color: '#059669', fontWeight: '700', marginBottom: '0.75rem' }}>
-                          Estimated Value: {formatINR(reward.reward_value_inr)}
+                        <div style={{ fontSize: '0.86rem', color: '#047857', fontWeight: 800, marginBottom: '0.75rem' }}>
+                          Estimated Cash Value: {formatINR(reward.reward_value_inr)}
                         </div>
                       )}
                     </div>
 
                     <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: '#64748b', marginBottom: '0.35rem' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: '#64748B', marginBottom: '0.45rem', fontWeight: 700 }}>
                         <span>Progress: {diamondBalance} / {reqDiamonds} Diamonds</span>
-                        <strong style={{ color: isEligible ? '#15803d' : '#2563eb' }}>{progressPct}%</strong>
+                        <strong style={{ color: isEligible ? '#047857' : '#2563EB' }}>{progressPct}%</strong>
                       </div>
-                      <div style={{ background: '#f1f5f9', height: '8px', borderRadius: '4px', overflow: 'hidden', marginBottom: '1rem' }}>
+                      <div style={{ background: '#F1F5F9', height: '8px', borderRadius: '9999px', overflow: 'hidden', marginBottom: '1.15rem' }}>
                         <div
                           style={{
                             width: `${progressPct}%`,
                             height: '100%',
-                            background: isEligible ? 'linear-gradient(90deg, #10b981 0%, #059669 100%)' : 'linear-gradient(90deg, #38bdf8 0%, #2563eb 100%)',
-                            borderRadius: '4px',
+                            background: isEligible ? 'linear-gradient(90deg, #10B981 0%, #059669 100%)' : 'linear-gradient(90deg, #38BDF8 0%, #2563EB 100%)',
+                            borderRadius: '9999px',
+                            transition: 'width 0.4s ease',
                           }}
-                        ></div>
+                        />
                       </div>
 
                       <button
+                        type="button"
                         disabled={!isEligible}
                         style={{
                           width: '100%',
-                          padding: '0.6rem',
-                          borderRadius: '8px',
+                          padding: '0.7rem',
+                          borderRadius: '11px',
                           border: 'none',
-                          fontWeight: '700',
+                          fontWeight: 800,
                           fontSize: '0.85rem',
                           cursor: isEligible ? 'pointer' : 'not-allowed',
-                          background: isEligible ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : '#e2e8f0',
-                          color: isEligible ? '#fff' : '#94a3b8',
-                          boxShadow: isEligible ? '0 4px 12px rgba(16, 185, 129, 0.3)' : 'none',
+                          background: isEligible ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)' : '#E2E8F0',
+                          color: isEligible ? '#FFFFFF' : '#94A3B8',
+                          boxShadow: isEligible ? '0 4px 14px rgba(16, 185, 129, 0.35)' : 'none',
+                          transition: 'all 0.15s ease',
                         }}
                       >
                         {isEligible ? '🎁 Claim This Reward Now' : `🔒 Needs ${reqDiamonds - diamondBalance} More Diamonds`}
