@@ -188,41 +188,21 @@ function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
             <p className="van-catalog-hero-desc">
               Browse verified corporate enterprises, compliance audit reports, and certified freelancer credentials across category domains.
             </p>
-
-            {/* Category Quick Chips in Hero */}
-            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '1.25rem' }}>
-              <button
-                type="button"
-                onClick={() => setCategoryFilter('')}
-                className={`van-hero-category-chip ${categoryFilter === '' ? 'active' : ''}`}
-              >
-                <span>All Categories ({combinedEntities.length})</span>
-              </button>
-              {categories.map((cat) => (
-                <button
-                  type="button"
-                  key={cat.id}
-                  onClick={() => setCategoryFilter(String(cat.id))}
-                  className={`van-hero-category-chip ${String(categoryFilter) === String(cat.id) ? 'active' : ''}`}
-                >
-                  <span>{cat.name}</span>
-                </button>
-              ))}
-            </div>
           </div>
         </div>
 
-        {/* Right Stats Chips Area */}
+        {/* Right Stats Chips & Action Button Area */}
         <div
           className="van-directs-hero-action-col"
           style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'flex-end',
-            gap: '1rem',
+            gap: '1.25rem',
             flexShrink: 0,
           }}
         >
+          {/* Top Row: Stats Chips */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
             <div className="van-catalog-stat-chip">
               <div className="van-catalog-stat-chip-val">{formatNumberIN(totalBusinessesCount)}</div>
@@ -241,7 +221,150 @@ function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
               <div className="van-catalog-stat-chip-lbl">100% Audited</div>
             </div>
           </div>
+
+          {/* Bottom Row: 3D Refresh Action Button */}
+          <button
+            type="button"
+            onClick={fetchDirectoryData}
+            className="van-btn-share-3d"
+            style={{
+              padding: '0.72rem 1.6rem',
+              height: 'auto',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.65rem',
+              fontSize: '0.88rem',
+              fontWeight: 800,
+              borderRadius: '14px',
+              background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+              borderBottom: '3px solid #1E40AF',
+              color: '#FFFFFF',
+              boxShadow: '0 8px 24px -3px rgba(37, 99, 235, 0.45)',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+            title="Refresh live directory reports from database"
+          >
+            <RotateCcw size={16} strokeWidth={2.4} />
+            <span>Refresh Directory</span>
+          </button>
         </div>
+      </div>
+
+      {/* Category Domain Filter Bar (Dedicated Clean Floating Bar) */}
+      <div
+        style={{
+          background: '#FFFFFF',
+          borderRadius: '16px',
+          padding: '0.85rem 1.35rem',
+          border: '1px solid #E2E8F0',
+          boxShadow: '0 4px 14px -2px rgba(15, 23, 42, 0.04)',
+          marginBottom: '1.75rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.65rem',
+          flexWrap: 'wrap',
+        }}
+      >
+        <span
+          style={{
+            fontSize: '0.78rem',
+            fontWeight: 800,
+            color: '#64748B',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+            marginRight: '0.35rem',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          <FolderKanban size={15} color="#2563EB" />
+          <span>Domain Sectors:</span>
+        </span>
+
+        <button
+          type="button"
+          onClick={() => setCategoryFilter('')}
+          style={{
+            background: categoryFilter === ''
+              ? 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)'
+              : '#F8FAFC',
+            border: categoryFilter === '' ? '1.5px solid #2563EB' : '1.5px solid #E2E8F0',
+            color: categoryFilter === '' ? '#FFFFFF' : '#475569',
+            padding: '0.38rem 0.95rem',
+            borderRadius: '20px',
+            fontSize: '0.78rem',
+            fontWeight: 800,
+            cursor: 'pointer',
+            transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+            boxShadow: categoryFilter === '' ? '0 4px 12px rgba(37, 99, 235, 0.35)' : 'none',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+          }}
+        >
+          <span>All Categories</span>
+          <span
+            style={{
+              background: categoryFilter === '' ? 'rgba(255, 255, 255, 0.25)' : '#E2E8F0',
+              color: categoryFilter === '' ? '#FFFFFF' : '#334155',
+              padding: '0.1rem 0.45rem',
+              borderRadius: '10px',
+              fontSize: '0.72rem',
+              fontWeight: 800,
+            }}
+          >
+            {combinedEntities.length}
+          </span>
+        </button>
+
+        {categories.map((cat) => {
+          const isSelected = String(categoryFilter) === String(cat.id);
+          const catCount = combinedEntities.filter((e) => String(e.entity_category_id) === String(cat.id)).length;
+          return (
+            <button
+              type="button"
+              key={cat.id}
+              onClick={() => setCategoryFilter(String(cat.id))}
+              style={{
+                background: isSelected
+                  ? 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)'
+                  : '#F8FAFC',
+                border: isSelected ? '1.5px solid #2563EB' : '1.5px solid #E2E8F0',
+                color: isSelected ? '#FFFFFF' : '#475569',
+                padding: '0.38rem 0.95rem',
+                borderRadius: '20px',
+                fontSize: '0.78rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                boxShadow: isSelected ? '0 4px 12px rgba(37, 99, 235, 0.35)' : 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+              }}
+            >
+              <span>{cat.name}</span>
+              {catCount > 0 && (
+                <span
+                  style={{
+                    background: isSelected ? 'rgba(255, 255, 255, 0.25)' : '#E2E8F0',
+                    color: isSelected ? '#FFFFFF' : '#334155',
+                    padding: '0.1rem 0.45rem',
+                    borderRadius: '10px',
+                    fontSize: '0.72rem',
+                    fontWeight: 800,
+                  }}
+                >
+                  {catCount}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
 
       {/* 4 Signature 3D KPI Cards Grid (4 in a row Desktop, 2x2 Tablet, 1 col Mobile) */}
