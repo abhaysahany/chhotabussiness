@@ -162,7 +162,7 @@ function DirectIncomePage({ user, onNavigate }) {
     if (typeof onNavigate === 'function') {
       onNavigate('my-income');
     } else {
-      navigate('/income');
+      navigate('/my-income');
     }
   };
 
