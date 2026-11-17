@@ -376,9 +376,10 @@ function DashboardOverview({ user, onNavigate }) {
 
       {/* Corporate Executive Profile Summary Card (Spacious 3D Banner) */}
       <div className="van-executive-banner">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
+        {/* Top Profile & Command Tier */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.75rem' }}>
           {/* User Profile Info */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.4rem', minWidth: 0 }}>
             <div className="van-avatar-hero-container">
               <div className="van-avatar-hero-ring">
                 <div className="van-avatar-hero-inner">
@@ -396,32 +397,42 @@ function DashboardOverview({ user, onNavigate }) {
               </div>
             </div>
 
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap', marginBottom: '0.35rem' }}>
-                <span className="van-badge-3d van-badge-3d-id">
-                  {userCode}
+            <div style={{ minWidth: 0 }}>
+              {/* Primary Greeting */}
+              <h2 style={{ fontSize: '1.65rem', fontWeight: 800, margin: '0 0 0.35rem 0', color: 'var(--van-brand-navy)', letterSpacing: '-0.025em' }}>
+                Welcome back, {userName}
+              </h2>
+
+              {/* Meta: Email & Member ID with comfortable spacing */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap', marginBottom: '0.65rem' }}>
+                <span style={{ fontSize: '0.84rem', color: '#64748B' }}>
+                  {userEmail}
                 </span>
-                <span className="van-badge-3d van-badge-3d-rank">
-                  <span>⭐</span>
-                  <span>{userRank}</span>
-                </span>
-                <span className={`van-badge-3d ${kycStatus === 'verified' ? 'van-badge-3d-kyc-verified' : 'van-badge-3d-kyc-unverified'}`}>
-                  <span>✓</span>
-                  <span>KYC {kycStatus}</span>
+                <span style={{ color: '#CBD5E1' }}>•</span>
+                <span style={{ fontSize: '0.82rem', fontFamily: 'monospace', fontWeight: 700, color: 'var(--van-brand-navy)', background: '#F1F5F9', border: '1px solid #E2E8F0', padding: '0.15rem 0.55rem', borderRadius: '6px' }}>
+                  ID: {userCode}
                 </span>
               </div>
 
-              <h2 style={{ fontSize: '1.45rem', fontWeight: 800, margin: '0.2rem 0 0.15rem 0', color: 'var(--van-brand-navy)', letterSpacing: '-0.02em' }}>
-                Welcome back, {userName}
-              </h2>
-              <p style={{ margin: 0, fontSize: '0.82rem', color: '#64748B' }}>
-                {userEmail}
-              </p>
+              {/* Badges Row - Clean and Uncrowded */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+                <span className="van-badge-3d van-badge-3d-rank" style={{ fontSize: '0.74rem', padding: '0.28rem 0.75rem' }}>
+                  <span>⭐</span>
+                  <span>{userRank}</span>
+                </span>
+                <span
+                  className={`van-badge-3d ${kycStatus === 'verified' ? 'van-badge-3d-kyc-verified' : 'van-badge-3d-kyc-unverified'}`}
+                  style={{ fontSize: '0.74rem', padding: '0.28rem 0.75rem' }}
+                >
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: kycStatus === 'verified' ? '#10B981' : '#F59E0B' }} />
+                  <span>KYC {kycStatus}</span>
+                </span>
+              </div>
             </div>
           </div>
 
           {/* Quick Action Commands Toolbar */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
             <button
               type="button"
               className="van-btn-action-3d van-btn-action-amber"
@@ -454,26 +465,30 @@ function DashboardOverview({ user, onNavigate }) {
           </div>
         </div>
 
-        {/* Live Referral Link Copier Toolbar */}
-        <div className="van-sponsor-bar-3d">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flex: 1, minWidth: '300px' }}>
+        {/* Live Referral Link Copier Toolbar — Spacious Two-Column Layout */}
+        <div className="van-sponsor-hub-3d">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.95rem', minWidth: '260px' }}>
             <div className="van-share-3d-badge" title="Official Referral Sponsor Link">
-              <Share2 size={17} />
+              <Share2 size={18} />
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--van-brand-navy)', whiteSpace: 'nowrap' }}>
-                Official Sponsor URL:
-              </span>
-              <div className="van-sponsor-pill-url" style={{ flex: 1, minWidth: '220px' }}>
-                <span className="van-sponsor-dot-live" title="Active Sponsor Link" />
-                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {referralUrl}
-                </span>
+            <div>
+              <div style={{ fontSize: '0.88rem', fontWeight: 800, color: 'var(--van-brand-navy)', letterSpacing: '-0.01em' }}>
+                Official Sponsor URL
+              </div>
+              <div style={{ fontSize: '0.78rem', color: '#64748B', marginTop: '0.1rem' }}>
+                Share your invite link to earn direct bonus commissions
               </div>
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap', flex: 1, justifyContent: 'flex-end', minWidth: '300px' }}>
+            <div className="van-sponsor-url-container">
+              <span className="van-sponsor-dot-live" title="Active Sponsor Link" />
+              <span className="van-sponsor-url-text">
+                {referralUrl}
+              </span>
+            </div>
+
             <button
               type="button"
               className={`van-sponsor-copy-btn ${copiedLink ? 'copied' : 'default'}`}
