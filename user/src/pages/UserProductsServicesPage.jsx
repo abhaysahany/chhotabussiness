@@ -19,7 +19,8 @@ import {
   ArrowRight, 
   Layers,
   Award,
-  Zap
+  Zap,
+  Tag
 } from 'lucide-react';
 import { getUserProducts, getUserServices, getUserCategories } from '../api/userCatalogService';
 
@@ -61,7 +62,7 @@ function UserProductsServicesPage({ user, onNavigate }) {
         price: Number(p.price) || 0,
         status: 'Verified',
         verified: true,
-        badge: p.stock < 10 ? 'Limited Stock' : 'Verified Product',
+        badge: p.stock < 10 ? 'Limited Stock' : 'Verified',
         image: p.image || '/logo.png',
         description: p.description || 'Quality verified commercial product with direct distributor warranty.',
         vendor: p.owner_name || 'Skyline Technologies Pvt Ltd',
@@ -80,7 +81,7 @@ function UserProductsServicesPage({ user, onNavigate }) {
         price: Number(s.price) || 0,
         status: 'Verified',
         verified: true,
-        badge: s.duration ? `${s.duration} Turnaround` : 'Certified Service',
+        badge: s.duration || 'Certified Service',
         image: s.image || '/logo.png',
         description: s.description || 'Professional end-to-end execution by verified industry experts.',
         vendor: s.owner_name || 'AddNet Tax Advisory',
@@ -385,6 +386,8 @@ function UserProductsServicesPage({ user, onNavigate }) {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(330px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
           {filteredItems.map((item) => {
             const isProduct = item.type === 'product';
+            // Clean title by removing trailing random hashes/uuids if present
+            const displayTitle = item.title.replace(/\s+[a-f0-9]{8,}$/i, '');
 
             return (
               <div key={item.id} className="van-product-card-3d">
@@ -392,18 +395,19 @@ function UserProductsServicesPage({ user, onNavigate }) {
                 <div className="van-product-media">
                   <img
                     src={item.image}
-                    alt={item.title}
+                    alt={displayTitle}
                     className="van-product-media-img"
                     onError={(e) => {
                       e.target.onerror = null;
                       e.target.src = '/logo.png';
                     }}
                   />
+                  <div className="van-product-media-scrim" />
 
-                  {/* Badges Overlay */}
-                  <div style={{ position: 'absolute', top: '12px', left: '12px', display: 'flex', gap: '0.45rem', zIndex: 2 }}>
+                  {/* Top Badges: Type on left, Delivery on right (Clean & Compact) */}
+                  <div style={{ position: 'absolute', top: '12px', left: '12px', right: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 2 }}>
                     <span className={`van-badge-pill-3d ${isProduct ? 'van-badge-product' : 'van-badge-service'}`}>
-                      {isProduct ? <Package size={11} strokeWidth={2.5} /> : <Briefcase size={11} strokeWidth={2.5} />}
+                      {isProduct ? <Package size={12} strokeWidth={2.5} /> : <Briefcase size={12} strokeWidth={2.5} />}
                       <span>{item.type}</span>
                     </span>
                     {item.badge && (
@@ -414,35 +418,18 @@ function UserProductsServicesPage({ user, onNavigate }) {
                     )}
                   </div>
 
-                  {/* Verified Chip */}
-                  <div
-                    style={{
-                      position: 'absolute',
-                      bottom: '10px',
-                      right: '12px',
-                      background: 'rgba(15, 23, 42, 0.85)',
-                      backdropFilter: 'blur(8px)',
-                      color: '#FFFFFF',
-                      padding: '0.25rem 0.65rem',
-                      borderRadius: '8px',
-                      fontSize: '0.72rem',
-                      fontWeight: 700,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.35rem',
-                      boxShadow: '0 2px 6px rgba(0, 0, 0, 0.25)',
-                    }}
-                  >
+                  {/* Verified Floater Chip */}
+                  <div className="van-badge-verified-float">
                     <ShieldCheck size={12} color="#10B981" />
-                    <span>Verified Listing</span>
+                    <span>Verified</span>
                   </div>
                 </div>
 
                 {/* Content Body */}
                 <div className="van-product-card-body">
-                  {/* Category & Vendor */}
+                  {/* Category & Vendor Row */}
                   <div className="van-product-category-row">
-                    <span className="van-product-category-chip">
+                    <span className="van-product-category-chip" title={item.category}>
                       {item.category}
                     </span>
                     <span className="van-product-vendor-text" title={`Provided by ${item.vendor}`}>
@@ -452,16 +439,18 @@ function UserProductsServicesPage({ user, onNavigate }) {
 
                   {/* Title & Description */}
                   <h3 className="van-product-title" title={item.title}>
-                    {item.title}
+                    {displayTitle}
                   </h3>
-                  <p className="van-product-desc">
+                  <p className="van-product-desc" title={item.description}>
                     {item.description}
                   </p>
 
                   {/* Pricing & Earnings Split Box */}
                   <div className="van-product-earnings-box">
                     <div className="van-product-price-row">
-                      <span className="van-product-price-label">Retail / Client Price</span>
+                      <span className="van-product-price-label">
+                        <Tag size={12} /> Client Price
+                      </span>
                       <strong className="van-product-price-amount">
                         ₹{item.price.toLocaleString('en-IN')}
                       </strong>
@@ -469,26 +458,30 @@ function UserProductsServicesPage({ user, onNavigate }) {
 
                     <div className="van-product-incentive-grid">
                       <div className="van-product-incentive-pill bonus">
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                          <Zap size={11} color="#047857" />
+                        <div className="van-incentive-header">
+                          <div className="van-incentive-icon-orb">
+                            <Zap size={11} strokeWidth={3} />
+                          </div>
                           <span className="van-incentive-title">Direct Bonus</span>
                         </div>
                         <div className="van-incentive-val">
                           +₹{item.referralBonusAmount.toLocaleString('en-IN')}{' '}
-                          <span style={{ fontSize: '0.72rem', fontWeight: 600, opacity: 0.85 }}>
+                          <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#047857', opacity: 0.85 }}>
                             ({item.referralCommissionPercent}%)
                           </span>
                         </div>
                       </div>
 
                       <div className="van-product-incentive-pill diamonds">
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                          <Award size={11} color="#6D28D9" />
-                          <span className="van-incentive-title">Team Diamonds</span>
+                        <div className="van-incentive-header">
+                          <div className="van-incentive-icon-orb">
+                            <Award size={11} strokeWidth={3} />
+                          </div>
+                          <span className="van-incentive-title">Diamonds</span>
                         </div>
                         <div className="van-incentive-val">
                           +{item.teamPointsBp}{' '}
-                          <span style={{ fontSize: '0.72rem', fontWeight: 600, opacity: 0.85 }}>
+                          <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#6D28D9', opacity: 0.85 }}>
                             (20 Lvls)
                           </span>
                         </div>
@@ -503,8 +496,8 @@ function UserProductsServicesPage({ user, onNavigate }) {
                       onClick={() => setSelectedItemForDetails(item)}
                       className="van-btn-details-3d"
                     >
-                      <Info size={14} />
-                      <span>Details & Scope</span>
+                      <Info size={15} />
+                      <span>Details</span>
                     </button>
                     <button
                       type="button"
@@ -514,7 +507,7 @@ function UserProductsServicesPage({ user, onNavigate }) {
                       }}
                       className="van-btn-share-3d"
                     >
-                      <Share2 size={14} />
+                      <Share2 size={15} />
                       <span>Share & Earn</span>
                     </button>
                   </div>
