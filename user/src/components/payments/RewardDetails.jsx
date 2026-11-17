@@ -876,7 +876,7 @@ function RewardDetails({ user, onNavigate }) {
             </button>
           </div>
 
-          {/* Compact Product Cards Grid (Short, Clean & Sleek) */}
+          {/* Compact Product Cards Grid (Short, Clean & Sleek - 4 Items 2x2 Grid) */}
           <div
             style={{
               display: 'grid',
@@ -884,7 +884,7 @@ function RewardDetails({ user, onNavigate }) {
               gap: '1.15rem',
             }}
           >
-            {rewards.slice(0, 3).map((r) => {
+            {rewards.slice(0, 4).map((r) => {
               const req = Number(r.required_bp) || 0;
               const ready = userDiamonds >= req;
               return (
