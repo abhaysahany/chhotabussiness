@@ -3414,6 +3414,45 @@
   }
 }
 
+/* ==========================================================================
+   VYAPAR ADNET — REVENUE ANALYTICS DOMAIN CARDS GRID (3D SAAS UPGRADE)
+   ========================================================================== */
+.van-revenue-domains-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+@media (max-width: 640px) {
+  .van-revenue-domains-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+}
+
+.van-revenue-domain-card {
+  background: #FFFFFF;
+  border-radius: 20px;
+  border: 1.5px solid #E2E8F0;
+  padding: 1.6rem 1.65rem;
+  box-shadow: 0 10px 28px -4px rgba(15, 23, 42, 0.05), inset 0 1px 0 #FFFFFF;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.25rem;
+}
+
+.van-revenue-domain-card:hover {
+  transform: translateY(-5px);
+  border-color: #93C5FD;
+  box-shadow: 0 18px 36px -4px rgba(37, 99, 235, 0.16), 0 4px 12px -2px rgba(15, 23, 42, 0.04), inset 0 1px 0 #FFFFFF;
+}
+
+
 
 
 
