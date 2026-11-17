@@ -377,7 +377,7 @@ function DashboardOverview({ user, onNavigate }) {
       {/* Corporate Executive Profile Summary Card (Spacious 3D Banner) */}
       <div className="van-executive-banner">
         {/* Top Profile & Command Tier */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.75rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.75rem' }}>
           {/* User Profile Info */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.4rem', minWidth: 0 }}>
             <div className="van-avatar-hero-container">
@@ -431,8 +431,8 @@ function DashboardOverview({ user, onNavigate }) {
             </div>
           </div>
 
-          {/* Quick Action Commands Toolbar */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+          {/* Quick Action Commands Toolbar — Shifted to align with Greeting */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap', marginTop: '0.25rem' }}>
             <button
               type="button"
               className="van-btn-action-3d van-btn-action-amber"
