@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Services\EmailTemplateRenderer;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -48,14 +49,32 @@ class RegistrationOtpMail extends Mailable
      */
     public function content(): Content
     {
+        $html = EmailTemplateRenderer::render('registration-otp', [
+            'recipientName' => $this->recipientName,
+            'otp' => $this->otp,
+            'expiresInMinutes' => $this->expiresInMinutes,
+        ]);
+
         return new Content(
-            view: 'emails.registration-otp',
-            with: [
-                'recipientName' => $this->recipientName,
-                'otp' => $this->otp,
-                'expiresInMinutes' => $this->expiresInMinutes,
-            ],
+            htmlString: $html,
         );
+    }
+
+    /**
+     * Build the message with inline CID logo attachment when enabled.
+     */
+    public function build()
+    {
+        if (EmailTemplateRenderer::shouldEmbedLogo()) {
+            $this->withSymfonyMessage(function ($message) {
+                $logoPath = EmailTemplateRenderer::getLogoPath();
+                if (file_exists($logoPath)) {
+                    $message->embedFromPath($logoPath, 'logo-email.png', 'image/png');
+                }
+            });
+        }
+
+        return $this;
     }
 
     /**
