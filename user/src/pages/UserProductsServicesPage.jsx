@@ -181,7 +181,7 @@ function UserProductsServicesPage({ user, onNavigate }) {
           </div>
           <div>
             <div className="van-catalog-hero-badge">
-              <span className="van-live-pulse-dot" style={{ width: '7px', height: '7px', background: '#2563EB' }} />
+              <span className="van-live-pulse-dot" style={{ width: '7px', height: '7px', background: '#38BDF8', boxShadow: '0 0 8px #38BDF8' }} />
               <Sparkles size={13} />
               <span>Certified Commercial Catalog & Marketing Hub</span>
             </div>
@@ -201,11 +201,11 @@ function UserProductsServicesPage({ user, onNavigate }) {
             <div className="van-catalog-stat-chip-lbl">Total Items</div>
           </div>
           <div className="van-catalog-stat-chip">
-            <div className="van-catalog-stat-chip-val" style={{ color: '#16A34A' }}>40%</div>
+            <div className="van-catalog-stat-chip-val" style={{ color: '#34D399' }}>40%</div>
             <div className="van-catalog-stat-chip-lbl">Max Direct Bonus</div>
           </div>
           <div className="van-catalog-stat-chip">
-            <div className="van-catalog-stat-chip-val" style={{ color: '#2563EB' }}>20 Lvls</div>
+            <div className="van-catalog-stat-chip-val" style={{ color: '#93C5FD' }}>20 Lvls</div>
             <div className="van-catalog-stat-chip-lbl">Team Diamonds</div>
           </div>
         </div>
