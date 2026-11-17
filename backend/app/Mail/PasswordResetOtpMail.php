@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Services\EmailTemplateRenderer;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -42,10 +43,8 @@ class PasswordResetOtpMail extends Mailable
      */
     public function envelope(): Envelope
     {
-        $appName = config('app.name', 'Vyapar AdNET');
-
         return new Envelope(
-            subject: "[{$appName}] {$this->accountType} Password Reset Verification Code",
+            subject: '[Vyapar AdNET] Password Reset Verification Code',
         );
     }
 
@@ -54,15 +53,33 @@ class PasswordResetOtpMail extends Mailable
      */
     public function content(): Content
     {
+        $html = EmailTemplateRenderer::render('password-reset-otp', [
+            'recipientName' => $this->recipientName,
+            'otp' => $this->otp,
+            'accountType' => $this->accountType,
+            'expiresInMinutes' => $this->expiresInMinutes,
+        ]);
+
         return new Content(
-            view: 'emails.password-reset-otp',
-            with: [
-                'recipientName' => $this->recipientName,
-                'otp' => $this->otp,
-                'accountType' => $this->accountType,
-                'expiresInMinutes' => $this->expiresInMinutes,
-            ],
+            htmlString: $html,
         );
+    }
+
+    /**
+     * Build the message with inline CID logo attachment when enabled.
+     */
+    public function build()
+    {
+        if (EmailTemplateRenderer::shouldEmbedLogo()) {
+            $this->withSymfonyMessage(function ($message) {
+                $logoPath = EmailTemplateRenderer::getLogoPath();
+                if (file_exists($logoPath)) {
+                    $message->embedFromPath($logoPath, 'logo-email.png', 'image/png');
+                }
+            });
+        }
+
+        return $this;
     }
 
     /**
