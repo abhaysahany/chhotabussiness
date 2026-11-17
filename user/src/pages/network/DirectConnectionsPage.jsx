@@ -312,19 +312,19 @@ function DirectConnectionsPage({ user, onNavigate }) {
           </div>
         </div>
 
-        {/* Right Action & Stats Area (Stacked: Chips on Top, Premium 3D Copy Bar on Bottom) */}
+        {/* Right Action & Stats Area (Stacked: Chips on Top, Premium 3D Copy Bar on Bottom with Comfortable Gap) */}
         <div
           className="van-directs-hero-action-col"
           style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'flex-end',
-            gap: '0.85rem',
+            gap: '1.4rem',
             flexShrink: 0,
           }}
         >
           {/* Top Row: Stats Chips */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
             <div className="van-catalog-stat-chip">
               <div className="van-catalog-stat-chip-val">{stats.totalCount}</div>
               <div className="van-catalog-stat-chip-lbl">Total Directs</div>
@@ -352,9 +352,9 @@ function DirectConnectionsPage({ user, onNavigate }) {
               border: '1px solid rgba(255, 255, 255, 0.22)',
               backdropFilter: 'blur(10px)',
               borderRadius: '16px',
-              padding: '0.35rem 0.4rem 0.35rem 1rem',
+              padding: '0.38rem 0.45rem 0.38rem 1.15rem',
               boxShadow: '0 8px 24px -4px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.25)',
-              gap: '0.85rem',
+              gap: '0.95rem',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
