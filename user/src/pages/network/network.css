@@ -1467,83 +1467,214 @@
   flex-shrink: 0;
 }
 
-/* 3D Social Share Channels */
+/* -------------------------------------------------------------------------- */
+/* Premium 3D Social Channel Cards with Smoother Animated 3D Pods            */
+/* -------------------------------------------------------------------------- */
 .van-ref-channels-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
+  gap: 1.15rem;
   width: 100%;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 820px) {
   .van-ref-channels-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 }
 
-.van-channel-btn-3d {
+.van-channel-card-3d {
+  background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+  border: 1.5px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 1.35rem 1.25rem 1.2rem;
   display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  padding: 0.95rem 1.15rem;
-  border-radius: 14px;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.95rem;
   text-decoration: none;
-  color: #ffffff;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  color: inherit;
+  box-shadow: 0 6px 18px -3px rgba(15, 23, 42, 0.05), inset 0 1px 0 #ffffff;
   position: relative;
   overflow: hidden;
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+  cursor: pointer;
 }
 
-.van-channel-btn-3d:hover {
-  transform: translateY(-3px);
+.van-channel-card-3d:hover {
+  transform: translateY(-5px);
 }
 
-.van-channel-whatsapp {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  border-bottom: 3.5px solid #047857;
-  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+.van-channel-card-whatsapp:hover {
+  border-color: #34d399;
+  box-shadow: 0 16px 30px -4px rgba(16, 185, 129, 0.22), 0 6px 12px -2px rgba(15, 23, 42, 0.05), inset 0 1px 0 #ffffff;
 }
 
-.van-channel-telegram {
-  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-  border-bottom: 3.5px solid #0369a1;
-  box-shadow: 0 6px 18px rgba(14, 165, 233, 0.35);
+.van-channel-card-telegram:hover {
+  border-color: #38bdf8;
+  box-shadow: 0 16px 30px -4px rgba(14, 165, 233, 0.22), 0 6px 12px -2px rgba(15, 23, 42, 0.05), inset 0 1px 0 #ffffff;
 }
 
-.van-channel-email {
-  background: linear-gradient(135deg, #475569 0%, #334155 100%);
-  border-bottom: 3.5px solid #1e293b;
-  box-shadow: 0 6px 18px rgba(71, 85, 105, 0.35);
+.van-channel-card-email:hover {
+  border-color: #818cf8;
+  box-shadow: 0 16px 30px -4px rgba(99, 102, 241, 0.22), 0 6px 12px -2px rgba(15, 23, 42, 0.05), inset 0 1px 0 #ffffff;
 }
 
-.van-channel-icon-pod {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.2);
+.van-channel-card-top-shimmer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3.5px;
+}
+
+.van-channel-card-whatsapp .van-channel-card-top-shimmer {
+  background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+}
+
+.van-channel-card-telegram .van-channel-card-top-shimmer {
+  background: linear-gradient(90deg, #0ea5e9 0%, #38bdf8 100%);
+}
+
+.van-channel-card-email .van-channel-card-top-shimmer {
+  background: linear-gradient(90deg, #6366f1 0%, #818cf8 100%);
+}
+
+.van-channel-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+/* 3D Floating Icon Pods with Smoother Animate */
+.van-channel-3d-pod {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  border-radius: 17px;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #ffffff;
+  animation: van-channel-orb-float 4.2s ease-in-out infinite;
+  transform-origin: center center;
+  will-change: transform, box-shadow;
   flex-shrink: 0;
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3);
 }
 
-.van-channel-meta {
+@keyframes van-channel-orb-float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(1.5deg);
+  }
+}
+
+.van-channel-3d-pod.whatsapp {
+  background: linear-gradient(135deg, #34d399 0%, #10b981 50%, #059669 100%);
+  box-shadow: 0 8px 20px -2px rgba(16, 185, 129, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.85);
+  animation-delay: 0s;
+}
+
+.van-channel-3d-pod.telegram {
+  background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 50%, #0284c7 100%);
+  box-shadow: 0 8px 20px -2px rgba(14, 165, 233, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.85);
+  animation-delay: 0.5s;
+}
+
+.van-channel-3d-pod.email {
+  background: linear-gradient(135deg, #818cf8 0%, #6366f1 50%, #4f46e5 100%);
+  box-shadow: 0 8px 20px -2px rgba(99, 102, 241, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.85);
+  animation-delay: 1s;
+}
+
+.van-channel-tag-pill {
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 0.22rem 0.65rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.van-channel-tag-pill.whatsapp {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.van-channel-tag-pill.telegram {
+  background: #f0f9ff;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+
+.van-channel-tag-pill.email {
+  background: #eef2ff;
+  color: #4338ca;
+  border: 1px solid #c7d2fe;
+}
+
+.van-channel-card-body {
   display: flex;
   flex-direction: column;
+  gap: 0.25rem;
 }
 
-.van-channel-title {
-  font-size: 0.88rem;
+.van-channel-card-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+
+.van-channel-card-desc {
+  font-size: 0.78rem;
+  color: #64748b;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.van-channel-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.65rem 1rem;
+  border-radius: 12px;
+  font-size: 0.84rem;
   font-weight: 800;
   color: #ffffff;
-  line-height: 1.2;
+  transition: all 0.2s ease;
+  margin-top: 0.35rem;
+  text-align: center;
 }
 
-.van-channel-sub {
-  font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.85);
-  font-weight: 600;
+.van-channel-action-btn.whatsapp {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-bottom: 2.5px solid #047857;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.van-channel-action-btn.telegram {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  border-bottom: 2.5px solid #0369a1;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+}
+
+.van-channel-action-btn.email {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  border-bottom: 2.5px solid #3730a3;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.van-channel-card-3d:hover .van-channel-action-btn {
+  transform: translateY(-1px);
 }
 
 /* 3D QR Code Pod */
