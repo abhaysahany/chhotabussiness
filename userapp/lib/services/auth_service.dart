@@ -8,6 +8,9 @@ class AuthService {
     final headers = <String, String>{
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+      'X-Client-Type': 'mobile-app',
+      'X-Mobile-App': '1',
+      'X-User-Activity': '1',
     };
     if (token != null && token.isNotEmpty) {
       headers['Authorization'] = 'Bearer $token';
