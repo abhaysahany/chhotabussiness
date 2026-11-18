@@ -1,5 +1,31 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Package,
+  Briefcase,
+  Gift,
+  Layers,
+  UserCheck,
+  Users,
+  CreditCard,
+  Receipt,
+  Landmark,
+  Wallet,
+  Info,
+  Clock,
+  CheckCircle2,
+  AlertCircle,
+  ArrowRight,
+  ArrowLeft,
+  Sparkles,
+  Zap,
+  Calculator,
+  Percent,
+  Check,
+  ChevronDown,
+  FileText,
+  BadgeCheck,
+} from 'lucide-react';
 import { createEntityOrder, verifyMemberId, getCatalogOfferings } from '../api/entityService';
 
 function EntityCreateOrder() {
@@ -300,7 +326,7 @@ function EntityCreateOrder() {
 
 
   return (
-    <div className="page-container" style={{ width: '100%' }}>
+    <div className="page-container" style={{ width: '100%', maxWidth: '1440px', margin: '0 auto' }}>
       {/* Toast Notification */}
       {toastMessage && (
         <div
@@ -308,99 +334,139 @@ function EntityCreateOrder() {
             position: 'fixed',
             top: '20px',
             right: '20px',
-            background: '#1e293b',
+            background: '#0f172a',
             color: '#ffffff',
-            padding: '0.85rem 1.25rem',
-            borderRadius: '8px',
+            padding: '0.85rem 1.35rem',
+            borderRadius: '12px',
             zIndex: 9999,
-            boxShadow: '0 10px 15px -3px rgba(0,0,0,0.2)',
+            boxShadow: '0 12px 30px rgba(0,0,0,0.25)',
             fontSize: '0.85rem',
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            border: '1px solid #334155',
           }}
         >
-          {toastMessage}
+          <Sparkles size={16} color="#eab308" />
+          <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Header Banner */}
-      <div className="page-subheader" style={{ marginBottom: '1.5rem' }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-            <h1 className="page-title" style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800 }}>
+      {/* Modern 3D Header Banner */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '1.5rem',
+          flexWrap: 'wrap',
+          gap: '1rem',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+          <div className="ent-3d-pod ent-3d-pod-md ent-pod-olive">
+            <Zap size={24} />
+          </div>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.2rem' }}>
+              <span className="ent-kpi-category-tag" style={{ background: '#f4f6ec', color: '#636B2F' }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#636B2F' }} /> MERCHANT SALES DESK
+              </span>
+              <span
+                style={{
+                  background: 'linear-gradient(135deg, #7c8838 0%, #636B2F 100%)',
+                  color: '#ffffff',
+                  fontSize: '0.68rem',
+                  fontWeight: 800,
+                  padding: '2px 8px',
+                  borderRadius: '6px',
+                  boxShadow: '0 2px 6px rgba(99, 107, 47, 0.3)',
+                  textTransform: 'uppercase',
+                }}
+              >
+                {entityName}
+              </span>
+            </div>
+            <h1 style={{ margin: 0, fontSize: '1.45rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>
               Create New Order
             </h1>
-            <span
-              style={{
-                background: '#636B2F',
-                color: '#ffffff',
-                fontSize: '0.7rem',
-                fontWeight: 700,
-                padding: '0.15rem 0.5rem',
-                borderRadius: '6px',
-                textTransform: 'uppercase',
-              }}
-            >
-              {entityName}
-            </span>
+            <p style={{ margin: '0.15rem 0 0 0', fontSize: '0.8rem', color: '#64748b' }}>
+              Record customer order transactions with dynamic Admin commission rates and automatic invoice generation.
+            </p>
           </div>
-          <p className="page-description" style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>
-            Record customer order transactions with dynamic Admin commission rates and automatic invoice generation.
-          </p>
         </div>
-        <div className="page-breadcrumb">
-          <span>Entity Panel</span>
-          <span className="separator">/</span>
-          <span>Orders & Fulfilment</span>
-          <span className="separator">/</span>
-          <span className="active">Create Sale</span>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+          <button
+            type="button"
+            onClick={() => navigate('/entity/orders')}
+            className="ent-slip-btn"
+            style={{ padding: '7px 14px', fontSize: '0.8rem' }}
+          >
+            <ArrowLeft size={14} />
+            <span>Back to Orders</span>
+          </button>
         </div>
       </div>
 
       {/* Main 2-Column Grid Layout */}
       <form onSubmit={handleSubmitSale}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.4fr) minmax(0, 1fr)', gap: '1.5rem', alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.4fr) minmax(320px, 1fr)', gap: '1.5rem', alignItems: 'start' }}>
           {/* Left Column: Sale & Customer Info */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.35rem' }}>
             {/* 1. Offering Type & Item Selection */}
-            <div className="content-card" style={{ padding: '1.5rem', background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#0f172a', margin: '0 0 1rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span>📦</span> 1. Select Offering & Pricing
-              </h3>
+            <div className="ent-3d-form-card ent-3d-form-card-olive">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div className="ent-3d-pod ent-3d-pod-sm ent-pod-olive">
+                    <Package size={20} />
+                  </div>
+                  <div>
+                    <span className="ent-step-pill" style={{ background: '#f4f6ec', color: '#636B2F' }}>
+                      STEP 01
+                    </span>
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a', margin: '2px 0 0 0' }}>
+                      Select Offering & Pricing
+                    </h3>
+                  </div>
+                </div>
+                <span className="ent-3d-target-pill" style={{ background: '#f8faf0', color: '#636B2F', border: '1px solid #d4dcbe' }}>
+                  <Layers size={13} /> Offering Type
+                </span>
+              </div>
 
               {/* Type Switcher Buttons */}
-              <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-                {['service', 'product', 'package'].map((type) => (
+              <div style={{ display: 'flex', gap: '0.65rem', marginBottom: '1.25rem' }}>
+                {[
+                  { id: 'service', label: 'Services', icon: Briefcase },
+                  { id: 'product', label: 'Products', icon: Package },
+                  { id: 'package', label: 'Packages', icon: Gift },
+                ].map(({ id, label, icon: Icon }) => (
                   <button
-                    key={type}
+                    key={id}
                     type="button"
-                    onClick={() => handleOfferingChange(type)}
-                    style={{
-                      flex: 1,
-                      padding: '0.55rem',
-                      borderRadius: '8px',
-                      border: offeringType === type ? '2px solid #636B2F' : '1px solid #e2e8f0',
-                      background: offeringType === type ? '#f4f6ec' : '#ffffff',
-                      color: offeringType === type ? '#505726' : '#64748b',
-                      fontWeight: 700,
-                      fontSize: '0.82rem',
-                      textTransform: 'capitalize',
-                      cursor: 'pointer',
-                    }}
+                    onClick={() => handleOfferingChange(id)}
+                    className={`ent-offering-type-btn ${offeringType === id ? 'active' : ''}`}
                   >
-                    {type === 'service' ? '💼 Services' : type === 'product' ? '📦 Products' : '🎁 Packages'}
+                    <Icon size={16} />
+                    <span>{label}</span>
                   </button>
                 ))}
               </div>
 
               {/* Preset Dropdown or Custom Title */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#334155', marginBottom: '0.35rem' }}>
-                    Catalog Item (With Admin Commission Rate)
+                  <label className="ent-form-label">
+                    <Layers size={14} color="#636B2F" />
+                    <span>Catalog Item (With Admin Commission Rate)</span>
                   </label>
                   <select
                     value={selectedItemId}
                     onChange={(e) => handleItemSelect(e.target.value)}
-                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', color: '#0f172a', background: '#ffffff' }}
+                    className="ent-form-input"
+                    style={{ fontWeight: 600, cursor: 'pointer' }}
                   >
                     {availableOfferings.length === 0 ? (
                       <option value="">(No catalog presets in DB - enter custom item below)</option>
@@ -415,33 +481,44 @@ function EntityCreateOrder() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#334155', marginBottom: '0.35rem' }}>
-                    Item Description / Title on Invoice
+                  <label className="ent-form-label">
+                    <FileText size={14} color="#636B2F" />
+                    <span>Item Description / Title on Invoice <span style={{ color: '#ef4444' }}>*</span></span>
                   </label>
                   <input
                     type="text"
                     value={customItemName}
                     onChange={(e) => { setCustomItemName(e.target.value); setFormErrors(prev => ({ ...prev, customItemName: null })); }}
-                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: formErrors.customItemName ? '2px solid #ef4444' : '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                    className="ent-form-input"
+                    style={{
+                      borderColor: formErrors.customItemName ? '#ef4444' : undefined,
+                      fontWeight: 600,
+                    }}
+                    placeholder="Enter item description or deliverables..."
                     required
                   />
                   {formErrors.customItemName && (
-                    <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block', fontWeight: 600 }}>
-                      ⚠️ {formErrors.customItemName}
+                    <span style={{ color: '#ef4444', fontSize: '0.74rem', marginTop: '0.3rem', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 700 }}>
+                      <AlertCircle size={12} /> {formErrors.customItemName}
                     </span>
                   )}
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.85rem' }}>
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#334155', marginBottom: '0.35rem' }}>
-                      Price (₹)
+                    <label className="ent-form-label">
+                      <span>Price (₹) <span style={{ color: '#ef4444' }}>*</span></span>
                     </label>
                     <input
                       type="number"
                       value={customPrice}
                       onChange={(e) => { setCustomPrice(Number(e.target.value)); setFormErrors(prev => ({ ...prev, customPrice: null })); }}
-                      style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: formErrors.customPrice ? '2px solid #ef4444' : '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                      className="ent-form-input"
+                      style={{
+                        borderColor: formErrors.customPrice ? '#ef4444' : undefined,
+                        fontWeight: 700,
+                        fontSize: '0.92rem',
+                      }}
                       min="1"
                       required
                     />
@@ -453,28 +530,30 @@ function EntityCreateOrder() {
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#334155', marginBottom: '0.35rem' }}>
-                      Qty
+                    <label className="ent-form-label">
+                      <span>Quantity</span>
                     </label>
                     <input
                       type="number"
                       value={quantity}
                       onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
-                      style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                      className="ent-form-input"
+                      style={{ fontWeight: 700 }}
                       min="1"
                       required
                     />
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#334155', marginBottom: '0.35rem' }}>
-                      Discount (%)
+                    <label className="ent-form-label">
+                      <span>Discount (%)</span>
                     </label>
                     <input
                       type="number"
                       value={discountPercent}
                       onChange={(e) => setDiscountPercent(Math.min(100, Math.max(0, Number(e.target.value))))}
-                      style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                      className="ent-form-input"
+                      style={{ fontWeight: 700 }}
                       min="0"
                       max="100"
                     />
@@ -484,20 +563,31 @@ function EntityCreateOrder() {
             </div>
 
             {/* 2. Customer / Member Information */}
-            <div className="content-card" style={{ padding: '1.5rem', background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-                <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#0f172a', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span>👤</span> 2. Customer / Member Information
-                </h3>
-                <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', background: '#f8fafc', padding: '0.2rem 0.5rem', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
-                  Live Database Auto-Fill
+            <div className="ent-3d-form-card ent-3d-form-card-emerald">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div className="ent-3d-pod ent-3d-pod-sm ent-pod-emerald">
+                    <Users size={20} />
+                  </div>
+                  <div>
+                    <span className="ent-step-pill" style={{ background: '#ecfdf5', color: '#059669' }}>
+                      STEP 02
+                    </span>
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a', margin: '2px 0 0 0' }}>
+                      Customer / Member Information
+                    </h3>
+                  </div>
+                </div>
+                <span className="ent-glass-badge ent-badge-emerald" style={{ padding: '4px 10px', fontSize: '0.72rem', fontWeight: 800 }}>
+                  <Sparkles size={12} /> Live Database Auto-Fill
                 </span>
               </div>
 
               {/* Member ID Primary Input */}
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#1e293b', marginBottom: '0.35rem' }}>
-                  Enter Member ID <span style={{ color: '#ef4444' }}>*</span>
+              <div style={{ marginBottom: '1.15rem' }}>
+                <label className="ent-form-label" style={{ fontSize: '0.82rem', color: '#0f172a' }}>
+                  <UserCheck size={15} color="#059669" />
+                  <span>Enter Member ID <span style={{ color: '#ef4444' }}>*</span></span>
                 </label>
                 <div style={{ position: 'relative' }}>
                   <input
@@ -506,144 +596,168 @@ function EntityCreateOrder() {
                     onChange={(e) => setCustomerUserCode(e.target.value.toUpperCase())}
                     placeholder="e.g. CB100001, CB100002"
                     required
+                    className="ent-form-input"
                     style={{
-                      width: '100%',
-                      padding: '0.75rem 1rem',
-                      borderRadius: '8px',
-                      border: memberLookupError ? '2px solid #ef4444' : memberVerified ? '2px solid #16a34a' : '1px solid #cbd5e1',
+                      paddingRight: '100px',
+                      borderColor: memberLookupError ? '#ef4444' : memberVerified ? '#10b981' : undefined,
                       fontSize: '0.95rem',
-                      fontWeight: 700,
+                      fontWeight: 800,
                       letterSpacing: '0.5px',
                       background: memberVerified ? '#f0fdf4' : '#ffffff',
                     }}
                   />
                   {isVerifyingMember && (
-                    <div style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '0.78rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                      <span className="spinner" style={{ width: '14px', height: '14px', border: '2px solid #cbd5e1', borderTopColor: '#3b82f6' }}></span>
+                    <div style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '0.76rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700 }}>
+                      <span className="spinner" style={{ width: '13px', height: '13px', border: '2px solid #cbd5e1', borderTopColor: '#059669', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.6s linear infinite' }}></span>
                       Checking...
+                    </div>
+                  )}
+                  {memberVerified && !isVerifyingMember && (
+                    <div style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: '#059669', display: 'flex', alignItems: 'center', gap: '3px', fontWeight: 800, fontSize: '0.76rem' }}>
+                      <CheckCircle2 size={16} /> Verified
                     </div>
                   )}
                 </div>
 
                 {formErrors.customerUserCode && (
-                  <div style={{ marginTop: '0.5rem', padding: '0.65rem 0.85rem', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '8px', color: '#dc2626', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span>❌</span>
+                  <div style={{ marginTop: '0.5rem', padding: '0.65rem 0.85rem', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '10px', color: '#dc2626', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700 }}>
+                    <AlertCircle size={15} />
                     <span>{formErrors.customerUserCode}</span>
                   </div>
                 )}
-                {/* Error Message when Member ID not found in database */}
                 {!formErrors.customerUserCode && memberLookupError && (
-                  <div style={{ marginTop: '0.5rem', padding: '0.65rem 0.85rem', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '8px', color: '#dc2626', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span>❌</span>
+                  <div style={{ marginTop: '0.5rem', padding: '0.65rem 0.85rem', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '10px', color: '#dc2626', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700 }}>
+                    <AlertCircle size={15} />
                     <span>{memberLookupError}</span>
                   </div>
                 )}
 
-                {/* Success Banner when Member is Found & Auto-filled */}
+                {/* Success Banner when Member is Found */}
                 {memberVerified && (
-                  <div style={{ marginTop: '0.5rem', padding: '0.65rem 0.85rem', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '8px', color: '#15803d', fontSize: '0.82rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.35rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700 }}>
-                      <span>✓</span>
+                  <div style={{ marginTop: '0.65rem', padding: '0.75rem 1rem', background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)', border: '1px solid #86efac', borderRadius: '12px', color: '#15803d', fontSize: '0.82rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.35rem', boxShadow: '0 2px 6px rgba(16, 185, 129, 0.12)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontWeight: 800 }}>
+                      <BadgeCheck size={16} color="#16a34a" />
                       <span>Member Found: {customerName}</span>
                     </div>
-                    <span style={{ fontSize: '0.75rem', color: '#16a34a' }}>
-                      Auto-filled from database
+                    <span style={{ fontSize: '0.74rem', color: '#16a34a', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                      <Sparkles size={12} /> Auto-filled from DB
                     </span>
                   </div>
                 )}
               </div>
 
               {/* Auto-filled details */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#334155', marginBottom: '0.35rem' }}>
-                    Customer Full Name <span style={{ color: '#ef4444' }}>*</span>
+                  <label className="ent-form-label">
+                    <span>Customer Full Name <span style={{ color: '#ef4444' }}>*</span></span>
                   </label>
                   <input
                     type="text"
                     value={customerName}
                     onChange={(e) => { setCustomerName(e.target.value); setFormErrors(prev => ({ ...prev, customerName: null })); }}
                     placeholder="Auto-filled on valid Member ID"
-                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: formErrors.customerName ? '2px solid #ef4444' : '1px solid #cbd5e1', fontSize: '0.85rem', background: memberVerified ? '#f8fafc' : '#ffffff' }}
+                    className="ent-form-input"
+                    style={{
+                      borderColor: formErrors.customerName ? '#ef4444' : undefined,
+                      background: memberVerified ? '#f8fafc' : '#ffffff',
+                      fontWeight: 700,
+                    }}
                     required
                   />
                   {formErrors.customerName && (
-                    <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block', fontWeight: 600 }}>
+                    <span style={{ color: '#ef4444', fontSize: '0.74rem', marginTop: '0.25rem', display: 'block', fontWeight: 700 }}>
                       ⚠️ {formErrors.customerName}
                     </span>
                   )}
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#334155', marginBottom: '0.35rem' }}>
-                    Customer Email <span style={{ color: '#ef4444' }}>*</span>
+                  <label className="ent-form-label">
+                    <span>Customer Email <span style={{ color: '#ef4444' }}>*</span></span>
                   </label>
                   <input
                     type="email"
                     value={customerEmail}
                     onChange={(e) => { setCustomerEmail(e.target.value); setFormErrors(prev => ({ ...prev, customerEmail: null })); }}
                     placeholder="Auto-filled on valid Member ID"
-                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: formErrors.customerEmail ? '2px solid #ef4444' : '1px solid #cbd5e1', fontSize: '0.85rem', background: memberVerified ? '#f8fafc' : '#ffffff' }}
+                    className="ent-form-input"
+                    style={{
+                      borderColor: formErrors.customerEmail ? '#ef4444' : undefined,
+                      background: memberVerified ? '#f8fafc' : '#ffffff',
+                      fontWeight: 600,
+                    }}
                     required
                   />
                   {formErrors.customerEmail && (
-                    <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block', fontWeight: 600 }}>
+                    <span style={{ color: '#ef4444', fontSize: '0.74rem', marginTop: '0.25rem', display: 'block', fontWeight: 700 }}>
                       ⚠️ {formErrors.customerEmail}
                     </span>
                   )}
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#334155', marginBottom: '0.35rem' }}>
-                    Phone Number
+                  <label className="ent-form-label">
+                    <span>Phone Number</span>
                   </label>
                   <input
                     type="text"
                     value={customerPhone}
                     onChange={(e) => { setCustomerPhone(e.target.value); setFormErrors(prev => ({ ...prev, customerPhone: null })); }}
                     placeholder="+91 98765 43210"
-                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: formErrors.customerPhone ? '2px solid #ef4444' : '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                    className="ent-form-input"
+                    style={{
+                      borderColor: formErrors.customerPhone ? '#ef4444' : undefined,
+                      fontWeight: 600,
+                    }}
                   />
                   {formErrors.customerPhone && (
-                    <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block', fontWeight: 600 }}>
+                    <span style={{ color: '#ef4444', fontSize: '0.74rem', marginTop: '0.25rem', display: 'block', fontWeight: 700 }}>
                       ⚠️ {formErrors.customerPhone}
                     </span>
                   )}
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#334155', marginBottom: '0.35rem' }}>
-                    Direct Sponsor
+                  <label className="ent-form-label">
+                    <span>Direct Sponsor</span>
                   </label>
                   <input
                     type="text"
                     value={customerSponsor}
                     placeholder="Auto-filled on valid Member ID"
                     disabled
+                    className="ent-form-input"
                     style={{
-                      width: '100%',
-                      padding: '0.65rem 0.85rem',
-                      borderRadius: '8px',
-                      border: '1px solid #cbd5e1',
-                      fontSize: '0.85rem',
                       background: '#f8fafc',
                       color: customerSponsor ? '#0f172a' : '#94a3b8',
-                      fontWeight: customerSponsor ? '600' : '400',
+                      fontWeight: customerSponsor ? '800' : '500',
+                      fontFamily: 'monospace',
                     }}
                   />
                 </div>
-
               </div>
             </div>
 
-
             {/* 3. Payment Mode & Settlement */}
-            <div className="content-card" style={{ padding: '1.5rem', background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-                <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#0f172a', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span>💳</span> 3. Payment Settlement
-                </h3>
-                <div style={{ display: 'flex', background: '#f1f5f9', padding: '0.2rem', borderRadius: '8px', gap: '0.25rem' }}>
+            <div className="ent-3d-form-card ent-3d-form-card-amber">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div className="ent-3d-pod ent-3d-pod-sm ent-pod-amber">
+                    <CreditCard size={20} />
+                  </div>
+                  <div>
+                    <span className="ent-step-pill" style={{ background: '#fffbeb', color: '#d97706' }}>
+                      STEP 03
+                    </span>
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a', margin: '2px 0 0 0' }}>
+                      Payment Settlement
+                    </h3>
+                  </div>
+                </div>
+
+                {/* Tactile Full vs Partial Switcher */}
+                <div style={{ display: 'inline-flex', background: '#f1f5f9', padding: '3.5px', borderRadius: '10px', gap: '3px', border: '1px solid #e2e8f0' }}>
                   <button
                     type="button"
                     onClick={() => {
@@ -651,14 +765,16 @@ function EntityCreateOrder() {
                       setAdvancePayment(grandTotal);
                     }}
                     style={{
-                      padding: '0.35rem 0.75rem',
-                      borderRadius: '6px',
                       border: 'none',
-                      fontSize: '0.78rem',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      background: paymentTypeOption === 'full' ? '#636B2F' : 'transparent',
+                      background: paymentTypeOption === 'full' ? 'linear-gradient(135deg, #7c8838 0%, #636B2F 100%)' : 'transparent',
                       color: paymentTypeOption === 'full' ? '#ffffff' : '#64748b',
+                      padding: '0.4rem 0.85rem',
+                      borderRadius: '7px',
+                      fontSize: '0.76rem',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      boxShadow: paymentTypeOption === 'full' ? '0 2px 6px rgba(99, 107, 47, 0.4)' : 'none',
+                      transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
                     }}
                   >
                     Full Payment
@@ -672,30 +788,33 @@ function EntityCreateOrder() {
                       }
                     }}
                     style={{
-                      padding: '0.35rem 0.75rem',
-                      borderRadius: '6px',
                       border: 'none',
-                      fontSize: '0.78rem',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      background: paymentTypeOption === 'partial' ? '#636B2F' : 'transparent',
+                      background: paymentTypeOption === 'partial' ? 'linear-gradient(135deg, #7c8838 0%, #636B2F 100%)' : 'transparent',
                       color: paymentTypeOption === 'partial' ? '#ffffff' : '#64748b',
+                      padding: '0.4rem 0.85rem',
+                      borderRadius: '7px',
+                      fontSize: '0.76rem',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      boxShadow: paymentTypeOption === 'partial' ? '0 2px 6px rgba(99, 107, 47, 0.4)' : 'none',
+                      transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
                     }}
                   >
-                    Partial / Advance Payment
+                    Partial / Advance
                   </button>
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.85rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#334155', marginBottom: '0.35rem' }}>
-                    Payment Mode
+                  <label className="ent-form-label">
+                    <span>Payment Mode</span>
                   </label>
                   <select
                     value={paymentMethod}
                     onChange={(e) => setPaymentMethod(e.target.value)}
-                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', background: '#ffffff' }}
+                    className="ent-form-input"
+                    style={{ fontWeight: 600 }}
                   >
                     <option value="UPI / QR Code">UPI / QR Code</option>
                     <option value="Bank NEFT / RTGS">Bank NEFT / RTGS</option>
@@ -706,8 +825,8 @@ function EntityCreateOrder() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#334155', marginBottom: '0.35rem' }}>
-                    {paymentTypeOption === 'full' ? 'Amount Paid (₹)' : 'Advance / Received (₹)'}
+                  <label className="ent-form-label">
+                    <span>{paymentTypeOption === 'full' ? 'Amount Paid (₹)' : 'Advance / Received (₹)'}</span>
                   </label>
                   <input
                     type="number"
@@ -718,15 +837,12 @@ function EntityCreateOrder() {
                       }
                     }}
                     disabled={paymentTypeOption === 'full'}
+                    className="ent-form-input"
                     style={{
-                      width: '100%',
-                      padding: '0.65rem 0.85rem',
-                      borderRadius: '8px',
-                      border: '1px solid #cbd5e1',
-                      fontSize: '0.85rem',
                       background: paymentTypeOption === 'full' ? '#f8fafc' : '#ffffff',
                       color: paymentTypeOption === 'full' ? '#64748b' : '#0f172a',
-                      fontWeight: 700,
+                      fontWeight: 800,
+                      fontSize: '0.92rem',
                     }}
                     min="0"
                     max={grandTotal}
@@ -734,24 +850,25 @@ function EntityCreateOrder() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#334155', marginBottom: '0.35rem' }}>
-                    Ref / UTR Number
+                  <label className="ent-form-label">
+                    <span>Ref / UTR Number</span>
                   </label>
                   <input
                     type="text"
                     value={referenceNo}
                     onChange={(e) => setReferenceNo(e.target.value)}
-                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                    className="ent-form-input"
+                    style={{ fontWeight: 700, fontFamily: 'monospace' }}
                   />
                 </div>
               </div>
 
               {paymentTypeOption === 'partial' && (
-                <div style={{ marginTop: '1rem', background: '#fef3c7', border: '1px solid #fde68a', borderRadius: '8px', padding: '0.75rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.82rem' }}>
-                  <span style={{ color: '#92400e', fontWeight: 600 }}>
-                    ⏳ Remaining Balance to Collect Later:
+                <div style={{ marginTop: '1.25rem', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '12px', padding: '0.85rem 1.15rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.84rem', boxShadow: '0 2px 6px rgba(217, 119, 6, 0.1)' }}>
+                  <span style={{ color: '#92400e', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                    <Clock size={15} /> Remaining Balance to Collect Later:
                   </span>
-                  <strong style={{ color: '#b45309', fontSize: '0.95rem' }}>
+                  <strong style={{ color: '#b45309', fontSize: '1.05rem', fontWeight: 800 }}>
                     ₹{remainingBalanceDue.toLocaleString()}
                   </strong>
                 </div>
@@ -762,42 +879,47 @@ function EntityCreateOrder() {
           {/* Right Column: Invoice Breakdown & Dynamic Commission to Admin */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             {/* Invoice & Admin Commission Card */}
-            <div className="content-card" style={{ padding: '1.5rem', background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem', marginBottom: '1rem' }}>
-                <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#0f172a', margin: 0 }}>
-                  🧾 Invoice & Commission Summary
-                </h3>
-                <span style={{ fontSize: '0.75rem', background: '#f1f5f9', color: '#475569', padding: '0.2rem 0.5rem', borderRadius: '4px', fontWeight: 600 }}>
-                  Live Calculation
+            <div className="ent-3d-summary-card">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.85rem', marginBottom: '1.25rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                  <div className="ent-3d-pod ent-3d-pod-sm ent-pod-olive">
+                    <Receipt size={18} />
+                  </div>
+                  <h3 style={{ fontSize: '1.08rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                    Invoice & Summary
+                  </h3>
+                </div>
+                <span className="ent-3d-target-pill" style={{ background: '#f8fafc', color: '#475569', border: '1px solid #e2e8f0', padding: '3px 8px', fontSize: '0.72rem' }}>
+                  <Calculator size={11} /> Live Calculation
                 </span>
               </div>
 
               {/* Price Calculation Items */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', fontSize: '0.85rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#475569' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.85rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#475569', fontWeight: 600 }}>
                   <span>Project Value ({quantity}x)</span>
-                  <span>₹{grossSubtotal.toLocaleString()}</span>
+                  <span style={{ fontWeight: 700, color: '#0f172a' }}>₹{grossSubtotal.toLocaleString()}</span>
                 </div>
 
                 {discountAmount > 0 && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#16a34a' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#16a34a', fontWeight: 700 }}>
                     <span>Discount ({discountPercent}%)</span>
                     <span>-₹{discountAmount.toLocaleString()}</span>
                   </div>
                 )}
 
-                <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '0.5rem', display: 'flex', justifyContent: 'space-between', fontSize: '1rem', fontWeight: 800, color: '#0f172a' }}>
+                <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '0.75rem', display: 'flex', justifyContent: 'space-between', fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>
                   <span>Total Project Value</span>
-                  <span style={{ color: '#0f172a' }}>₹{grandTotal.toLocaleString()}</span>
+                  <span>₹{grandTotal.toLocaleString()}</span>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#2563eb', fontWeight: 700 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#059669', fontWeight: 800 }}>
                   <span>Amount Received Now</span>
                   <span>₹{receivedAmount.toLocaleString()}</span>
                 </div>
 
                 {remainingBalanceDue > 0 && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#d97706', fontWeight: 700 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#d97706', fontWeight: 800 }}>
                     <span>Remaining Balance Due</span>
                     <span>₹{remainingBalanceDue.toLocaleString()}</span>
                   </div>
@@ -805,54 +927,56 @@ function EntityCreateOrder() {
               </div>
 
               {/* Dynamic Commission To Admin on Collected Amount */}
-              <div style={{ marginTop: '1.25rem', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '1rem' }}>
+              <div style={{ marginTop: '1.35rem', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1rem', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                  <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#0f172a' }}>
-                    🏛️ Admin Facilitation Commission
+                  <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#0f172a', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                    <Landmark size={14} color="#636B2F" /> Admin Cut
                   </span>
-                  <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#dc2626' }}>
+                  <span style={{ fontSize: '0.84rem', fontWeight: 800, color: '#dc2626' }}>
                     {adminCommissionPercent}% (₹{adminCommissionAmount.toLocaleString()})
                   </span>
                 </div>
-                <div style={{ fontSize: '0.72rem', color: '#64748b', marginBottom: '0.65rem' }}>
-                  Calculated strictly on the <strong>received amount (₹{receivedAmount.toLocaleString()})</strong>
+                <div style={{ fontSize: '0.72rem', color: '#64748b', marginBottom: '0.75rem' }}>
+                  Calculated strictly on received amount (<strong>₹{receivedAmount.toLocaleString()}</strong>)
                 </div>
 
-                <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem' }}>
-                  <span style={{ color: '#15803d', fontWeight: 700 }}>
-                    💰 Net Entity Realized Now
+                <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '0.65rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.88rem' }}>
+                  <span style={{ color: '#059669', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                    <Wallet size={15} color="#059669" /> Net Entity Realized
                   </span>
-                  <span style={{ color: '#15803d', fontWeight: 800, fontSize: '0.95rem' }}>
+                  <span style={{ color: '#059669', fontWeight: 800, fontSize: '1.1rem' }}>
                     ₹{netEntityEarnings.toLocaleString()}
                   </span>
                 </div>
               </div>
 
               {/* Notice that Admin Distributes Network MLM Incomes */}
-              <div style={{ marginTop: '1rem', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '8px', padding: '0.75rem', fontSize: '0.78rem', color: '#1e40af', lineHeight: '1.45' }}>
-                ℹ️ <strong>Admin Commission Release:</strong> Admin commission of ₹{adminCommissionAmount.toLocaleString()} is recorded in the database. When balance payments are collected in the Payments section, additional admin commission will be automatically released.
+              <div style={{ marginTop: '1.15rem', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '12px', padding: '0.85rem', fontSize: '0.76rem', color: '#1e40af', lineHeight: '1.45', display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
+                <Info size={16} color="#2563eb" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <div>
+                  <strong>Admin Commission Release:</strong> Admin commission of ₹{adminCommissionAmount.toLocaleString()} is recorded in database. Additional cuts will be released upon balance receipt.
+                </div>
               </div>
 
               {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isSubmitting}
-                style={{
-                  width: '100%',
-                  marginTop: '1.25rem',
-                  padding: '0.85rem',
-                  background: isSubmitting ? '#94a3b8' : 'linear-gradient(135deg, #636B2F 0%, #505726 100%)',
-                  color: '#ffffff',
-                  border: 'none',
-                  borderRadius: '10px',
-                  fontWeight: 800,
-                  fontSize: '0.95rem',
-                  cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                  boxShadow: '0 4px 12px rgba(99, 107, 47, 0.3)',
-                  transition: 'transform 0.1s ease',
-                }}
+                className="ent-submit-sale-btn"
+                style={{ marginTop: '1.35rem' }}
               >
-                {isSubmitting ? 'Saving to Database...' : '🚀 Record Sale & Generate Invoice'}
+                {isSubmitting ? (
+                  <>
+                    <span className="spinner" style={{ width: '16px', height: '16px', border: '2px solid rgba(255,255,255,0.4)', borderTopColor: '#ffffff', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.6s linear infinite' }}></span>
+                    <span>Saving to Database...</span>
+                  </>
+                ) : (
+                  <>
+                    <Zap size={18} />
+                    <span>Record Sale & Generate Invoice</span>
+                    <ArrowRight size={16} />
+                  </>
+                )}
               </button>
             </div>
           </div>
@@ -864,12 +988,9 @@ function EntityCreateOrder() {
         <div
           style={{
             position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
+            inset: 0,
             backgroundColor: 'rgba(15, 23, 42, 0.75)',
-            backdropFilter: 'blur(5px)',
+            backdropFilter: 'blur(6px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -880,28 +1001,42 @@ function EntityCreateOrder() {
           <div
             style={{
               background: '#ffffff',
-              borderRadius: '16px',
+              borderRadius: '20px',
               width: '100%',
               maxWidth: '560px',
               padding: '2rem',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.3)',
               textAlign: 'center',
+              border: '1px solid rgba(226, 232, 240, 0.9)',
             }}
           >
-            <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#fef3c7', color: '#b45309', fontSize: '1.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem auto' }}>
-              ⏳
+            <div
+              style={{
+                width: '60px',
+                height: '60px',
+                borderRadius: '16px',
+                background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                color: '#ffffff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 1.15rem auto',
+                boxShadow: '0 8px 20px rgba(217, 119, 6, 0.35)',
+              }}
+            >
+              <Clock size={28} />
             </div>
-            <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0f172a', margin: '0 0 0.4rem 0' }}>
+            <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0f172a', margin: '0 0 0.4rem 0', letterSpacing: '-0.02em' }}>
               Order Submitted Successfully!
             </h3>
-            <p style={{ fontSize: '0.85rem', color: '#64748b', margin: '0 0 1.25rem 0' }}>
-              Your order has been submitted successfully and is <strong>awaiting Admin approval</strong>.
+            <p style={{ fontSize: '0.85rem', color: '#64748b', margin: '0 0 1.35rem 0' }}>
+              Your order has been recorded in database and is <strong>awaiting Admin approval</strong>.
             </p>
 
-            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '1rem', textAlign: 'left', fontSize: '0.82rem', marginBottom: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.15rem', textAlign: 'left', fontSize: '0.82rem', marginBottom: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: '#64748b' }}>Invoice Number:</span>
-                <strong>{createdSaleData.invoiceNumber || createdSaleData.invoice_number}</strong>
+                <span className="ent-code-chip">{createdSaleData.invoiceNumber || createdSaleData.invoice_number}</span>
               </div>
               {createdSaleData.id && (
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -919,28 +1054,31 @@ function EntityCreateOrder() {
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: '#64748b' }}>Total Project Value:</span>
-                <strong>₹{Number(createdSaleData.grossAmount || createdSaleData.gross_amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</strong>
+                <strong style={{ color: '#0f172a' }}>₹{Number(createdSaleData.grossAmount || createdSaleData.gross_amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</strong>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: '#64748b' }}>Amount Received:</span>
-                <strong style={{ color: '#16a34a' }}>₹{Number(createdSaleData.advancePayment || createdSaleData.advance_payment || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</strong>
+                <strong style={{ color: '#059669' }}>₹{Number(createdSaleData.advancePayment || createdSaleData.advance_payment || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</strong>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: '#64748b' }}>Remaining Balance Due:</span>
-                <strong style={{ color: Number(createdSaleData.balanceDue || createdSaleData.balance_due || 0) > 0 ? '#d97706' : '#16a34a' }}>
+                <strong style={{ color: Number(createdSaleData.balanceDue || createdSaleData.balance_due || 0) > 0 ? '#d97706' : '#059669' }}>
                   ₹{Number(createdSaleData.balanceDue || createdSaleData.balance_due || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                 </strong>
               </div>
-              <div style={{ borderTop: '1px dashed #cbd5e1', marginTop: '0.25rem', paddingTop: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ color: '#64748b' }}>Approval Status:</span>
-                <span style={{ background: '#fef3c7', color: '#92400e', fontSize: '0.75rem', fontWeight: 700, padding: '0.2rem 0.6rem', borderRadius: '9999px', border: '1px solid #fde68a' }}>
-                  ⏳ Pending Approval
+              <div style={{ borderTop: '1px dashed #cbd5e1', marginTop: '0.35rem', paddingTop: '0.65rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ color: '#64748b', fontWeight: 700 }}>Approval Status:</span>
+                <span style={{ background: '#fef3c7', color: '#92400e', fontSize: '0.74rem', fontWeight: 800, padding: '3px 9px', borderRadius: '9999px', border: '1px solid #fde68a', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                  <Clock size={11} /> Pending Admin Approval
                 </span>
               </div>
             </div>
 
-            <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '8px', padding: '0.75rem 1rem', fontSize: '0.78rem', color: '#166534', marginBottom: '1.25rem', textAlign: 'left', lineHeight: 1.4 }}>
-              ℹ️ <strong>Workflow Notice:</strong> Administrator will review this order and approve the final Admin Commission. Balance collection and further payment actions will become available after confirmation.
+            <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '12px', padding: '0.85rem 1rem', fontSize: '0.78rem', color: '#166534', marginBottom: '1.35rem', textAlign: 'left', lineHeight: 1.45, display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
+              <CheckCircle2 size={16} color="#16a34a" style={{ flexShrink: 0, marginTop: '2px' }} />
+              <div>
+                <strong>Workflow Notice:</strong> Administrator will review this order and approve the final Admin Commission. Balance collection and further payment actions will become available after confirmation.
+              </div>
             </div>
 
             <div style={{ display: 'flex', gap: '0.75rem' }}>
@@ -950,9 +1088,11 @@ function EntityCreateOrder() {
                   setShowSuccessModal(false);
                   navigate('/entity/orders');
                 }}
-                style={{ flex: 1, padding: '0.65rem 1rem', background: '#636B2F', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer' }}
+                className="ent-submit-sale-btn"
+                style={{ flex: 1, padding: '0.75rem' }}
               >
-                View My Orders →
+                <span>View My Orders</span>
+                <ArrowRight size={15} />
               </button>
               <button
                 type="button"
@@ -964,15 +1104,15 @@ function EntityCreateOrder() {
                   setCustomerUserCode('');
                   setPaymentTypeOption('full');
                 }}
-                style={{ flex: 1, padding: '0.65rem 1rem', background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', borderRadius: '8px', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer' }}
+                className="ent-slip-btn"
+                style={{ flex: 1, padding: '0.75rem', justifyContent: 'center' }}
               >
-                Record Another Order
+                <span>Record Another Order</span>
               </button>
             </div>
           </div>
         </div>
       )}
-
     </div>
   );
 }
