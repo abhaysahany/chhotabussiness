@@ -514,3 +514,92 @@
     justify-content: center !important;
   }
 }
+
+/* ==========================================================================
+   DIRECT INCOME & ENTITY PAYMENTS SUITE RESPONSIVE EXTENSIONS
+   ========================================================================== */
+.pro-income-reconciliation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.pro-income-filter-grid-row1 {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+}
+
+.pro-income-filter-grid-row2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
+  align-items: flex-end;
+}
+
+.pro-income-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.pro-income-audit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+@media (max-width: 1024px) {
+  .pro-income-filter-grid-row1 {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .pro-income-filter-grid-row1 > div:first-child {
+    grid-column: span 2 !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .pro-income-reconciliation-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.5rem !important;
+  }
+
+  .pro-income-filter-grid-row1 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .pro-income-filter-grid-row1 > div:first-child {
+    grid-column: span 1 !important;
+  }
+
+  .pro-income-filter-grid-row2 {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .pro-income-details-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+  .pro-income-audit-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .pro-income-table-row-grid {
+    min-width: 650px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .pro-income-reconciliation-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .pro-income-filter-grid-row2 {
+    grid-template-columns: 1fr !important;
+  }
+}

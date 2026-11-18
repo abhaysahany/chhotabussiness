@@ -167,7 +167,7 @@ function AdminDirectIncomeDetailsPage() {
   const recSummary = getReconciliationStatus();
 
   return (
-    <div style={{ padding: '1.25rem', maxWidth: '1400px', margin: '0 auto', fontFamily: 'inherit', color: '#1e293b' }}>
+    <div className="admin-page-container pro-orders-container">
       {/* 1. TOP BAR / ACTION NAVIGATION */}
       <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
         <button
@@ -407,13 +407,7 @@ function AdminDirectIncomeDetailsPage() {
           </div>
 
           {/* 2. FINANCIAL SUMMARY — ONLY TWO COMPACT CARDS */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-              gap: '1rem',
-            }}
-          >
+          <div className="pro-income-details-grid">
             {/* Card A — Order Financial Overview */}
             <div
               style={{
@@ -453,7 +447,7 @@ function AdminDirectIncomeDetailsPage() {
                 </span>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
+              <div className="pro-orders-modal-grid-2col" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.85rem' }}>
                 <div style={{ background: '#f8fafc', padding: '0.65rem 0.75rem', borderRadius: '8px', border: '1px solid #f1f5f9' }}>
                   <div style={{ color: '#64748b', fontSize: '0.72rem', fontWeight: 500 }}>Total Order Value</div>
                   <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', marginTop: '0.15rem' }}>
@@ -532,7 +526,7 @@ function AdminDirectIncomeDetailsPage() {
                 </span>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
+              <div className="pro-orders-modal-grid-2col" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.85rem' }}>
                 <div style={{ background: '#f8fafc', padding: '0.65rem 0.75rem', borderRadius: '8px', border: '1px solid #f1f5f9' }}>
                   <div style={{ color: '#64748b', fontSize: '0.72rem', fontWeight: 500 }}>Expected Direct Income</div>
                   <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', marginTop: '0.15rem' }}>
@@ -623,8 +617,8 @@ function AdminDirectIncomeDetailsPage() {
               </span>
             </div>
 
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', textAlign: 'left' }}>
+            <div className="table-responsive-inner" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', textAlign: 'left', minWidth: '650px' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#64748b' }}>
                     <th style={{ padding: '0.65rem 1rem', fontWeight: 600 }}>Receipt #</th>
@@ -650,9 +644,11 @@ function AdminDirectIncomeDetailsPage() {
                           <td colSpan={6} style={{ padding: 0 }}>
                             {/* Primary Row */}
                             <div
+                              className="pro-income-table-row-grid"
                               style={{
                                 display: 'grid',
                                 gridTemplateColumns: '1.2fr 1.5fr 1.5fr 1.5fr 1.2fr 1fr',
+                                minWidth: '650px',
                                 alignItems: 'center',
                                 padding: '0.65rem 1rem',
                                 background: isExpanded ? '#f8fafc' : 'transparent',

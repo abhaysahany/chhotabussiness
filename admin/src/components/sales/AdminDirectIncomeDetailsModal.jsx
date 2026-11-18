@@ -84,35 +84,19 @@ function AdminDirectIncomeDetailsModal({ orderId, onClose }) {
 
   return (
     <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(15, 23, 42, 0.75)',
-        backdropFilter: 'blur(4px)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 99990,
-        padding: '1rem',
-      }}
+      className="pro-orders-modal-backdrop"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div
+        className="pro-orders-modal-dialog"
         style={{
-          background: '#ffffff',
-          borderRadius: '16px',
-          width: '100%',
-          maxWidth: '960px',
-          maxHeight: '92vh',
+          padding: 0,
+          overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-          overflow: 'hidden',
+          maxWidth: '960px',
         }}
       >
         {/* MODAL HEADER */}
@@ -353,9 +337,10 @@ function AdminDirectIncomeDetailsModal({ orderId, onClose }) {
                 </div>
 
                 <div
+                  className="pro-orders-modal-grid-2col"
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
                     gap: '1rem',
                   }}
                 >
@@ -558,8 +543,8 @@ function AdminDirectIncomeDetailsModal({ orderId, onClose }) {
                   </span>
                 </div>
 
-                <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem' }}>
+                <div className="table-responsive-inner" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem', minWidth: '700px' }}>
                     <thead>
                       <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left', color: '#64748b' }}>
                         <th style={{ padding: '0.65rem 0.85rem' }}>Receipt #</th>
@@ -686,8 +671,8 @@ function AdminDirectIncomeDetailsModal({ orderId, onClose }) {
                   </span>
                 </div>
 
-                <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem' }}>
+                <div className="table-responsive-inner" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem', minWidth: '700px' }}>
                     <thead>
                       <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left', color: '#64748b' }}>
                         <th style={{ padding: '0.65rem 0.85rem' }}>Ledger ID</th>
@@ -806,8 +791,8 @@ function AdminDirectIncomeDetailsModal({ orderId, onClose }) {
                   ℹ️ <strong>Notice:</strong> Approved Dump represents a non-cash write-off of uncollectible installments and does not generate wallet credit.
                 </div>
 
-                <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem' }}>
+                <div className="table-responsive-inner" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem', minWidth: '700px' }}>
                     <thead>
                       <tr style={{ background: '#ffffff', borderBottom: '1px solid #e2e8f0', textAlign: 'left', color: '#64748b' }}>
                         <th style={{ padding: '0.65rem 0.85rem' }}>Dump ID</th>
