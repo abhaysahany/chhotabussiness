@@ -269,7 +269,7 @@ function AdminBusinessPage({ onNavigate }) {
   });
 
   return (
-    <div className="page-content-wrapper">
+    <div className="page-content-wrapper pro-entity-page-container">
       {/* Success Notification Alert */}
       {successMessage && (
         <div className="alert-success" style={{ backgroundColor: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0', padding: '0.875rem 1.25rem', borderRadius: '12px', marginBottom: '1.5rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -391,7 +391,7 @@ function AdminBusinessPage({ onNavigate }) {
               </div>
 
               {/* Basic Details */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem', marginBottom: '0.85rem' }}>
+              <div className="pro-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem', marginBottom: '0.85rem' }}>
                 <div>
                   <label className="form-label">Business Name *</label>
                   <input
@@ -429,7 +429,7 @@ function AdminBusinessPage({ onNavigate }) {
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem', marginBottom: '0.85rem' }}>
+              <div className="pro-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem', marginBottom: '0.85rem' }}>
                 <div>
                   <label className="form-label">Email Address *</label>
                   <input
@@ -509,7 +509,7 @@ function AdminBusinessPage({ onNavigate }) {
                 </p>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem', marginBottom: '0.85rem' }}>
+              <div className="pro-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem', marginBottom: '0.85rem' }}>
                 <div>
                   <label className="form-label">GST / Registration No. <span style={{ color: '#64748b', fontWeight: 'normal', fontSize: '0.75rem' }}>(Optional)</span></label>
                   <input
@@ -551,7 +551,7 @@ function AdminBusinessPage({ onNavigate }) {
               </div>
 
               {/* Status and Advertisement Toggle */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem', marginBottom: '1rem' }}>
+              <div className="pro-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem', marginBottom: '1rem' }}>
                 <div>
                   <label className="form-label">Verification Status</label>
                   <select
@@ -624,7 +624,7 @@ function AdminBusinessPage({ onNavigate }) {
                   </div>
                 ) : (
                   form.documents.map((doc, idx) => (
-                    <div key={idx} style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', marginBottom: '0.4rem', background: '#fff', padding: '0.5rem', borderRadius: '6px', border: '1px solid #cbd5e1' }}>
+                    <div key={idx} className="pro-doc-row" style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', marginBottom: '0.4rem', background: '#fff', padding: '0.5rem', borderRadius: '6px', border: '1px solid #cbd5e1' }}>
                       <input
                         type="text"
                         className="form-input"
@@ -671,7 +671,7 @@ function AdminBusinessPage({ onNavigate }) {
               </div>
 
               {/* Form Action Buttons */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid #f1f5f9' }}>
+              <div className="pro-form-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid #f1f5f9' }}>
                 <button
                   type="button"
                   className="pro-btn-secondary"

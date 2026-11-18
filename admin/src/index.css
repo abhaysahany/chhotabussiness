@@ -2524,3 +2524,180 @@ div[style*="position: fixed"]:not(.sidebar-container):not(.sidebar-backdrop):not
     gap: 0.75rem !important;
   }
 }
+
+/* ==========================================================================
+   BUSINESS ENTITY SECTION RESPONSIVE SUITE (Register Business & Freelance)
+   ========================================================================== */
+.pro-entity-page-container {
+  padding: 1.5rem 2rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.pro-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+  margin-bottom: 0.85rem;
+  width: 100%;
+}
+
+.pro-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.pro-doc-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 1024px) {
+  .pro-entity-hero {
+    padding: 1.5rem 1.75rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .pro-entity-page-container {
+    padding: 0.85rem 0.65rem !important;
+  }
+
+  .pro-entity-hero {
+    padding: 1.25rem 1rem !important;
+    border-radius: 12px !important;
+    margin-bottom: 1.25rem !important;
+  }
+
+  .pro-entity-hero > div {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.85rem !important;
+  }
+
+  .pro-entity-hero button {
+    width: 100% !important;
+    justify-content: center !important;
+    font-size: 0.875rem !important;
+    padding: 0.65rem 1rem !important;
+  }
+
+  .pro-hero-title {
+    font-size: 1.35rem !important;
+  }
+
+  .pro-hero-subtitle {
+    font-size: 0.825rem !important;
+  }
+
+  /* KPI Grid */
+  .pro-kpi-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+    margin-bottom: 1.25rem !important;
+  }
+
+  .pro-kpi-card {
+    padding: 0.85rem 1rem !important;
+    border-radius: 10px !important;
+  }
+
+  .pro-kpi-val {
+    font-size: 1.45rem !important;
+  }
+
+  .pro-kpi-label {
+    font-size: 0.72rem !important;
+  }
+
+  /* Search & Filter Bar */
+  .pro-search-bar {
+    padding: 1rem 0.85rem !important;
+    border-radius: 12px !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.75rem !important;
+  }
+
+  .pro-search-bar > div:first-child {
+    flex-direction: column !important;
+    width: 100% !important;
+    align-items: stretch !important;
+    gap: 0.65rem !important;
+  }
+
+  .pro-search-bar input[type="text"],
+  .pro-search-bar select,
+  .pro-search-bar button {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .pro-search-bar .pro-btn-primary {
+    justify-content: center !important;
+    padding: 0.7rem 1rem !important;
+  }
+
+  /* Table and Wrapper */
+  .pro-table-wrapper {
+    padding: 1rem 0.75rem !important;
+    border-radius: 12px !important;
+  }
+
+  /* Form Layout */
+  .pro-form-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  .pro-form-actions {
+    flex-direction: column-reverse !important;
+    align-items: stretch !important;
+  }
+
+  .pro-form-actions button {
+    width: 100% !important;
+    justify-content: center !important;
+    height: 44px !important;
+  }
+
+  .pro-doc-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    background: #ffffff !important;
+    padding: 0.65rem !important;
+    border-radius: 8px !important;
+    border: 1px solid #e2e8f0 !important;
+  }
+
+  .pro-doc-row input,
+  .pro-doc-row select {
+    width: 100% !important;
+  }
+
+  .pro-doc-row button {
+    align-self: flex-end !important;
+  }
+
+  /* Universal grid fallback for 1fr 1fr inside entity pages */
+  div[style*="gridTemplateColumns: '1fr 1fr'"],
+  div[style*="grid-template-columns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .pro-kpi-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
