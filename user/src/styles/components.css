@@ -3745,6 +3745,744 @@
   box-shadow: 0 18px 36px -4px rgba(37, 99, 235, 0.16), inset 0 1px 0 #FFFFFF;
 }
 
+/* ==========================================================================
+   VIP PERSONAL PROFILE IDENTITY HUB & EXECUTIVE SUITE
+   Tailored distinctive design with 3D metallic pods & smooth float animations
+   ========================================================================== */
+
+.van-profile-page-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Luxury Showcase Hero Card */
+.van-profile-hero-card {
+  background: #FFFFFF;
+  border-radius: 20px;
+  border: 1.5px solid rgba(226, 232, 240, 0.95);
+  box-shadow: 
+    0 10px 30px -5px rgba(15, 23, 42, 0.07),
+    0 4px 12px -2px rgba(15, 23, 42, 0.03),
+    inset 0 1px 0 #FFFFFF;
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* Luxury Cover Banner */
+.van-profile-cover-banner {
+  height: 145px;
+  background: linear-gradient(135deg, #090e1a 0%, #0f1f3d 35%, #1e3a8a 70%, #0284c7 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.van-profile-cover-mesh {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(circle at 85% 25%, rgba(56, 189, 248, 0.35) 0%, transparent 50%),
+    radial-gradient(circle at 20% 90%, rgba(245, 158, 11, 0.22) 0%, transparent 45%),
+    radial-gradient(rgba(255, 255, 255, 0.12) 1.5px, transparent 1.5px);
+  background-size: 100% 100%, 100% 100%, 18px 18px;
+  pointer-events: none;
+}
+
+.van-profile-cover-badges {
+  position: absolute;
+  top: 1rem;
+  right: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  z-index: 2;
+  flex-wrap: wrap;
+}
+
+.van-profile-vip-pill {
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(253, 230, 138, 0.4);
+  color: #FEF08A;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  letter-spacing: 0.02em;
+}
+
+.van-profile-status-live {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(167, 243, 208, 0.7);
+  color: #047857;
+  padding: 0.35rem 0.8rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.van-profile-dot-pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.35);
+  animation: van-pulse-dot 2s infinite ease-in-out;
+}
+
+/* Profile Showcase Header Body */
+.van-profile-hero-body {
+  padding: 0 2rem 1.65rem 2rem;
+  position: relative;
+}
+
+.van-profile-hero-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.van-profile-identity-group {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.5rem;
+  flex: 1;
+  min-width: 300px;
+}
+
+/* 3D Metallic Avatar Pod with Floating Animation */
+.van-profile-avatar-pod {
+  position: relative;
+  width: 116px;
+  height: 116px;
+  border-radius: 50%;
+  border: 4.5px solid #FFFFFF;
+  background: linear-gradient(135deg, #1E3A8A 0%, #0F172A 100%);
+  box-shadow: 
+    0 12px 28px -4px rgba(15, 23, 42, 0.32),
+    0 4px 10px rgba(15, 23, 42, 0.15),
+    inset 0 2px 4px rgba(255, 255, 255, 0.5),
+    inset 0 -3px 5px rgba(0, 0, 0, 0.4);
+  flex-shrink: 0;
+  margin-top: -3.5rem;
+  z-index: 5;
+  animation: van-avatar-smooth-float 4.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  transform: translateZ(0);
+}
+
+.van-profile-avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.van-profile-avatar-fallback {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #FFFFFF;
+  background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 45%, #0B192C 100%);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+  letter-spacing: -0.02em;
+}
+
+.van-avatar-quick-upload {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+  border: 2.5px solid #FFFFFF;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.45);
+  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 6;
+}
+
+.van-avatar-quick-upload:hover {
+  transform: scale(1.18) rotate(8deg);
+  background: linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%);
+  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.55);
+}
+
+/* User Info Section */
+.van-profile-meta-block {
+  flex: 1;
+  min-width: 250px;
+  padding-bottom: 0.25rem;
+}
+
+.van-profile-name-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.25rem;
+}
+
+.van-profile-fullname {
+  font-size: 1.65rem;
+  font-weight: 850;
+  color: #0F172A;
+  margin: 0;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.van-profile-gold-crown {
+  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+  color: #92400E;
+  border: 1px solid #FCD34D;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.15);
+}
+
+.van-profile-contact-sub {
+  color: #64748B;
+  font-size: 0.85rem;
+  font-weight: 550;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.25rem;
+}
+
+.van-profile-chips-deck {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.van-profile-code-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: #F8FAFC;
+  border: 1.5px solid #E2E8F0;
+  padding: 0.35rem 0.75rem;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  transition: all 0.2s ease;
+}
+
+.van-profile-code-chip:hover {
+  background: #F1F5F9;
+  border-color: #CBD5E1;
+}
+
+.van-profile-chip-lbl {
+  color: #64748B;
+  font-weight: 600;
+  font-size: 0.78rem;
+}
+
+.van-profile-chip-val {
+  color: #1E3A8A;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.van-profile-copy-btn {
+  background: #EFF6FF;
+  color: #1D4ED8;
+  border: 1px solid #BFDBFE;
+  font-size: 0.72rem;
+  font-weight: 750;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.van-profile-copy-btn:hover {
+  background: #DBEAFE;
+  transform: translateY(-1px);
+}
+
+.van-profile-sponsor-chip {
+  background: #FAF5FF;
+  border-color: #E9D5FF;
+}
+
+.van-profile-sponsor-chip .van-profile-chip-val {
+  color: #6D28D9;
+}
+
+/* Action Hub on Hero */
+.van-profile-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.van-btn-profile-primary {
+  background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+  color: #FFFFFF;
+  border: none;
+  padding: 0.65rem 1.35rem;
+  border-radius: 12px;
+  font-size: 0.86rem;
+  font-weight: 750;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.van-btn-profile-primary:hover {
+  background: linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.42);
+}
+
+.van-btn-profile-secondary {
+  background: #FFFFFF;
+  color: #334155;
+  border: 1.5px solid #CBD5E1;
+  padding: 0.65rem 1.25rem;
+  border-radius: 12px;
+  font-size: 0.86rem;
+  font-weight: 750;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+  transition: all 0.2s ease;
+}
+
+.van-btn-profile-secondary:hover {
+  background: #F8FAFC;
+  border-color: #94A3B8;
+  color: #0F172A;
+  transform: translateY(-1px);
+}
+
+/* Luxury Segmented Pill Navigation Tabs */
+.van-profile-nav-pills-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #F8FAFC;
+  border-top: 1px solid #E2E8F0;
+  padding: 0.65rem 1.5rem;
+  overflow-x: auto;
+}
+
+.van-profile-tab-pill {
+  background: transparent;
+  border: 1.5px solid transparent;
+  padding: 0.55rem 1.15rem;
+  border-radius: 10px;
+  font-size: 0.84rem;
+  font-weight: 750;
+  color: #64748B;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.van-profile-tab-pill:hover {
+  color: #0F172A;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.van-profile-tab-pill.active {
+  background: #FFFFFF;
+  color: #1D4ED8;
+  border-color: #BFDBFE;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12), 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+/* 4 Executive KPI Metric Cards in 1 Row */
+.van-profile-metrics-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 1100px) {
+  .van-profile-metrics-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 580px) {
+  .van-profile-metrics-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.van-profile-kpi-card {
+  background: #FFFFFF;
+  border-radius: 16px;
+  border: 1.5px solid rgba(226, 232, 240, 0.9);
+  padding: 1.25rem 1.35rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 
+    0 4px 14px -2px rgba(15, 23, 42, 0.04),
+    0 2px 4px -1px rgba(15, 23, 42, 0.02),
+    inset 0 1px 0 #FFFFFF;
+  transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.van-profile-kpi-card:hover {
+  transform: translateY(-4px);
+  border-color: #CBD5E1;
+  box-shadow: 
+    0 14px 28px -4px rgba(15, 23, 42, 0.1),
+    0 4px 8px -1px rgba(15, 23, 42, 0.04),
+    inset 0 1px 0 #FFFFFF;
+}
+
+.van-profile-kpi-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.65rem;
+}
+
+.van-profile-kpi-lbl {
+  font-size: 0.74rem;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748B;
+  margin: 0;
+}
+
+.van-profile-kpi-val {
+  font-size: 1.55rem;
+  font-weight: 850;
+  color: #0F172A;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.35rem 0;
+  line-height: 1.2;
+}
+
+.van-profile-kpi-sub {
+  font-size: 0.78rem;
+  color: #64748B;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 550;
+}
+
+/* Detailed Information Identity Cards Grid */
+.van-profile-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.35rem;
+}
+
+@media (max-width: 950px) {
+  .van-profile-details-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.van-profile-info-card {
+  background: #FFFFFF;
+  border-radius: 18px;
+  border: 1.5px solid rgba(226, 232, 240, 0.92);
+  overflow: hidden;
+  box-shadow: 
+    0 6px 18px -3px rgba(15, 23, 42, 0.05),
+    0 2px 6px -1px rgba(15, 23, 42, 0.02),
+    inset 0 1px 0 #FFFFFF;
+  transition: all 0.25s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.van-profile-info-card:hover {
+  border-color: #CBD5E1;
+  box-shadow: 0 10px 25px -4px rgba(15, 23, 42, 0.08);
+}
+
+.van-profile-card-header {
+  padding: 1.15rem 1.35rem;
+  border-bottom: 1px solid #F1F5F9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  background: linear-gradient(180deg, #FFFFFF 0%, #FAFAFC 100%);
+}
+
+.van-profile-header-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.van-profile-card-h3 {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.van-profile-card-body {
+  padding: 1.35rem;
+  flex: 1;
+}
+
+.van-profile-field-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.85rem 1rem;
+}
+
+@media (max-width: 520px) {
+  .van-profile-field-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+.van-profile-field-pod {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.van-profile-field-pod:hover {
+  background: #F1F5F9;
+  border-color: #CBD5E1;
+}
+
+.van-profile-field-pod.full-width {
+  grid-column: 1 / -1;
+}
+
+.van-profile-field-lbl {
+  font-size: 0.72rem;
+  font-weight: 750;
+  text-transform: uppercase;
+  color: #64748B;
+  letter-spacing: 0.04em;
+}
+
+.van-profile-field-val {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #0F172A;
+  word-break: break-word;
+}
+
+.van-profile-bio-box {
+  background: linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%);
+  border: 1px dashed #BFDBFE;
+  border-radius: 12px;
+  padding: 1rem 1.15rem;
+  font-size: 0.88rem;
+  color: #334155;
+  line-height: 1.55;
+  position: relative;
+  font-style: italic;
+}
+
+/* Quick Compliance Gateway Badges */
+.van-compliance-row-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.van-compliance-item-tile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  transition: all 0.2s ease;
+}
+
+.van-compliance-item-tile:hover {
+  background: #FFFFFF;
+  border-color: #CBD5E1;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+}
+
+.van-compliance-info-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.van-compliance-dot-ok {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+}
+
+.van-compliance-name {
+  font-size: 0.86rem;
+  font-weight: 750;
+  color: #0F172A;
+}
+
+.van-compliance-desc {
+  font-size: 0.75rem;
+  color: #64748B;
+  margin-top: 0.1rem;
+}
+
+/* Edit Tab Form Styles */
+.van-profile-edit-studio {
+  background: #FFFFFF;
+  border-radius: 20px;
+  border: 1.5px solid rgba(226, 232, 240, 0.95);
+  box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+}
+
+.van-profile-edit-header {
+  padding: 1.25rem 1.75rem;
+  border-bottom: 1px solid #F1F5F9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: linear-gradient(180deg, #FFFFFF 0%, #FAFAFC 100%);
+}
+
+.van-profile-edit-body {
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.van-avatar-studio-box {
+  background: linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%);
+  border: 1.5px dashed #BFDBFE;
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.van-profile-form-grid-2col {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .van-profile-form-grid-2col {
+    grid-template-columns: 1fr;
+  }
+}
+
+.van-profile-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.van-profile-input-label {
+  font-size: 0.8rem;
+  font-weight: 750;
+  color: #334155;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.van-profile-edit-footer {
+  padding: 1.25rem 1.75rem;
+  background: #F8FAFC;
+  border-top: 1px solid #E2E8F0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+/* Callout bottom bar */
+.van-profile-callout-bar {
+  background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 100%);
+  border-radius: 18px;
+  padding: 1.5rem 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  color: #FFFFFF;
+  box-shadow: 0 8px 20px -3px rgba(15, 23, 42, 0.2);
+  flex-wrap: wrap;
+}
+
+
 
 
 
