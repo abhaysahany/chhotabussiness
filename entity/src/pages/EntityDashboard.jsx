@@ -28,6 +28,8 @@ import {
   PieChart,
   Target,
   BarChart2,
+  Copy,
+  Check,
 } from 'lucide-react';
 import { getEntityDashboardStats, getEntityProfile } from '../api/entityService';
 
@@ -40,8 +42,16 @@ function EntityDashboard() {
   const [timeRange, setTimeRange] = useState('7d');
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [settlementCountdown, setSettlementCountdown] = useState({ hours: 14, minutes: 42, seconds: 19 });
+  const [copiedCode, setCopiedCode] = useState(false);
 
   const navigate = useNavigate();
+
+  const handleCopyCode = (code) => {
+    if (!code) return;
+    navigator.clipboard.writeText(code);
+    setCopiedCode(true);
+    setTimeout(() => setCopiedCode(false), 2000);
+  };
 
   // Next bank settlement countdown
   useEffect(() => {
@@ -342,110 +352,110 @@ function EntityDashboard() {
   const activityFeed = data?.activityFeed || [];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', width: '100%', boxSizing: 'border-box' }}>
+    <div className="ent-dash-wrapper">
       {/* Toast Alert */}
       {toastMessage && (
         <div
           style={{
             position: 'fixed',
-            top: '20px',
-            right: '20px',
-            background: '#1e293b',
+            top: '24px',
+            right: '24px',
+            background: 'linear-gradient(135deg, #09170e 0%, #15291b 100%)',
             color: '#ffffff',
-            padding: '0.85rem 1.25rem',
-            borderRadius: '8px',
+            padding: '0.85rem 1.35rem',
+            borderRadius: '12px',
             zIndex: 99999,
-            boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
-            fontSize: '0.85rem',
+            boxShadow: '0 20px 35px -10px rgba(0,0,0,0.4)',
+            fontSize: '0.86rem',
             fontWeight: 700,
-            borderLeft: '4px solid #636B2F',
+            borderLeft: '4px solid #848f3e',
+            border: '1px solid rgba(74, 222, 128, 0.25)',
             display: 'flex',
             alignItems: 'center',
-            gap: '0.5rem',
+            gap: '0.65rem',
           }}
         >
-          <Sparkles size={16} color="#848f3e" />
+          <Sparkles size={16} color="#a3e635" />
           <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* 1. Merchant Executive Hero Identity Banner (Olive Gold & Forest Slate) */}
-      <div
-        style={{
-          background: 'linear-gradient(135deg, #182211 0%, #29381e 50%, #3e502a 100%)',
-          borderRadius: '14px',
-          padding: '1.5rem 1.75rem',
-          color: '#ffffff',
-          boxShadow: '0 15px 30px -10px rgba(41, 56, 30, 0.4)',
-          position: 'relative',
-          overflow: 'hidden',
-          border: '1px solid #4d6335',
-        }}
-      >
-        {/* Glow decoration */}
-        <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: '220px', height: '220px', background: 'radial-gradient(circle, rgba(132, 143, 62, 0.35) 0%, rgba(132, 143, 62, 0) 70%)', pointerEvents: 'none' }} />
-
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem', position: 'relative', zIndex: 2 }}>
+      {/* 1. Merchant Executive Hero Identity Banner (Deep Olive Emerald Luxury) */}
+      <div className="ent-dash-hero">
+        <div className="ent-hero-content">
           {/* Merchant Identity */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div
-              style={{
-                width: '56px',
-                height: '56px',
-                borderRadius: '12px',
-                background: 'linear-gradient(135deg, #636B2F 0%, #848f3e 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: 900,
-                fontSize: '1.5rem',
-                color: '#ffffff',
-                boxShadow: '0 6px 14px rgba(99, 107, 47, 0.35)',
-                border: '2px solid rgba(255,255,255,0.2)',
-              }}
-            >
-              {entityDetails?.entity_type === 'freelancer' ? '👨‍💻' : '🏢'}
+          <div className="ent-merchant-profile">
+            <div className="ent-3d-pod ent-pod-olive" style={{ width: '66px', height: '66px', borderRadius: '20px' }}>
+              {entityDetails?.entity_type === 'freelancer' ? <Briefcase size={30} /> : <Building2 size={30} />}
             </div>
 
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
-                <span style={{ background: '#f4f6ec', color: '#636B2F', border: '1px solid #d4dcbe', padding: '2px 8px', borderRadius: '10px', fontSize: '0.72rem', fontWeight: 800 }}>
-                  ✓ VERIFIED MERCHANT PARTNER
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '0.35rem' }}>
+                <span className="ent-glass-badge ent-badge-olive">
+                  <ShieldCheck size={13} /> VERIFIED MERCHANT PARTNER
                 </span>
-                <span style={{ background: 'rgba(255,255,255,0.15)', color: '#e2e8f0', padding: '2px 8px', borderRadius: '10px', fontSize: '0.72rem', fontWeight: 600 }}>
-                  {entityDetails?.category || 'Enterprise Service Provider'}
+                <span className="ent-glass-badge ent-badge-muted">
+                  <Briefcase size={12} /> {entityDetails?.category || 'IT & Software Development'}
                 </span>
-                <span style={{ background: 'rgba(5, 150, 105, 0.25)', color: '#6ee7b7', border: '1px solid rgba(5, 150, 105, 0.4)', padding: '2px 8px', borderRadius: '10px', fontSize: '0.72rem', fontWeight: 700 }}>
-                  ● Settlement Active
+                <span className="ent-glass-badge ent-badge-emerald">
+                  <span className="ent-pulse-dot" /> Settlement Active
                 </span>
               </div>
-              <h2 style={{ fontSize: '1.45rem', fontWeight: 800, margin: '0.3rem 0 0.1rem 0', color: '#ffffff', letterSpacing: '-0.02em' }}>
+
+              <h1 style={{ fontSize: '1.75rem', fontWeight: 800, margin: '0.2rem 0 0.25rem 0', color: '#ffffff', letterSpacing: '-0.025em' }}>
                 {entityDetails?.business_name || entityDetails?.name || storedUser?.business_name || storedUser?.name || 'Merchant Entity'}
-              </h2>
-              <p style={{ margin: 0, fontSize: '0.8rem', color: '#cbd5e1' }}>
-                {storedUser?.email} • {entityDetails?.registration_no ? <span>GST/PAN: <strong style={{ color: '#ffffff' }}>{entityDetails.registration_no}</strong> • </span> : null}Account ID: <strong style={{ color: '#848f3e' }}>{storedUser?.user_code || `ENT-${storedUser?.id || ''}`}</strong>
-              </p>
+              </h1>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap', fontSize: '0.82rem', color: '#cbd5e1' }}>
+                <span>{storedUser?.email}</span>
+                <span style={{ opacity: 0.35 }}>•</span>
+                {entityDetails?.registration_no && (
+                  <>
+                    <span>GST/PAN: <strong style={{ color: '#ffffff', fontFamily: 'monospace' }}>{entityDetails.registration_no}</strong></span>
+                    <span style={{ opacity: 0.35 }}>•</span>
+                  </>
+                )}
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                  Account ID:
+                  <strong style={{ color: '#d9f99d', fontFamily: 'monospace', letterSpacing: '0.5px' }}>
+                    {storedUser?.user_code || `ENT-${storedUser?.id || ''}`}
+                  </strong>
+                  <button
+                    type="button"
+                    onClick={() => handleCopyCode(storedUser?.user_code || `ENT-${storedUser?.id || ''}`)}
+                    style={{
+                      background: 'rgba(255,255,255,0.12)',
+                      border: '1px solid rgba(255,255,255,0.2)',
+                      borderRadius: '6px',
+                      padding: '2px 6px',
+                      color: copiedCode ? '#34d399' : '#e2e8f0',
+                      cursor: 'pointer',
+                      fontSize: '0.7rem',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '3px',
+                      marginLeft: '2px',
+                    }}
+                    title="Copy Account ID"
+                  >
+                    {copiedCode ? <Check size={11} /> : <Copy size={11} />}
+                    <span>{copiedCode ? 'Copied' : 'Copy'}</span>
+                  </button>
+                </span>
+              </div>
             </div>
           </div>
 
           {/* Top Quick Actions */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
             {/* Auto Settlement Countdown */}
-            <div
-              style={{
-                background: 'rgba(0,0,0,0.3)',
-                border: '1px solid rgba(255,255,255,0.15)',
-                padding: '0.45rem 0.85rem',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-              }}
-            >
-              <Clock size={15} color="#fbbf24" />
-              <div style={{ fontSize: '0.75rem' }}>
-                <span style={{ color: '#cbd5e1' }}>Next Bank Settlement: </span>
-                <strong style={{ color: '#ffffff', fontFamily: 'monospace' }}>
+            <div className="ent-countdown-capsule">
+              <Clock size={16} color="#fbbf24" style={{ filter: 'drop-shadow(0 0 6px rgba(251,191,36,0.6))' }} />
+              <div style={{ fontSize: '0.76rem' }}>
+                <div style={{ color: '#94a3b8', fontSize: '0.66rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                  Next Bank Settlement
+                </div>
+                <strong style={{ color: '#ffffff', fontFamily: 'monospace', fontSize: '0.92rem', letterSpacing: '0.5px' }}>
                   {String(settlementCountdown.hours).padStart(2, '0')}h {String(settlementCountdown.minutes).padStart(2, '0')}m {String(settlementCountdown.seconds).padStart(2, '0')}s
                 </strong>
               </div>
@@ -454,41 +464,16 @@ function EntityDashboard() {
             <button
               type="button"
               onClick={() => navigate('/entity/orders/create')}
-              style={{
-                background: 'linear-gradient(135deg, #636B2F 0%, #848f3e 100%)',
-                color: '#ffffff',
-                border: 'none',
-                padding: '0.6rem 1.15rem',
-                borderRadius: '8px',
-                fontWeight: 800,
-                fontSize: '0.82rem',
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                boxShadow: '0 4px 12px rgba(99, 107, 47, 0.35)',
-              }}
+              className="ent-hero-btn-primary"
             >
-              <Zap size={15} />
+              <Zap size={16} />
               + Create Sale
             </button>
 
             <button
               type="button"
               onClick={fetchStats}
-              style={{
-                background: 'rgba(255,255,255,0.12)',
-                border: '1px solid rgba(255,255,255,0.2)',
-                color: '#ffffff',
-                padding: '0.55rem 0.85rem',
-                borderRadius: '8px',
-                fontWeight: 700,
-                fontSize: '0.8rem',
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-              }}
+              className="ent-hero-btn-secondary"
             >
               <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
               <span>Sync DB</span>
@@ -497,173 +482,152 @@ function EntityDashboard() {
         </div>
       </div>
 
-      {/* 2. Four High-Yield Financial Vault KPI Cards (Olive & Forest Theme) */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '1rem' }}>
+      {/* 2. Four High-Yield Financial Vault KPI Cards (With 3D Floating Pods) */}
+      <div className="ent-kpi-grid">
         {/* Card 1: Gross Sales GMV */}
-        <div
-          style={{
-            background: '#ffffff',
-            borderRadius: '12px',
-            border: '1px solid #d4dcbe',
-            borderTop: '4px solid #636B2F',
-            padding: '1.25rem 1.4rem',
-            boxShadow: '0 2px 8px rgba(99, 107, 47, 0.04)',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#636B2F', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-              Gross Billed Turnover (GMV)
-            </span>
-            <div style={{ width: '32px', height: '32px', borderRadius: '6px', background: '#f4f6ec', color: '#636B2F', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Receipt size={17} />
+        <div className="ent-kpi-card ent-kpi-card-olive">
+          <div className="ent-kpi-top-row">
+            <div>
+              <span className="ent-kpi-title" style={{ color: '#636B2F' }}>Gross Billed Turnover (GMV)</span>
+              <div className="ent-kpi-value">
+                ₹{kpis.totalGrossSales.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+              </div>
+            </div>
+            <div className="ent-3d-pod ent-3d-pod-sm ent-pod-olive">
+              <Receipt size={22} />
             </div>
           </div>
-          <div style={{ margin: '0.65rem 0 0.35rem 0', fontSize: '1.65rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>
-            ₹{kpis.totalGrossSales.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem', color: '#64748b', borderTop: '1px solid #f1f5f9', paddingTop: '0.5rem' }}>
-            <span>{kpis.totalInvoicesCount} Invoices Processed</span>
-            <strong style={{ color: '#059669' }}>+22.4% MoM</strong>
+          <div className="ent-kpi-footer">
+            <span style={{ background: '#f4f6ec', color: '#636B2F', padding: '3px 8px', borderRadius: '6px', fontWeight: 700, fontSize: '0.72rem' }}>
+              {kpis.totalInvoicesCount} Invoices Processed
+            </span>
+            <strong style={{ color: '#059669', display: 'flex', alignItems: 'center', gap: '3px', fontSize: '0.75rem' }}>
+              <TrendingUp size={13} /> +22.4% MoM
+            </strong>
           </div>
         </div>
 
         {/* Card 2: Net Disbursed Bank Settlements */}
-        <div
-          style={{
-            background: '#ffffff',
-            borderRadius: '12px',
-            border: '1px solid #a7f3d0',
-            borderTop: '4px solid #059669',
-            padding: '1.25rem 1.4rem',
-            boxShadow: '0 2px 8px rgba(5, 150, 105, 0.04)',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#059669', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-              Net Bank Settlements Disbursed
-            </span>
-            <div style={{ width: '32px', height: '32px', borderRadius: '6px', background: '#ecfdf5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <TrendingUp size={17} />
+        <div className="ent-kpi-card ent-kpi-card-emerald">
+          <div className="ent-kpi-top-row">
+            <div>
+              <span className="ent-kpi-title" style={{ color: '#059669' }}>Net Bank Settlements Disbursed</span>
+              <div className="ent-kpi-value">
+                ₹{kpis.totalNetEarnings.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+              </div>
+            </div>
+            <div className="ent-3d-pod ent-3d-pod-sm ent-pod-emerald">
+              <TrendingUp size={22} />
             </div>
           </div>
-          <div style={{ margin: '0.65rem 0 0.35rem 0', fontSize: '1.65rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>
-            ₹{kpis.totalNetEarnings.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem', color: '#64748b', borderTop: '1px solid #f1f5f9', paddingTop: '0.5rem' }}>
-            <span>Direct IMPS Bank Deposits</span>
+          <div className="ent-kpi-footer">
+            <span style={{ background: '#ecfdf5', color: '#059669', padding: '3px 8px', borderRadius: '6px', fontWeight: 700, fontSize: '0.72rem' }}>
+              Direct IMPS Bank Deposits
+            </span>
             <button
               type="button"
               onClick={() => navigate('/entity/payments/bank-settlements')}
-              style={{ background: 'none', border: 'none', color: '#059669', fontWeight: 800, cursor: 'pointer', padding: 0 }}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#059669',
+                fontWeight: 800,
+                cursor: 'pointer',
+                padding: 0,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '2px',
+                fontSize: '0.76rem',
+              }}
             >
-              Settlements →
+              Settlements <ChevronRight size={13} />
             </button>
           </div>
         </div>
 
         {/* Card 3: Pending Customer Balance Receivables */}
-        <div
-          style={{
-            background: '#ffffff',
-            borderRadius: '12px',
-            border: '1px solid #fde68a',
-            borderTop: '4px solid #d97706',
-            padding: '1.25rem 1.4rem',
-            boxShadow: '0 2px 8px rgba(217, 119, 6, 0.04)',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#d97706', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-              Pending Balance Due
-            </span>
-            <div style={{ width: '32px', height: '32px', borderRadius: '6px', background: '#fef3c7', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <CreditCard size={17} />
+        <div className="ent-kpi-card ent-kpi-card-amber">
+          <div className="ent-kpi-top-row">
+            <div>
+              <span className="ent-kpi-title" style={{ color: '#d97706' }}>Pending Balance Due</span>
+              <div className="ent-kpi-value" style={{ color: '#b45309' }}>
+                ₹{kpis.totalBalanceDue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+              </div>
+            </div>
+            <div className="ent-3d-pod ent-3d-pod-sm ent-pod-amber">
+              <CreditCard size={22} />
             </div>
           </div>
-          <div style={{ margin: '0.65rem 0 0.35rem 0', fontSize: '1.65rem', fontWeight: 800, color: '#9a3412', letterSpacing: '-0.02em' }}>
-            ₹{kpis.totalBalanceDue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem', color: '#64748b', borderTop: '1px solid #f1f5f9', paddingTop: '0.5rem' }}>
-            <span>Uncollected Receivables</span>
+          <div className="ent-kpi-footer">
+            <span style={{ background: '#fef3c7', color: '#d97706', padding: '3px 8px', borderRadius: '6px', fontWeight: 700, fontSize: '0.72rem' }}>
+              Uncollected Receivables
+            </span>
             <button
               type="button"
               onClick={() => navigate('/entity/payments/receive-balance')}
-              style={{ background: 'none', border: 'none', color: '#d97706', fontWeight: 800, cursor: 'pointer', padding: 0 }}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#d97706',
+                fontWeight: 800,
+                cursor: 'pointer',
+                padding: 0,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '2px',
+                fontSize: '0.76rem',
+              }}
             >
-              Collect →
+              Collect <ChevronRight size={13} />
             </button>
           </div>
         </div>
 
         {/* Card 4: Platform Fee Retained & Catalog Size */}
-        <div
-          style={{
-            background: '#ffffff',
-            borderRadius: '12px',
-            border: '1px solid #cbd5e1',
-            borderTop: '4px solid #334155',
-            padding: '1.25rem 1.4rem',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-              Platform Fee & Catalog
-            </span>
-            <div style={{ width: '32px', height: '32px', borderRadius: '6px', background: '#f1f5f9', color: '#334155', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Layers size={17} />
+        <div className="ent-kpi-card ent-kpi-card-slate">
+          <div className="ent-kpi-top-row">
+            <div>
+              <span className="ent-kpi-title" style={{ color: '#475569' }}>Platform Fee & Catalog</span>
+              <div className="ent-kpi-value">
+                ₹{kpis.totalPlatformFeePaid.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+              </div>
+            </div>
+            <div className="ent-3d-pod ent-3d-pod-sm ent-pod-slate">
+              <Layers size={22} />
             </div>
           </div>
-          <div style={{ margin: '0.65rem 0 0.35rem 0', fontSize: '1.65rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>
-            ₹{kpis.totalPlatformFeePaid.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem', color: '#64748b', borderTop: '1px solid #f1f5f9', paddingTop: '0.5rem' }}>
-            <span>{kpis.totalCatalogOfferings} Active Products & Services</span>
-            <span style={{ color: '#636B2F', fontWeight: 700 }}>Published</span>
+          <div className="ent-kpi-footer">
+            <span style={{ background: '#f1f5f9', color: '#475569', padding: '3px 8px', borderRadius: '6px', fontWeight: 700, fontSize: '0.72rem' }}>
+              {kpis.totalCatalogOfferings} Active Products & Services
+            </span>
+            <span style={{ color: '#636B2F', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: '0.74rem' }}>
+              <CheckCircle2 size={13} /> Published
+            </span>
           </div>
         </div>
       </div>
 
-      {/* 3. Four Diverse ApexChart Analytics Suite */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '1.25rem' }}>
+      {/* 3. Primary ApexChart Analytics Suite (Dual-Axis Mixed + Monthly Gauge) */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.25rem' }}>
         {/* Chart 1: Dual-Axis Mixed Combo (Column + Line + Dashed) */}
-        <div
-          style={{
-            background: '#ffffff',
-            borderRadius: '12px',
-            border: '1px solid #d4dcbe',
-            padding: '1.4rem',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
-            flex: '2 1 540px',
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1rem' }}>
+        <div className="ent-chart-card" style={{ flex: '2 1 540px' }}>
+          <div className="ent-chart-header">
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <Activity size={17} color="#636B2F" />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div className="ent-3d-pod ent-3d-pod-xs ent-pod-olive">
+                  <Activity size={18} />
+                </div>
                 <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#0f172a' }}>
-                  📊 Dual-Axis Sales & Settlement Velocity (Mixed Chart)
+                  Dual-Axis Sales & Settlement Velocity (Mixed Chart)
                 </h3>
               </div>
-              <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.76rem', color: '#64748b' }}>
+              <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.78rem', color: '#64748b' }}>
                 Gross Billed Invoices (Bars) vs Net Bank Disbursals (Smooth Line)
               </p>
             </div>
 
             {/* Time Toggle */}
-            <div style={{ display: 'flex', background: '#f4f6ec', padding: '3px', borderRadius: '6px', gap: '2px', border: '1px solid #d4dcbe' }}>
+            <div className="ent-time-pill-group">
               {[
                 { id: '7d', label: '7D' },
                 { id: '30d', label: '30D' },
@@ -673,16 +637,7 @@ function EntityDashboard() {
                   key={t.id}
                   type="button"
                   onClick={() => setTimeRange(t.id)}
-                  style={{
-                    border: 'none',
-                    background: timeRange === t.id ? '#636B2F' : 'transparent',
-                    color: timeRange === t.id ? '#ffffff' : '#636B2F',
-                    padding: '0.2rem 0.65rem',
-                    borderRadius: '4px',
-                    fontSize: '0.72rem',
-                    fontWeight: 800,
-                    cursor: 'pointer',
-                  }}
+                  className={`ent-time-pill ${timeRange === t.id ? 'active' : ''}`}
                 >
                   {t.label}
                 </button>
@@ -701,45 +656,42 @@ function EntityDashboard() {
         </div>
 
         {/* Chart 2: Radial Gauge / Milestone Target Accomplishment */}
-        <div
-          style={{
-            background: '#ffffff',
-            borderRadius: '12px',
-            border: '1px solid #d4dcbe',
-            padding: '1.4rem',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
-            flex: '1 1 300px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-          }}
-        >
+        <div className="ent-chart-card" style={{ flex: '1 1 320px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-              <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <Target size={17} color="#636B2F" /> Monthly Sales Quota (Gauge)
-              </h3>
-              <span style={{ fontSize: '0.72rem', background: '#ecfdf5', color: '#059669', padding: '2px 8px', borderRadius: '4px', fontWeight: 800 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div className="ent-3d-pod ent-3d-pod-xs ent-pod-olive">
+                  <Target size={18} />
+                </div>
+                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#0f172a' }}>
+                  Monthly Sales Quota (Gauge)
+                </h3>
+              </div>
+              <span style={{ fontSize: '0.74rem', background: '#ecfdf5', color: '#059669', padding: '3px 10px', borderRadius: '9999px', fontWeight: 800, border: '1px solid rgba(5,150,105,0.2)' }}>
                 Target: ₹25 Lakhs
               </span>
             </div>
-            <p style={{ margin: 0, fontSize: '0.76rem', color: '#64748b' }}>
+            <p style={{ margin: 0, fontSize: '0.78rem', color: '#64748b' }}>
               Real-time accomplishment against monthly enterprise target
             </p>
           </div>
 
-          <div style={{ minHeight: '220px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ minHeight: '230px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Chart
               options={targetGaugeOptions}
               series={targetGaugeSeries}
               type="radialBar"
-              height={250}
+              height={260}
             />
           </div>
 
-          <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Achieved: <strong>₹{kpis.totalGrossSales.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</strong></span>
-            <span style={{ fontSize: '0.75rem', color: '#059669', fontWeight: 800 }}>Remaining: ₹{Math.max(0, 2500000 - kpis.totalGrossSales).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+          <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '0.85rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.76rem', color: '#64748b' }}>
+              Achieved: <strong style={{ color: '#0f172a' }}>₹{kpis.totalGrossSales.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</strong>
+            </span>
+            <span style={{ fontSize: '0.76rem', color: '#059669', fontWeight: 800 }}>
+              Remaining: ₹{Math.max(0, 2500000 - kpis.totalGrossSales).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+            </span>
           </div>
         </div>
       </div>
@@ -747,24 +699,21 @@ function EntityDashboard() {
       {/* Secondary Chart Row: Horizontal Deliverables Bar & Stacked Velocity Column */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.25rem' }}>
         {/* Chart 3: Horizontal Revenue Distribution Bar */}
-        <div
-          style={{
-            background: '#ffffff',
-            borderRadius: '12px',
-            border: '1px solid #d4dcbe',
-            padding: '1.4rem',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
-          }}
-        >
+        <div className="ent-chart-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <BarChart2 size={17} color="#636B2F" /> Deliverable Revenue Breakdown (Horizontal)
-            </h3>
-            <span style={{ fontSize: '0.72rem', background: '#f4f6ec', color: '#636B2F', padding: '2px 8px', borderRadius: '4px', fontWeight: 800 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div className="ent-3d-pod ent-3d-pod-xs ent-pod-olive">
+                <BarChart2 size={18} />
+              </div>
+              <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#0f172a' }}>
+                Deliverable Revenue Breakdown (Horizontal)
+              </h3>
+            </div>
+            <span style={{ fontSize: '0.72rem', background: '#f4f6ec', color: '#636B2F', padding: '3px 8px', borderRadius: '6px', fontWeight: 800, border: '1px solid #d4dcbe' }}>
               By Product Offering
             </span>
           </div>
-          <p style={{ margin: '0 0 0.75rem 0', fontSize: '0.76rem', color: '#64748b' }}>
+          <p style={{ margin: '0 0 0.85rem 0', fontSize: '0.76rem', color: '#64748b' }}>
             Top sales volume generators across services & packages
           </p>
 
@@ -779,24 +728,21 @@ function EntityDashboard() {
         </div>
 
         {/* Chart 4: Stacked Invoicing Velocity Column */}
-        <div
-          style={{
-            background: '#ffffff',
-            borderRadius: '12px',
-            border: '1px solid #d4dcbe',
-            padding: '1.4rem',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
-          }}
-        >
+        <div className="ent-chart-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <BarChart3 size={17} color="#059669" /> Daily Invoicing Velocity (Stacked Columns)
-            </h3>
-            <span style={{ fontSize: '0.72rem', background: '#ecfdf5', color: '#059669', padding: '2px 8px', borderRadius: '4px', fontWeight: 800 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div className="ent-3d-pod ent-3d-pod-xs ent-pod-emerald">
+                <BarChart3 size={18} />
+              </div>
+              <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#0f172a' }}>
+                Daily Invoicing Velocity (Stacked Columns)
+              </h3>
+            </div>
+            <span style={{ fontSize: '0.72rem', background: '#ecfdf5', color: '#059669', padding: '3px 8px', borderRadius: '6px', fontWeight: 800, border: '1px solid #a7f3d0' }}>
               Paid vs Partial
             </span>
           </div>
-          <p style={{ margin: '0 0 0.75rem 0', fontSize: '0.76rem', color: '#64748b' }}>
+          <p style={{ margin: '0 0 0.85rem 0', fontSize: '0.76rem', color: '#64748b' }}>
             Weekly distribution of fully settled orders vs advance booking installments
           </p>
 
@@ -812,127 +758,76 @@ function EntityDashboard() {
       </div>
 
       {/* 4. Merchant Operations Hub & Fast Action Shortcuts */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '1.15rem' }}>
         <button
           type="button"
           onClick={() => navigate('/entity/orders/create')}
-          style={{
-            background: 'linear-gradient(135deg, #f4f6ec 0%, #ffffff 100%)',
-            border: '1.5px solid #d4dcbe',
-            borderRadius: '10px',
-            padding: '1rem',
-            textAlign: 'left',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.85rem',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
-          }}
+          className="ent-action-card"
         >
-          <div style={{ width: '42px', height: '42px', borderRadius: '8px', background: '#636B2F', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Zap size={20} />
+          <div className="ent-3d-pod ent-3d-pod-sm ent-pod-olive">
+            <Zap size={22} />
           </div>
           <div>
-            <div style={{ fontWeight: 800, fontSize: '0.88rem', color: '#0f172a' }}>Create Sale / Invoice</div>
-            <div style={{ fontSize: '0.72rem', color: '#64748b' }}>Generate GST tax bill</div>
+            <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#0f172a' }}>Create Sale / Invoice</div>
+            <div style={{ fontSize: '0.74rem', color: '#64748b', marginTop: '2px' }}>Generate GST tax bill</div>
           </div>
         </button>
 
         <button
           type="button"
           onClick={() => navigate('/entity/payments/receive-balance')}
-          style={{
-            background: 'linear-gradient(135deg, #fffbeb 0%, #ffffff 100%)',
-            border: '1.5px solid #fde68a',
-            borderRadius: '10px',
-            padding: '1rem',
-            textAlign: 'left',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.85rem',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
-          }}
+          className="ent-action-card"
         >
-          <div style={{ width: '42px', height: '42px', borderRadius: '8px', background: '#d97706', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <CreditCard size={20} />
+          <div className="ent-3d-pod ent-3d-pod-sm ent-pod-amber">
+            <CreditCard size={22} />
           </div>
           <div>
-            <div style={{ fontWeight: 800, fontSize: '0.88rem', color: '#0f172a' }}>Collect Balance Due</div>
-            <div style={{ fontSize: '0.72rem', color: '#9a3412', fontWeight: 700 }}>₹{kpis.totalBalanceDue.toLocaleString('en-IN')} pending</div>
+            <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#0f172a' }}>Collect Balance Due</div>
+            <div style={{ fontSize: '0.74rem', color: '#b45309', fontWeight: 700, marginTop: '2px' }}>
+              ₹{kpis.totalBalanceDue.toLocaleString('en-IN')} pending
+            </div>
           </div>
         </button>
 
         <button
           type="button"
           onClick={() => navigate('/entity/payments/receipts-ledger')}
-          style={{
-            background: 'linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%)',
-            border: '1.5px solid #a7f3d0',
-            borderRadius: '10px',
-            padding: '1rem',
-            textAlign: 'left',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.85rem',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
-          }}
+          className="ent-action-card"
         >
-          <div style={{ width: '42px', height: '42px', borderRadius: '8px', background: '#059669', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Receipt size={20} />
+          <div className="ent-3d-pod ent-3d-pod-sm ent-pod-emerald">
+            <Receipt size={22} />
           </div>
           <div>
-            <div style={{ fontWeight: 800, fontSize: '0.88rem', color: '#0f172a' }}>Payment Receipts</div>
-            <div style={{ fontSize: '0.72rem', color: '#64748b' }}>Audit ledger & slips</div>
+            <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#0f172a' }}>Payment Receipts</div>
+            <div style={{ fontSize: '0.74rem', color: '#64748b', marginTop: '2px' }}>Audit ledger & slips</div>
           </div>
         </button>
 
         <button
           type="button"
           onClick={() => navigate('/entity/payments/bank-settlements')}
-          style={{
-            background: 'linear-gradient(135deg, #f8fafc 0%, #ffffff 100%)',
-            border: '1.5px solid #cbd5e1',
-            borderRadius: '10px',
-            padding: '1rem',
-            textAlign: 'left',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.85rem',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
-          }}
+          className="ent-action-card"
         >
-          <div style={{ width: '42px', height: '42px', borderRadius: '8px', background: '#334155', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Building2 size={20} />
+          <div className="ent-3d-pod ent-3d-pod-sm ent-pod-slate">
+            <Building2 size={22} />
           </div>
           <div>
-            <div style={{ fontWeight: 800, fontSize: '0.88rem', color: '#0f172a' }}>Bank Settlements</div>
-            <div style={{ fontSize: '0.72rem', color: '#64748b' }}>IMPS payout reports</div>
+            <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#0f172a' }}>Bank Settlements</div>
+            <div style={{ fontSize: '0.74rem', color: '#64748b', marginTop: '2px' }}>IMPS payout reports</div>
           </div>
         </button>
       </div>
 
       {/* 5. Recent Customer Invoices Table & Live Activity Feed */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.25rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.25rem' }}>
         {/* Recent Invoices Table */}
-        <div
-          style={{
-            background: '#ffffff',
-            borderRadius: '12px',
-            border: '1px solid #d4dcbe',
-            overflow: 'hidden',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
-            flex: '2 1 540px',
-          }}
-        >
-          <div style={{ padding: '1.1rem 1.4rem', borderBottom: '1px solid #e2e8f0', background: '#fcfdfa', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="ent-table-card" style={{ flex: '2 1 540px' }}>
+          <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid #e2e8f0', background: '#fcfdfa', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#0f172a' }}>
+              <h3 style={{ margin: 0, fontSize: '1.02rem', fontWeight: 800, color: '#0f172a' }}>
                 Recent Customer Invoices & Cash Receipts
               </h3>
-              <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.75rem', color: '#64748b' }}>
+              <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.76rem', color: '#64748b' }}>
                 Live database records of client orders, platform fee deductions, and net payouts
               </p>
             </div>
@@ -942,12 +837,13 @@ function EntityDashboard() {
               style={{
                 background: '#ffffff',
                 border: '1px solid #d4dcbe',
-                padding: '0.35rem 0.75rem',
-                borderRadius: '6px',
+                padding: '0.4rem 0.85rem',
+                borderRadius: '8px',
                 color: '#636B2F',
-                fontSize: '0.75rem',
+                fontSize: '0.76rem',
                 fontWeight: 800,
                 cursor: 'pointer',
+                transition: 'all 0.15s ease',
               }}
             >
               All Invoices →
@@ -955,130 +851,164 @@ function EntityDashboard() {
           </div>
 
           <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.8rem' }}>
+            <table>
               <thead>
-                <tr style={{ background: '#636B2F', color: '#ffffff', fontWeight: 700 }}>
-                  <th style={{ padding: '0.65rem 1rem' }}>Invoice / Client</th>
-                  <th style={{ padding: '0.65rem 1rem' }}>Deliverable Item</th>
-                  <th style={{ padding: '0.65rem 1rem', textAlign: 'right' }}>Gross GMV</th>
-                  <th style={{ padding: '0.65rem 1rem', textAlign: 'right' }}>Net Disbursed</th>
-                  <th style={{ padding: '0.65rem 1rem' }}>Status</th>
-                  <th style={{ padding: '0.65rem 1rem', textAlign: 'center' }}>Action</th>
+                <tr>
+                  <th>Invoice / Client</th>
+                  <th>Deliverable Item</th>
+                  <th style={{ textAlign: 'right' }}>Gross GMV</th>
+                  <th style={{ textAlign: 'right' }}>Net Disbursed</th>
+                  <th>Status</th>
+                  <th style={{ textAlign: 'center' }}>Action</th>
                 </tr>
               </thead>
               <tbody>
                 {recentInvoices.length === 0 ? (
                   <tr>
-                    <td colSpan="6" style={{ padding: '2rem 1rem', textAlign: 'center', color: '#64748b' }}>
+                    <td colSpan="6" style={{ padding: '2.5rem 1rem', textAlign: 'center', color: '#64748b' }}>
                       No recent customer invoices found.
                     </td>
                   </tr>
                 ) : (
                   recentInvoices.map((txn, idx) => (
-                  <tr key={txn.id || idx} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                    <td style={{ padding: '0.75rem 1rem' }}>
-                      <div style={{ fontWeight: 800, color: '#0f172a' }}>{txn.customer}</div>
-                      <div style={{ fontSize: '0.7rem', color: '#64748b', fontFamily: 'monospace' }}>
-                        {txn.id} • {txn.date}
-                      </div>
-                    </td>
-                    <td style={{ padding: '0.75rem 1rem' }}>
-                      <span style={{ fontWeight: 600, color: '#334155' }}>
-                        {txn.item}
-                      </span>
-                    </td>
-                    <td style={{ padding: '0.75rem 1rem', textAlign: 'right', color: '#0f172a', fontWeight: 700 }}>
-                      ₹{txn.gross.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                    </td>
-                    <td style={{ padding: '0.75rem 1rem', textAlign: 'right', color: '#059669', fontWeight: 800 }}>
-                      ₹{txn.netPayout.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                    </td>
-                    <td style={{ padding: '0.75rem 1rem' }}>
-                      <span
-                        style={{
-                          background: txn.status === 'completed' ? '#ecfdf5' : '#fef3c7',
-                          color: txn.status === 'completed' ? '#059669' : '#d97706',
-                          padding: '2px 8px',
-                          borderRadius: '4px',
-                          fontSize: '0.72rem',
-                          fontWeight: 800,
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '0.3rem',
-                        }}
-                      >
-                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: txn.status === 'completed' ? '#059669' : '#d97706' }} />
-                        {txn.status}
-                      </span>
-                    </td>
-                    <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
-                      <button
-                        type="button"
-                        onClick={() => setSelectedInvoice(txn)}
-                        style={{
-                          background: '#f4f6ec',
-                          border: '1px solid #d4dcbe',
-                          borderRadius: '4px',
-                          padding: '3px 8px',
-                          fontSize: '0.72rem',
-                          fontWeight: 800,
-                          color: '#636B2F',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        Slip
-                      </button>
-                    </td>
-                  </tr>
-                )))}
+                    <tr key={txn.id || idx}>
+                      <td>
+                        <div style={{ fontWeight: 800, color: '#0f172a' }}>{txn.customer}</div>
+                        <div style={{ fontSize: '0.72rem', color: '#64748b', fontFamily: 'monospace' }}>
+                          {txn.id} • {txn.date}
+                        </div>
+                      </td>
+                      <td>
+                        <span style={{ fontWeight: 600, color: '#334155' }}>
+                          {txn.item}
+                        </span>
+                      </td>
+                      <td style={{ textAlign: 'right', color: '#0f172a', fontWeight: 700 }}>
+                        ₹{txn.gross.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                      </td>
+                      <td style={{ textAlign: 'right', color: '#059669', fontWeight: 800 }}>
+                        ₹{txn.netPayout.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                      </td>
+                      <td>
+                        <span
+                          style={{
+                            background: txn.status === 'completed' ? '#ecfdf5' : '#fef3c7',
+                            color: txn.status === 'completed' ? '#059669' : '#d97706',
+                            border: txn.status === 'completed' ? '1px solid #a7f3d0' : '1px solid #fde68a',
+                            padding: '3px 9px',
+                            borderRadius: '9999px',
+                            fontSize: '0.72rem',
+                            fontWeight: 800,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.35rem',
+                          }}
+                        >
+                          <span
+                            style={{
+                              width: '6px',
+                              height: '6px',
+                              borderRadius: '50%',
+                              background: txn.status === 'completed' ? '#059669' : '#d97706',
+                            }}
+                          />
+                          {txn.status}
+                        </span>
+                      </td>
+                      <td style={{ textAlign: 'center' }}>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedInvoice(txn)}
+                          style={{
+                            background: '#f4f6ec',
+                            border: '1px solid #d4dcbe',
+                            borderRadius: '6px',
+                            padding: '4px 10px',
+                            fontSize: '0.74rem',
+                            fontWeight: 800,
+                            color: '#636B2F',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '3px',
+                          }}
+                        >
+                          <FileText size={12} /> Slip
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
         </div>
 
         {/* Live Activity Feed */}
-        <div
-          style={{
-            background: '#ffffff',
-            borderRadius: '12px',
-            border: '1px solid #d4dcbe',
-            padding: '1.4rem',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
-            flex: '1 1 320px',
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-            <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              🔔 Merchant Activity Feed
-            </h3>
-            <span style={{ background: '#f4f6ec', color: '#636B2F', padding: '2px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 800 }}>
-              Live
-            </span>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {activityFeed.length === 0 ? (
-              <div style={{ padding: '1.5rem', textAlign: 'center', color: '#64748b', fontSize: '0.82rem' }}>
-                No recent activity recorded for this entity.
-              </div>
-            ) : (
-              activityFeed.map((act) => (
-              <div key={act.id} style={{ display: 'flex', gap: '0.75rem', position: 'relative' }}>
-                <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#636B2F', marginTop: '4px', flexShrink: 0 }} />
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 700, fontSize: '0.82rem', color: '#0f172a' }}>{act.title}</div>
-                  <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.15rem' }}>{act.desc}</div>
-                  <div style={{ fontSize: '0.68rem', color: '#94a3b8', marginTop: '0.2rem' }}>🕒 {act.time}</div>
+        <div className="ent-chart-card" style={{ flex: '1 1 320px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div className="ent-3d-pod ent-3d-pod-xs ent-pod-olive">
+                  <Activity size={18} />
                 </div>
+                <h3 style={{ margin: 0, fontSize: '1.02rem', fontWeight: 800, color: '#0f172a' }}>
+                  Merchant Activity Feed
+                </h3>
               </div>
-            )))}
+              <span className="ent-glass-badge ent-badge-emerald" style={{ fontSize: '0.7rem' }}>
+                <span className="ent-pulse-dot" /> Live
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+              {activityFeed.length === 0 ? (
+                <div style={{ padding: '2rem 1rem', textAlign: 'center', color: '#64748b', fontSize: '0.84rem' }}>
+                  No recent activity recorded for this entity.
+                </div>
+              ) : (
+                activityFeed.map((act) => (
+                  <div key={act.id} className="ent-activity-node">
+                    <div
+                      style={{
+                        width: '14px',
+                        height: '14px',
+                        borderRadius: '50%',
+                        background: 'linear-gradient(135deg, #848f3e 0%, #636B2F 100%)',
+                        boxShadow: '0 0 8px rgba(99, 107, 47, 0.4)',
+                        marginTop: '3px',
+                        flexShrink: 0,
+                      }}
+                    />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 700, fontSize: '0.84rem', color: '#0f172a' }}>{act.title}</div>
+                      <div style={{ fontSize: '0.76rem', color: '#64748b', marginTop: '0.15rem' }}>{act.desc}</div>
+                      <div style={{ fontSize: '0.7rem', color: '#94a3b8', marginTop: '0.25rem', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                        <Clock size={11} /> {act.time}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
 
-          <div style={{ marginTop: '1.25rem', borderTop: '1px solid #f1f5f9', paddingTop: '0.75rem' }}>
+          <div style={{ marginTop: '1.5rem', borderTop: '1px solid #f1f5f9', paddingTop: '0.85rem' }}>
             <button
               type="button"
               onClick={() => navigate('/entity/payments/receipts-ledger')}
-              style={{ width: '100%', padding: '0.5rem', background: '#f4f6ec', border: '1px solid #d4dcbe', borderRadius: '6px', color: '#636B2F', fontWeight: 800, fontSize: '0.76rem', cursor: 'pointer' }}
+              style={{
+                width: '100%',
+                padding: '0.65rem',
+                background: '#f4f6ec',
+                border: '1px solid #d4dcbe',
+                borderRadius: '8px',
+                color: '#636B2F',
+                fontWeight: 800,
+                fontSize: '0.8rem',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+              }}
             >
               View Full Receipts Ledger →
             </button>
@@ -1093,7 +1023,7 @@ function EntityDashboard() {
             position: 'fixed',
             inset: 0,
             background: 'rgba(15, 23, 42, 0.65)',
-            backdropFilter: 'blur(4px)',
+            backdropFilter: 'blur(6px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -1105,81 +1035,146 @@ function EntityDashboard() {
           <div
             style={{
               background: '#ffffff',
-              borderRadius: '12px',
-              maxWidth: '520px',
+              borderRadius: '20px',
+              maxWidth: '540px',
               width: '100%',
-              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+              boxShadow: '0 25px 60px -15px rgba(0,0,0,0.3)',
               overflow: 'hidden',
-              border: '1px solid #d4dcbe',
+              border: '1px solid rgba(226, 232, 240, 0.9)',
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ background: '#636B2F', color: '#ffffff', padding: '1.25rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div
+              style={{
+                background: 'linear-gradient(135deg, #09170e 0%, #15291b 100%)',
+                color: '#ffffff',
+                padding: '1.4rem 1.75rem',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                borderBottom: '1px solid rgba(74, 222, 128, 0.2)',
+              }}
+            >
               <div>
-                <div style={{ fontSize: '0.7rem', color: '#d4dcbe', fontWeight: 800, textTransform: 'uppercase' }}>✓ VERIFIED MERCHANT TAX INVOICE</div>
-                <h3 style={{ margin: '0.2rem 0 0 0', fontSize: '1.15rem', fontWeight: 800 }}>{selectedInvoice.id}</h3>
+                <div style={{ fontSize: '0.72rem', color: '#a3e635', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  ✓ VERIFIED MERCHANT TAX INVOICE
+                </div>
+                <h3 style={{ margin: '0.2rem 0 0 0', fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.02em' }}>
+                  {selectedInvoice.id}
+                </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedInvoice(null)}
-                style={{ background: 'rgba(255,255,255,0.15)', border: 'none', color: '#ffffff', width: '28px', height: '28px', borderRadius: '50%', cursor: 'pointer' }}
+                style={{
+                  background: 'rgba(255,255,255,0.12)',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  color: '#ffffff',
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                }}
               >
                 ✕
               </button>
             </div>
 
-            <div style={{ padding: '1.4rem' }}>
-              <div style={{ background: '#f4f6ec', borderRadius: '8px', padding: '0.85rem', border: '1px solid #d4dcbe', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ padding: '1.5rem' }}>
+              <div
+                style={{
+                  background: '#f4f6ec',
+                  borderRadius: '12px',
+                  padding: '1rem',
+                  border: '1px solid #d4dcbe',
+                  marginBottom: '1.25rem',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
                 <div>
-                  <span style={{ fontSize: '0.7rem', color: '#636B2F', fontWeight: 700 }}>CLIENT / CUSTOMER</span>
-                  <div style={{ fontWeight: 800, fontSize: '1.05rem', color: '#0f172a' }}>{selectedInvoice.customer}</div>
+                  <span style={{ fontSize: '0.7rem', color: '#636B2F', fontWeight: 800, textTransform: 'uppercase' }}>CLIENT / CUSTOMER</span>
+                  <div style={{ fontWeight: 800, fontSize: '1.1rem', color: '#0f172a' }}>{selectedInvoice.customer}</div>
                 </div>
-                <span style={{ background: selectedInvoice.status === 'completed' ? '#ecfdf5' : '#fef3c7', color: selectedInvoice.status === 'completed' ? '#059669' : '#d97706', padding: '2px 8px', borderRadius: '4px', fontSize: '0.74rem', fontWeight: 800 }}>
+                <span
+                  style={{
+                    background: selectedInvoice.status === 'completed' ? '#ecfdf5' : '#fef3c7',
+                    color: selectedInvoice.status === 'completed' ? '#059669' : '#d97706',
+                    border: selectedInvoice.status === 'completed' ? '1px solid #a7f3d0' : '1px solid #fde68a',
+                    padding: '3px 10px',
+                    borderRadius: '9999px',
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                  }}
+                >
                   ✓ {selectedInvoice.status?.toUpperCase()}
                 </span>
               </div>
 
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', marginBottom: '1.25rem' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.84rem', marginBottom: '1.5rem' }}>
                 <tbody>
                   <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                    <td style={{ padding: '0.45rem 0', color: '#64748b' }}>Item / Deliverable</td>
-                    <td style={{ padding: '0.45rem 0', textAlign: 'right', fontWeight: 700 }}>{selectedInvoice.item}</td>
+                    <td style={{ padding: '0.6rem 0', color: '#64748b' }}>Item / Deliverable</td>
+                    <td style={{ padding: '0.6rem 0', textAlign: 'right', fontWeight: 700, color: '#0f172a' }}>{selectedInvoice.item}</td>
                   </tr>
                   <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                    <td style={{ padding: '0.45rem 0', color: '#64748b' }}>Invoice Date</td>
-                    <td style={{ padding: '0.45rem 0', textAlign: 'right', fontWeight: 700 }}>{selectedInvoice.date}</td>
+                    <td style={{ padding: '0.6rem 0', color: '#64748b' }}>Invoice Date</td>
+                    <td style={{ padding: '0.6rem 0', textAlign: 'right', fontWeight: 700, color: '#0f172a' }}>{selectedInvoice.date}</td>
                   </tr>
                   <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                    <td style={{ padding: '0.45rem 0', color: '#64748b' }}>Payment Mode</td>
-                    <td style={{ padding: '0.45rem 0', textAlign: 'right', fontWeight: 700 }}>{selectedInvoice.paymentMethod}</td>
+                    <td style={{ padding: '0.6rem 0', color: '#64748b' }}>Payment Mode</td>
+                    <td style={{ padding: '0.6rem 0', textAlign: 'right', fontWeight: 700, color: '#0f172a' }}>{selectedInvoice.paymentMethod}</td>
                   </tr>
                   <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                    <td style={{ padding: '0.45rem 0', color: '#64748b' }}>Gross Invoice Amount (GMV)</td>
-                    <td style={{ padding: '0.45rem 0', textAlign: 'right', fontWeight: 700 }}>₹{selectedInvoice.gross.toFixed(2)}</td>
+                    <td style={{ padding: '0.6rem 0', color: '#64748b' }}>Gross Invoice Amount (GMV)</td>
+                    <td style={{ padding: '0.6rem 0', textAlign: 'right', fontWeight: 800, color: '#0f172a' }}>₹{selectedInvoice.gross.toFixed(2)}</td>
                   </tr>
                   <tr style={{ borderBottom: '1px solid #f1f5f9', color: '#d97706' }}>
-                    <td style={{ padding: '0.45rem 0', fontWeight: 700 }}>Platform Fee Commission</td>
-                    <td style={{ padding: '0.45rem 0', textAlign: 'right', fontWeight: 700 }}>-₹{selectedInvoice.adminCut.toFixed(2)}</td>
+                    <td style={{ padding: '0.6rem 0', fontWeight: 700 }}>Platform Fee Commission</td>
+                    <td style={{ padding: '0.6rem 0', textAlign: 'right', fontWeight: 700 }}>-₹{selectedInvoice.adminCut.toFixed(2)}</td>
                   </tr>
                   <tr style={{ background: '#f4f6ec' }}>
-                    <td style={{ padding: '0.65rem 0.5rem', fontWeight: 800, color: '#636B2F', fontSize: '0.88rem' }}>Net Bank Payout Receivable</td>
-                    <td style={{ padding: '0.65rem 0.5rem', textAlign: 'right', fontWeight: 800, color: '#636B2F', fontSize: '1.05rem' }}>₹{selectedInvoice.netPayout.toFixed(2)}</td>
+                    <td style={{ padding: '0.75rem 0.65rem', fontWeight: 800, color: '#636B2F', fontSize: '0.9rem' }}>Net Bank Payout Receivable</td>
+                    <td style={{ padding: '0.75rem 0.65rem', textAlign: 'right', fontWeight: 800, color: '#636B2F', fontSize: '1.15rem' }}>₹{selectedInvoice.netPayout.toFixed(2)}</td>
                   </tr>
                 </tbody>
               </table>
 
-              <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+              <div style={{ display: 'flex', gap: '0.65rem', justifyContent: 'flex-end' }}>
                 <button
                   type="button"
                   onClick={() => window.print()}
-                  style={{ padding: '0.5rem 1rem', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '6px', color: '#334155', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer' }}
+                  style={{
+                    padding: '0.6rem 1.15rem',
+                    background: '#f8fafc',
+                    border: '1px solid #cbd5e1',
+                    borderRadius: '8px',
+                    color: '#334155',
+                    fontWeight: 700,
+                    fontSize: '0.82rem',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                  }}
                 >
-                  🖨️ Print Tax Invoice
+                  <Printer size={15} /> Print Tax Invoice
                 </button>
                 <button
                   type="button"
                   onClick={() => setSelectedInvoice(null)}
-                  style={{ padding: '0.5rem 1.25rem', background: '#636B2F', border: 'none', borderRadius: '6px', color: '#ffffff', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}
+                  style={{
+                    padding: '0.6rem 1.35rem',
+                    background: '#636B2F',
+                    border: 'none',
+                    borderRadius: '8px',
+                    color: '#ffffff',
+                    fontWeight: 800,
+                    fontSize: '0.82rem',
+                    cursor: 'pointer',
+                  }}
                 >
                   Close
                 </button>

@@ -1870,3 +1870,445 @@ body {
     page-break-inside: avoid !important;
   }
 }
+
+/* ==========================================================================
+   Luxury Enterprise Entity Portal Design System
+   ========================================================================== */
+
+.ent-dash-wrapper {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* 1. Hero Identity Banner */
+.ent-dash-hero {
+  background: linear-gradient(135deg, #09170e 0%, #132817 50%, #1b3821 100%);
+  border-radius: 20px;
+  padding: 1.75rem 2rem;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(74, 222, 128, 0.22);
+  box-shadow: 0 20px 40px -15px rgba(9, 23, 14, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+}
+
+.ent-dash-hero::before {
+  content: '';
+  position: absolute;
+  top: -80px;
+  right: -80px;
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, rgba(99, 107, 47, 0.45) 0%, rgba(99, 107, 47, 0) 70%);
+  pointer-events: none;
+}
+
+.ent-dash-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -60px;
+  left: 20%;
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0) 70%);
+  pointer-events: none;
+}
+
+.ent-hero-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.ent-merchant-profile {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+/* 3D Floating Pods */
+.ent-3d-pod {
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  flex-shrink: 0;
+  position: relative;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ent-3d-pod:hover {
+  transform: translateY(-2px) scale(1.02);
+}
+
+.ent-3d-pod-sm {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+}
+
+.ent-3d-pod-xs {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+}
+
+.ent-pod-olive {
+  background: linear-gradient(135deg, #7c8838 0%, #505923 100%);
+  box-shadow: 0 10px 22px -4px rgba(99, 107, 47, 0.6), inset 0 2px 2px rgba(255, 255, 255, 0.45), inset 0 -2px 3px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.ent-pod-emerald {
+  background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+  box-shadow: 0 10px 22px -4px rgba(16, 185, 129, 0.6), inset 0 2px 2px rgba(255, 255, 255, 0.45), inset 0 -2px 3px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.ent-pod-amber {
+  background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
+  box-shadow: 0 10px 22px -4px rgba(245, 158, 11, 0.6), inset 0 2px 2px rgba(255, 255, 255, 0.45), inset 0 -2px 3px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.ent-pod-slate {
+  background: linear-gradient(135deg, #64748b 0%, #334155 100%);
+  box-shadow: 0 10px 22px -4px rgba(71, 85, 105, 0.6), inset 0 2px 2px rgba(255, 255, 255, 0.45), inset 0 -2px 3px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.ent-pod-blue {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  box-shadow: 0 10px 22px -4px rgba(59, 130, 246, 0.6), inset 0 2px 2px rgba(255, 255, 255, 0.45), inset 0 -2px 3px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+/* Glass Badges */
+.ent-glass-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.ent-badge-emerald {
+  background: rgba(16, 185, 129, 0.15);
+  color: #6ee7b7;
+  border: 1px solid rgba(52, 211, 153, 0.35);
+}
+
+.ent-badge-olive {
+  background: rgba(132, 143, 62, 0.22);
+  color: #e2f0a5;
+  border: 1px solid rgba(132, 143, 62, 0.45);
+}
+
+.ent-badge-muted {
+  background: rgba(255, 255, 255, 0.12);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.ent-pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #34d399;
+  box-shadow: 0 0 8px #34d399;
+  animation: entPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes entPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.85); }
+}
+
+/* Countdown Capsule */
+.ent-countdown-capsule {
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+/* Hero Action Buttons */
+.ent-hero-btn-primary {
+  background: linear-gradient(135deg, #788536 0%, #586027 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 0.65rem 1.35rem;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 0.84rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 8px 20px -4px rgba(99, 107, 47, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.35);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ent-hero-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px -4px rgba(99, 107, 47, 0.7);
+  background: linear-gradient(135deg, #84933d 0%, #60692b 100%);
+}
+
+.ent-hero-btn-secondary {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  padding: 0.65rem 1.1rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.84rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.ent-hero-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+/* 2. Financial Vault KPI Cards */
+.ent-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.25rem;
+}
+
+.ent-kpi-card {
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  padding: 1.35rem 1.45rem;
+  box-shadow: 0 4px 18px -2px rgba(0, 0, 0, 0.04), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 165px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ent-kpi-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 28px -6px rgba(0, 0, 0, 0.08);
+}
+
+.ent-kpi-card-olive {
+  border-top: 3.5px solid #636B2F;
+}
+.ent-kpi-card-olive:hover {
+  border-color: rgba(99, 107, 47, 0.4);
+}
+
+.ent-kpi-card-emerald {
+  border-top: 3.5px solid #059669;
+}
+.ent-kpi-card-emerald:hover {
+  border-color: rgba(5, 150, 105, 0.4);
+}
+
+.ent-kpi-card-amber {
+  border-top: 3.5px solid #d97706;
+}
+.ent-kpi-card-amber:hover {
+  border-color: rgba(217, 119, 6, 0.4);
+}
+
+.ent-kpi-card-slate {
+  border-top: 3.5px solid #475569;
+}
+.ent-kpi-card-slate:hover {
+  border-color: rgba(71, 85, 105, 0.4);
+}
+
+.ent-kpi-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.ent-kpi-title {
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #64748b;
+  line-height: 1.3;
+}
+
+.ent-kpi-value {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.03em;
+  margin: 0.65rem 0 0.35rem 0;
+  font-family: var(--font-sans);
+}
+
+.ent-kpi-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: #64748b;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 0.6rem;
+}
+
+/* 3. Luxury Chart Cards */
+.ent-chart-card {
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  padding: 1.5rem;
+  box-shadow: 0 4px 18px -2px rgba(0, 0, 0, 0.03);
+  transition: all 0.2s ease;
+}
+
+.ent-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  margin-bottom: 1.15rem;
+}
+
+.ent-time-pill-group {
+  display: inline-flex;
+  background: #f4f6ec;
+  padding: 3px;
+  border-radius: 8px;
+  gap: 2px;
+  border: 1px solid #d4dcbe;
+}
+
+.ent-time-pill {
+  border: none;
+  background: transparent;
+  color: #636B2F;
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ent-time-pill.active {
+  background: #636B2F;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(99, 107, 47, 0.35);
+}
+
+/* 4. Quick Actions Hub */
+.ent-action-card {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: left;
+}
+
+.ent-action-card:hover {
+  transform: translateY(-3px);
+  border-color: #636B2F;
+  box-shadow: 0 12px 24px -6px rgba(99, 107, 47, 0.15);
+}
+
+/* 5. Invoices Table & Activity Card */
+.ent-table-card {
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  overflow: hidden;
+  box-shadow: 0 4px 18px -2px rgba(0, 0, 0, 0.03);
+}
+
+.ent-table-card table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.82rem;
+}
+
+.ent-table-card thead tr {
+  background: linear-gradient(135deg, #132717 0%, #1e3822 100%);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.ent-table-card th {
+  padding: 0.85rem 1.25rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.4px;
+}
+
+.ent-table-card tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+  transition: background-color 0.15s ease;
+}
+
+.ent-table-card tbody tr:hover {
+  background-color: #fcfdfa;
+}
+
+.ent-table-card td {
+  padding: 0.9rem 1.25rem;
+}
+
+.ent-activity-node {
+  display: flex;
+  gap: 0.85rem;
+  position: relative;
+  padding-bottom: 0.85rem;
+}
+
+.ent-activity-node::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 18px;
+  bottom: 0;
+  width: 2px;
+  background-color: #e2e8f0;
+}
+
+.ent-activity-node:last-child::before {
+  display: none;
+}
+
