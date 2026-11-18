@@ -608,68 +608,45 @@ function RewardsClaimed({ user, onNavigate }) {
         </div>
       </div>
 
-      {/* Proven Executive 2-Tier 3D Filter Command Toolbar */}
-      <div className="van-dir-toolbar-3d" style={{ marginBottom: '1.75rem' }}>
-        {/* Tier 1: Search Bar & Count Action */}
-        <div className="van-dir-toolbar-top">
-          <div className="van-dir-search-wrap" style={{ flex: '1 1 380px' }}>
-            <Search size={18} className="van-dir-search-icon" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by claim code, reward item, courier, city, or AWB tracking..."
-              className="van-dir-search-input"
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => setSearchQuery('')}
-                className="van-dir-clear-btn"
-                title="Clear Search"
-              >
-                <X size={14} />
-              </button>
-            )}
+      {/* Sleek Unified 3D Filter & Search Command Bar */}
+      <div
+        className="van-dir-toolbar-3d"
+        style={{
+          padding: '1.15rem 1.45rem',
+          marginBottom: '1.75rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '1rem',
+        }}
+      >
+        {/* Left: Search Bar with 3D Icon Pod */}
+        <div className="van-dir-search-wrap" style={{ flex: '1 1 360px', minWidth: '260px' }}>
+          <div className="van-dir-search-icon-pod">
+            <Search size={16} color="#2563EB" />
           </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-            <span className="van-dir-count-pill">
-              {filteredClaims.length} Order{filteredClaims.length === 1 ? '' : 's'} Found
-            </span>
-
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by claim code, reward item, courier, city, or AWB tracking..."
+            className="van-dir-search-input"
+          />
+          {searchQuery && (
             <button
               type="button"
-              onClick={() => loadClaims(true)}
-              disabled={refreshing}
-              title="Sync claims with database"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.45rem',
-                padding: '0.52rem 0.95rem',
-                borderRadius: '9999px',
-                border: '1px solid #cbd5e1',
-                background: '#ffffff',
-                color: '#334155',
-                fontSize: '0.8rem',
-                fontWeight: 700,
-                cursor: refreshing ? 'not-allowed' : 'pointer',
-                boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
-                transition: 'all 0.15s ease',
-              }}
+              onClick={() => setSearchQuery('')}
+              className="van-dir-search-clear"
+              title="Clear Search"
             >
-              <RotateCcw size={14} className={refreshing ? 'spin-anim' : ''} />
-              <span>{refreshing ? 'Refreshing...' : 'Refresh'}</span>
+              <X size={14} />
             </button>
-          </div>
+          )}
         </div>
 
-        {/* Divider */}
-        <div className="van-dir-toolbar-divider" />
-
-        {/* Tier 2: Filter Capsules */}
-        <div className="van-dir-toolbar-bottom">
+        {/* Right: Status Filter Capsule + Count + Refresh Action */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
           {/* Status Filter Capsule */}
           <div className="van-dir-filter-capsule">
             <ShieldCheck size={15} color="#10b981" />
@@ -695,9 +672,40 @@ function RewardsClaimed({ user, onNavigate }) {
               className="van-dir-reset-btn"
             >
               <X size={14} />
-              <span>Reset Filters</span>
+              <span>Reset</span>
             </button>
           )}
+
+          {/* Order Count Pill */}
+          <span className="van-dir-count-pill">
+            {filteredClaims.length} Order{filteredClaims.length === 1 ? '' : 's'}
+          </span>
+
+          {/* Refresh Action Button */}
+          <button
+            type="button"
+            onClick={() => loadClaims(true)}
+            disabled={refreshing}
+            title="Sync claims with database"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+              padding: '0.52rem 0.95rem',
+              borderRadius: '9999px',
+              border: '1.5px solid #cbd5e1',
+              background: '#ffffff',
+              color: '#334155',
+              fontSize: '0.8rem',
+              fontWeight: 700,
+              cursor: refreshing ? 'not-allowed' : 'pointer',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+              transition: 'all 0.15s ease',
+            }}
+          >
+            <RotateCcw size={14} className={refreshing ? 'spin-anim' : ''} />
+            <span>{refreshing ? 'Syncing...' : 'Refresh'}</span>
+          </button>
         </div>
       </div>
 
@@ -716,7 +724,7 @@ function RewardsClaimed({ user, onNavigate }) {
           data={filteredClaims}
           defaultPageSize={10}
           searchable={false}
-          showPageSize={true}
+          showPageSize={false}
           loading={loading}
           emptyMessage="No milestone reward claims found. Check Available Rewards to redeem your Diamonds!"
         />

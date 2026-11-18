@@ -480,7 +480,9 @@ function AvailableRewards({ user, onNavigate }) {
         {/* Tier 1: Search Bar & Count Action */}
         <div className="van-dir-toolbar-top">
           <div className="van-dir-search-wrap" style={{ flex: '1 1 380px' }}>
-            <Search size={18} className="van-dir-search-icon" />
+            <div className="van-dir-search-icon-pod">
+              <Search size={16} color="#2563EB" />
+            </div>
             <input
               type="text"
               value={searchQuery}
@@ -492,7 +494,7 @@ function AvailableRewards({ user, onNavigate }) {
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="van-dir-clear-btn"
+                className="van-dir-search-clear"
                 title="Clear Search"
               >
                 <X size={14} />

@@ -3194,6 +3194,40 @@
   min-width: 260px;
 }
 
+.van-dir-search-icon {
+  position: absolute;
+  left: 0.95rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.van-dir-clear-btn {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #e2e8f0;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #475569;
+  transition: all 0.15s ease;
+  z-index: 2;
+}
+
+.van-dir-clear-btn:hover {
+  background: #cbd5e1;
+  color: #0f172a;
+}
+
 .van-dir-search-icon-pod {
   position: absolute;
   left: 0.65rem;
