@@ -2300,14 +2300,63 @@ body {
   background: rgba(0, 0, 0, 0.04);
 }
 
-/* 3. Luxury Chart Cards */
+/* 3. Luxury 3D Chart Cards & Visual Suite */
+.ent-chart-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 1.35rem;
+}
+
+@media (max-width: 1040px) {
+  .ent-chart-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ent-3d-chart-card {
+  background: #ffffff;
+  border-radius: 22px;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  padding: 1.6rem 1.75rem;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05), 0 3px 8px -1px rgba(0, 0, 0, 0.02);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.ent-3d-chart-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 42px -10px rgba(0, 0, 0, 0.09);
+}
+
+.ent-3d-chart-card-olive {
+  border-top: 4px solid #636B2F;
+  background: radial-gradient(circle at 94% 8%, rgba(99, 107, 47, 0.07) 0%, #ffffff 55%);
+}
+.ent-3d-chart-card-olive:hover {
+  border-color: rgba(99, 107, 47, 0.45);
+  box-shadow: 0 22px 42px -10px rgba(99, 107, 47, 0.15);
+}
+
+.ent-3d-chart-card-emerald {
+  border-top: 4px solid #059669;
+  background: radial-gradient(circle at 94% 8%, rgba(5, 150, 105, 0.07) 0%, #ffffff 55%);
+}
+.ent-3d-chart-card-emerald:hover {
+  border-color: rgba(5, 150, 105, 0.45);
+  box-shadow: 0 22px 42px -10px rgba(5, 150, 105, 0.15);
+}
+
 .ent-chart-card {
   background: #ffffff;
-  border-radius: 18px;
+  border-radius: 20px;
   border: 1px solid rgba(226, 232, 240, 0.9);
-  padding: 1.5rem;
-  box-shadow: 0 4px 18px -2px rgba(0, 0, 0, 0.03);
-  transition: all 0.2s ease;
+  padding: 1.5rem 1.65rem;
+  box-shadow: 0 6px 20px -3px rgba(0, 0, 0, 0.04);
+  transition: all 0.25s ease;
 }
 
 .ent-chart-header {
@@ -2319,31 +2368,84 @@ body {
   margin-bottom: 1.15rem;
 }
 
-.ent-time-pill-group {
+/* 3D Tactile Time Range Switcher */
+.ent-3d-time-switcher {
   display: inline-flex;
-  background: #f4f6ec;
-  padding: 3px;
-  border-radius: 8px;
-  gap: 2px;
-  border: 1px solid #d4dcbe;
+  background: #f1f5f9;
+  padding: 3.5px;
+  border-radius: 10px;
+  gap: 3px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
 }
 
-.ent-time-pill {
+.ent-3d-time-btn {
   border: none;
   background: transparent;
-  color: #636B2F;
-  padding: 0.25rem 0.75rem;
-  border-radius: 6px;
+  color: #64748b;
+  padding: 0.35rem 0.85rem;
+  border-radius: 7px;
   font-size: 0.74rem;
   font-weight: 800;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.ent-time-pill.active {
-  background: #636B2F;
+.ent-3d-time-btn:hover {
+  color: #0f172a;
+}
+
+.ent-3d-time-btn.active {
+  background: linear-gradient(135deg, #7c8838 0%, #636B2F 100%);
   color: #ffffff;
-  box-shadow: 0 2px 6px rgba(99, 107, 47, 0.35);
+  box-shadow: 0 4px 12px rgba(99, 107, 47, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+/* 3D Target Capsule */
+.ent-3d-target-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  box-shadow: 0 2px 6px rgba(5, 150, 105, 0.12), inset 0 1px 1px #ffffff;
+}
+
+/* 3D Gauge Twin-Vault and Progress Bar */
+.ent-gauge-twin-vault {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+  margin-top: 0.65rem;
+}
+
+.ent-gauge-progress-track {
+  width: 100%;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 9999px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
+  margin-top: 0.65rem;
+}
+
+.ent-gauge-progress-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #636B2F 0%, #059669 100%);
+  box-shadow: 0 0 8px rgba(5, 150, 105, 0.5);
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* 4. Quick Actions Hub */

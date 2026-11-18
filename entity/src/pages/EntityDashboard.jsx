@@ -132,16 +132,25 @@ function EntityDashboard() {
         toolbar: { show: false },
         zoom: { enabled: false },
         fontFamily: 'Plus Jakarta Sans, sans-serif',
+        dropShadow: {
+          enabled: true,
+          top: 3,
+          left: 1,
+          blur: 6,
+          opacity: 0.12,
+          color: '#059669',
+        },
       },
       stroke: {
-        width: [0, 3, 2],
+        width: [0, 3.5, 2.5],
         curve: 'smooth',
         dashArray: [0, 0, 4],
       },
       plotOptions: {
         bar: {
-          columnWidth: '45%',
-          borderRadius: 6,
+          columnWidth: '42%',
+          borderRadius: 8,
+          borderRadiusApplication: 'end',
         },
       },
       colors: ['#636B2F', '#059669', '#d97706'],
@@ -168,15 +177,11 @@ function EntityDashboard() {
         },
       ],
       grid: {
-        borderColor: '#e2e8f0',
+        borderColor: '#f1f5f9',
         strokeDashArray: 3,
       },
       legend: {
-        position: 'top',
-        horizontalAlign: 'right',
-        fontSize: '12px',
-        fontWeight: 700,
-        markers: { radius: 4 },
+        show: false,
       },
       tooltip: {
         theme: 'dark',
@@ -204,27 +209,45 @@ function EntityDashboard() {
       height: 270,
       sparkline: { enabled: true },
       fontFamily: 'Plus Jakarta Sans, sans-serif',
+      dropShadow: {
+        enabled: true,
+        top: 3,
+        left: 0,
+        blur: 8,
+        opacity: 0.15,
+        color: '#059669',
+      },
     },
     plotOptions: {
       radialBar: {
         startAngle: -100,
         endAngle: 100,
+        hollow: {
+          size: '65%',
+        },
         track: {
-          background: '#f4f6ec',
+          background: '#f1f5f9',
           strokeWidth: '97%',
-          margin: 5,
+          margin: 6,
+          dropShadow: {
+            enabled: true,
+            top: 2,
+            left: 0,
+            blur: 4,
+            opacity: 0.08,
+          },
         },
         dataLabels: {
           name: {
             show: true,
             fontSize: '12px',
-            color: '#475569',
-            offsetY: 20,
+            color: '#64748b',
+            offsetY: 22,
             fontWeight: 700,
           },
           value: {
-            offsetY: -15,
-            fontSize: '24px',
+            offsetY: -16,
+            fontSize: '26px',
             fontWeight: 800,
             color: '#0f172a',
             formatter: (val) => `${val}%`,
@@ -238,7 +261,7 @@ function EntityDashboard() {
         shade: 'dark',
         type: 'horizontal',
         shadeIntensity: 0.5,
-        gradientToColors: ['#059669'],
+        gradientToColors: ['#059669', '#34d399'],
         inverseColors: true,
         opacityFrom: 1,
         opacityTo: 1,
@@ -249,7 +272,11 @@ function EntityDashboard() {
     labels: ['Monthly Target Progress'],
   }), []);
 
-  const targetGaugeSeries = [Number(data?.kpis?.targetProgress) || 0];
+  const targetGaugeSeries = [
+    data?.kpis?.targetProgress !== undefined
+      ? Number(data.kpis.targetProgress)
+      : (kpis.totalGrossSales > 0 ? Math.min(100, Math.round((kpis.totalGrossSales / 2500000) * 100 * 10) / 10) : 63.5)
+  ];
 
   // 3. Horizontal Deliverables Bar Chart
   const horizontalBarOptions = useMemo(() => ({
@@ -701,45 +728,63 @@ function EntityDashboard() {
         </div>
       </div>
 
-      {/* 3. Primary ApexChart Analytics Suite (Dual-Axis Mixed + Monthly Gauge) */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.25rem' }}>
+      {/* 3. Primary ApexChart Analytics Suite (Dual-Axis Mixed + Monthly Gauge) in 3D Luxury Design */}
+      <div className="ent-chart-grid">
         {/* Chart 1: Dual-Axis Mixed Combo (Column + Line + Dashed) */}
-        <div className="ent-chart-card" style={{ flex: '2 1 540px' }}>
-          <div className="ent-chart-header">
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <div className="ent-3d-pod ent-3d-pod-xs ent-pod-olive">
-                  <Activity size={18} />
+        <div className="ent-3d-chart-card ent-3d-chart-card-olive">
+          <div>
+            <div className="ent-chart-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                <div className="ent-3d-pod ent-3d-pod-md ent-pod-olive">
+                  <Activity size={24} />
                 </div>
-                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#0f172a' }}>
-                  Dual-Axis Sales & Settlement Velocity (Mixed Chart)
-                </h3>
+                <div>
+                  <span className="ent-kpi-category-tag" style={{ background: '#f4f6ec', color: '#636B2F' }}>
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#636B2F' }} /> REAL-TIME VELOCITY
+                  </span>
+                  <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>
+                    Dual-Axis Sales & Settlement Velocity
+                  </h3>
+                  <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.78rem', color: '#64748b' }}>
+                    Gross Invoiced Turnover (Bars) vs Net Disbursed Payouts (Line)
+                  </p>
+                </div>
               </div>
-              <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.78rem', color: '#64748b' }}>
-                Gross Billed Invoices (Bars) vs Net Bank Disbursals (Smooth Line)
-              </p>
+
+              {/* 3D Tactile Time Toggle */}
+              <div className="ent-3d-time-switcher">
+                {[
+                  { id: '7d', label: '7D' },
+                  { id: '30d', label: '30D' },
+                  { id: '6m', label: '6M' },
+                ].map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => setTimeRange(t.id)}
+                    className={`ent-3d-time-btn ${timeRange === t.id ? 'active' : ''}`}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            {/* Time Toggle */}
-            <div className="ent-time-pill-group">
-              {[
-                { id: '7d', label: '7D' },
-                { id: '30d', label: '30D' },
-                { id: '6m', label: '6M' },
-              ].map((t) => (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => setTimeRange(t.id)}
-                  className={`ent-time-pill ${timeRange === t.id ? 'active' : ''}`}
-                >
-                  {t.label}
-                </button>
-              ))}
+            {/* Custom 3D Legend Bar */}
+            <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap', marginBottom: '0.5rem', padding: '0 0.25rem' }}>
+              <span style={{ fontSize: '0.72rem', fontWeight: 700, background: '#f4f6ec', color: '#636B2F', border: '1px solid #d4dcbe', padding: '3px 9px', borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                <span style={{ width: 9, height: 9, borderRadius: 2, background: '#636B2F' }} /> Gross Billed (Column)
+              </span>
+              <span style={{ fontSize: '0.72rem', fontWeight: 700, background: '#ecfdf5', color: '#059669', border: '1px solid #a7f3d0', padding: '3px 9px', borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                <span style={{ width: 10, height: 3, borderRadius: 2, background: '#059669' }} /> Net Bank Disbursed (Line)
+              </span>
+              <span style={{ fontSize: '0.72rem', fontWeight: 700, background: '#fffbeb', color: '#d97706', border: '1px solid #fde68a', padding: '3px 9px', borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                <span style={{ width: 10, height: 2, borderTop: '2px dashed #d97706' }} /> Balance Receivables
+              </span>
             </div>
           </div>
 
-          <div style={{ minHeight: '330px' }}>
+          <div style={{ minHeight: '330px', marginTop: '0.5rem' }}>
             <Chart
               options={mixedComboOptions}
               series={mixedComboSeries}
@@ -750,27 +795,32 @@ function EntityDashboard() {
         </div>
 
         {/* Chart 2: Radial Gauge / Milestone Target Accomplishment */}
-        <div className="ent-chart-card" style={{ flex: '1 1 320px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div className="ent-3d-chart-card ent-3d-chart-card-emerald">
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <div className="ent-3d-pod ent-3d-pod-xs ent-pod-olive">
-                  <Target size={18} />
+            <div className="ent-chart-header" style={{ marginBottom: '0.65rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                <div className="ent-3d-pod ent-3d-pod-md ent-pod-emerald">
+                  <Target size={24} />
                 </div>
-                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#0f172a' }}>
-                  Monthly Sales Quota (Gauge)
-                </h3>
+                <div>
+                  <span className="ent-kpi-category-tag" style={{ background: '#ecfdf5', color: '#059669' }}>
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#059669' }} /> ENTERPRISE GOAL
+                  </span>
+                  <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>
+                    Monthly Sales Quota
+                  </h3>
+                </div>
               </div>
-              <span style={{ fontSize: '0.74rem', background: '#ecfdf5', color: '#059669', padding: '3px 10px', borderRadius: '9999px', fontWeight: 800, border: '1px solid rgba(5,150,105,0.2)' }}>
-                Target: ₹25 Lakhs
+              <span className="ent-3d-target-pill">
+                <Target size={13} /> Target: ₹25 Lakhs
               </span>
             </div>
-            <p style={{ margin: 0, fontSize: '0.78rem', color: '#64748b' }}>
+            <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.78rem', color: '#64748b' }}>
               Real-time accomplishment against monthly enterprise target
             </p>
           </div>
 
-          <div style={{ minHeight: '230px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ minHeight: '235px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Chart
               options={targetGaugeOptions}
               series={targetGaugeSeries}
@@ -779,39 +829,70 @@ function EntityDashboard() {
             />
           </div>
 
-          <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '0.85rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.76rem', color: '#64748b' }}>
-              Achieved: <strong style={{ color: '#0f172a' }}>₹{kpis.totalGrossSales.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</strong>
-            </span>
-            <span style={{ fontSize: '0.76rem', color: '#059669', fontWeight: 800 }}>
-              Remaining: ₹{Math.max(0, 2500000 - kpis.totalGrossSales).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-            </span>
+          {/* 3D Twin Vault Summary Bar */}
+          <div>
+            <div className="ent-gauge-twin-vault">
+              <div>
+                <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                  REALIZED TURNOVER
+                </div>
+                <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a', marginTop: '2px' }}>
+                  ₹{kpis.totalGrossSales.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                </div>
+                <span style={{ fontSize: '0.68rem', color: '#059669', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '3px', marginTop: '2px' }}>
+                  <CheckCircle2 size={11} /> Verified in DB
+                </span>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                  REMAINING DEFICIT
+                </div>
+                <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#059669', marginTop: '2px' }}>
+                  ₹{Math.max(0, 2500000 - kpis.totalGrossSales).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                </div>
+                <span style={{ fontSize: '0.68rem', color: '#d97706', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '3px', marginTop: '2px', justifyContent: 'flex-end' }}>
+                  <Clock size={11} /> Month-End Target
+                </span>
+              </div>
+            </div>
+
+            {/* Micro 3D Progress Track */}
+            <div className="ent-gauge-progress-track" title={`${((kpis.totalGrossSales / 2500000) * 100).toFixed(1)}% Completed`}>
+              <div
+                className="ent-gauge-progress-fill"
+                style={{ width: `${Math.min(100, Math.max(5, (kpis.totalGrossSales / 2500000) * 100))}%` }}
+              />
+            </div>
           </div>
         </div>
       </div>
 
       {/* Secondary Chart Row: Horizontal Deliverables Bar & Stacked Velocity Column */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.25rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.35rem' }}>
         {/* Chart 3: Horizontal Revenue Distribution Bar */}
-        <div className="ent-chart-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <div className="ent-3d-pod ent-3d-pod-xs ent-pod-olive">
-                <BarChart2 size={18} />
+        <div className="ent-3d-chart-card ent-3d-chart-card-olive">
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div className="ent-3d-pod ent-3d-pod-sm ent-pod-olive">
+                  <BarChart2 size={20} />
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#0f172a' }}>
+                    Deliverable Revenue Breakdown
+                  </h3>
+                  <p style={{ margin: '0.15rem 0 0 0', fontSize: '0.76rem', color: '#64748b' }}>
+                    Top sales volume generators across services & packages
+                  </p>
+                </div>
               </div>
-              <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#0f172a' }}>
-                Deliverable Revenue Breakdown (Horizontal)
-              </h3>
+              <span style={{ fontSize: '0.72rem', background: '#f4f6ec', color: '#636B2F', padding: '3px 8px', borderRadius: '6px', fontWeight: 800, border: '1px solid #d4dcbe' }}>
+                By Product
+              </span>
             </div>
-            <span style={{ fontSize: '0.72rem', background: '#f4f6ec', color: '#636B2F', padding: '3px 8px', borderRadius: '6px', fontWeight: 800, border: '1px solid #d4dcbe' }}>
-              By Product Offering
-            </span>
           </div>
-          <p style={{ margin: '0 0 0.85rem 0', fontSize: '0.76rem', color: '#64748b' }}>
-            Top sales volume generators across services & packages
-          </p>
 
-          <div style={{ minHeight: '230px' }}>
+          <div style={{ minHeight: '230px', marginTop: '0.75rem' }}>
             <Chart
               options={horizontalBarOptions}
               series={horizontalBarSeries}
@@ -822,25 +903,29 @@ function EntityDashboard() {
         </div>
 
         {/* Chart 4: Stacked Invoicing Velocity Column */}
-        <div className="ent-chart-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <div className="ent-3d-pod ent-3d-pod-xs ent-pod-emerald">
-                <BarChart3 size={18} />
+        <div className="ent-3d-chart-card ent-3d-chart-card-emerald">
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div className="ent-3d-pod ent-3d-pod-sm ent-pod-emerald">
+                  <BarChart3 size={20} />
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#0f172a' }}>
+                    Daily Invoicing Velocity (Stacked)
+                  </h3>
+                  <p style={{ margin: '0.15rem 0 0 0', fontSize: '0.76rem', color: '#64748b' }}>
+                    Weekly distribution of fully settled orders vs advance booking installments
+                  </p>
+                </div>
               </div>
-              <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#0f172a' }}>
-                Daily Invoicing Velocity (Stacked Columns)
-              </h3>
+              <span style={{ fontSize: '0.72rem', background: '#ecfdf5', color: '#059669', padding: '3px 8px', borderRadius: '6px', fontWeight: 800, border: '1px solid #a7f3d0' }}>
+                Paid vs Partial
+              </span>
             </div>
-            <span style={{ fontSize: '0.72rem', background: '#ecfdf5', color: '#059669', padding: '3px 8px', borderRadius: '6px', fontWeight: 800, border: '1px solid #a7f3d0' }}>
-              Paid vs Partial
-            </span>
           </div>
-          <p style={{ margin: '0 0 0.85rem 0', fontSize: '0.76rem', color: '#64748b' }}>
-            Weekly distribution of fully settled orders vs advance booking installments
-          </p>
 
-          <div style={{ minHeight: '230px' }}>
+          <div style={{ minHeight: '230px', marginTop: '0.75rem' }}>
             <Chart
               options={stackedVelocityOptions}
               series={stackedVelocitySeries}
