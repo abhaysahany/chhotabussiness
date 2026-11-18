@@ -436,47 +436,47 @@ function EntityOrders() {
       {/* 2 by 3 Financial Vault KPI Cards */}
       <div className="ent-orders-kpi-grid">
         {/* Card 1: Contracts GMV */}
-        <div className="ent-kpi-card ent-kpi-card-olive">
+        <div className="ent-kpi-card ent-kpi-card-olive ent-orders-kpi-card">
           <div className="ent-kpi-top-row">
             <div>
               <span className="ent-kpi-category-tag" style={{ color: '#636B2F', background: 'rgba(99, 107, 47, 0.1)', whiteSpace: 'nowrap' }}>
                 ● CONTRACTS GMV
               </span>
-              <div className="ent-kpi-title">TOTAL ACTIVE CONTRACTS</div>
+              <div className="ent-kpi-title" style={{ fontSize: '0.74rem' }}>TOTAL ACTIVE CONTRACTS</div>
             </div>
             <div className="ent-3d-pod ent-3d-pod-sm ent-pod-olive">
-              <Receipt size={20} strokeWidth={2.4} />
+              <Receipt size={18} strokeWidth={2.4} />
             </div>
           </div>
-          <div className="ent-kpi-value-row">
-            <div className="ent-kpi-value">{formatCurrency(totalGross)}</div>
+          <div className="ent-kpi-value-row" style={{ margin: '0.65rem 0 0.35rem 0' }}>
+            <div className="ent-kpi-value ent-orders-kpi-val">{formatCurrency(totalGross)}</div>
           </div>
-          <div className="ent-kpi-vault-footer">
+          <div className="ent-orders-kpi-footer">
             <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
               <Layers size={13} color="#636B2F" />
               <span>{activeOrders.length} Invoices Processed</span>
             </span>
-            <span style={{ fontWeight: 700, color: '#636B2F' }}>Lifetime Contract GMV</span>
+            <span style={{ fontWeight: 700, color: '#636B2F' }}>Lifetime GMV</span>
           </div>
         </div>
 
         {/* Card 2: Cash Collected */}
-        <div className="ent-kpi-card ent-kpi-card-emerald">
+        <div className="ent-kpi-card ent-kpi-card-emerald ent-orders-kpi-card">
           <div className="ent-kpi-top-row">
             <div>
               <span className="ent-kpi-category-tag" style={{ color: '#059669', background: 'rgba(5, 150, 105, 0.1)', whiteSpace: 'nowrap' }}>
                 ● REVENUE REALIZED
               </span>
-              <div className="ent-kpi-title">AMOUNT COLLECTED</div>
+              <div className="ent-kpi-title" style={{ fontSize: '0.74rem' }}>AMOUNT COLLECTED</div>
             </div>
             <div className="ent-3d-pod ent-3d-pod-sm ent-pod-emerald">
-              <CheckCircle2 size={20} strokeWidth={2.4} />
+              <CheckCircle2 size={18} strokeWidth={2.4} />
             </div>
           </div>
-          <div className="ent-kpi-value-row">
-            <div className="ent-kpi-value" style={{ color: '#059669' }}>{formatCurrency(totalCollected)}</div>
+          <div className="ent-kpi-value-row" style={{ margin: '0.65rem 0 0.35rem 0' }}>
+            <div className="ent-kpi-value ent-orders-kpi-val" style={{ color: '#059669' }}>{formatCurrency(totalCollected)}</div>
           </div>
-          <div className="ent-kpi-vault-footer">
+          <div className="ent-orders-kpi-footer">
             <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#059669', fontWeight: 600 }}>
               <CreditCard size={13} />
               <span>Direct IMPS &amp; Advance</span>
@@ -486,102 +486,102 @@ function EntityOrders() {
         </div>
 
         {/* Card 3: Outstanding Balance Due */}
-        <div className="ent-kpi-card ent-kpi-card-amber">
+        <div className="ent-kpi-card ent-kpi-card-amber ent-orders-kpi-card">
           <div className="ent-kpi-top-row">
             <div>
               <span className="ent-kpi-category-tag" style={{ color: '#d97706', background: 'rgba(217, 119, 6, 0.1)', whiteSpace: 'nowrap' }}>
                 ● RECEIVABLES DUE
               </span>
-              <div className="ent-kpi-title">OUTSTANDING BALANCE</div>
+              <div className="ent-kpi-title" style={{ fontSize: '0.74rem' }}>OUTSTANDING BALANCE</div>
             </div>
             <div className="ent-3d-pod ent-3d-pod-sm ent-pod-amber">
-              <Clock size={20} strokeWidth={2.4} />
+              <Clock size={18} strokeWidth={2.4} />
             </div>
           </div>
-          <div className="ent-kpi-value-row">
-            <div className="ent-kpi-value" style={{ color: totalBalanceDue > 0 ? '#b45309' : '#059669' }}>
+          <div className="ent-kpi-value-row" style={{ margin: '0.65rem 0 0.35rem 0' }}>
+            <div className="ent-kpi-value ent-orders-kpi-val" style={{ color: totalBalanceDue > 0 ? '#b45309' : '#059669' }}>
               {formatCurrency(totalBalanceDue)}
             </div>
           </div>
-          <div className="ent-kpi-vault-footer">
+          <div className="ent-orders-kpi-footer">
             <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#b45309', fontWeight: 600 }}>
               <AlertCircle size={13} />
-              <span>Uncollected Receivables</span>
+              <span>Uncollected Due</span>
             </span>
             <span style={{ fontWeight: 700, color: '#d97706' }}>Due on Delivery</span>
           </div>
         </div>
 
         {/* Card 4: Net Realized Earnings */}
-        <div className="ent-kpi-card ent-kpi-card-olive">
+        <div className="ent-kpi-card ent-kpi-card-olive ent-orders-kpi-card">
           <div className="ent-kpi-top-row">
             <div>
               <span className="ent-kpi-category-tag" style={{ color: '#636B2F', background: 'rgba(99, 107, 47, 0.1)', whiteSpace: 'nowrap' }}>
                 ● ENTITY EARNINGS
               </span>
-              <div className="ent-kpi-title">NET REALIZED EARNINGS</div>
+              <div className="ent-kpi-title" style={{ fontSize: '0.74rem' }}>NET REALIZED EARNINGS</div>
             </div>
             <div className="ent-3d-pod ent-3d-pod-sm ent-pod-olive">
-              <Wallet size={20} strokeWidth={2.4} />
+              <Wallet size={18} strokeWidth={2.4} />
             </div>
           </div>
-          <div className="ent-kpi-value-row">
-            <div className="ent-kpi-value" style={{ color: '#636B2F' }}>{formatCurrency(totalNetEarnings)}</div>
+          <div className="ent-kpi-value-row" style={{ margin: '0.65rem 0 0.35rem 0' }}>
+            <div className="ent-kpi-value ent-orders-kpi-val" style={{ color: '#636B2F' }}>{formatCurrency(totalNetEarnings)}</div>
           </div>
-          <div className="ent-kpi-vault-footer">
+          <div className="ent-orders-kpi-footer">
             <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#059669', fontWeight: 600 }}>
               <CheckCircle2 size={13} />
               <span>Net from Receipts</span>
             </span>
-            <span style={{ fontWeight: 700, color: '#636B2F' }}>Bank Settlement Active</span>
+            <span style={{ fontWeight: 700, color: '#636B2F' }}>Settlement Active</span>
           </div>
         </div>
 
         {/* Card 5: Admin Commission */}
-        <div className="ent-kpi-card ent-kpi-card-rose">
+        <div className="ent-kpi-card ent-kpi-card-rose ent-orders-kpi-card">
           <div className="ent-kpi-top-row">
             <div>
               <span className="ent-kpi-category-tag" style={{ color: '#dc2626', background: 'rgba(220, 38, 38, 0.1)', whiteSpace: 'nowrap' }}>
                 ● ADMIN COMMISSION
               </span>
-              <div className="ent-kpi-title">ADMIN COMMISSION</div>
+              <div className="ent-kpi-title" style={{ fontSize: '0.74rem' }}>ADMIN COMMISSION</div>
             </div>
             <div className="ent-3d-pod ent-3d-pod-sm ent-pod-rose">
-              <ShieldAlert size={20} strokeWidth={2.4} />
+              <ShieldAlert size={18} strokeWidth={2.4} />
             </div>
           </div>
-          <div className="ent-kpi-value-row">
-            <div className="ent-kpi-value" style={{ color: '#dc2626' }}>{formatCurrency(totalAdminCommission)}</div>
+          <div className="ent-kpi-value-row" style={{ margin: '0.65rem 0 0.35rem 0' }}>
+            <div className="ent-kpi-value ent-orders-kpi-val" style={{ color: '#dc2626' }}>{formatCurrency(totalAdminCommission)}</div>
           </div>
-          <div className="ent-kpi-vault-footer">
+          <div className="ent-orders-kpi-footer">
             <span style={{ color: '#64748b', fontWeight: 600 }}>Platform Facilitation Cut</span>
             <span style={{ fontWeight: 700, color: '#dc2626' }}>Cut on Receipts</span>
           </div>
         </div>
 
         {/* Card 6: Collection Recovery Ratio */}
-        <div className="ent-kpi-card ent-kpi-card-blue">
+        <div className="ent-kpi-card ent-kpi-card-blue ent-orders-kpi-card">
           <div className="ent-kpi-top-row">
             <div>
               <span className="ent-kpi-category-tag" style={{ color: '#2563eb', background: 'rgba(37, 99, 235, 0.1)', whiteSpace: 'nowrap' }}>
                 ● RECOVERY EFFICIENCY
               </span>
-              <div className="ent-kpi-title">COLLECTION RATIO</div>
+              <div className="ent-kpi-title" style={{ fontSize: '0.74rem' }}>COLLECTION RATIO</div>
             </div>
             <div className="ent-3d-pod ent-3d-pod-sm ent-pod-blue">
-              <TrendingUp size={20} strokeWidth={2.4} />
+              <TrendingUp size={18} strokeWidth={2.4} />
             </div>
           </div>
-          <div className="ent-kpi-value-row">
-            <div className="ent-kpi-value" style={{ color: '#2563eb' }}>
+          <div className="ent-kpi-value-row" style={{ margin: '0.65rem 0 0.35rem 0' }}>
+            <div className="ent-kpi-value ent-orders-kpi-val" style={{ color: '#2563eb' }}>
               {totalGross > 0 ? ((totalCollected / totalGross) * 100).toFixed(1) + '%' : '0.0%'}
             </div>
           </div>
-          <div className="ent-kpi-vault-footer">
+          <div className="ent-orders-kpi-footer">
             <span style={{ color: '#64748b', fontWeight: 600 }}>
-              Avg Ticket: {formatCurrency(activeOrders.length ? totalGross / activeOrders.length : 0)}
+              Avg: {formatCurrency(activeOrders.length ? totalGross / activeOrders.length : 0)}
             </span>
-            <span style={{ fontWeight: 700, color: '#2563eb' }}>Recovery Progress</span>
+            <span style={{ fontWeight: 700, color: '#2563eb' }}>Progress</span>
           </div>
         </div>
       </div>
