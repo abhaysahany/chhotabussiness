@@ -1,4 +1,25 @@
 import React, { useState, useEffect } from 'react';
+import {
+  Bell,
+  BellRing,
+  CheckCheck,
+  RotateCcw,
+  Search,
+  Megaphone,
+  Wallet,
+  AlertTriangle,
+  Info,
+  Sparkles,
+  ChevronRight,
+  ArrowUpRight,
+  CheckCircle2,
+  Inbox,
+  Filter,
+  X,
+  Clock,
+  Radio,
+  Check,
+} from 'lucide-react';
 import { formatDateTime } from '../utils/timezone';
 import {
   getUserNotifications,
@@ -68,18 +89,17 @@ function UserNotificationsPage({ user, onNavigate }) {
     }
   };
 
-  const getIcon = (type) => {
+  const getIconComponent = (type) => {
     switch (type) {
       case 'success':
-        return '🎉';
-      case 'warning':
-        return '⚠️';
-      case 'info':
-        return 'ℹ️';
       case 'commission':
-        return '💰';
+        return <Wallet size={20} strokeWidth={2.4} />;
+      case 'warning':
+        return <AlertTriangle size={20} strokeWidth={2.4} />;
+      case 'info':
+        return <Info size={20} strokeWidth={2.4} />;
       default:
-        return '📢';
+        return <Megaphone size={20} strokeWidth={2.4} />;
     }
   };
 
@@ -98,274 +118,248 @@ function UserNotificationsPage({ user, onNavigate }) {
   });
 
   return (
-    <div className="page-container">
+    <div className="van-notify-page-wrap">
       {/* Toast Alert */}
       {toastMessage && (
-        <div
-          style={{
-            position: 'fixed',
-            top: '20px',
-            right: '20px',
-            background: '#0f172a',
-            color: '#ffffff',
-            padding: '0.85rem 1.35rem',
-            borderRadius: '10px',
-            zIndex: 99999,
-            boxShadow: '0 10px 25px -5px rgba(0,0,0,0.3)',
-            fontSize: '0.875rem',
-            fontWeight: 700,
-            border: '1px solid #334155',
-          }}
-        >
-          {toastMessage}
+        <div className="profile-toast-success">
+          <CheckCircle2 size={18} strokeWidth={2.4} />
+          <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Header Banner */}
-      <div style={{ background: 'linear-gradient(135deg, var(--brand-primary-dark) 0%, var(--brand-primary) 100%)', borderRadius: '16px', padding: '2rem 2.25rem', color: '#ffffff', marginBottom: '2rem', boxShadow: '0 10px 25px -5px rgba(49, 46, 129, 0.25)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-          <div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.12)', padding: '0.25rem 0.85rem', borderRadius: '20px', fontSize: '0.78rem', fontWeight: '700', color: '#c7d2fe', marginBottom: '0.75rem' }}>
-              <span>🔔 Support & Communications Desk</span>
+      {/* Top Luxury Communications Hero Card */}
+      <div className="van-notify-hero-card">
+        <div className="van-notify-hero-left">
+          <div className="van-notify-hero-icon-pod">
+            <BellRing size={28} strokeWidth={2.4} />
+          </div>
+          <div className="van-notify-hero-title-box">
+            <div className="van-notify-badge-row">
+              <span className="van-notify-glass-badge amber">
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#F59E0B', boxShadow: '0 0 6px #F59E0B' }}></span>
+                Live Communications Feed
+              </span>
+              <span className="van-notify-glass-badge">
+                <Radio size={12} /> Official Broadcasts
+              </span>
+              <span className="van-notify-glass-badge">
+                Support » Notifications
+              </span>
             </div>
-            <h1 style={{ fontSize: '1.85rem', fontWeight: '800', margin: '0 0 0.4rem 0', color: '#ffffff' }}>
-              Notifications & Announcements
-            </h1>
-            <p style={{ color: '#cbd5e1', fontSize: '0.925rem', maxWidth: '720px', margin: 0 }}>
+            <h1 className="van-notify-hero-h1">Notifications & Announcements</h1>
+            <p className="van-notify-hero-p">
               Stay informed with official company broadcasts, weekly payout confirmations, system updates, and milestone achievements.
             </p>
           </div>
+        </div>
 
-          <div style={{ display: 'flex', gap: '0.75rem' }}>
-            {unreadCount > 0 && (
-              <button
-                type="button"
-                onClick={handleMarkAllRead}
-                style={{
-                  padding: '0.65rem 1.25rem',
-                  background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
-                  color: '#ffffff',
-                  border: 'none',
-                  borderRadius: '8px',
-                  fontWeight: 700,
-                  fontSize: '0.85rem',
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 10px rgba(34, 197, 94, 0.3)',
-                }}
-              >
-                ✓ Mark All Read ({unreadCount})
-              </button>
-            )}
-
+        <div className="van-notify-hero-actions">
+          {unreadCount > 0 && (
             <button
               type="button"
-              onClick={loadNotifications}
-              style={{
-                padding: '0.65rem 1.25rem',
-                background: '#ffffff',
-                color: '#0f172a',
-                border: 'none',
-                borderRadius: '8px',
-                fontWeight: 700,
-                fontSize: '0.85rem',
-                cursor: 'pointer',
-              }}
+              onClick={handleMarkAllRead}
+              className="van-notify-glass-btn primary"
+              title="Mark all notifications as read"
             >
-              🔄 Refresh
+              <CheckCheck size={16} strokeWidth={2.5} />
+              <span>Mark All Read ({unreadCount})</span>
             </button>
-          </div>
+          )}
+
+          <button
+            type="button"
+            onClick={loadNotifications}
+            className="van-notify-glass-btn"
+            disabled={loading}
+            title="Refresh notifications"
+          >
+            <RotateCcw size={15} className={loading ? 'spin-anim' : ''} />
+            <span>{loading ? 'Refreshing...' : 'Refresh'}</span>
+          </button>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '1.25rem', marginBottom: '1.75rem', display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ flex: 1, minWidth: '260px' }}>
+      <div className="van-notify-control-card">
+        <div className="van-notify-search-box">
+          <span className="van-notify-search-icon">
+            <Search size={16} strokeWidth={2.2} />
+          </span>
           <input
             type="text"
             placeholder="Search notification messages, announcements, topics..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ width: '100%', padding: '0.6rem 1rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+            className="van-notify-search-input"
           />
+          {searchTerm && (
+            <button
+              type="button"
+              className="van-notify-search-clear"
+              onClick={() => setSearchTerm('')}
+              title="Clear search query"
+            >
+              <X size={14} />
+            </button>
+          )}
         </div>
 
-        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+        <div className="van-notify-filter-pills">
           <button
             type="button"
             onClick={() => setFilterType('all')}
-            style={{
-              padding: '0.5rem 0.9rem',
-              borderRadius: '20px',
-              border: '1px solid #cbd5e1',
-              background: filterType === 'all' ? '#0f172a' : '#ffffff',
-              color: filterType === 'all' ? '#ffffff' : '#475569',
-              fontSize: '0.8rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-            }}
+            className={`van-notify-pill ${filterType === 'all' ? 'active' : ''}`}
           >
-            All ({notifications.length})
+            <span>All</span>
+            <span className="van-notify-pill-badge">{notifications.length}</span>
           </button>
 
           <button
             type="button"
             onClick={() => setFilterType('unread')}
-            style={{
-              padding: '0.5rem 0.9rem',
-              borderRadius: '20px',
-              border: '1px solid #cbd5e1',
-              background: filterType === 'unread' ? '#16a34a' : '#ffffff',
-              color: filterType === 'unread' ? '#ffffff' : '#475569',
-              fontSize: '0.8rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-            }}
+            className={`van-notify-pill ${filterType === 'unread' ? 'active unread' : ''}`}
           >
-            Unread ({unreadCount})
+            <span>Unread</span>
+            <span className="van-notify-pill-badge">{unreadCount}</span>
           </button>
 
           <button
             type="button"
             onClick={() => setFilterType('announcement')}
-            style={{
-              padding: '0.5rem 0.9rem',
-              borderRadius: '20px',
-              border: '1px solid #cbd5e1',
-              background: filterType === 'announcement' ? '#7c3aed' : '#ffffff',
-              color: filterType === 'announcement' ? '#ffffff' : '#475569',
-              fontSize: '0.8rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-            }}
+            className={`van-notify-pill ${filterType === 'announcement' ? 'active announcement' : ''}`}
           >
-            📢 Announcements
+            <Megaphone size={13} />
+            <span>Announcements</span>
           </button>
 
           <button
             type="button"
             onClick={() => setFilterType('success')}
-            style={{
-              padding: '0.5rem 0.9rem',
-              borderRadius: '20px',
-              border: '1px solid #cbd5e1',
-              background: filterType === 'success' ? '#0284c7' : '#ffffff',
-              color: filterType === 'success' ? '#ffffff' : '#475569',
-              fontSize: '0.8rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-            }}
+            className={`van-notify-pill ${filterType === 'success' ? 'active success' : ''}`}
           >
-            🎉 Success / Payouts
+            <Wallet size={13} />
+            <span>Success / Payouts</span>
           </button>
 
           <button
             type="button"
             onClick={() => setFilterType('warning')}
-            style={{
-              padding: '0.5rem 0.9rem',
-              borderRadius: '20px',
-              border: '1px solid #cbd5e1',
-              background: filterType === 'warning' ? '#d97706' : '#ffffff',
-              color: filterType === 'warning' ? '#ffffff' : '#475569',
-              fontSize: '0.8rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-            }}
+            className={`van-notify-pill ${filterType === 'warning' ? 'active warning' : ''}`}
           >
-            ⚠️ Warnings / KYC
+            <AlertTriangle size={13} />
+            <span>Warnings / KYC</span>
           </button>
         </div>
       </div>
 
       {/* Notifications Feed */}
       {loading ? (
-        <div style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>Loading notification stream...</div>
-      ) : filteredNotifications.length === 0 ? (
-        <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '3.5rem 2rem', textAlign: 'center' }}>
-          <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: '0.75rem' }}>📭</span>
-          <h3 style={{ margin: '0 0 0.35rem 0', fontSize: '1.2rem', color: '#0f172a', fontWeight: 800 }}>No Notifications Found</h3>
-          <p style={{ margin: 0, color: '#64748b', fontSize: '0.875rem' }}>
-            You're all caught up with your network updates!
+        <div className="van-notify-empty-box">
+          <div className="van-spinner" style={{ width: '32px', height: '32px', borderTopColor: '#2563EB' }}></div>
+          <p style={{ margin: '0.5rem 0 0 0', color: '#64748B', fontWeight: 650, fontSize: '0.9rem' }}>
+            Synchronizing live notification stream...
           </p>
         </div>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {filteredNotifications.map((n) => (
-            <div
-              key={n.id}
-              onClick={() => handleItemClick(n)}
-              style={{
-                background: !n.is_read ? '#f0fdf4' : '#ffffff',
-                borderRadius: '14px',
-                border: `1px solid ${!n.is_read ? '#bbf7d0' : '#e2e8f0'}`,
-                padding: '1.25rem 1.5rem',
-                boxShadow: !n.is_read ? '0 4px 15px rgba(34, 197, 94, 0.08)' : '0 2px 8px rgba(0,0,0,0.02)',
-                cursor: 'pointer',
-                transition: 'transform 0.15s ease, box-shadow 0.15s ease',
-                display: 'flex',
-                gap: '1.25rem',
-                alignItems: 'flex-start',
+      ) : filteredNotifications.length === 0 ? (
+        <div className="van-notify-empty-box">
+          <div className="van-notify-empty-icon">
+            <Inbox size={32} strokeWidth={2.3} />
+          </div>
+          <div>
+            <h3 className="van-notify-empty-title">You're All Caught Up!</h3>
+            <p className="van-notify-empty-p">
+              {searchTerm
+                ? `No notification matches your query "${searchTerm}". Try searching for another keyword or clear the filter.`
+                : "There are no new broadcasts or notifications in this category. Any official payouts, system alerts, or promotions will appear here instantly."}
+            </p>
+          </div>
+          {searchTerm && (
+            <button
+              type="button"
+              className="van-vault-action-btn"
+              onClick={() => {
+                setSearchTerm('');
+                setFilterType('all');
               }}
             >
-              {/* Type Avatar */}
-              <div
-                style={{
-                  width: '46px',
-                  height: '46px',
-                  borderRadius: '12px',
-                  background:
-                    n.type === 'success' ? '#dcfce7' :
-                    n.type === 'warning' ? '#fee2e2' :
-                    n.type === 'info' ? '#e0f2fe' : '#f3e8ff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '1.4rem',
-                  flexShrink: 0,
-                }}
-              >
-                {getIcon(n.type)}
-              </div>
+              <span>Clear Filter & Show All</span>
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="van-notify-feed-list">
+          {filteredNotifications.map((n) => {
+            const iconClass =
+              n.type === 'success' || n.type === 'commission'
+                ? 'success'
+                : n.type === 'warning'
+                ? 'warning'
+                : n.type === 'info'
+                ? 'info'
+                : 'announcement';
 
-              {/* Message Details */}
-              <div style={{ flex: 1 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                    <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: !n.is_read ? 800 : 700, color: '#0f172a' }}>
-                      {n.title}
-                    </h3>
-                    {!n.is_read && (
-                      <span style={{ background: '#22c55e', color: '#ffffff', fontSize: '0.68rem', fontWeight: 800, padding: '0.15rem 0.55rem', borderRadius: '12px' }}>
-                        UNREAD
-                      </span>
-                    )}
+            return (
+              <div
+                key={n.id}
+                onClick={() => handleItemClick(n)}
+                className={`van-notify-item-card ${!n.is_read ? 'unread' : ''}`}
+              >
+                {/* 3D Micro-Icon Pod */}
+                <div className={`van-notify-item-icon-pod ${iconClass}`}>
+                  {getIconComponent(n.type)}
+                </div>
+
+                {/* Message Details */}
+                <div className="van-notify-content">
+                  <div className="van-notify-title-row">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                      <h3 className="van-notify-title">{n.title}</h3>
+                      {!n.is_read && (
+                        <span className="van-card-badge-pill green" style={{ fontSize: '0.65rem', padding: '0.12rem 0.5rem' }}>
+                          ● NEW UNREAD
+                        </span>
+                      )}
+                    </div>
+
+                    <span className="van-notify-time">
+                      <Clock size={12} />
+                      <span>{n.time_ago || (n.created_at ? formatDateTime(n.created_at) : '')}</span>
+                    </span>
                   </div>
 
-                  <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 600 }}>
-                    {n.time_ago || (n.created_at ? formatDateTime(n.created_at) : '')}
-                  </span>
-                </div>
+                  <p className="van-notify-message">{n.message}</p>
 
-                <p style={{ margin: '0 0 0.75rem 0', fontSize: '0.86rem', color: '#475569', lineHeight: 1.5 }}>
-                  {n.message}
-                </p>
+                  <div className="van-notify-footer">
+                    {n.action_url ? (
+                      <span className="van-notify-action-pill">
+                        <Sparkles size={13} />
+                        <span>Take Action: {n.action_url}</span>
+                        <ArrowUpRight size={13} strokeWidth={2.5} />
+                      </span>
+                    ) : (
+                      <span style={{ fontSize: '0.74rem', color: '#94A3B8', fontWeight: 650 }}>
+                        Vyapar AdNET Official Dispatch
+                      </span>
+                    )}
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #f1f5f9', paddingTop: '0.65rem' }}>
-                  {n.action_url ? (
-                    <span style={{ fontSize: '0.8rem', color: '#2563eb', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
-                      <span>🚀 Jump to Action:</span> <u>{n.action_url}</u> <span>→</span>
+                    <span style={{ fontSize: '0.74rem', color: n.is_read ? '#94A3B8' : '#16A34A', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                      {n.is_read ? (
+                        <>
+                          <Check size={13} strokeWidth={2.5} />
+                          <span>Read</span>
+                        </>
+                      ) : (
+                        <>
+                          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#16A34A' }}></span>
+                          <span>Click to mark read</span>
+                        </>
+                      )}
                     </span>
-                  ) : (
-                    <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>AddNet Official Notice</span>
-                  )}
-
-                  <span style={{ fontSize: '0.72rem', color: n.is_read ? '#94a3b8' : '#16a34a', fontWeight: 600 }}>
-                    {n.is_read ? '✓ Read' : '● Click to mark read'}
-                  </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

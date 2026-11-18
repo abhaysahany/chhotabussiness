@@ -5669,6 +5669,516 @@
   transform: translateY(0);
 }
 
+/* ========================================================================== */
+/* NOTIFICATIONS & ANNOUNCEMENTS COMMUNICATIONS DESK REDESIGN                  */
+/* ========================================================================== */
+
+.van-notify-page-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-bottom: 3.5rem;
+}
+
+/* Luxury Hero Banner */
+.van-notify-hero-card {
+  position: relative;
+  background: linear-gradient(135deg, #090E1E 0%, #0F172A 50%, #1E3A8A 100%);
+  border-radius: 20px;
+  border: 1.5px solid rgba(59, 130, 246, 0.28);
+  padding: 1.75rem 2.25rem;
+  overflow: hidden;
+  box-shadow: 0 12px 30px -4px rgba(15, 23, 42, 0.35), 0 0 25px rgba(59, 130, 246, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.van-notify-hero-card::after {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.van-notify-hero-left {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex: 1;
+  min-width: 280px;
+  position: relative;
+  z-index: 2;
+}
+
+.van-notify-hero-icon-pod {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  color: #FFFFFF;
+  box-shadow: 
+    0 8px 20px rgba(217, 119, 6, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.4),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+  animation: vanFloatPod 4s ease-in-out infinite;
+}
+
+.van-notify-hero-title-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.van-notify-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.2rem;
+}
+
+.van-notify-glass-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #93C5FD;
+  font-size: 0.72rem;
+  font-weight: 750;
+  padding: 0.2rem 0.65rem;
+  border-radius: 9999px;
+  backdrop-filter: blur(8px);
+  letter-spacing: 0.02em;
+}
+
+.van-notify-glass-badge.amber {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(251, 191, 36, 0.35);
+  color: #FCD34D;
+}
+
+.van-notify-hero-h1 {
+  margin: 0;
+  font-size: 1.55rem;
+  font-weight: 850;
+  color: #FFFFFF;
+  letter-spacing: -0.02em;
+}
+
+.van-notify-hero-p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #93C5FD;
+  line-height: 1.45;
+  max-width: 650px;
+}
+
+.van-notify-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 2;
+}
+
+.van-notify-glass-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.6rem 1.15rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  color: #FFFFFF;
+  font-size: 0.82rem;
+  font-weight: 750;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.van-notify-glass-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-1.5px);
+}
+
+.van-notify-glass-btn.primary {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  border: 1px solid rgba(52, 211, 153, 0.4);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+}
+
+.van-notify-glass-btn.primary:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.5);
+}
+
+/* Filter & Search Bar */
+.van-notify-control-card {
+  background: #FFFFFF;
+  border-radius: 18px;
+  border: 1.5px solid rgba(226, 232, 240, 0.9);
+  padding: 1.15rem 1.35rem;
+  box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.van-notify-search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 260px;
+}
+
+.van-notify-search-icon {
+  position: absolute;
+  left: 0.95rem;
+  color: #94A3B8;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.van-notify-search-input {
+  width: 100%;
+  padding: 0.65rem 2.5rem 0.65rem 2.6rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #0F172A;
+  background: #F8FAFC;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 12px;
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.van-notify-search-input:focus {
+  background: #FFFFFF;
+  border-color: #3B82F6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.van-notify-search-clear {
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  color: #94A3B8;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.15s ease;
+}
+
+.van-notify-search-clear:hover {
+  color: #0F172A;
+  background: #E2E8F0;
+}
+
+.van-notify-filter-pills {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.van-notify-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.48rem 0.95rem;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 750;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #E2E8F0;
+  background: #F8FAFC;
+  color: #475569;
+}
+
+.van-notify-pill:hover {
+  background: #FFFFFF;
+  border-color: #CBD5E1;
+  color: #0F172A;
+  transform: translateY(-1px);
+}
+
+.van-notify-pill.active {
+  background: #0F172A;
+  color: #FFFFFF;
+  border-color: #0F172A;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.2);
+}
+
+.van-notify-pill.active.unread {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  border-color: #059669;
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.3);
+}
+
+.van-notify-pill.active.announcement {
+  background: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%);
+  border-color: #6D28D9;
+  box-shadow: 0 3px 10px rgba(109, 40, 217, 0.3);
+}
+
+.van-notify-pill.active.success {
+  background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%);
+  border-color: #0369A1;
+  box-shadow: 0 3px 10px rgba(2, 132, 199, 0.3);
+}
+
+.van-notify-pill.active.warning {
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  border-color: #D97706;
+  box-shadow: 0 3px 10px rgba(217, 119, 6, 0.3);
+}
+
+.van-notify-pill-badge {
+  background: rgba(0, 0, 0, 0.08);
+  font-size: 0.7rem;
+  padding: 0.08rem 0.45rem;
+  border-radius: 9999px;
+  font-weight: 800;
+}
+
+.van-notify-pill.active .van-notify-pill-badge {
+  background: rgba(255, 255, 255, 0.25);
+  color: #FFFFFF;
+}
+
+/* Notification Feed Items */
+.van-notify-feed-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+}
+
+.van-notify-item-card {
+  background: #FFFFFF;
+  border-radius: 16px;
+  border: 1.5px solid rgba(226, 232, 240, 0.9);
+  padding: 1.25rem 1.45rem;
+  display: flex;
+  gap: 1.15rem;
+  align-items: flex-start;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.van-notify-item-card:hover {
+  transform: translateY(-2px);
+  border-color: #93C5FD;
+  box-shadow: 0 8px 22px -3px rgba(37, 99, 235, 0.09);
+}
+
+.van-notify-item-card.unread {
+  background: linear-gradient(180deg, #F0FDF4 0%, #FFFFFF 100%);
+  border-color: #86EFAC;
+  box-shadow: 0 4px 14px rgba(34, 197, 94, 0.08);
+}
+
+.van-notify-item-card.unread::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, #10B981 0%, #059669 100%);
+}
+
+.van-notify-item-icon-pod {
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.van-notify-item-card:hover .van-notify-item-icon-pod {
+  transform: scale(1.08) rotate(3deg);
+}
+
+.van-notify-item-icon-pod.success {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: #FFFFFF;
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+}
+
+.van-notify-item-icon-pod.warning {
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  color: #FFFFFF;
+  box-shadow: 0 4px 10px rgba(217, 119, 6, 0.3);
+}
+
+.van-notify-item-icon-pod.announcement {
+  background: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%);
+  color: #FFFFFF;
+  box-shadow: 0 4px 10px rgba(109, 40, 217, 0.3);
+}
+
+.van-notify-item-icon-pod.info {
+  background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+  color: #FFFFFF;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+}
+
+.van-notify-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.van-notify-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.van-notify-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0F172A;
+  letter-spacing: -0.01em;
+}
+
+.van-notify-time {
+  font-size: 0.75rem;
+  color: #64748B;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.van-notify-message {
+  margin: 0 0 0.85rem 0;
+  font-size: 0.865rem;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.van-notify-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-top: 1px solid #F1F5F9;
+  padding-top: 0.65rem;
+}
+
+.van-notify-action-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 750;
+  color: #1D4ED8;
+  background: #EFF6FF;
+  border: 1px solid #DBEAFE;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+}
+
+.van-notify-action-pill:hover {
+  background: #2563EB;
+  color: #FFFFFF;
+  border-color: #1D4ED8;
+}
+
+/* Luxury Empty State */
+.van-notify-empty-box {
+  background: #FFFFFF;
+  border-radius: 20px;
+  border: 1.5px solid rgba(226, 232, 240, 0.9);
+  padding: 3.5rem 2rem;
+  text-align: center;
+  box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.04);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.van-notify-empty-box::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.van-notify-empty-icon {
+  width: 70px;
+  height: 70px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+  color: #2563EB;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.15);
+  animation: vanFloatPod 4s ease-in-out infinite;
+}
+
+.van-notify-empty-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 850;
+  color: #0F172A;
+  letter-spacing: -0.01em;
+}
+
+.van-notify-empty-p {
+  margin: 0;
+  color: #64748B;
+  font-size: 0.88rem;
+  max-width: 480px;
+  line-height: 1.5;
+}
+
+
 
 
 
