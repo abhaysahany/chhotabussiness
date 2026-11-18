@@ -648,12 +648,11 @@
 }
 
 .cb-footer-brand-logo.brand-logo-img {
-  width: 90px;
-  height: 90px;
-  max-width: 90px;
-  max-height: 90px;
+  height: 54px;
+  max-height: 60px;
+  width: auto;
+  max-width: 240px;
   object-fit: contain;
-  aspect-ratio: 1 / 1;
   display: block;
 }
 
@@ -755,10 +754,10 @@
     margin-bottom: 1rem;
   }
   .cb-footer-brand-logo.brand-logo-img {
-    width: 72px !important;
-    height: 72px !important;
-    max-width: 72px;
-    max-height: 72px;
+    height: 42px !important;
+    max-height: 46px !important;
+    width: auto !important;
+    max-width: 190px !important;
   }
   .cb-footer-brand-logo.brand-logo-fallback-text {
     font-size: 1.2rem;
@@ -776,9 +775,9 @@
 
 @media (max-width: 360px) {
   .cb-footer-brand-logo.brand-logo-img {
-    width: 64px !important;
-    height: 64px !important;
-    max-width: 64px;
-    max-height: 64px;
+    height: 36px !important;
+    max-height: 38px !important;
+    width: auto !important;
+    max-width: 160px !important;
   }
 }

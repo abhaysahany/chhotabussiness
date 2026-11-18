@@ -55,11 +55,24 @@ function LandingNavbar({ onLoginClick, onRegisterClick, onNavigateSection }) {
           height: 100%;
         }
 
-        .cb-nav-logo img {
-          width: 70px;
-          height: 70px;
+        .cb-nav-logo img,
+        .cb-nav-logo .brand-logo-img {
+          height: 50px;
+          max-height: 54px;
+          width: auto;
+          max-width: 220px;
           object-fit: contain;
           flex-shrink: 0;
+          display: block;
+        }
+
+        @media (max-width: 768px) {
+          .cb-nav-logo img,
+          .cb-nav-logo .brand-logo-img {
+            height: 38px;
+            max-height: 40px;
+            max-width: 150px;
+          }
         }
 
         .cb-header-login-btn {
@@ -126,9 +139,13 @@ function LandingNavbar({ onLoginClick, onRegisterClick, onNavigateSection }) {
             flex-shrink: 1;
           }
 
-          .cb-nav-logo img {
-            width: 58px !important;
-            height: 58px !important;
+          .cb-nav-logo img,
+          .cb-nav-logo .brand-logo-img {
+            height: 38px !important;
+            max-height: 40px !important;
+            width: auto !important;
+            max-width: 160px !important;
+            object-fit: contain !important;
             flex-shrink: 0;
           }
 
@@ -204,9 +221,13 @@ function LandingNavbar({ onLoginClick, onRegisterClick, onNavigateSection }) {
             gap: 0.45rem;
           }
 
-          .cb-nav-logo img {
-            width: 48px !important;
-            height: 48px !important;
+          .cb-nav-logo img,
+          .cb-nav-logo .brand-logo-img {
+            height: 32px !important;
+            max-height: 34px !important;
+            width: auto !important;
+            max-width: 130px !important;
+            object-fit: contain !important;
           }
 
           .cb-brand-title {
@@ -256,7 +277,7 @@ function LandingNavbar({ onLoginClick, onRegisterClick, onNavigateSection }) {
         {/* Brand Logo & Mobile Toggle Row */}
         <div className="cb-nav-top-row">
           <div className="cb-nav-logo" onClick={() => handleScrollTo('hero')}>
-            <BrandLogo size={70} mobileSize={58} alt={appName} />
+            <BrandLogo size={50} mobileSize={38} maxWidth={220} alt={appName} />
           </div>
 
           {/* Mobile Hamburger Toggle (placed in top row on mobile, styled via CSS) */}

@@ -145,7 +145,7 @@ export default function SponsorOnboardingPage({ user, onComplete, onLogout }) {
       {/* 1. Top Navigation Bar (Matches Login Page Topbar) */}
       <header className="cb-auth-topbar">
         <div className="cb-topbar-brand">
-          <BrandLogo size={42} alt={appName} />
+          <BrandLogo size={42} mobileSize={34} maxWidth={180} alt={appName} />
         </div>
 
         <button
@@ -236,7 +236,7 @@ export default function SponsorOnboardingPage({ user, onComplete, onLogout }) {
 
             {/* Brand Logo Header (Logo-Only Presentation, Horizontally Centered) */}
             <div className="cb-auth-brand-header" style={{ marginBottom: '1.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
-              <BrandLogo size={96} mobileSize={80} alt={appName} />
+              <BrandLogo size={54} mobileSize={44} maxWidth={220} alt={appName} />
             </div>
 
             {/* Step Badge */}

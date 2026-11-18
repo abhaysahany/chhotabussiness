@@ -430,7 +430,7 @@ function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackTo
             
             {/* Brand Logo Header (Logo-Only Presentation, Horizontally Centered) */}
             <div className="cb-auth-brand-header" style={{ marginBottom: '1.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
-              <BrandLogo size={96} mobileSize={80} onClick={onBackToHome} style={{ cursor: onBackToHome ? 'pointer' : 'default' }} />
+              <BrandLogo size={54} mobileSize={44} maxWidth={220} onClick={onBackToHome} style={{ cursor: onBackToHome ? 'pointer' : 'default' }} />
             </div>
 
             {/* Switch Tabs (Login vs Register) */}

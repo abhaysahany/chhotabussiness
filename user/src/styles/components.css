@@ -1100,17 +1100,20 @@
    Brand Logo (Logo-Only Presentation & Responsive Sizing)
    ========================================================================== */
 .brand-logo-img {
-  width: var(--brand-logo-size, 56px);
-  height: var(--brand-logo-size, 56px);
+  height: var(--brand-logo-height, var(--brand-logo-size, 48px));
+  max-height: var(--brand-logo-max-height, 56px);
+  width: auto;
+  max-width: var(--brand-logo-max-width, 220px);
   object-fit: contain;
-  aspect-ratio: 1 / 1;
   display: block;
 }
 
 @media (max-width: 768px) {
   .brand-logo-img {
-    width: var(--brand-logo-mobile-size, var(--brand-logo-size, 56px));
-    height: var(--brand-logo-mobile-size, var(--brand-logo-size, 56px));
+    height: var(--brand-logo-mobile-height, var(--brand-logo-mobile-size, 38px));
+    max-height: 42px;
+    width: auto;
+    max-width: 160px;
   }
 }
 

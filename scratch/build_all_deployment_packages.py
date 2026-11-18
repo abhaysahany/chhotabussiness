@@ -96,6 +96,9 @@ backend_dirs = [
     "backend/bootstrap",
     "backend/config",
     "backend/routes",
+    "backend/resources/views/emails",
+    "backend/public/images",
+    "backend/public/logo",
 ]
 
 with zipfile.ZipFile(backend_zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
@@ -106,6 +109,13 @@ with zipfile.ZipFile(backend_zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
                 full_path = os.path.join(root, file)
                 rel_path = os.path.relpath(full_path, base_dir).replace('\\', '/')
                 zipf.write(full_path, rel_path)
+
+    # Extra single backend files
+    extra_files = ["backend/public/logo.png", "backend/public/favicon.ico", "backend/public/favicon.png"]
+    for ef in extra_files:
+        ef_path = os.path.join(base_dir, ef)
+        if os.path.exists(ef_path):
+            zipf.write(ef_path, ef)
 
 print(f"-> Backend patch package created: {os.path.getsize(backend_zip_path):,} bytes\n")
 
