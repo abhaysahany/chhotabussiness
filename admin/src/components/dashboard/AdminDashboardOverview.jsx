@@ -495,7 +495,7 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
         </div>
       </div>
 
-      {/* 2. Four Corporate Financial Vault KPI Cards */}
+      {/* 2. Four Corporate Financial Vault KPI Cards (Strict 2x2 Grid) */}
       <div className="adm-kpi-grid">
         {/* Card 1: Gross Platform GMV */}
         <div className="adm-kpi-card adm-kpi-card-steel">
@@ -503,38 +503,41 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
             <div>
               <span
                 style={{
-                  fontSize: '0.68rem',
+                  fontSize: '0.7rem',
                   fontWeight: 800,
                   color: '#3569a7',
                   background: 'rgba(53, 105, 167, 0.1)',
-                  padding: '2.5px 8px',
+                  padding: '3px 10px',
                   borderRadius: '6px',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.04em',
+                  letterSpacing: '0.05em',
                   display: 'inline-block',
-                  marginBottom: '0.35rem',
+                  marginBottom: '0.45rem',
                   whiteSpace: 'nowrap',
                 }}
               >
                 ● PLATFORM GMV
               </span>
-              <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#475569', letterSpacing: '0.04em' }}>
+              <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#475569', letterSpacing: '0.04em' }}>
                 PLATFORM GROSS VOLUME (GMV)
               </div>
             </div>
-            <div className="adm-3d-pod adm-pod-steel" style={{ width: '40px', height: '40px', borderRadius: '12px' }}>
-              <Receipt size={18} strokeWidth={2.4} />
+            <div className="adm-3d-pod adm-pod-steel" style={{ width: '48px', height: '48px', borderRadius: '14px' }}>
+              <Receipt size={22} strokeWidth={2.4} />
             </div>
           </div>
-          <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
+          <div style={{ margin: '0.85rem 0 0.45rem 0' }}>
             <div className="adm-kpi-val">
               ₹{kpis.totalGmv.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
           </div>
           <div className="adm-kpi-footer">
-            <span>Merchant &amp; Affiliate Sales</span>
-            <span style={{ color: '#0d9488', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
-              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#0d9488' }}></span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+              <Layers size={14} color="#3569a7" />
+              <span>Merchant &amp; Affiliate Sales</span>
+            </span>
+            <span style={{ color: '#0d9488', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+              <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#0d9488' }}></span>
               Active System
             </span>
           </div>
@@ -546,36 +549,39 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
             <div>
               <span
                 style={{
-                  fontSize: '0.68rem',
+                  fontSize: '0.7rem',
                   fontWeight: 800,
                   color: '#0d9488',
                   background: 'rgba(13, 148, 136, 0.1)',
-                  padding: '2.5px 8px',
+                  padding: '3px 10px',
                   borderRadius: '6px',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.04em',
+                  letterSpacing: '0.05em',
                   display: 'inline-block',
-                  marginBottom: '0.35rem',
+                  marginBottom: '0.45rem',
                   whiteSpace: 'nowrap',
                 }}
               >
                 ● NET RETAINED POOL
               </span>
-              <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#475569', letterSpacing: '0.04em' }}>
+              <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#475569', letterSpacing: '0.04em' }}>
                 RETAINED ADMIN FEE POOL
               </div>
             </div>
-            <div className="adm-3d-pod adm-pod-emerald" style={{ width: '40px', height: '40px', borderRadius: '12px' }}>
-              <TrendingUp size={18} strokeWidth={2.4} />
+            <div className="adm-3d-pod adm-pod-emerald" style={{ width: '48px', height: '48px', borderRadius: '14px' }}>
+              <TrendingUp size={22} strokeWidth={2.4} />
             </div>
           </div>
-          <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
+          <div style={{ margin: '0.85rem 0 0.45rem 0' }}>
             <div className="adm-kpi-val" style={{ color: '#0d9488' }}>
               ₹{kpis.totalPlatformRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
           </div>
           <div className="adm-kpi-footer">
-            <span>Net Corporate Earnings</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+              <DollarSign size={14} color="#0d9488" />
+              <span>Net Corporate Earnings</span>
+            </span>
             <button
               type="button"
               onClick={() => onNavigate && onNavigate('orders-management')}
@@ -592,36 +598,39 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
             <div>
               <span
                 style={{
-                  fontSize: '0.68rem',
+                  fontSize: '0.7rem',
                   fontWeight: 800,
                   color: '#d97706',
                   background: 'rgba(217, 119, 6, 0.1)',
-                  padding: '2.5px 8px',
+                  padding: '3px 10px',
                   borderRadius: '6px',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.04em',
+                  letterSpacing: '0.05em',
                   display: 'inline-block',
-                  marginBottom: '0.35rem',
+                  marginBottom: '0.45rem',
                   whiteSpace: 'nowrap',
                 }}
               >
                 ● COMMISSIONS &amp; TAX
               </span>
-              <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#475569', letterSpacing: '0.04em' }}>
+              <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#475569', letterSpacing: '0.04em' }}>
                 DISBURSED COMMISSIONS &amp; TDS
               </div>
             </div>
-            <div className="adm-3d-pod adm-pod-amber" style={{ width: '40px', height: '40px', borderRadius: '12px' }}>
-              <CreditCard size={18} strokeWidth={2.4} />
+            <div className="adm-3d-pod adm-pod-amber" style={{ width: '48px', height: '48px', borderRadius: '14px' }}>
+              <CreditCard size={22} strokeWidth={2.4} />
             </div>
           </div>
-          <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
+          <div style={{ margin: '0.85rem 0 0.45rem 0' }}>
             <div className="adm-kpi-val" style={{ color: '#d97706' }}>
               ₹{kpis.totalCommissionsPaid.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
           </div>
           <div className="adm-kpi-footer">
-            <span>TDS Pool: ₹{kpis.totalTdsCollected.toLocaleString('en-IN')} (5% Tax)</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+              <CreditCard size={14} color="#d97706" />
+              <span>TDS Pool: ₹{kpis.totalTdsCollected.toLocaleString('en-IN')} (5% Tax)</span>
+            </span>
             <span style={{ color: '#d97706', fontWeight: 800 }}>Settled</span>
           </div>
         </div>
@@ -632,37 +641,40 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
             <div>
               <span
                 style={{
-                  fontSize: '0.68rem',
+                  fontSize: '0.7rem',
                   fontWeight: 800,
                   color: '#4f46e5',
                   background: 'rgba(79, 70, 229, 0.1)',
-                  padding: '2.5px 8px',
+                  padding: '3px 10px',
                   borderRadius: '6px',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.04em',
+                  letterSpacing: '0.05em',
                   display: 'inline-block',
-                  marginBottom: '0.35rem',
+                  marginBottom: '0.45rem',
                   whiteSpace: 'nowrap',
                 }}
               >
                 ● AFFILIATE NETWORK
               </span>
-              <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#475569', letterSpacing: '0.04em' }}>
+              <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#475569', letterSpacing: '0.04em' }}>
                 REGISTERED NETWORK BASE
               </div>
             </div>
-            <div className="adm-3d-pod adm-pod-indigo" style={{ width: '40px', height: '40px', borderRadius: '12px' }}>
-              <Users2 size={18} strokeWidth={2.4} />
+            <div className="adm-3d-pod adm-pod-indigo" style={{ width: '48px', height: '48px', borderRadius: '14px' }}>
+              <Users2 size={22} strokeWidth={2.4} />
             </div>
           </div>
-          <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
+          <div style={{ margin: '0.85rem 0 0.45rem 0' }}>
             <div className="adm-kpi-val" style={{ color: '#0f172a' }}>
               {kpis.totalUsers.toLocaleString('en-IN')}{' '}
-              <span style={{ fontSize: '0.84rem', color: '#64748b', fontWeight: 700 }}>({kpis.activeUsers} Active)</span>
+              <span style={{ fontSize: '0.88rem', color: '#64748b', fontWeight: 700 }}>({kpis.activeUsers} Active)</span>
             </div>
           </div>
           <div className="adm-kpi-footer">
-            <span>+{kpis.newUsersThisMonth} joins this month</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+              <Users2 size={14} color="#4f46e5" />
+              <span>+{kpis.newUsersThisMonth} joins this month</span>
+            </span>
             <button
               type="button"
               onClick={() => onNavigate && onNavigate('users-details')}

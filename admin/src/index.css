@@ -2784,32 +2784,39 @@ div[style*="position: fixed"]:not(.sidebar-container):not(.sidebar-backdrop):not
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-/* 4 KPI Financial Vault Cards */
+/* 4 KPI Financial Vault Cards (Strict 2x2 Grid, Spacious & Executive) */
 .adm-kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.15rem;
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 1.4rem !important;
   width: 100%;
+}
+
+@media (max-width: 768px) {
+  .adm-kpi-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
 }
 
 .adm-kpi-card {
   background: #ffffff;
-  border-radius: 18px;
-  border: 1px solid #e2e8f0;
-  padding: 1.25rem 1.4rem;
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02);
+  border-radius: 20px;
+  border: 1px solid #cbd5e1;
+  padding: 1.6rem 1.85rem;
+  box-shadow: 0 6px 20px -3px rgba(15, 23, 42, 0.04), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 172px;
-  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  min-height: 192px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   overflow: hidden;
 }
 
 .adm-kpi-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 16px 32px -6px rgba(15, 23, 42, 0.08);
+  transform: translateY(-5px);
+  box-shadow: 0 20px 38px -10px rgba(15, 23, 42, 0.09);
 }
 
 .adm-kpi-card-steel {
