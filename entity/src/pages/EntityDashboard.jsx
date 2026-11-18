@@ -212,9 +212,9 @@ function EntityDashboard() {
 
   const mixedComboSeries = useMemo(() => {
     return [
-      { name: 'Gross Billed (Column)', type: 'column', data: data?.charts?.grossSeries || [] },
-      { name: 'Net Bank Disbursed (Line)', type: 'line', data: data?.charts?.netSeries || [] },
-      { name: 'Balance Receivables (Dashed)', type: 'line', data: data?.charts?.balanceSeries || [] },
+      { name: 'Gross Billed', type: 'column', data: data?.charts?.grossSeries || [] },
+      { name: 'Net Disbursed', type: 'line', data: data?.charts?.netSeries || [] },
+      { name: 'Balance Due', type: 'line', data: data?.charts?.balanceSeries || [] },
     ];
   }, [data]);
 
@@ -786,27 +786,39 @@ function EntityDashboard() {
               </div>
             </div>
 
-            {/* Custom 3D Interactive Clickable Legend Bar */}
-            <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap', alignItems: 'center', marginTop: '0.65rem', marginBottom: '0.65rem', padding: '0 0.15rem' }}>
+            {/* Custom 3D Interactive Clickable Legend Bar (Strictly Inline) */}
+            <div
+              style={{
+                display: 'flex',
+                gap: '0.45rem',
+                flexWrap: 'nowrap',
+                alignItems: 'center',
+                marginTop: '0.65rem',
+                marginBottom: '0.5rem',
+                overflowX: 'auto',
+                whiteSpace: 'nowrap',
+              }}
+            >
               <button
                 type="button"
-                onClick={() => toggleSeries('Gross Billed (Column)', 'gross')}
+                onClick={() => toggleSeries('Gross Billed', 'gross')}
                 style={{
                   background: hiddenSeries.gross ? '#f8fafc' : '#f4f6ec',
                   color: hiddenSeries.gross ? '#94a3b8' : '#636B2F',
                   border: hiddenSeries.gross ? '1.5px solid #cbd5e1' : '1.5px solid #d4dcbe',
-                  borderRadius: '8px',
-                  padding: '5px 12px',
-                  fontSize: '0.74rem',
+                  borderRadius: '7px',
+                  padding: '4px 10px',
+                  fontSize: '0.72rem',
                   fontWeight: 800,
                   cursor: 'pointer',
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '6px',
+                  gap: '5px',
                   opacity: hiddenSeries.gross ? 0.45 : 1,
                   textDecoration: hiddenSeries.gross ? 'line-through' : 'none',
                   boxShadow: hiddenSeries.gross ? 'none' : '0 2px 6px rgba(99, 107, 47, 0.15)',
                   transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                  flexShrink: 0,
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-2px)';
@@ -820,35 +832,36 @@ function EntityDashboard() {
               >
                 <span
                   style={{
-                    width: 10,
-                    height: 10,
-                    borderRadius: 3,
+                    width: 9,
+                    height: 9,
+                    borderRadius: 2.5,
                     background: hiddenSeries.gross ? '#94a3b8' : '#636B2F',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.2)',
                   }}
                 />
-                <span>Gross Billed (Column)</span>
+                <span>Gross Billed</span>
               </button>
 
               <button
                 type="button"
-                onClick={() => toggleSeries('Net Bank Disbursed (Line)', 'net')}
+                onClick={() => toggleSeries('Net Disbursed', 'net')}
                 style={{
                   background: hiddenSeries.net ? '#f8fafc' : '#ecfdf5',
                   color: hiddenSeries.net ? '#94a3b8' : '#059669',
                   border: hiddenSeries.net ? '1.5px solid #cbd5e1' : '1.5px solid #a7f3d0',
-                  borderRadius: '8px',
-                  padding: '5px 12px',
-                  fontSize: '0.74rem',
+                  borderRadius: '7px',
+                  padding: '4px 10px',
+                  fontSize: '0.72rem',
                   fontWeight: 800,
                   cursor: 'pointer',
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '6px',
+                  gap: '5px',
                   opacity: hiddenSeries.net ? 0.45 : 1,
                   textDecoration: hiddenSeries.net ? 'line-through' : 'none',
                   boxShadow: hiddenSeries.net ? 'none' : '0 2px 6px rgba(5, 150, 105, 0.15)',
                   transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                  flexShrink: 0,
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-2px)';
@@ -858,39 +871,40 @@ function EntityDashboard() {
                   e.currentTarget.style.transform = 'translateY(0)';
                   e.currentTarget.style.boxShadow = hiddenSeries.net ? 'none' : '0 2px 6px rgba(5, 150, 105, 0.15)';
                 }}
-                title="Click to show / hide Net Bank Disbursed"
+                title="Click to show / hide Net Disbursed"
               >
                 <span
                   style={{
-                    width: 12,
-                    height: 4,
+                    width: 10,
+                    height: 3.5,
                     borderRadius: 2,
                     background: hiddenSeries.net ? '#94a3b8' : '#059669',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.2)',
                   }}
                 />
-                <span>Net Bank Disbursed (Line)</span>
+                <span>Net Disbursed</span>
               </button>
 
               <button
                 type="button"
-                onClick={() => toggleSeries('Balance Receivables (Dashed)', 'balance')}
+                onClick={() => toggleSeries('Balance Due', 'balance')}
                 style={{
                   background: hiddenSeries.balance ? '#f8fafc' : '#fffbeb',
                   color: hiddenSeries.balance ? '#94a3b8' : '#d97706',
                   border: hiddenSeries.balance ? '1.5px solid #cbd5e1' : '1.5px solid #fde68a',
-                  borderRadius: '8px',
-                  padding: '5px 12px',
-                  fontSize: '0.74rem',
+                  borderRadius: '7px',
+                  padding: '4px 10px',
+                  fontSize: '0.72rem',
                   fontWeight: 800,
                   cursor: 'pointer',
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '6px',
+                  gap: '5px',
                   opacity: hiddenSeries.balance ? 0.45 : 1,
                   textDecoration: hiddenSeries.balance ? 'line-through' : 'none',
                   boxShadow: hiddenSeries.balance ? 'none' : '0 2px 6px rgba(217, 119, 6, 0.15)',
                   transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                  flexShrink: 0,
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-2px)';
@@ -900,16 +914,16 @@ function EntityDashboard() {
                   e.currentTarget.style.transform = 'translateY(0)';
                   e.currentTarget.style.boxShadow = hiddenSeries.balance ? 'none' : '0 2px 6px rgba(217, 119, 6, 0.15)';
                 }}
-                title="Click to show / hide Balance Receivables"
+                title="Click to show / hide Balance Due"
               >
                 <span
                   style={{
-                    width: 12,
+                    width: 10,
                     height: 2,
-                    borderTop: hiddenSeries.balance ? '2.5px dashed #94a3b8' : '2.5px dashed #d97706',
+                    borderTop: hiddenSeries.balance ? '2px dashed #94a3b8' : '2px dashed #d97706',
                   }}
                 />
-                <span>Balance Receivables (Dashed)</span>
+                <span>Balance Due</span>
               </button>
             </div>
           </div>
