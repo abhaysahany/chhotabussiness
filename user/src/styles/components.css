@@ -556,6 +556,146 @@
   }
 }
 
+.van-kyc-grid-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 2.25rem;
+  margin-top: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .van-kyc-grid-layout {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+}
+
+/* ==========================================================================
+   KYC Verification Desk — Premium Luxury & 3D Animated Components
+   ========================================================================== */
+.van-kyc-card {
+  background: #FFFFFF;
+  border-radius: 22px;
+  border: 1.5px solid #E2E8F0;
+  box-shadow: 0 10px 30px -4px rgba(15, 23, 42, 0.05), 0 4px 12px -2px rgba(15, 23, 42, 0.03), inset 0 1px 0 #FFFFFF;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.van-kyc-card:hover {
+  box-shadow: 0 20px 40px -6px rgba(15, 23, 42, 0.08), 0 8px 18px -2px rgba(15, 23, 42, 0.03);
+  border-color: #CBD5E1;
+}
+
+.van-kyc-card-accent-blue {
+  border-top: 4px solid #2563EB;
+}
+
+.van-kyc-card-accent-amber {
+  border-top: 4px solid #F59E0B;
+}
+
+.van-kyc-card-accent-emerald {
+  border-top: 4px solid #10B981;
+}
+
+/* 3D Pod Floating Animation */
+.van-3d-pod-float {
+  animation: van-avatar-smooth-float 4.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  transform: translateZ(0);
+}
+
+.van-kyc-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.85rem 1.25rem;
+  border: 2px dashed #93C5FD;
+  border-radius: 16px;
+  background: #F8FAFC;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: center;
+  position: relative;
+}
+
+.van-kyc-dropzone:hover {
+  background: #F0F7FF;
+  border-color: #2563EB;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px -4px rgba(37, 99, 235, 0.12);
+}
+
+.van-kyc-dropzone.error {
+  border-color: #F87171;
+  background: #FEF2F2;
+}
+
+.van-kyc-input-box {
+  width: 100%;
+  padding: 0.92rem 1.15rem;
+  border-radius: 12px;
+  border: 1.5px solid #CBD5E1;
+  background: #F8FAFC;
+  font-size: 1.05rem;
+  font-weight: 800;
+  font-family: monospace;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  outline: none;
+  color: #0F172A;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.van-kyc-input-box:focus {
+  border-color: #2563EB;
+  background: #FFFFFF;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+}
+
+.van-kyc-input-box.error {
+  border-color: #EF4444;
+  background: #FEF2F2;
+}
+
+.van-kyc-stepper-track {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.van-kyc-stepper-track::before {
+  content: '';
+  position: absolute;
+  top: 26px;
+  bottom: 26px;
+  left: 23px;
+  width: 2px;
+  background: repeating-linear-gradient(to bottom, #CBD5E1 0, #CBD5E1 5px, transparent 5px, transparent 10px);
+  z-index: 0;
+}
+
+.van-kyc-checklist-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.van-kyc-checklist-row:hover {
+  background: #F0FDF4;
+  border-color: #BBF7D0;
+  transform: translateX(3px);
+}
+
 .van-stat-card-premium {
   background: #FFFFFF;
   border-radius: 14px;
