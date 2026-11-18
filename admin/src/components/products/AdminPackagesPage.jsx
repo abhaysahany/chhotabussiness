@@ -536,7 +536,7 @@ function AdminPackagesPage() {
           <p style={{ margin: 0, fontWeight: '600' }}>Loading pricing packages from database...</p>
         </div>
       ) : viewMode === 'table' ? (
-        <div className="pro-card-table">
+        <div className="pro-card-table table-responsive">
           <div className="pro-table-header">
             <h3>Pricing Packages Directory ({filteredPackages.length} Bundles)</h3>
           </div>
