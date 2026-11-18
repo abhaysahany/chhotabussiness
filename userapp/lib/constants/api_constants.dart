@@ -31,4 +31,39 @@ class ApiConstants {
   static const String logout = '/logout';
   static const String dashboardStats = '/user/dashboard-stats';
   static const String userInfo = '/user/info';
+
+  // Network Endpoints
+  static const String networkDirect = '/user/network/direct';
+  static const String networkTeam = '/user/network/team';
+  static const String networkGenealogy = '/user/network/genealogy';
+
+  // Income Endpoints
+  static const String incomeDirect = '/user/income/direct';
+  static const String incomeDirectOrders = '/user/income/direct-orders';
+  static const String incomeLevels = '/user/income/levels';
+  static const String incomeSummary = '/user/income/summary';
+
+  // Rewards Endpoints
+  static const String rewards = '/user/rewards';
+  static const String rewardClaims = '/user/reward-claims';
+  static const String claimReward = '/user/rewards/claim';
+  static const String diamonds = '/user/diamonds';
+
+  // Payouts & Payments
+  static const String payouts = '/user/payouts';
+  static const String payoutWithdraw = '/user/payouts/withdraw';
+  static const String businessReports = '/user/business-reports';
+
+  // Settings, KYC & Bank Accounts
+  static const String profile = '/user/profile';
+  static const String profilePhoto = '/user/profile/photo';
+  static const String updatePassword = '/user/update-password';
+  static const String kycSubmit = '/user/kyc/submit';
+  static const String payoutAccounts = '/user/payout-accounts';
+  static const String sendBankOtp = '/user/send-bank-otp';
+  static const String addBankAccount = '/user/bank-accounts/add';
+  static const String addUpiAccount = '/user/upi-accounts/add';
+
+  // Support Endpoints
+  static const String supportTickets = '/user/support-tickets';
 }
