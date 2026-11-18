@@ -427,9 +427,9 @@ function SupportTickets({ user }) {
                   <div
                     key={t.id}
                     onClick={() => setSelectedTicketId(t.id)}
-                    className={`van-ticket-item-row ${isSelected ? 'active' : ''}`}
+                    className={`van-ticket-item-pod ${isSelected ? 'active' : ''}`}
                   >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem' }}>
                       <span className="van-ticket-code-badge">
                         {t.ticket_code}
                       </span>
@@ -442,9 +442,9 @@ function SupportTickets({ user }) {
                       {t.subject}
                     </h4>
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem', color: '#64748B' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem', color: '#64748B', marginTop: '0.2rem' }}>
                       <span style={{ maxWidth: '170px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                        <Folder size={12} />
+                        <Folder size={12} style={{ color: '#94A3B8' }} />
                         <span>{t.category}</span>
                       </span>
                       <span className={`van-card-badge-pill ${priorityClass}`} style={{ fontSize: '0.62rem', padding: '0.08rem 0.4rem' }}>
@@ -462,11 +462,13 @@ function SupportTickets({ user }) {
         <div className="van-support-thread-card">
           {selectedTicket ? (
             <>
+              <div className="van-security-card-stripe blue"></div>
+
               {/* Thread Header */}
               <div className="van-support-thread-header">
                 <div style={{ minWidth: '240px', flex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', marginBottom: '0.35rem' }}>
-                    <span className="van-ticket-code-badge" style={{ fontSize: '0.85rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', marginBottom: '0.45rem', flexWrap: 'wrap' }}>
+                    <span className="van-ticket-code-badge" style={{ fontSize: '0.82rem' }}>
                       {selectedTicket.ticket_code}
                     </span>
                     <span className={`van-card-badge-pill ${getStatusBadgeClass(selectedTicket.status)}`}>
@@ -477,15 +479,18 @@ function SupportTickets({ user }) {
                     </span>
                   </div>
 
-                  <h2 style={{ fontSize: '1.25rem', fontWeight: 850, color: '#0F172A', margin: '0 0 0.4rem 0', letterSpacing: '-0.01em' }}>
+                  <h2 style={{ fontSize: '1.25rem', fontWeight: 850, color: '#0F172A', margin: '0 0 0.45rem 0', letterSpacing: '-0.015em', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
                     {selectedTicket.subject}
                   </h2>
 
                   <div style={{ fontSize: '0.78rem', color: '#64748B', display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
-                    <span>Category: <strong style={{ color: '#0F172A' }}>{selectedTicket.category}</strong></span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                      <Folder size={13} style={{ color: '#94A3B8' }} />
+                      <span>Category: <strong style={{ color: '#0F172A' }}>{selectedTicket.category}</strong></span>
+                    </span>
                     <span>•</span>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
-                      <Clock size={12} />
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                      <Clock size={12} style={{ color: '#94A3B8' }} />
                       <span>{formatDateTime(selectedTicket.created_at)}</span>
                     </span>
                   </div>
@@ -495,14 +500,16 @@ function SupportTickets({ user }) {
                   <button
                     type="button"
                     onClick={handleToggleCloseTicket}
-                    className={`van-vault-action-btn ${selectedTicket.status === 'Resolved' || selectedTicket.status === 'Closed' ? '' : 'primary'}`}
+                    className="van-vault-action-btn"
                     style={{
                       background: selectedTicket.status === 'Resolved' || selectedTicket.status === 'Closed' ? '#F1F5F9' : '#ECFDF5',
                       color: selectedTicket.status === 'Resolved' || selectedTicket.status === 'Closed' ? '#475569' : '#059669',
                       borderColor: selectedTicket.status === 'Resolved' || selectedTicket.status === 'Closed' ? '#CBD5E1' : '#A7F3D0',
+                      padding: '0.5rem 1rem',
+                      fontWeight: 750,
                     }}
                   >
-                    <CheckCircle2 size={13} strokeWidth={2.4} />
+                    <CheckCircle2 size={14} strokeWidth={2.4} />
                     <span>{selectedTicket.status === 'Resolved' || selectedTicket.status === 'Closed' ? 'Reopen Ticket' : 'Mark as Resolved'}</span>
                   </button>
                 </div>
@@ -518,16 +525,23 @@ function SupportTickets({ user }) {
                         key={m.id}
                         className={`van-thread-bubble ${isMe ? 'user' : 'support'}`}
                       >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem' }}>
-                          <strong style={{ color: isMe ? '#1D4ED8' : '#0F172A', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                            {isMe ? `${m.sender_name} (You)` : `🛡️ Support Agent • ${m.sender_name}`}
-                          </strong>
-                          <span style={{ color: '#94A3B8', fontSize: '0.68rem', fontWeight: 600 }}>
-                            {formatTime(m.created_at)}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', borderBottom: isMe ? '1px solid rgba(191, 219, 254, 0.6)' : '1px solid #F1F5F9', paddingBottom: '0.45rem' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                            <span style={{ width: '22px', height: '22px', borderRadius: '50%', background: isMe ? '#2563EB' : '#7C3AED', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 800 }}>
+                              {isMe ? 'U' : 'S'}
+                            </span>
+                            <strong style={{ color: isMe ? '#1D4ED8' : '#0F172A', fontSize: '0.8rem' }}>
+                              {isMe ? `${m.sender_name} (You)` : `Support Specialist • ${m.sender_name}`}
+                            </strong>
+                          </div>
+
+                          <span style={{ color: '#64748B', fontSize: '0.72rem', fontWeight: 650, display: 'inline-flex', alignItems: 'center', gap: '0.25rem', flexShrink: 0 }}>
+                            <Clock size={11} />
+                            <span>{formatTime(m.created_at)}</span>
                           </span>
                         </div>
 
-                        <p style={{ margin: 0, fontSize: '0.86rem', color: isMe ? '#1E3A8A' : '#334155', lineHeight: 1.55, whiteSpace: 'pre-wrap' }}>
+                        <p style={{ margin: 0, fontSize: '0.88rem', color: isMe ? '#1E3A8A' : '#334155', lineHeight: 1.55, whiteSpace: 'pre-wrap', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
                           {m.message}
                         </p>
                       </div>
