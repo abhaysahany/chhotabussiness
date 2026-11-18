@@ -2701,3 +2701,245 @@ div[style*="position: fixed"]:not(.sidebar-container):not(.sidebar-backdrop):not
     grid-template-columns: 1fr !important;
   }
 }
+
+/* ==========================================================================
+   Admin Executive 3D Luxury Fintech Aesthetics
+   ========================================================================== */
+
+@keyframes admFloatPodSlow {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-4px) rotate(1.5deg);
+  }
+}
+
+.adm-3d-pod {
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  position: relative;
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+  animation: admFloatPodSlow 4s ease-in-out infinite;
+}
+
+.adm-3d-pod:hover,
+.adm-kpi-card:hover .adm-3d-pod,
+.adm-chart-card:hover .adm-3d-pod {
+  transform: translateY(-3px) scale(1.08) rotate(2deg);
+  animation-play-state: paused;
+}
+
+.adm-pod-steel {
+  background: linear-gradient(135deg, #4a80c2 0%, #3569a7 50%, #1e3a5f 100%);
+  box-shadow: 
+    0 10px 22px -3px rgba(53, 105, 167, 0.45),
+    0 3px 8px rgba(53, 105, 167, 0.2),
+    inset 0 2px 3px rgba(255, 255, 255, 0.45),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.adm-pod-emerald {
+  background: linear-gradient(135deg, #2dd4bf 0%, #0d9488 50%, #115e59 100%);
+  box-shadow: 
+    0 10px 22px -3px rgba(13, 148, 136, 0.45),
+    0 3px 8px rgba(13, 148, 136, 0.2),
+    inset 0 2px 3px rgba(255, 255, 255, 0.45),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.adm-pod-amber {
+  background: linear-gradient(135deg, #fbbf24 0%, #d97706 50%, #78350f 100%);
+  box-shadow: 
+    0 10px 22px -3px rgba(217, 119, 6, 0.45),
+    0 3px 8px rgba(217, 119, 6, 0.2),
+    inset 0 2px 3px rgba(255, 255, 255, 0.45),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.adm-pod-indigo {
+  background: linear-gradient(135deg, #818cf8 0%, #4f46e5 50%, #312e81 100%);
+  box-shadow: 
+    0 10px 22px -3px rgba(79, 70, 229, 0.45),
+    0 3px 8px rgba(79, 70, 229, 0.2),
+    inset 0 2px 3px rgba(255, 255, 255, 0.45),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.adm-pod-rose {
+  background: linear-gradient(135deg, #f87171 0%, #dc2626 50%, #991b1b 100%);
+  box-shadow: 
+    0 10px 22px -3px rgba(220, 38, 38, 0.45),
+    0 3px 8px rgba(220, 38, 38, 0.2),
+    inset 0 2px 3px rgba(255, 255, 255, 0.45),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* 4 KPI Financial Vault Cards */
+.adm-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.15rem;
+  width: 100%;
+}
+
+.adm-kpi-card {
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #e2e8f0;
+  padding: 1.25rem 1.4rem;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 172px;
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.adm-kpi-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px -6px rgba(15, 23, 42, 0.08);
+}
+
+.adm-kpi-card-steel {
+  border-top: 4px solid #3569a7;
+  background: radial-gradient(circle at 92% 10%, rgba(53, 105, 167, 0.06) 0%, #ffffff 60%);
+}
+.adm-kpi-card-steel:hover {
+  border-color: rgba(53, 105, 167, 0.45);
+}
+
+.adm-kpi-card-emerald {
+  border-top: 4px solid #0d9488;
+  background: radial-gradient(circle at 92% 10%, rgba(13, 148, 136, 0.06) 0%, #ffffff 60%);
+}
+.adm-kpi-card-emerald:hover {
+  border-color: rgba(13, 148, 136, 0.45);
+}
+
+.adm-kpi-card-amber {
+  border-top: 4px solid #d97706;
+  background: radial-gradient(circle at 92% 10%, rgba(217, 119, 6, 0.06) 0%, #ffffff 60%);
+}
+.adm-kpi-card-amber:hover {
+  border-color: rgba(217, 119, 6, 0.45);
+}
+
+.adm-kpi-card-indigo {
+  border-top: 4px solid #4f46e5;
+  background: radial-gradient(circle at 92% 10%, rgba(79, 70, 229, 0.06) 0%, #ffffff 60%);
+}
+.adm-kpi-card-indigo:hover {
+  border-color: rgba(79, 70, 229, 0.45);
+}
+
+.adm-kpi-val {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.adm-kpi-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.74rem;
+  color: #64748b;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 0.65rem;
+  margin-top: 0.4rem;
+  white-space: nowrap;
+}
+
+/* Hero Header Banner */
+.adm-hero-banner {
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #e2e8f0;
+  padding: 1.25rem 1.6rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+/* Operations Sentinel Banner */
+.adm-sentinel-banner {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border-radius: 16px;
+  padding: 1.15rem 1.6rem;
+  color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  border: 1px solid #334155;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.16);
+}
+
+.adm-sentinel-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.48rem 0.95rem;
+  border-radius: 9px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  border: none;
+}
+
+.adm-sentinel-btn:hover {
+  transform: translateY(-1.5px);
+}
+
+.adm-sentinel-btn:active {
+  transform: translateY(0);
+}
+
+/* Chart Cards */
+.adm-chart-card {
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #e2e8f0;
+  padding: 1.4rem;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02);
+  transition: all 0.25s ease;
+}
+
+.adm-chart-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+}
+
+.adm-code-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.55rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #0f172a;
+}
