@@ -661,7 +661,7 @@ function AppContent() {
           <Route path="/payouts/current" element={<CurrentPayouts user={user} onNavigate={handleNavigate} />} />
           <Route path="/current-payouts" element={<Navigate to="/payouts/current" replace />} />
 
-          <Route path="/payouts/history" element={<PayoutHistory user={user} />} />
+          <Route path="/payouts/history" element={<PayoutHistory user={user} onNavigate={handleNavigate} />} />
           <Route path="/payout-history" element={<Navigate to="/payouts/history" replace />} />
 
           <Route path="/payouts/withdraw" element={<RequestWithdrawal user={user} onNavigate={handleNavigate} />} />
