@@ -506,102 +506,119 @@ function RewardsClaimed({ user, onNavigate }) {
         </div>
       </div>
 
-      {/* 4 Premium KPI Summary Pods Grid */}
+      {/* 4 Premium 3D KPI Summary Pods Grid */}
       <div
+        className="van-business-kpi-grid"
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-          gap: '1rem',
-          marginBottom: '1.75rem',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+          gap: '1.25rem',
+          marginBottom: '2rem',
         }}
       >
         {/* Card 1: Total Claims Placed */}
-        <div className="van-stat-card-premium">
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #3B82F6, #1D4ED8)' }} />
           <div>
             <div className="van-stat-card-top">
-              <span className="van-stat-card-label" style={{ color: '#2563EB' }}>
+              <span className="van-stat-card-title" style={{ color: '#2563EB' }}>
                 Total Claims Placed
               </span>
-              <div className="van-3d-kpi-icon" style={{ background: '#2563EB', color: '#fff' }}>
-                <Gift size={20} />
+              <div className="van-3d-kpi-icon van-3d-icon-blue" title="Total Claims Placed">
+                <Gift size={20} strokeWidth={2.4} />
               </div>
             </div>
             <div className="van-stat-card-value">
-              {claims.length} <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748B' }}>Orders</span>
+              <span>{claims.length}</span>
+              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748B' }}>Total Orders</span>
             </div>
           </div>
           <div className="van-stat-card-bottom">
-            <span className="van-stat-desc-text">Milestone redemption records</span>
-            <span className="van-card-badge-pill" style={{ background: '#EFF6FF', color: '#1D4ED8' }}>
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+              Milestone orders placed
+            </span>
+            <span className="van-card-badge-pill" style={{ background: '#EFF6FF', color: '#1D4ED8', border: '1px solid #BFDBFE' }}>
               Claims
             </span>
           </div>
         </div>
 
         {/* Card 2: Diamonds Redeemed */}
-        <div className="van-stat-card-premium">
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #A855F7, #7C3AED)' }} />
           <div>
             <div className="van-stat-card-top">
-              <span className="van-stat-card-label" style={{ color: '#7C3AED' }}>
+              <span className="van-stat-card-title" style={{ color: '#7C3AED' }}>
                 Diamonds Redeemed
               </span>
-              <div className="van-3d-kpi-icon" style={{ background: '#7C3AED', color: '#fff' }}>
-                <Gem size={20} />
+              <div className="van-3d-kpi-icon van-3d-icon-purple" title="Diamonds Redeemed">
+                <Gem size={20} strokeWidth={2.4} />
               </div>
             </div>
             <div className="van-stat-card-value" style={{ color: '#7C3AED' }}>
-              💎 {totalPointsSpent}
+              <span>💎 {totalPointsSpent}</span>
+              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748B' }}>Diamonds</span>
             </div>
           </div>
           <div className="van-stat-card-bottom">
-            <span className="van-stat-desc-text">Points deducted for products</span>
-            <span className="van-card-badge-pill" style={{ background: '#F5F3FF', color: '#6D28D9' }}>
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+              Milestone points spent
+            </span>
+            <span className="van-card-badge-pill" style={{ background: '#F5F3FF', color: '#6D28D9', border: '1px solid #DDD6FE' }}>
               Redeemed
             </span>
           </div>
         </div>
 
         {/* Card 3: In Transit / Dispatched */}
-        <div className="van-stat-card-premium">
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #38BDF8, #0284C7)' }} />
           <div>
             <div className="van-stat-card-top">
-              <span className="van-stat-card-label" style={{ color: '#0284C7' }}>
+              <span className="van-stat-card-title" style={{ color: '#0284C7' }}>
                 In Transit / Dispatched
               </span>
-              <div className="van-3d-kpi-icon" style={{ background: '#0284C7', color: '#fff' }}>
-                <Truck size={20} />
+              <div className="van-3d-kpi-icon van-3d-icon-cyan" title="In Transit">
+                <Truck size={20} strokeWidth={2.4} />
               </div>
             </div>
-            <div className="van-stat-card-value" style={{ color: '#0284C7' }}>
-              {inTransitCount} <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748B' }}>Shipments</span>
+            <div className="van-stat-card-value" style={{ color: inTransitCount > 0 ? '#0284C7' : '#0F172A' }}>
+              <span>{inTransitCount}</span>
+              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748B' }}>Shipments</span>
             </div>
           </div>
           <div className="van-stat-card-bottom">
-            <span className="van-stat-desc-text">Active courier AWB assigned</span>
-            <span className="van-card-badge-pill" style={{ background: '#F0F9FF', color: '#0369A1' }}>
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+              Active courier AWB assigned
+            </span>
+            <span className="van-card-badge-pill" style={{ background: '#F0F9FF', color: '#0369A1', border: '1px solid #BAE6FD' }}>
               In Transit
             </span>
           </div>
         </div>
 
         {/* Card 4: Successfully Delivered */}
-        <div className="van-stat-card-premium">
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #34D399, #059669)' }} />
           <div>
             <div className="van-stat-card-top">
-              <span className="van-stat-card-label" style={{ color: '#059669' }}>
+              <span className="van-stat-card-title" style={{ color: '#059669' }}>
                 Successfully Delivered
               </span>
-              <div className="van-3d-kpi-icon" style={{ background: '#059669', color: '#fff' }}>
-                <CheckCircle2 size={20} />
+              <div className="van-3d-kpi-icon van-3d-icon-emerald" title="Delivered">
+                <CheckCircle2 size={20} strokeWidth={2.4} />
               </div>
             </div>
-            <div className="van-stat-card-value" style={{ color: '#059669' }}>
-              {deliveredCount} <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748B' }}>Completed</span>
+            <div className="van-stat-card-value" style={{ color: deliveredCount > 0 ? '#059669' : '#0F172A' }}>
+              <span>{deliveredCount}</span>
+              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748B' }}>Delivered</span>
             </div>
           </div>
           <div className="van-stat-card-bottom">
-            <span className="van-stat-desc-text">Fulfilled to delivery address</span>
-            <span className="van-card-badge-pill" style={{ background: '#ECFDF5', color: '#047857' }}>
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+              Door delivery completed
+            </span>
+            <span className="van-card-badge-pill" style={{ background: '#ECFDF5', color: '#047857', border: '1px solid #A7F3D0' }}>
               Delivered
             </span>
           </div>

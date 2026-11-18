@@ -351,62 +351,70 @@ function AvailableRewards({ user, onNavigate }) {
         </div>
       </div>
 
-      {/* KPI Summary Pods Grid (4 Columns) */}
+      {/* 4 Premium 3D KPI Summary Pods Grid */}
       <div
+        className="van-business-kpi-grid"
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-          gap: '1rem',
-          marginBottom: '1.75rem',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+          gap: '1.25rem',
+          marginBottom: '2rem',
         }}
       >
         {/* Card 1: Total Catalog Rewards */}
-        <div className="van-stat-card-premium">
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #3B82F6, #1D4ED8)' }} />
           <div>
             <div className="van-stat-card-top">
-              <span className="van-stat-card-label" style={{ color: '#2563EB' }}>
+              <span className="van-stat-card-title" style={{ color: '#2563EB' }}>
                 Catalog Rewards
               </span>
-              <div className="van-3d-kpi-icon" style={{ background: '#2563EB', color: '#fff' }}>
-                <Gift size={20} />
+              <div className="van-3d-kpi-icon van-3d-icon-blue" title="Catalog Rewards">
+                <Gift size={20} strokeWidth={2.4} />
               </div>
             </div>
             <div className="van-stat-card-value">
-              {activeRewards.length} <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748B' }}>Products</span>
+              <span>{activeRewards.length}</span>
+              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748B' }}>Products</span>
             </div>
           </div>
           <div className="van-stat-card-bottom">
-            <span className="van-stat-desc-text">In active milestone tiers</span>
-            <span className="van-card-badge-pill" style={{ background: '#EFF6FF', color: '#1D4ED8' }}>
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+              Active milestone tiers
+            </span>
+            <span className="van-card-badge-pill" style={{ background: '#EFF6FF', color: '#1D4ED8', border: '1px solid #BFDBFE' }}>
               Active
             </span>
           </div>
         </div>
 
         {/* Card 2: Unlocked & Eligible */}
-        <div className="van-stat-card-premium">
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #34D399, #059669)' }} />
           <div>
             <div className="van-stat-card-top">
-              <span className="van-stat-card-label" style={{ color: '#059669' }}>
+              <span className="van-stat-card-title" style={{ color: '#059669' }}>
                 Ready to Claim
               </span>
-              <div className="van-3d-kpi-icon" style={{ background: '#059669', color: '#fff' }}>
-                <CheckCircle2 size={20} />
+              <div className="van-3d-kpi-icon van-3d-icon-emerald" title="Ready to Claim">
+                <CheckCircle2 size={20} strokeWidth={2.4} />
               </div>
             </div>
             <div className="van-stat-card-value" style={{ color: '#059669' }}>
-              {eligibleCount} <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748B' }}>Unlocked</span>
+              <span>{eligibleCount}</span>
+              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748B' }}>Unlocked</span>
             </div>
           </div>
           <div className="van-stat-card-bottom">
-            <span className="van-stat-desc-text">
-              {eligibleCount > 0 ? 'Eligible for instant claim' : 'Accumulate more Diamonds'}
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+              {eligibleCount > 0 ? 'Eligible for claim' : 'Accumulate Diamonds'}
             </span>
             <span
               className="van-card-badge-pill"
               style={{
                 background: eligibleCount > 0 ? '#ECFDF5' : '#F1F5F9',
                 color: eligibleCount > 0 ? '#047857' : '#64748B',
+                border: `1px solid ${eligibleCount > 0 ? '#A7F3D0' : '#E2E8F0'}`,
               }}
             >
               {eligibleCount > 0 ? '✓ Claimable' : 'In Progress'}
@@ -415,43 +423,47 @@ function AvailableRewards({ user, onNavigate }) {
         </div>
 
         {/* Card 3: Your Diamond Balance */}
-        <div className="van-stat-card-premium">
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #38BDF8, #0284C7)' }} />
           <div>
             <div className="van-stat-card-top">
-              <span className="van-stat-card-label" style={{ color: '#0284C7' }}>
+              <span className="van-stat-card-title" style={{ color: '#0284C7' }}>
                 Diamond Balance
               </span>
-              <div className="van-3d-kpi-icon" style={{ background: '#0284C7', color: '#fff' }}>
-                <Gem size={20} />
+              <div className="van-3d-kpi-icon van-3d-icon-cyan" title="Diamond Balance">
+                <Gem size={20} strokeWidth={2.4} />
               </div>
             </div>
             <div className="van-stat-card-value" style={{ color: '#0284C7' }}>
-              💎 {formatDiamonds(userDiamonds)}
+              <span>💎 {formatDiamonds(userDiamonds)}</span>
             </div>
           </div>
           <div className="van-stat-card-bottom">
-            <span className="van-stat-desc-text">Level 1 & 2 Diamond earnings</span>
-            <span className="van-card-badge-pill" style={{ background: '#F0F9FF', color: '#0369A1' }}>
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+              Level 1 & 2 earnings
+            </span>
+            <span className="van-card-badge-pill" style={{ background: '#F0F9FF', color: '#0369A1', border: '1px solid #BAE6FD' }}>
               Balance
             </span>
           </div>
         </div>
 
         {/* Card 4: Next Target Milestone */}
-        <div className="van-stat-card-premium">
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #FBBF24, #D97706)' }} />
           <div>
             <div className="van-stat-card-top">
-              <span className="van-stat-card-label" style={{ color: '#D97706' }}>
+              <span className="van-stat-card-title" style={{ color: '#D97706' }}>
                 Next Target Milestone
               </span>
-              <div className="van-3d-kpi-icon" style={{ background: '#D97706', color: '#fff' }}>
-                <Award size={20} />
+              <div className="van-3d-kpi-icon van-3d-icon-amber" title="Target Milestone">
+                <Award size={20} strokeWidth={2.4} />
               </div>
             </div>
             <div
               className="van-stat-card-value"
               style={{
-                fontSize: '1.25rem',
+                fontSize: '1.2rem',
                 lineHeight: '1.3',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
@@ -459,16 +471,16 @@ function AvailableRewards({ user, onNavigate }) {
               }}
               title={nearestMilestone ? nearestMilestone.title : 'All Milestones Achieved!'}
             >
-              {nearestMilestone ? nearestMilestone.title : 'All Unlocked! 🎉'}
+              <span>{nearestMilestone ? nearestMilestone.title : 'All Unlocked! 🎉'}</span>
             </div>
           </div>
           <div className="van-stat-card-bottom">
-            <span className="van-stat-desc-text">
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
               {nearestMilestone
-                ? `Requires ${formatDiamonds(nearestMilestone.deficit)} more 💎`
-                : 'You qualify for all rewards'}
+                ? `Need ${formatDiamonds(nearestMilestone.deficit)} more 💎`
+                : 'All rewards unlocked'}
             </span>
-            <span className="van-card-badge-pill" style={{ background: '#FFFBEB', color: '#B45309' }}>
+            <span className="van-card-badge-pill" style={{ background: '#FFFBEB', color: '#B45309', border: '1px solid #FDE68A' }}>
               {nearestMilestone ? 'Target' : 'Completed'}
             </span>
           </div>
