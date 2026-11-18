@@ -45,12 +45,14 @@ class SystemSettingController extends Controller
             'company_logo' => $companyLogo,
             'company_logo_url' => $companyLogoUrl,
             'logo_url' => $companyLogoUrl,
+            'favicon_url' => url('favicon.ico'),
             'branding' => [
                 'app_name' => $appName,
                 'company_name' => $appName,
                 'company_logo' => $companyLogo,
                 'company_logo_url' => $companyLogoUrl,
                 'logo_url' => $companyLogoUrl,
+                'favicon_url' => url('favicon.ico'),
             ],
         ], 200);
     }
