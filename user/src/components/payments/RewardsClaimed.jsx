@@ -506,12 +506,12 @@ function RewardsClaimed({ user, onNavigate }) {
         </div>
       </div>
 
-      {/* 4 Premium 3D KPI Summary Pods Grid */}
+      {/* 4 Premium 3D KPI Summary Pods - Strictly 1 Row */}
       <div
-        className="van-business-kpi-grid"
+        className="van-rewards-kpi-row"
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+          gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
           gap: '1.25rem',
           marginBottom: '2rem',
         }}

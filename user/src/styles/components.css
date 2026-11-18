@@ -507,6 +507,27 @@
 /* ==========================================================================
    PREMIUM SPACIOUS 3D STAT CARDS (CLEAN & BREATHABLE)
    ========================================================================== */
+.van-rewards-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 1024px) {
+  .van-rewards-kpi-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 580px) {
+  .van-rewards-kpi-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
 .van-stat-card-premium {
   background: #FFFFFF;
   border-radius: 14px;
