@@ -224,7 +224,7 @@ class _LevelIncomeScreenState extends State<LevelIncomeScreen> {
                     itemCount: _levelsBreakdown.length,
                     itemBuilder: (ctx, idx) {
                       final lvlItem = _levelsBreakdown[idx] as Map<String, dynamic>;
-                      final lvl = lvlItem['level']?.toString() ?? '${idx + 2}';
+                      final lvl = lvlItem['level_number']?.toString() ?? lvlItem['levelNumber']?.toString() ?? lvlItem['level']?.toString() ?? '2';
                       final amt = lvlItem['total_amount'] ?? lvlItem['totalAmount'] ?? '0';
                       final count = lvlItem['member_count'] ?? lvlItem['memberCount'] ?? '—';
 

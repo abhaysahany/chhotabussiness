@@ -183,20 +183,20 @@ class UserIncomeController extends Controller
 
         $recordsByLevel = $records->groupBy('level');
 
-        // Determine active level numbers dynamically (including Level 1 when configured > 0 or earned)
+        // Determine active level numbers dynamically (only include levels configured > 0 or that already have historical records)
         $globalSetting = CommissionSetting::getGlobalRecord();
         $levelColumns = CommissionSetting::getLevelColumns();
         $levelNumbers = [];
         foreach ($levelColumns as $col) {
             $lvlNum = (int) $col['level'];
             $lvlPct = (float) ($globalSetting?->{$col['key']} ?? 0);
-            if ($lvlNum === 1 && $lvlPct <= 0 && !$recordsByLevel->has(1)) {
+            if ($lvlPct <= 0 && !$recordsByLevel->has($lvlNum)) {
                 continue;
             }
             $levelNumbers[] = $lvlNum;
         }
         if (empty($levelNumbers)) {
-            $levelNumbers = [2, 3, 4, 5];
+            $levelNumbers = [2];
         }
 
         // Build per-level breakdown dynamically
