@@ -4481,19 +4481,22 @@
 }
 
 .van-profile-field-pod {
-  background: #F8FAFC;
-  border: 1px solid #E2E8F0;
-  border-radius: 12px;
-  padding: 0.85rem 1rem;
+  background: linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%);
+  border: 1.5px solid rgba(226, 232, 240, 0.85);
+  border-radius: 14px;
+  padding: 0.9rem 1.1rem;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  transition: all 0.2s ease;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02);
 }
 
 .van-profile-field-pod:hover {
-  background: #F1F5F9;
+  background: #FFFFFF;
   border-color: #CBD5E1;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px -2px rgba(15, 23, 42, 0.06);
 }
 
 .van-profile-field-pod.full-width {
@@ -4509,10 +4512,45 @@
 }
 
 .van-profile-field-val {
-  font-size: 0.9rem;
-  font-weight: 700;
+  font-size: 0.92rem;
+  font-weight: 750;
   color: #0F172A;
   word-break: break-word;
+}
+
+/* Tactile Copy Button */
+.van-clean-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.32rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 750;
+  color: #1D4ED8;
+  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+  border: 1px solid #BFDBFE;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.12);
+}
+
+.van-clean-copy-btn:hover {
+  background: #2563EB;
+  color: #FFFFFF;
+  border-color: #1D4ED8;
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.28);
+}
+
+.van-clean-copy-btn:active {
+  transform: scale(0.96);
+}
+
+.van-clean-copy-btn.copied {
+  background: linear-gradient(135deg, #DCFCE7 0%, #BBF7D0 100%);
+  color: #15803D;
+  border-color: #86EFAC;
 }
 
 .van-profile-bio-box {
@@ -4532,6 +4570,127 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+}
+
+/* Statutory KYC & Security Vault Tiles */
+.van-security-vault-tile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.95rem 1.15rem;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%);
+  border: 1.5px solid rgba(226, 232, 240, 0.85);
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02);
+}
+
+.van-security-vault-tile:hover {
+  background: #FFFFFF;
+  border-color: #93C5FD;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -3px rgba(37, 99, 235, 0.08);
+}
+
+.van-security-vault-left {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.van-vault-micro-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.25s ease;
+}
+
+.van-security-vault-tile:hover .van-vault-micro-icon {
+  transform: scale(1.06) rotate(3deg);
+}
+
+.van-vault-micro-icon.purple {
+  background: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%);
+  color: #FFFFFF;
+  box-shadow: 0 4px 10px rgba(109, 40, 217, 0.3);
+}
+
+.van-vault-micro-icon.emerald {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: #FFFFFF;
+  box-shadow: 0 4px 10px rgba(5, 150, 105, 0.3);
+}
+
+.van-vault-micro-icon.blue {
+  background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+  color: #FFFFFF;
+  box-shadow: 0 4px 10px rgba(29, 78, 216, 0.3);
+}
+
+.van-security-tile-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.van-security-status-badge {
+  font-size: 0.68rem;
+  font-weight: 750;
+  padding: 0.12rem 0.5rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.van-security-status-badge.verified {
+  background: #DCFCE7;
+  color: #15803D;
+  border: 1px solid #86EFAC;
+}
+
+.van-security-status-badge.linked {
+  background: #E0E7FF;
+  color: #3730A3;
+  border: 1px solid #C7D2FE;
+}
+
+.van-security-status-badge.protected {
+  background: #E0F2FE;
+  color: #0369A1;
+  border: 1px solid #BAE6FD;
+}
+
+.van-vault-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 750;
+  color: #1D4ED8;
+  background: #EFF6FF;
+  border: 1px solid #DBEAFE;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.van-vault-action-btn:hover {
+  background: #2563EB;
+  color: #FFFFFF;
+  border-color: #1D4ED8;
+  transform: translateX(2px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
 }
 
 .van-compliance-item-tile {
@@ -4654,16 +4813,93 @@
 
 /* Callout bottom bar */
 .van-profile-callout-bar {
-  background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 100%);
-  border-radius: 18px;
-  padding: 1.5rem 1.75rem;
+  background: linear-gradient(135deg, #090E1E 0%, #0F172A 50%, #172554 100%) !important;
+  border-radius: 20px !important;
+  padding: 1.5rem 1.85rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 1.5rem !important;
+  border: 1.5px solid rgba(59, 130, 246, 0.3) !important;
+  box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.35), 0 0 20px rgba(59, 130, 246, 0.12) !important;
+  flex-wrap: wrap;
+  position: relative;
+  overflow: hidden;
+}
+
+.van-profile-callout-bar::after {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 140px;
+  height: 140px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.van-profile-callout-left {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
-  color: #FFFFFF;
-  box-shadow: 0 8px 20px -3px rgba(15, 23, 42, 0.2);
-  flex-wrap: wrap;
+  gap: 1.15rem;
+  flex: 1;
+  min-width: 260px;
+}
+
+.van-callout-3d-icon {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 13px !important;
+  flex-shrink: 0;
+}
+
+.van-callout-text-wrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.van-callout-heading {
+  margin: 0 !important;
+  font-size: 1.08rem !important;
+  font-weight: 800 !important;
+  color: #FFFFFF !important;
+  letter-spacing: -0.01em !important;
+  line-height: 1.35 !important;
+}
+
+.van-callout-desc {
+  margin: 0.3rem 0 0 0 !important;
+  font-size: 0.86rem !important;
+  color: #93C5FD !important;
+  line-height: 1.45 !important;
+}
+
+.van-callout-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: linear-gradient(135deg, #38BDF8 0%, #2563EB 100%) !important;
+  color: #FFFFFF !important;
+  font-size: 0.92rem;
+  font-weight: 750;
+  padding: 0.72rem 1.45rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.van-callout-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  filter: brightness(1.06);
+}
+
+.van-callout-action-btn:active {
+  transform: translateY(0);
 }
 
 

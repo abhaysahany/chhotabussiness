@@ -815,48 +815,72 @@ function PersonalProfile({ user, onNavigate, onUpdateUser }) {
                   </div>
                   <h3 className="van-profile-card-h3">Affiliate & Network Credentials</h3>
                 </div>
-                <span className="van-card-badge-pill teal">✓ Verified Hierarchy</span>
+                <span className="van-card-badge-pill teal">✓ Hierarchy Verified</span>
               </div>
 
               <div className="van-profile-card-body">
                 <div className="van-profile-field-list">
                   <div className="van-profile-field-pod">
                     <span className="van-profile-field-lbl">Member Code</span>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
-                      <span className="van-profile-field-val" style={{ color: '#1d4ed8' }}>{savedData.user_code || 'CB9741655'}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', marginTop: '0.15rem' }}>
+                      <span className="van-profile-field-val" style={{ color: '#1d4ed8', fontWeight: 800 }}>{savedData.user_code || 'CB9741655'}</span>
                       <button
                         type="button"
-                        className="van-profile-copy-btn"
+                        className={`van-clean-copy-btn ${copiedCode ? 'copied' : ''}`}
                         onClick={handleCopyUserCode}
+                        title="Copy Member Code"
                       >
-                        {copiedCode ? '✓' : 'Copy'}
+                        {copiedCode ? (
+                          <>
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <span>Copied</span>
+                          </>
+                        ) : (
+                          <>
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            <span>Copy</span>
+                          </>
+                        )}
                       </button>
                     </div>
                   </div>
 
                   <div className="van-profile-field-pod">
                     <span className="van-profile-field-lbl">Sponsor ID</span>
-                    <span className="van-profile-field-val" style={{ color: '#7c3aed' }}>{savedData.sponsor_id || 'CB100001'}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.15rem' }}>
+                      <span className="van-profile-field-val" style={{ color: '#7c3aed', fontWeight: 800 }}>{savedData.sponsor_id || 'CB100001'}</span>
+                      <span className="van-card-badge-pill purple" style={{ fontSize: '0.68rem', padding: '0.15rem 0.45rem' }}>Root Admin</span>
+                    </div>
                   </div>
 
                   <div className="van-profile-field-pod">
                     <span className="van-profile-field-lbl">Network Binary Leg</span>
-                    <span className="van-profile-field-val">Left Leg (Auto-Balancing)</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginTop: '0.15rem' }}>
+                      <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#0284c7', flexShrink: 0 }}></span>
+                      <span className="van-profile-field-val">Left Leg (Auto-Balancing)</span>
+                    </div>
                   </div>
 
                   <div className="van-profile-field-pod">
                     <span className="van-profile-field-lbl">Active Rank</span>
-                    <span className="van-profile-field-val" style={{ color: '#92400e' }}>Gold Executive 🏆</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginTop: '0.15rem' }}>
+                      <span className="van-profile-field-val" style={{ color: '#92400e', fontWeight: 800 }}>Gold Executive 🏆</span>
+                    </div>
                   </div>
 
                   <div className="van-profile-field-pod">
                     <span className="van-profile-field-lbl">Direct Partners</span>
-                    <span className="van-profile-field-val">48 Active Associates</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginTop: '0.15rem' }}>
+                      <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', flexShrink: 0 }}></span>
+                      <span className="van-profile-field-val" style={{ fontWeight: 800 }}>48 Active Associates</span>
+                    </div>
                   </div>
 
                   <div className="van-profile-field-pod">
                     <span className="van-profile-field-lbl">Binary Commission</span>
-                    <span className="van-profile-field-val" style={{ color: '#047857' }}>Qualified & Active</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginTop: '0.15rem' }}>
+                      <span className="van-card-badge-pill green" style={{ fontSize: '0.72rem', padding: '0.15rem 0.55rem' }}>Qualified & Active</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -880,59 +904,89 @@ function PersonalProfile({ user, onNavigate, onUpdateUser }) {
               <div className="van-profile-card-body">
                 <div className="van-compliance-row-grid">
                   {/* Item 1: PAN & Aadhaar KYC */}
-                  <div className="van-compliance-item-tile">
-                    <div className="van-compliance-info-left">
-                      <span className="van-compliance-dot-ok"></span>
+                  <div className="van-security-vault-tile">
+                    <div className="van-security-vault-left">
+                      <div className="van-vault-micro-icon purple">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
+                          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                          <line x1="8" y1="21" x2="16" y2="21"></line>
+                          <line x1="12" y1="17" x2="12" y2="21"></line>
+                        </svg>
+                      </div>
                       <div>
-                        <div className="van-compliance-name">PAN & Aadhaar Identification</div>
+                        <div className="van-security-tile-title-row">
+                          <span className="van-compliance-name">PAN & Aadhaar Identification</span>
+                          <span className="van-security-status-badge verified">✓ Verified</span>
+                        </div>
                         <div className="van-compliance-desc">Section 194H TDS compliant tax records</div>
                       </div>
                     </div>
                     <button
                       type="button"
-                      className="van-card-action-pill"
-                      style={{ color: '#2563eb' }}
+                      className="van-vault-action-btn"
                       onClick={() => onNavigate ? onNavigate('/profile/kyc') : window.location.assign('/profile/kyc')}
                     >
-                      KYC Desk →
+                      <span>KYC Desk</span>
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
                     </button>
                   </div>
 
                   {/* Item 2: Bank & UPI Accounts */}
-                  <div className="van-compliance-item-tile">
-                    <div className="van-compliance-info-left">
-                      <span className="van-compliance-dot-ok"></span>
+                  <div className="van-security-vault-tile">
+                    <div className="van-security-vault-left">
+                      <div className="van-vault-micro-icon emerald">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
+                          <path d="M3 21h18"></path>
+                          <path d="M3 10h18"></path>
+                          <path d="M5 6l7-3 7 3"></path>
+                          <path d="M4 10v11"></path>
+                          <path d="M20 10v11"></path>
+                          <path d="M8 14v4"></path>
+                          <path d="M12 14v4"></path>
+                          <path d="M16 14v4"></path>
+                        </svg>
+                      </div>
                       <div>
-                        <div className="van-compliance-name">Bank & UPI Settlement Vault</div>
+                        <div className="van-security-tile-title-row">
+                          <span className="van-compliance-name">Bank & UPI Settlement Vault</span>
+                          <span className="van-security-status-badge linked">✓ Linked</span>
+                        </div>
                         <div className="van-compliance-desc">Registered payout destinations for commission withdrawals</div>
                       </div>
                     </div>
                     <button
                       type="button"
-                      className="van-card-action-pill"
-                      style={{ color: '#2563eb' }}
+                      className="van-vault-action-btn"
                       onClick={() => onNavigate ? onNavigate('/profile/bank') : window.location.assign('/profile/bank')}
                     >
-                      Bank Vault →
+                      <span>Bank Vault</span>
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
                     </button>
                   </div>
 
                   {/* Item 3: Password & Security */}
-                  <div className="van-compliance-item-tile">
-                    <div className="van-compliance-info-left">
-                      <span className="van-compliance-dot-ok"></span>
+                  <div className="van-security-vault-tile">
+                    <div className="van-security-vault-left">
+                      <div className="van-vault-micro-icon blue">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
+                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                      </div>
                       <div>
-                        <div className="van-compliance-name">Security, 2FA & Password</div>
+                        <div className="van-security-tile-title-row">
+                          <span className="van-compliance-name">Security, 2FA & Password</span>
+                          <span className="van-security-status-badge protected">🛡️ Protected</span>
+                        </div>
                         <div className="van-compliance-desc">Email OTP validation & encrypted authentication</div>
                       </div>
                     </div>
                     <button
                       type="button"
-                      className="van-card-action-pill"
-                      style={{ color: '#2563eb' }}
+                      className="van-vault-action-btn"
                       onClick={() => onNavigate ? onNavigate('/profile/security') : window.location.assign('/profile/security')}
                     >
-                      Security →
+                      <span>Security</span>
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
                     </button>
                   </div>
                 </div>
@@ -942,17 +996,17 @@ function PersonalProfile({ user, onNavigate, onUpdateUser }) {
 
           {/* Callout Banner at Bottom */}
           <div className="van-profile-callout-bar">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, minWidth: '260px' }}>
-              <div className="van-3d-kpi-icon van-3d-icon-cyan" style={{ width: '46px', height: '46px', borderRadius: '12px' }}>
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
-                  <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-                  <path d="M2 17l10 5 10-5"></path>
-                  <path d="M2 12l10 5 10-5"></path>
+            <div className="van-profile-callout-left">
+              <div className="van-3d-kpi-icon van-3d-icon-cyan van-callout-3d-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="8.5" cy="7" r="4"></circle>
+                  <polyline points="17 11 19 13 23 9"></polyline>
                 </svg>
               </div>
-              <div>
-                <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800 }}>Need to update contact numbers, picture or residential address?</h4>
-                <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.84rem', color: '#cbd5e1' }}>
+              <div className="van-callout-text-wrap">
+                <h4 className="van-callout-heading">Need to update contact numbers, picture or residential address?</h4>
+                <p className="van-callout-desc">
                   Keep your personal profile details updated to ensure seamless bank disbursements and official notifications.
                 </p>
               </div>
@@ -960,11 +1014,10 @@ function PersonalProfile({ user, onNavigate, onUpdateUser }) {
 
             <button
               type="button"
-              className="van-btn-profile-primary"
-              style={{ background: 'linear-gradient(135deg, #38BDF8 0%, #0284C7 100%)', color: '#FFFFFF', flexShrink: 0 }}
+              className="van-callout-action-btn"
               onClick={() => setActiveTab('edit')}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
               </svg>
