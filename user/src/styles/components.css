@@ -6178,6 +6178,350 @@
   line-height: 1.5;
 }
 
+/* ========================================================================== */
+/* SUPPORT TICKETS & MEMBER INQUIRIES DESK REDESIGN                           */
+/* ========================================================================== */
+
+.van-support-page-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-bottom: 3.5rem;
+}
+
+/* Hero Banner */
+.van-support-hero-card {
+  position: relative;
+  background: linear-gradient(135deg, #090E1E 0%, #0F172A 50%, #1E3A8A 100%);
+  border-radius: 20px;
+  border: 1.5px solid rgba(59, 130, 246, 0.28);
+  padding: 1.75rem 2.25rem;
+  overflow: hidden;
+  box-shadow: 0 12px 30px -4px rgba(15, 23, 42, 0.35), 0 0 25px rgba(59, 130, 246, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.van-support-hero-card::after {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.16) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.van-support-hero-left {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex: 1;
+  min-width: 280px;
+  position: relative;
+  z-index: 2;
+}
+
+.van-support-hero-icon-pod {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%);
+  color: #FFFFFF;
+  box-shadow: 
+    0 8px 20px rgba(2, 132, 199, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.4),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+  animation: vanFloatPod 4s ease-in-out infinite;
+}
+
+.van-support-hero-title-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.van-support-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.2rem;
+}
+
+.van-support-glass-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #93C5FD;
+  font-size: 0.72rem;
+  font-weight: 750;
+  padding: 0.2rem 0.65rem;
+  border-radius: 9999px;
+  backdrop-filter: blur(8px);
+  letter-spacing: 0.02em;
+}
+
+.van-support-glass-badge.cyan {
+  background: rgba(6, 182, 212, 0.15);
+  border-color: rgba(34, 211, 238, 0.35);
+  color: #67E8F9;
+}
+
+.van-support-hero-h1 {
+  margin: 0;
+  font-size: 1.55rem;
+  font-weight: 850;
+  color: #FFFFFF;
+  letter-spacing: -0.02em;
+}
+
+.van-support-hero-p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #93C5FD;
+  line-height: 1.45;
+  max-width: 650px;
+}
+
+.van-support-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 2;
+}
+
+/* Control & Filter Bar */
+.van-support-filter-card {
+  background: #FFFFFF;
+  border-radius: 18px;
+  border: 1.5px solid rgba(226, 232, 240, 0.9);
+  padding: 1.15rem 1.35rem;
+  box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.van-support-search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 250px;
+}
+
+.van-support-search-icon {
+  position: absolute;
+  left: 0.95rem;
+  color: #94A3B8;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.van-support-search-input {
+  width: 100%;
+  padding: 0.65rem 2.2rem 0.65rem 2.6rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #0F172A;
+  background: #F8FAFC;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 12px;
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.van-support-search-input:focus {
+  background: #FFFFFF;
+  border-color: #3B82F6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.van-support-select-group {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.van-support-select {
+  padding: 0.65rem 1rem;
+  border-radius: 12px;
+  border: 1.5px solid #E2E8F0;
+  background: #F8FAFC;
+  color: #1E293B;
+  font-size: 0.84rem;
+  font-weight: 700;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.van-support-select:focus {
+  background: #FFFFFF;
+  border-color: #3B82F6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* Two Column Layout */
+.van-support-layout-grid {
+  display: grid;
+  grid-template-columns: minmax(330px, 1fr) 1.85fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 950px) {
+  .van-support-layout-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Ticket List Column */
+.van-support-list-card {
+  background: #FFFFFF;
+  border-radius: 18px;
+  border: 1.5px solid rgba(226, 232, 240, 0.9);
+  overflow: hidden;
+  box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.04);
+  display: flex;
+  flex-direction: column;
+  max-height: 720px;
+}
+
+.van-support-list-header {
+  padding: 1.15rem 1.35rem;
+  background: linear-gradient(180deg, #FFFFFF 0%, #FAFAFC 100%);
+  border-bottom: 1px solid #F1F5F9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.van-support-list-body {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.van-ticket-item-row {
+  padding: 1.1rem 1.25rem;
+  border-bottom: 1px solid #F1F5F9;
+  border-left: 4px solid transparent;
+  background: #FFFFFF;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.van-ticket-item-row:hover {
+  background: #F8FAFC;
+}
+
+.van-ticket-item-row.active {
+  background: #EFF6FF;
+  border-left-color: #2563EB;
+}
+
+.van-ticket-code-badge {
+  font-family: monospace;
+  font-size: 0.76rem;
+  color: #1D4ED8;
+  font-weight: 850;
+  background: #DBEAFE;
+  padding: 0.12rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #BFDBFE;
+}
+
+.van-ticket-item-title {
+  font-size: 0.9rem;
+  font-weight: 750;
+  color: #0F172A;
+  margin: 0.35rem 0 0.4rem 0;
+  line-height: 1.35;
+}
+
+/* Thread Column */
+.van-support-thread-card {
+  background: #FFFFFF;
+  border-radius: 18px;
+  border: 1.5px solid rgba(226, 232, 240, 0.9);
+  overflow: hidden;
+  box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.04);
+  display: flex;
+  flex-direction: column;
+  min-height: 600px;
+  max-height: 720px;
+}
+
+.van-support-thread-header {
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(180deg, #FFFFFF 0%, #FAFAFC 100%);
+  border-bottom: 1px solid #F1F5F9;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.van-support-thread-body {
+  padding: 1.5rem;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: #F8FAFC;
+}
+
+.van-thread-bubble {
+  max-width: 80%;
+  padding: 1rem 1.25rem;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.van-thread-bubble.user {
+  align-self: flex-end;
+  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+  border: 1.5px solid #BFDBFE;
+  border-bottom-right-radius: 3px;
+}
+
+.van-thread-bubble.support {
+  align-self: flex-start;
+  background: #FFFFFF;
+  border: 1.5px solid #E2E8F0;
+  border-bottom-left-radius: 3px;
+}
+
+.van-support-reply-bar {
+  padding: 1rem 1.35rem;
+  background: #FFFFFF;
+  border-top: 1px solid #F1F5F9;
+}
+
+
 
 
 

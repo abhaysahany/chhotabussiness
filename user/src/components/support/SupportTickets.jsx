@@ -1,4 +1,24 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import {
+  Headphones,
+  LifeBuoy,
+  MessageSquare,
+  Plus,
+  RotateCcw,
+  CheckCircle2,
+  Clock,
+  AlertTriangle,
+  Search,
+  X,
+  Filter,
+  Sparkles,
+  ShieldCheck,
+  FileText,
+  ChevronRight,
+  Send,
+  Folder,
+  Check,
+} from 'lucide-react';
 import { formatDateTime, formatTime } from '../../utils/timezone';
 import {
   getUserSupportTickets,
@@ -209,145 +229,132 @@ function SupportTickets({ user }) {
     }
   };
 
-  const getPriorityBadgeStyle = (priority) => {
+  const getPriorityBadgeClass = (priority) => {
     switch (priority) {
       case 'Urgent':
-        return { bg: '#fee2e2', text: '#b91c1c', border: '#fecdd3' };
+        return 'red';
       case 'High':
-        return { bg: '#ffedd5', text: '#c2410c', border: '#fed7aa' };
+        return 'amber';
       case 'Medium':
-        return { bg: '#fef3c7', text: '#b45309', border: '#fde68a' };
+        return 'blue';
       default:
-        return { bg: '#f1f5f9', text: '#475569', border: '#cbd5e1' };
+        return 'teal';
     }
   };
 
-  const getStatusBadgeStyle = (status) => {
+  const getStatusBadgeClass = (status) => {
     switch (status) {
       case 'Resolved':
-        return { bg: '#dcfce7', text: '#15803d', border: '#bbf7d0' };
+        return 'green';
       case 'In Progress':
-        return { bg: '#e0f2fe', text: '#0369a1', border: '#bae6fd' };
+        return 'cyan';
       case 'Closed':
-        return { bg: '#f1f5f9', text: '#64748b', border: '#cbd5e1' };
+        return 'purple';
       default:
-        return { bg: '#fef3c7', text: '#b45309', border: '#fde68a' };
+        return 'amber';
     }
   };
 
+  const openTicketsCount = useMemo(() => {
+    return tickets.filter((t) => t.status === 'Open' || t.status === 'In Progress').length;
+  }, [tickets]);
+
+  const resolvedTicketsCount = useMemo(() => {
+    return tickets.filter((t) => t.status === 'Resolved').length;
+  }, [tickets]);
+
   return (
-    <div className="page-container support-tickets-container">
+    <div className="van-support-page-wrap">
       {/* Toast Alert */}
       {toastMessage && (
-        <div
-          style={{
-            position: 'fixed',
-            top: '20px',
-            right: '20px',
-            background: '#0f172a',
-            color: '#ffffff',
-            padding: '0.85rem 1.35rem',
-            borderRadius: '10px',
-            zIndex: 999999,
-            boxShadow: '0 10px 25px -5px rgba(0,0,0,0.3)',
-            fontSize: '0.875rem',
-            fontWeight: 700,
-            border: '1px solid #334155',
-          }}
-        >
-          {toastMessage}
+        <div className="profile-toast-success">
+          <CheckCircle2 size={18} strokeWidth={2.4} />
+          <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Page Header */}
-      <div style={{ marginBottom: '1.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#eff6ff', color: '#1d4ed8', padding: '0.2rem 0.65rem', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700, marginBottom: '0.35rem', border: '1px solid #bfdbfe' }}>
-            <span>🎫 Live Support Desk</span>
-            <span>• Direct Database Tickets</span>
+      {/* Top Luxury Support Hero Card */}
+      <div className="van-support-hero-card">
+        <div className="van-support-hero-left">
+          <div className="van-support-hero-icon-pod">
+            <Headphones size={28} strokeWidth={2.4} />
           </div>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0f172a', margin: '0 0 0.3rem 0' }}>
-            Support Tickets & Inquiries
-          </h1>
-          <p style={{ color: '#64748b', fontSize: '0.9rem', margin: 0 }}>
-            Submit tickets for payouts, KYC, commissions, rank progression, or custom inquiries. Tickets are tracked directly in the database.
-          </p>
+          <div className="van-support-hero-title-box">
+            <div className="van-support-badge-row">
+              <span className="van-support-glass-badge cyan">
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#22D3EE', boxShadow: '0 0 6px #22D3EE' }}></span>
+                24/7 Priority Resolution Desk
+              </span>
+              <span className="van-support-glass-badge">
+                <ShieldCheck size={12} /> Direct Database Tracking
+              </span>
+              <span className="van-support-glass-badge">
+                Support » Support Tickets
+              </span>
+            </div>
+            <h1 className="van-support-hero-h1">Support Tickets & Inquiries</h1>
+            <p className="van-support-hero-p">
+              Submit tickets for payouts, KYC, commissions, rank progression, or custom inquiries. Tickets are tracked directly in the database with complete audit trail.
+            </p>
+          </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '0.65rem' }}>
+        <div className="van-support-hero-actions">
           <button
             type="button"
             onClick={fetchTickets}
             disabled={loading}
-            style={{
-              background: '#ffffff',
-              color: '#334155',
-              border: '1px solid #cbd5e1',
-              padding: '0.6rem 1rem',
-              borderRadius: '8px',
-              fontWeight: 700,
-              fontSize: '0.82rem',
-              cursor: loading ? 'not-allowed' : 'pointer',
-            }}
+            className="van-notify-glass-btn"
+            title="Sync tickets with database"
           >
-            🔄 {loading ? 'Syncing...' : 'Sync Database'}
+            <RotateCcw size={15} className={loading ? 'spin-anim' : ''} />
+            <span>{loading ? 'Syncing...' : 'Sync Database'}</span>
           </button>
+
           <button
             type="button"
             onClick={() => setShowCreateModal(true)}
-            style={{
-              background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-              color: '#ffffff',
-              border: 'none',
-              padding: '0.6rem 1.25rem',
-              borderRadius: '8px',
-              fontWeight: 800,
-              fontSize: '0.85rem',
-              cursor: 'pointer',
-              boxShadow: '0 4px 12px rgba(37, 99, 235, 0.25)',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-            }}
+            className="van-notify-glass-btn primary"
+            title="Create a new support ticket"
           >
-            <span>+</span> Create New Ticket
+            <Plus size={16} strokeWidth={2.6} />
+            <span>Create New Ticket</span>
           </button>
         </div>
       </div>
 
       {/* Filter & Search Bar */}
-      <div
-        className="support-tickets-filter-bar"
-        style={{
-          background: '#ffffff',
-          borderRadius: '14px',
-          padding: '1rem 1.25rem',
-          border: '1px solid #e2e8f0',
-          marginBottom: '1.5rem',
-          display: 'flex',
-          gap: '0.85rem',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <div style={{ flex: 1, minWidth: '240px' }}>
+      <div className="van-support-filter-card">
+        <div className="van-support-search-box">
+          <span className="van-support-search-icon">
+            <Search size={16} strokeWidth={2.2} />
+          </span>
           <input
             type="text"
             placeholder="Search tickets by Subject, Ticket Ref #, or Category..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ width: '100%', padding: '0.6rem 0.9rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+            className="van-support-search-input"
           />
+          {searchQuery && (
+            <button
+              type="button"
+              className="van-notify-search-clear"
+              onClick={() => setSearchQuery('')}
+              title="Clear search"
+            >
+              <X size={14} />
+            </button>
+          )}
         </div>
 
-        <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
+        <div className="van-support-select-group">
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            style={{ padding: '0.6rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem', background: '#ffffff', fontWeight: 600 }}
+            className="van-support-select"
           >
-            <option value="All">All Statuses</option>
+            <option value="All">All Statuses ({tickets.length})</option>
             <option value="Open">Open</option>
             <option value="In Progress">In Progress</option>
             <option value="Resolved">Resolved</option>
@@ -357,7 +364,8 @@ function SupportTickets({ user }) {
           <select
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
-            style={{ padding: '0.6rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem', background: '#ffffff', fontWeight: 600, maxWidth: '240px' }}
+            className="van-support-select"
+            style={{ maxWidth: '240px' }}
           >
             <option value="All">All Categories</option>
             {SUPPORT_CATEGORIES.map((cat) => (
@@ -368,84 +376,78 @@ function SupportTickets({ user }) {
       </div>
 
       {/* Main Two-Column Layout */}
-      <div className="support-tickets-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(320px, 1fr) 2fr', gap: '1.5rem', alignItems: 'flex-start' }}>
-        {/* Left Column: Tickets List */}
-        <div className="support-tickets-list-card" style={{ background: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden', display: 'flex', flexDirection: 'column', maxHeight: '720px' }}>
-          <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid #f1f5f9', background: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <strong style={{ fontSize: '0.9rem', color: '#0f172a' }}>Tickets ({tickets.length})</strong>
-            <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Select to view thread</span>
+      <div className="van-support-layout-grid">
+        {/* Left Column: Tickets Queue */}
+        <div className="van-support-list-card">
+          <div className="van-support-list-header">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <strong style={{ fontSize: '0.92rem', color: '#0F172A', fontWeight: 800 }}>
+                Ticket Queue
+              </strong>
+              <span className="van-card-badge-pill blue" style={{ fontSize: '0.68rem', padding: '0.1rem 0.45rem' }}>
+                {tickets.length} Total
+              </span>
+            </div>
+            <span style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: 600 }}>
+              {openTicketsCount} Active
+            </span>
           </div>
 
-          <div style={{ overflowY: 'auto', flex: 1 }}>
-            {tickets.length === 0 ? (
-              <div style={{ padding: '2.5rem 1rem', textAlign: 'center', color: '#64748b' }}>
-                <span style={{ fontSize: '2rem', display: 'block', marginBottom: '0.5rem' }}>📭</span>
-                <p style={{ margin: 0, fontSize: '0.85rem' }}>No support tickets found.</p>
+          <div className="van-support-list-body">
+            {loading ? (
+              <div style={{ padding: '3rem 1rem', textAlign: 'center' }}>
+                <div className="van-spinner" style={{ width: '24px', height: '24px', margin: '0 auto 0.75rem auto' }}></div>
+                <span style={{ fontSize: '0.84rem', color: '#64748B', fontWeight: 600 }}>Fetching tickets...</span>
+              </div>
+            ) : tickets.length === 0 ? (
+              <div style={{ padding: '3rem 1.5rem', textAlign: 'center', color: '#64748B' }}>
+                <div style={{ width: '52px', height: '52px', borderRadius: '16px', background: '#EFF6FF', color: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem auto' }}>
+                  <LifeBuoy size={26} strokeWidth={2.2} />
+                </div>
+                <h4 style={{ margin: '0 0 0.35rem 0', fontSize: '1rem', fontWeight: 800, color: '#0F172A' }}>No Tickets Found</h4>
+                <p style={{ margin: '0 0 1rem 0', fontSize: '0.82rem', color: '#64748B' }}>
+                  Have an issue or inquiry? Raise a direct ticket to our support desk.
+                </p>
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(true)}
-                  style={{ marginTop: '0.75rem', background: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe', padding: '0.4rem 0.85rem', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}
+                  className="van-vault-action-btn"
                 >
-                  + Raise Your First Ticket
+                  <Plus size={13} strokeWidth={2.4} />
+                  <span>Raise First Ticket</span>
                 </button>
               </div>
             ) : (
               tickets.map((t) => {
                 const isSelected = selectedTicket?.id === t.id;
-                const pStyle = getPriorityBadgeStyle(t.priority);
-                const sStyle = getStatusBadgeStyle(t.status);
+                const statusClass = getStatusBadgeClass(t.status);
+                const priorityClass = getPriorityBadgeClass(t.priority);
 
                 return (
                   <div
                     key={t.id}
                     onClick={() => setSelectedTicketId(t.id)}
-                    style={{
-                      padding: '1rem 1.25rem',
-                      borderBottom: '1px solid #f1f5f9',
-                      borderLeft: isSelected ? '4px solid #2563eb' : '4px solid transparent',
-                      background: isSelected ? '#f8fafc' : '#ffffff',
-                      cursor: 'pointer',
-                      transition: 'all 0.15s ease',
-                    }}
+                    className={`van-ticket-item-row ${isSelected ? 'active' : ''}`}
                   >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.35rem' }}>
-                      <span style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: '#2563eb', fontWeight: 800 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                      <span className="van-ticket-code-badge">
                         {t.ticket_code}
                       </span>
-                      <span
-                        style={{
-                          fontSize: '0.68rem',
-                          fontWeight: 800,
-                          padding: '0.15rem 0.5rem',
-                          borderRadius: '10px',
-                          background: sStyle.bg,
-                          color: sStyle.text,
-                          border: `1px solid ${sStyle.border}`,
-                          textTransform: 'uppercase',
-                        }}
-                      >
+                      <span className={`van-card-badge-pill ${statusClass}`} style={{ fontSize: '0.64rem', padding: '0.1rem 0.45rem' }}>
                         ● {t.status}
                       </span>
                     </div>
 
-                    <strong style={{ fontSize: '0.875rem', color: '#0f172a', display: 'block', marginBottom: '0.35rem', lineHeight: 1.3 }}>
+                    <h4 className="van-ticket-item-title">
                       {t.subject}
-                    </strong>
+                    </h4>
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem', color: '#64748b' }}>
-                      <span style={{ maxWidth: '160px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        📁 {t.category}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem', color: '#64748B' }}>
+                      <span style={{ maxWidth: '170px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                        <Folder size={12} />
+                        <span>{t.category}</span>
                       </span>
-                      <span
-                        style={{
-                          fontSize: '0.65rem',
-                          fontWeight: 700,
-                          padding: '0.1rem 0.4rem',
-                          borderRadius: '4px',
-                          background: pStyle.bg,
-                          color: pStyle.text,
-                        }}
-                      >
+                      <span className={`van-card-badge-pill ${priorityClass}`} style={{ fontSize: '0.62rem', padding: '0.08rem 0.4rem' }}>
                         {t.priority}
                       </span>
                     </div>
@@ -457,128 +459,133 @@ function SupportTickets({ user }) {
         </div>
 
         {/* Right Column: Selected Ticket Thread */}
-        <div className="support-tickets-thread-card" style={{ background: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', minHeight: '600px', maxHeight: '720px' }}>
+        <div className="van-support-thread-card">
           {selectedTicket ? (
             <>
               {/* Thread Header */}
-              <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid #f1f5f9', background: '#f8fafc', borderRadius: '16px 16px 0 0' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem' }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
-                      <span style={{ fontFamily: 'monospace', fontSize: '0.85rem', fontWeight: 800, color: '#2563eb' }}>
-                        {selectedTicket.ticket_code}
-                      </span>
-                      <span
-                        style={{
-                          fontSize: '0.72rem',
-                          fontWeight: 800,
-                          padding: '0.15rem 0.55rem',
-                          borderRadius: '10px',
-                          ...getStatusBadgeStyle(selectedTicket.status),
-                        }}
-                      >
-                        ● {selectedTicket.status}
-                      </span>
-                    </div>
-                    <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0f172a', margin: '0 0 0.35rem 0' }}>
-                      {selectedTicket.subject}
-                    </h2>
-                    <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
-                      Category: <strong style={{ color: '#334155' }}>{selectedTicket.category}</strong> • Priority: <strong style={{ color: '#334155' }}>{selectedTicket.priority}</strong> • Created: <strong style={{ color: '#334155' }}>{formatDateTime(selectedTicket.created_at)}</strong>
-                    </div>
+              <div className="van-support-thread-header">
+                <div style={{ minWidth: '240px', flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', marginBottom: '0.35rem' }}>
+                    <span className="van-ticket-code-badge" style={{ fontSize: '0.85rem' }}>
+                      {selectedTicket.ticket_code}
+                    </span>
+                    <span className={`van-card-badge-pill ${getStatusBadgeClass(selectedTicket.status)}`}>
+                      ● {selectedTicket.status}
+                    </span>
+                    <span className={`van-card-badge-pill ${getPriorityBadgeClass(selectedTicket.priority)}`}>
+                      {selectedTicket.priority} Priority
+                    </span>
                   </div>
 
+                  <h2 style={{ fontSize: '1.25rem', fontWeight: 850, color: '#0F172A', margin: '0 0 0.4rem 0', letterSpacing: '-0.01em' }}>
+                    {selectedTicket.subject}
+                  </h2>
+
+                  <div style={{ fontSize: '0.78rem', color: '#64748B', display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+                    <span>Category: <strong style={{ color: '#0F172A' }}>{selectedTicket.category}</strong></span>
+                    <span>•</span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                      <Clock size={12} />
+                      <span>{formatDateTime(selectedTicket.created_at)}</span>
+                    </span>
+                  </div>
+                </div>
+
+                <div>
                   <button
                     type="button"
                     onClick={handleToggleCloseTicket}
+                    className={`van-vault-action-btn ${selectedTicket.status === 'Resolved' || selectedTicket.status === 'Closed' ? '' : 'primary'}`}
                     style={{
-                      background: selectedTicket.status === 'Resolved' || selectedTicket.status === 'Closed' ? '#f1f5f9' : '#f0fdf4',
-                      color: selectedTicket.status === 'Resolved' || selectedTicket.status === 'Closed' ? '#475569' : '#15803d',
-                      border: `1px solid ${selectedTicket.status === 'Resolved' || selectedTicket.status === 'Closed' ? '#cbd5e1' : '#bbf7d0'}`,
-                      padding: '0.45rem 0.85rem',
-                      borderRadius: '8px',
-                      fontSize: '0.75rem',
-                      fontWeight: 700,
-                      cursor: 'pointer',
+                      background: selectedTicket.status === 'Resolved' || selectedTicket.status === 'Closed' ? '#F1F5F9' : '#ECFDF5',
+                      color: selectedTicket.status === 'Resolved' || selectedTicket.status === 'Closed' ? '#475569' : '#059669',
+                      borderColor: selectedTicket.status === 'Resolved' || selectedTicket.status === 'Closed' ? '#CBD5E1' : '#A7F3D0',
                     }}
                   >
-                    {selectedTicket.status === 'Resolved' || selectedTicket.status === 'Closed' ? 'Reopen Ticket' : '✓ Mark Resolved'}
+                    <CheckCircle2 size={13} strokeWidth={2.4} />
+                    <span>{selectedTicket.status === 'Resolved' || selectedTicket.status === 'Closed' ? 'Reopen Ticket' : 'Mark as Resolved'}</span>
                   </button>
                 </div>
               </div>
 
               {/* Thread Messages */}
-              <div style={{ padding: '1.5rem', flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem', background: '#fafafa' }}>
+              <div className="van-support-thread-body">
                 {selectedTicket.messages && selectedTicket.messages.length > 0 ? (
                   selectedTicket.messages.map((m) => {
                     const isMe = m.sender_type === 'user';
                     return (
                       <div
                         key={m.id}
-                        style={{
-                          alignSelf: isMe ? 'flex-end' : 'flex-start',
-                          maxWidth: '78%',
-                          background: isMe ? '#eff6ff' : '#ffffff',
-                          border: isMe ? '1px solid #bfdbfe' : '1px solid #e2e8f0',
-                          borderRadius: isMe ? '14px 14px 2px 14px' : '14px 14px 14px 2px',
-                          padding: '1rem 1.15rem',
-                          boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
-                        }}
+                        className={`van-thread-bubble ${isMe ? 'user' : 'support'}`}
                       >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem', fontSize: '0.74rem' }}>
-                          <strong style={{ color: isMe ? '#1d4ed8' : '#0f172a' }}>
-                            {isMe ? `${m.sender_name} (You)` : `🛡️ ${m.sender_name}`}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem' }}>
+                          <strong style={{ color: isMe ? '#1D4ED8' : '#0F172A', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                            {isMe ? `${m.sender_name} (You)` : `🛡️ Support Agent • ${m.sender_name}`}
                           </strong>
-                          <span style={{ color: '#94a3b8', fontSize: '0.68rem' }}>
+                          <span style={{ color: '#94A3B8', fontSize: '0.68rem', fontWeight: 600 }}>
                             {formatTime(m.created_at)}
                           </span>
                         </div>
 
-                        <p style={{ margin: 0, fontSize: '0.85rem', color: '#1e293b', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>
+                        <p style={{ margin: 0, fontSize: '0.86rem', color: isMe ? '#1E3A8A' : '#334155', lineHeight: 1.55, whiteSpace: 'pre-wrap' }}>
                           {m.message}
                         </p>
                       </div>
                     );
                   })
                 ) : (
-                  <div style={{ textAlign: 'center', color: '#64748b', padding: '2rem' }}>No messages in thread yet.</div>
+                  <div style={{ textAlign: 'center', color: '#64748B', padding: '3rem 1rem' }}>
+                    <MessageSquare size={32} style={{ color: '#CBD5E1', marginBottom: '0.5rem' }} />
+                    <p style={{ margin: 0, fontSize: '0.85rem' }}>No messages in thread yet.</p>
+                  </div>
                 )}
               </div>
 
               {/* Reply Box Form */}
-              <div style={{ padding: '1rem 1.25rem', borderTop: '1px solid #e2e8f0', background: '#ffffff', borderRadius: '0 0 16px 16px' }}>
-                <form onSubmit={handleSendReply} style={{ display: 'flex', gap: '0.75rem' }}>
+              <div className="van-support-reply-bar">
+                <form onSubmit={handleSendReply} style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
                   <input
                     type="text"
                     required
-                    placeholder="Type your message or response..."
+                    placeholder="Type your response to the support team..."
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
-                    style={{ flex: 1, padding: '0.7rem 1rem', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem' }}
+                    className="van-sec-input"
+                    style={{ padding: '0.7rem 1.1rem' }}
                   />
                   <button
                     type="submit"
                     disabled={replying || !replyText.trim()}
+                    className="van-vault-action-btn"
                     style={{
-                      background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-                      color: '#ffffff',
-                      border: 'none',
-                      padding: '0.7rem 1.25rem',
-                      borderRadius: '10px',
-                      fontWeight: 800,
-                      fontSize: '0.85rem',
-                      cursor: replying ? 'not-allowed' : 'pointer',
+                      background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                      color: '#FFFFFF',
+                      borderColor: '#1D4ED8',
+                      padding: '0.7rem 1.35rem',
+                      borderRadius: '12px',
                     }}
                   >
-                    {replying ? 'Sending...' : 'Send Reply →'}
+                    {replying ? (
+                      <span>Sending...</span>
+                    ) : (
+                      <>
+                        <Send size={14} strokeWidth={2.4} />
+                        <span>Send Reply</span>
+                      </>
+                    )}
                   </button>
                 </form>
               </div>
             </>
           ) : (
-            <div className="support-tickets-empty-placeholder" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, color: '#64748b', flexDirection: 'column' }}>
-              <span style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>💬</span>
-              <p style={{ margin: 0, fontSize: '0.95rem' }}>Select a ticket from the left column to view the conversation.</p>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, color: '#64748B', flexDirection: 'column', padding: '3rem' }}>
+              <div style={{ width: '64px', height: '64px', borderRadius: '18px', background: '#EFF6FF', color: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
+                <MessageSquare size={32} strokeWidth={2.2} />
+              </div>
+              <h3 style={{ margin: '0 0 0.35rem 0', fontSize: '1.1rem', fontWeight: 800, color: '#0F172A' }}>Select a Ticket</h3>
+              <p style={{ margin: 0, fontSize: '0.86rem', color: '#64748B', textAlign: 'center' }}>
+                Choose any ticket from the queue on the left to review the resolution thread or send a reply.
+              </p>
             </div>
           )}
         </div>
@@ -603,28 +610,29 @@ function SupportTickets({ user }) {
           }}
         >
           <div
-            className="support-ticket-modal-card"
             style={{
-              background: '#ffffff',
+              background: '#FFFFFF',
               borderRadius: '20px',
               width: '100%',
               maxWidth: '560px',
               padding: '2rem 2.25rem',
               boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.35)',
-              border: '1px solid #e2e8f0',
+              border: '1.5px solid #E2E8F0',
               maxHeight: '90vh',
               overflowY: 'auto',
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.85rem', marginBottom: '1.25rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #F1F5F9', paddingBottom: '0.95rem', marginBottom: '1.35rem' }}>
               <div>
-                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#2563eb', textTransform: 'uppercase' }}>Database Support Desk</span>
-                <h3 style={{ margin: '0.2rem 0 0 0', fontSize: '1.3rem', fontWeight: 800, color: '#0f172a' }}>Raise New Support Ticket</h3>
+                <span className="van-card-badge-pill blue" style={{ fontSize: '0.68rem' }}>24/7 Priority Desk</span>
+                <h3 style={{ margin: '0.35rem 0 0 0', fontSize: '1.35rem', fontWeight: 850, color: '#0F172A', letterSpacing: '-0.01em' }}>
+                  Raise New Support Ticket
+                </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setShowCreateModal(false)}
-                style={{ background: '#f1f5f9', border: 'none', width: '32px', height: '32px', borderRadius: '50%', fontSize: '1.2rem', color: '#64748b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{ background: '#F1F5F9', border: 'none', width: '34px', height: '34px', borderRadius: '50%', fontSize: '1.1rem', color: '#64748B', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
                 ✕
               </button>
@@ -633,14 +641,15 @@ function SupportTickets({ user }) {
             <form onSubmit={handleCreateTicketSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
               {/* Category Dropdown */}
               <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 750, color: '#475569', textTransform: 'uppercase', marginBottom: '0.35rem', letterSpacing: '0.04em' }}>
                   Support Category *
                 </label>
                 <select
                   required
                   value={newTicket.category}
                   onChange={(e) => setNewTicket({ ...newTicket, category: e.target.value })}
-                  style={{ width: '100%', padding: '0.7rem 0.85rem', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.9rem', background: '#ffffff', fontWeight: 600 }}
+                  className="van-support-select"
+                  style={{ width: '100%' }}
                 >
                   {SUPPORT_CATEGORIES.map((cat) => (
                     <option key={cat} value={cat}>{cat}</option>
@@ -650,8 +659,8 @@ function SupportTickets({ user }) {
 
               {/* Custom Category Input if "Others" selected */}
               {newTicket.category === 'Others' && (
-                <div style={{ background: '#f0f9ff', padding: '0.85rem', borderRadius: '8px', border: '1px solid #bae6fd' }}>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0369a1', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
+                <div style={{ background: '#F0F9FF', padding: '0.85rem', borderRadius: '12px', border: '1px solid #BAE6FD' }}>
+                  <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: 750, color: '#0369A1', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
                     Specify Your Topic / Category *
                   </label>
                   <input
@@ -660,10 +669,11 @@ function SupportTickets({ user }) {
                     placeholder="e.g. Form 16A Certificate, Event RSVP, Special Settlement..."
                     value={newTicket.customCategory}
                     onChange={(e) => { setNewTicket({ ...newTicket, customCategory: e.target.value }); setCreateErrors(prev => ({ ...prev, customCategory: null })); }}
-                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '6px', border: createErrors.customCategory ? '2px solid #ef4444' : '1px solid #38bdf8', fontSize: '0.85rem', background: '#ffffff' }}
+                    className="van-sec-input"
+                    style={{ padding: '0.65rem 0.85rem', borderColor: createErrors.customCategory ? '#EF4444' : '#38BDF8' }}
                   />
                   {createErrors.customCategory && (
-                    <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block', fontWeight: 600 }}>
+                    <span style={{ color: '#EF4444', fontSize: '0.74rem', marginTop: '0.25rem', display: 'block', fontWeight: 650 }}>
                       ⚠️ {createErrors.customCategory}
                     </span>
                   )}
@@ -672,13 +682,14 @@ function SupportTickets({ user }) {
 
               {/* Priority */}
               <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 750, color: '#475569', textTransform: 'uppercase', marginBottom: '0.35rem', letterSpacing: '0.04em' }}>
                   Priority Level *
                 </label>
                 <select
                   value={newTicket.priority}
                   onChange={(e) => setNewTicket({ ...newTicket, priority: e.target.value })}
-                  style={{ width: '100%', padding: '0.7rem 0.85rem', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.9rem', background: '#ffffff' }}
+                  className="van-support-select"
+                  style={{ width: '100%' }}
                 >
                   <option value="Low">Low - General Question</option>
                   <option value="Medium">Medium - Standard Request</option>
@@ -689,7 +700,7 @@ function SupportTickets({ user }) {
 
               {/* Subject */}
               <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 750, color: '#475569', textTransform: 'uppercase', marginBottom: '0.35rem', letterSpacing: '0.04em' }}>
                   Subject Summary *
                 </label>
                 <input
@@ -698,10 +709,11 @@ function SupportTickets({ user }) {
                   placeholder="e.g. Need assistance with TDS certificate for payout PAY-2026-102"
                   value={newTicket.subject}
                   onChange={(e) => { setNewTicket({ ...newTicket, subject: e.target.value }); setCreateErrors(prev => ({ ...prev, subject: null })); }}
-                  style={{ width: '100%', padding: '0.7rem 0.85rem', borderRadius: '8px', border: createErrors.subject ? '2px solid #ef4444' : '1.5px solid #cbd5e1', fontSize: '0.9rem' }}
+                  className="van-sec-input"
+                  style={{ padding: '0.7rem 0.95rem', borderColor: createErrors.subject ? '#EF4444' : '#CBD5E1' }}
                 />
                 {createErrors.subject && (
-                  <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block', fontWeight: 600 }}>
+                  <span style={{ color: '#EF4444', fontSize: '0.74rem', marginTop: '0.25rem', display: 'block', fontWeight: 650 }}>
                     ⚠️ {createErrors.subject}
                   </span>
                 )}
@@ -709,7 +721,7 @@ function SupportTickets({ user }) {
 
               {/* Description */}
               <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 750, color: '#475569', textTransform: 'uppercase', marginBottom: '0.35rem', letterSpacing: '0.04em' }}>
                   Detailed Description *
                 </label>
                 <textarea
@@ -718,10 +730,11 @@ function SupportTickets({ user }) {
                   placeholder="Please provide full details, reference numbers, or context..."
                   value={newTicket.description}
                   onChange={(e) => { setNewTicket({ ...newTicket, description: e.target.value }); setCreateErrors(prev => ({ ...prev, description: null })); }}
-                  style={{ width: '100%', padding: '0.75rem 0.85rem', borderRadius: '8px', border: createErrors.description ? '2px solid #ef4444' : '1.5px solid #cbd5e1', fontSize: '0.85rem', resize: 'vertical' }}
+                  className="van-sec-input"
+                  style={{ padding: '0.75rem 0.95rem', resize: 'vertical', borderColor: createErrors.description ? '#EF4444' : '#CBD5E1' }}
                 ></textarea>
                 {createErrors.description && (
-                  <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block', fontWeight: 600 }}>
+                  <span style={{ color: '#EF4444', fontSize: '0.74rem', marginTop: '0.25rem', display: 'block', fontWeight: 650 }}>
                     ⚠️ {createErrors.description}
                   </span>
                 )}
@@ -732,24 +745,15 @@ function SupportTickets({ user }) {
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  style={{ flex: 1, padding: '0.8rem', background: '#f1f5f9', color: '#475569', border: '1px solid #cbd5e1', borderRadius: '10px', fontWeight: 700, cursor: 'pointer' }}
+                  style={{ flex: 1, padding: '0.8rem', background: '#F1F5F9', color: '#475569', border: '1px solid #CBD5E1', borderRadius: '12px', fontWeight: 750, cursor: 'pointer' }}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={creating}
-                  style={{
-                    flex: 1.3,
-                    padding: '0.8rem',
-                    background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-                    color: '#ffffff',
-                    border: 'none',
-                    borderRadius: '10px',
-                    fontWeight: 800,
-                    cursor: creating ? 'not-allowed' : 'pointer',
-                    boxShadow: '0 4px 14px rgba(37, 99, 235, 0.3)',
-                  }}
+                  className="van-sec-submit-btn"
+                  style={{ flex: 1.4, margin: 0 }}
                 >
                   {creating ? 'Saving to Database...' : '✓ Submit Ticket to Database'}
                 </button>
