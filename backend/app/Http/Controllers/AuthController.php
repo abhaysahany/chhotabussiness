@@ -447,7 +447,10 @@ class AuthController extends Controller
         }
 
         // Create Sanctum API Token
-        $token = $user->createToken('user_auth_token')->plainTextToken;
+        $tokenName = ($request->header('X-Client-Type') === 'mobile-app' || $request->header('X-Mobile-App') === '1')
+            ? 'mobile_auth_token'
+            : 'user_auth_token';
+        $token = $user->createToken($tokenName)->plainTextToken;
 
         return response()->json([
             'status' => 'success',

@@ -661,7 +661,7 @@ function AppContent() {
           <Route path="/payouts/current" element={<CurrentPayouts user={user} onNavigate={handleNavigate} />} />
           <Route path="/current-payouts" element={<Navigate to="/payouts/current" replace />} />
 
-          <Route path="/payouts/history" element={<PayoutHistory user={user} />} />
+          <Route path="/payouts/history" element={<PayoutHistory user={user} onNavigate={handleNavigate} />} />
           <Route path="/payout-history" element={<Navigate to="/payouts/history" replace />} />
 
           <Route path="/payouts/withdraw" element={<RequestWithdrawal user={user} onNavigate={handleNavigate} />} />
@@ -677,7 +677,7 @@ function AppContent() {
           <Route path="/payments/rewards/:rewardId" element={<RewardItemDetailPage user={user} onNavigate={handleNavigate} />} />
           <Route path="/reward-details" element={<Navigate to="/payments/rewards" replace />} />
 
-          <Route path="/payments/rewards-claimed" element={<RewardsClaimed user={user} />} />
+          <Route path="/payments/rewards-claimed" element={<RewardsClaimed user={user} onNavigate={handleNavigate} />} />
           <Route path="/payments/rewards/claimed" element={<Navigate to="/payments/rewards-claimed" replace />} />
           <Route path="/rewards-claimed" element={<Navigate to="/payments/rewards-claimed" replace />} />
 

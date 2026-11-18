@@ -41,7 +41,7 @@ class PersonalAccessToken extends SanctumPersonalAccessToken
      */
     public function isIdleExpired(?int $timeoutMinutes = null): bool
     {
-        $limit = $timeoutMinutes ?? (int) config('session_timeout.idle_timeout_minutes', 30);
+        $limit = $timeoutMinutes ?? (int) config('session_timeout.idle_timeout_minutes', 0);
         if ($limit <= 0) {
             return false;
         }
@@ -62,7 +62,7 @@ class PersonalAccessToken extends SanctumPersonalAccessToken
      */
     public function isAbsoluteExpired(?int $timeoutHours = null): bool
     {
-        $limit = $timeoutHours ?? (int) config('session_timeout.absolute_timeout_hours', 12);
+        $limit = $timeoutHours ?? (int) config('session_timeout.absolute_timeout_hours', 0);
         if ($limit <= 0) {
             return false;
         }
