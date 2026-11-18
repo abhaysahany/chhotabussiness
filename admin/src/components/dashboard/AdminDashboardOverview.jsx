@@ -355,32 +355,27 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
 
       {/* 1. Master Enterprise Hero Header Banner */}
       <div className="adm-hero-banner">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.15rem' }}>
-          {/* Floating 3D Building Pod */}
-          <div
-            className="adm-3d-pod adm-pod-steel"
-            style={{
-              width: '52px',
-              height: '52px',
-              borderRadius: '16px',
-            }}
-          >
-            <Building2 size={26} strokeWidth={2.2} />
+        {/* Top Profile / Title Row */}
+        <div className="adm-hero-top-row">
+          {/* Prominent 3D Floating Building Pod */}
+          <div className="adm-hero-pod-3d">
+            <Building2 size={32} strokeWidth={2.4} />
           </div>
 
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
               <span
                 style={{
                   fontSize: '0.68rem',
                   fontWeight: 800,
                   textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
+                  letterSpacing: '0.07em',
                   background: 'rgba(53, 105, 167, 0.1)',
                   color: '#3569a7',
-                  padding: '2.5px 8px',
+                  padding: '3px 10px',
                   borderRadius: '6px',
                   border: '1px solid rgba(53, 105, 167, 0.22)',
+                  whiteSpace: 'nowrap',
                 }}
               >
                 ● MASTER GOVERNANCE PORTAL
@@ -388,108 +383,115 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
               <span
                 style={{
                   fontSize: '0.72rem',
-                  fontWeight: 700,
+                  fontWeight: 800,
                   color: '#0d9488',
                   background: 'rgba(13, 148, 136, 0.1)',
-                  padding: '2.5px 8px',
+                  padding: '3px 10px',
                   borderRadius: '6px',
-                  border: '1px solid rgba(13, 148, 136, 0.2)',
+                  border: '1px solid rgba(13, 148, 136, 0.22)',
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '0.35rem',
+                  gap: '0.4rem',
+                  whiteSpace: 'nowrap',
                 }}
               >
-                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#0d9488' }}></span>
+                <span
+                  style={{
+                    width: '7px',
+                    height: '7px',
+                    borderRadius: '50%',
+                    background: '#0d9488',
+                    boxShadow: '0 0 8px rgba(13, 148, 136, 0.65)',
+                  }}
+                ></span>
                 Database Online (MySQL 8.0)
               </span>
+              <span
+                style={{
+                  fontSize: '0.7rem',
+                  fontWeight: 700,
+                  color: '#64748b',
+                  background: '#f1f5f9',
+                  padding: '3px 9px',
+                  borderRadius: '6px',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                Telemetry v2.4
+              </span>
             </div>
+
             <h1
               style={{
-                margin: '0.25rem 0 0 0',
-                fontSize: '1.5rem',
-                fontWeight: 800,
+                margin: '0.35rem 0 0 0',
+                fontSize: '1.68rem',
+                fontWeight: 900,
                 color: '#0f172a',
-                letterSpacing: '-0.025em',
+                letterSpacing: '-0.03em',
+                lineHeight: 1.25,
               }}
             >
               Enterprise Platform Administration
             </h1>
-            <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.82rem', color: '#64748b' }}>
-              Real-time platform governance, automated batch settlement telemetry, and multi-tier revenue telemetry.
+            <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.88rem', color: '#64748b', lineHeight: 1.55 }}>
+              Real-time platform governance, automated batch settlement telemetry, and multi-tier network revenue telemetry.
             </p>
           </div>
         </div>
 
-        {/* Action Controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-          {/* Tuesday Auto Settlement Pill */}
-          <div
-            style={{
-              background: '#f8fafc',
-              border: '1px solid #e2e8f0',
-              padding: '0.5rem 0.95rem',
-              borderRadius: '10px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.55rem',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
-            }}
-          >
-            <Clock size={16} color="#d97706" />
-            <div style={{ fontSize: '0.76rem' }}>
-              <span style={{ color: '#64748b' }}>Weekly Batch Cycle: </span>
-              <strong style={{ color: '#0f172a', fontFamily: 'monospace', fontWeight: 800 }}>
-                {String(settlementCountdown.hours).padStart(2, '0')}h {String(settlementCountdown.minutes).padStart(2, '0')}m {String(settlementCountdown.seconds).padStart(2, '0')}s
-              </strong>
+        {/* Spacious Action Toolbar */}
+        <div className="adm-hero-toolbar">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            {/* Weekly Batch Countdown Capsule */}
+            <div className="adm-batch-capsule">
+              <Clock size={16} color="#d97706" />
+              <div style={{ fontSize: '0.78rem' }}>
+                <span style={{ color: '#64748b' }}>Weekly Batch Cycle: </span>
+                <strong style={{ color: '#0f172a', fontFamily: 'monospace', fontWeight: 800 }}>
+                  {String(settlementCountdown.hours).padStart(2, '0')}h {String(settlementCountdown.minutes).padStart(2, '0')}m {String(settlementCountdown.seconds).padStart(2, '0')}s
+                </strong>
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                fontSize: '0.74rem',
+                fontWeight: 700,
+                color: '#0d9488',
+                background: 'rgba(13, 148, 136, 0.08)',
+                padding: '0.55rem 0.85rem',
+                borderRadius: '12px',
+                border: '1px solid rgba(13, 148, 136, 0.18)',
+              }}
+            >
+              <ShieldCheck size={14} color="#0d9488" />
+              <span>Settlement Pipeline Active</span>
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={fetchStats}
-            disabled={loading}
-            style={{
-              background: '#ffffff',
-              border: '1.5px solid #cbd5e1',
-              color: '#3569a7',
-              padding: '0.52rem 0.95rem',
-              borderRadius: '10px',
-              fontWeight: 800,
-              fontSize: '0.82rem',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.45rem',
-              boxShadow: '0 2px 6px rgba(0, 0, 0, 0.03)',
-              transition: 'all 0.2s ease',
-            }}
-          >
-            <RefreshCw size={14} className={loading ? 'spin' : ''} />
-            <span>{loading ? 'Syncing...' : 'Sync MySQL'}</span>
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={fetchStats}
+              disabled={loading}
+              className="adm-hero-btn-sync"
+            >
+              <RefreshCw size={15} className={loading ? 'spin' : ''} />
+              <span>{loading ? 'Syncing...' : 'Sync MySQL'}</span>
+            </button>
 
-          <button
-            type="button"
-            onClick={() => onNavigate && onNavigate('orders-management')}
-            style={{
-              background: 'linear-gradient(135deg, #4a80c2 0%, #264e7e 100%)',
-              color: '#ffffff',
-              border: 'none',
-              padding: '0.56rem 1.25rem',
-              borderRadius: '10px',
-              fontWeight: 800,
-              fontSize: '0.84rem',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.45rem',
-              boxShadow: '0 4px 14px rgba(53, 105, 167, 0.32), inset 0 1px 1px rgba(255, 255, 255, 0.3)',
-              transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
-            }}
-          >
-            <Zap size={16} />
-            + New Sales Order
-          </button>
+            <button
+              type="button"
+              onClick={() => onNavigate && onNavigate('orders-management')}
+              className="adm-hero-btn-primary"
+            >
+              <Zap size={16} />
+              + New Sales Order
+            </button>
+          </div>
         </div>
       </div>
 

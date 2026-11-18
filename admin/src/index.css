@@ -2864,18 +2864,149 @@ div[style*="position: fixed"]:not(.sidebar-container):not(.sidebar-backdrop):not
   white-space: nowrap;
 }
 
-/* Hero Header Banner */
+/* Executive 3D Luxury Hero Banner */
 .adm-hero-banner {
-  background: #ffffff;
-  border-radius: 18px;
-  border: 1px solid #e2e8f0;
-  padding: 1.25rem 1.6rem;
+  background: radial-gradient(120% 120% at 96% 8%, rgba(53, 105, 167, 0.06) 0%, rgba(255, 255, 255, 0.98) 45%, #ffffff 100%);
+  border-radius: 22px;
+  border: 1px solid #cbd5e1;
+  border-top: 4px solid #3569a7;
+  padding: 1.85rem 2.25rem;
+  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.05), 0 2px 6px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.adm-hero-banner:hover {
+  box-shadow: 0 18px 40px -8px rgba(53, 105, 167, 0.1), 0 4px 12px rgba(0, 0, 0, 0.03);
+  border-color: #94a3b8;
+}
+
+/* Floating 3D Hero Pod */
+@keyframes admHeroPodFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+    box-shadow: 
+      0 14px 28px -4px rgba(53, 105, 167, 0.45),
+      0 4px 10px rgba(53, 105, 167, 0.25),
+      inset 0 2.5px 3px rgba(255, 255, 255, 0.65),
+      inset 0 -3px 4px rgba(0, 0, 0, 0.35);
+  }
+  50% {
+    transform: translateY(-6px) rotate(2deg);
+    box-shadow: 
+      0 22px 36px -4px rgba(53, 105, 167, 0.55),
+      0 6px 14px rgba(53, 105, 167, 0.3),
+      inset 0 3px 4px rgba(255, 255, 255, 0.75),
+      inset 0 -3px 4px rgba(0, 0, 0, 0.35);
+  }
+}
+
+.adm-hero-pod-3d {
+  width: 68px;
+  height: 68px;
+  border-radius: 20px;
+  background: radial-gradient(135% 135% at 20% 20%, #5b9ae2 0%, #3569a7 50%, #17345b 100%);
+  border: 1.5px solid rgba(255, 255, 255, 0.45);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  animation: admHeroPodFloat 4s ease-in-out infinite;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.adm-hero-pod-3d:hover {
+  transform: translateY(-8px) scale(1.08) rotate(3deg);
+  animation-play-state: paused;
+}
+
+.adm-hero-top-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .adm-hero-top-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}
+
+.adm-hero-toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 1.25rem;
-  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+  gap: 1rem;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 1.15rem;
+}
+
+.adm-batch-capsule {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 0.55rem 1.1rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.adm-hero-btn-sync {
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  color: #3569a7;
+  padding: 0.58rem 1.15rem;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 0.82rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.adm-hero-btn-sync:hover {
+  transform: translateY(-2px);
+  border-color: #3569a7;
+  box-shadow: 0 4px 12px rgba(53, 105, 167, 0.15);
+}
+
+.adm-hero-btn-primary {
+  background: linear-gradient(135deg, #4a80c2 0%, #264e7e 100%);
+  color: #ffffff;
+  border: none;
+  padding: 0.62rem 1.45rem;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 6px 18px -2px rgba(53, 105, 167, 0.42), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.adm-hero-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px -3px rgba(53, 105, 167, 0.55);
+  background: linear-gradient(135deg, #5b91d3 0%, #305e94 100%);
+}
+
+.adm-hero-btn-primary:active,
+.adm-hero-btn-sync:active {
+  transform: translateY(0);
 }
 
 /* Operations Sentinel Banner */
