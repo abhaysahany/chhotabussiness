@@ -385,8 +385,8 @@ function EntityDashboard() {
         <div className="ent-hero-content">
           {/* Merchant Identity */}
           <div className="ent-merchant-profile">
-            <div className="ent-3d-pod ent-pod-olive" style={{ width: '66px', height: '66px', borderRadius: '20px' }}>
-              {entityDetails?.entity_type === 'freelancer' ? <Briefcase size={30} /> : <Building2 size={30} />}
+            <div className="ent-3d-pod ent-3d-pod-hero ent-pod-olive">
+              {entityDetails?.entity_type === 'freelancer' ? <Briefcase size={32} /> : <Building2 size={32} />}
             </div>
 
             <div>
@@ -482,127 +482,221 @@ function EntityDashboard() {
         </div>
       </div>
 
-      {/* 2. Four High-Yield Financial Vault KPI Cards (With 3D Floating Pods) */}
+      {/* 2. Four High-Yield Financial Vault KPI Cards (Strict 2x2 Grid with Smooth 3D Pods) */}
       <div className="ent-kpi-grid">
         {/* Card 1: Gross Sales GMV */}
         <div className="ent-kpi-card ent-kpi-card-olive">
-          <div className="ent-kpi-top-row">
-            <div>
-              <span className="ent-kpi-title" style={{ color: '#636B2F' }}>Gross Billed Turnover (GMV)</span>
+          <div>
+            <div className="ent-kpi-top-row">
+              <div>
+                <span className="ent-kpi-category-tag" style={{ background: '#f4f6ec', color: '#636B2F' }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#636B2F' }} /> TURNOVER & SALES
+                </span>
+                <div className="ent-kpi-title">Gross Billed Turnover (GMV)</div>
+              </div>
+              <div className="ent-3d-pod ent-3d-pod-md ent-pod-olive" title="Gross Billed Turnover">
+                <Receipt size={24} />
+              </div>
+            </div>
+
+            <div className="ent-kpi-value-row">
               <div className="ent-kpi-value">
                 ₹{kpis.totalGrossSales.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
               </div>
-            </div>
-            <div className="ent-3d-pod ent-3d-pod-sm ent-pod-olive">
-              <Receipt size={22} />
+              <span
+                style={{
+                  background: '#ecfdf5',
+                  color: '#059669',
+                  border: '1px solid #a7f3d0',
+                  padding: '3px 9px',
+                  borderRadius: '6px',
+                  fontSize: '0.74rem',
+                  fontWeight: 800,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '3px',
+                }}
+              >
+                <TrendingUp size={13} /> +22.4% MoM
+              </span>
             </div>
           </div>
-          <div className="ent-kpi-footer">
-            <span style={{ background: '#f4f6ec', color: '#636B2F', padding: '3px 8px', borderRadius: '6px', fontWeight: 700, fontSize: '0.72rem' }}>
-              {kpis.totalInvoicesCount} Invoices Processed
+
+          <div className="ent-kpi-vault-footer">
+            <span style={{ color: '#64748b', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.76rem' }}>
+              <FileText size={14} color="#636B2F" />
+              <span><strong>{kpis.totalInvoicesCount}</strong> Invoices Processed</span>
             </span>
-            <strong style={{ color: '#059669', display: 'flex', alignItems: 'center', gap: '3px', fontSize: '0.75rem' }}>
-              <TrendingUp size={13} /> +22.4% MoM
-            </strong>
+            <button
+              type="button"
+              onClick={() => navigate('/entity/orders')}
+              className="ent-kpi-action-link"
+              style={{ color: '#636B2F' }}
+            >
+              Invoices History <ChevronRight size={14} />
+            </button>
           </div>
         </div>
 
         {/* Card 2: Net Disbursed Bank Settlements */}
         <div className="ent-kpi-card ent-kpi-card-emerald">
-          <div className="ent-kpi-top-row">
-            <div>
-              <span className="ent-kpi-title" style={{ color: '#059669' }}>Net Bank Settlements Disbursed</span>
+          <div>
+            <div className="ent-kpi-top-row">
+              <div>
+                <span className="ent-kpi-category-tag" style={{ background: '#ecfdf5', color: '#059669' }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#059669' }} /> NET DISBURSEMENTS
+                </span>
+                <div className="ent-kpi-title">Net Bank Settlements Disbursed</div>
+              </div>
+              <div className="ent-3d-pod ent-3d-pod-md ent-pod-emerald" title="Net Bank Settlements">
+                <TrendingUp size={24} />
+              </div>
+            </div>
+
+            <div className="ent-kpi-value-row">
               <div className="ent-kpi-value">
                 ₹{kpis.totalNetEarnings.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
               </div>
-            </div>
-            <div className="ent-3d-pod ent-3d-pod-sm ent-pod-emerald">
-              <TrendingUp size={22} />
+              <span
+                style={{
+                  background: '#ecfdf5',
+                  color: '#059669',
+                  border: '1px solid #a7f3d0',
+                  padding: '3px 9px',
+                  borderRadius: '6px',
+                  fontSize: '0.74rem',
+                  fontWeight: 800,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '3px',
+                }}
+              >
+                <CheckCircle2 size={13} /> 100% Disbursed
+              </span>
             </div>
           </div>
-          <div className="ent-kpi-footer">
-            <span style={{ background: '#ecfdf5', color: '#059669', padding: '3px 8px', borderRadius: '6px', fontWeight: 700, fontSize: '0.72rem' }}>
-              Direct IMPS Bank Deposits
+
+          <div className="ent-kpi-vault-footer">
+            <span style={{ color: '#64748b', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.76rem' }}>
+              <Wallet size={14} color="#059669" />
+              <span>Direct IMPS Bank Deposits</span>
             </span>
             <button
               type="button"
               onClick={() => navigate('/entity/payments/bank-settlements')}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: '#059669',
-                fontWeight: 800,
-                cursor: 'pointer',
-                padding: 0,
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '2px',
-                fontSize: '0.76rem',
-              }}
+              className="ent-kpi-action-link"
+              style={{ color: '#059669' }}
             >
-              Settlements <ChevronRight size={13} />
+              Settlements Vault <ChevronRight size={14} />
             </button>
           </div>
         </div>
 
         {/* Card 3: Pending Customer Balance Receivables */}
         <div className="ent-kpi-card ent-kpi-card-amber">
-          <div className="ent-kpi-top-row">
-            <div>
-              <span className="ent-kpi-title" style={{ color: '#d97706' }}>Pending Balance Due</span>
+          <div>
+            <div className="ent-kpi-top-row">
+              <div>
+                <span className="ent-kpi-category-tag" style={{ background: '#fef3c7', color: '#d97706' }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#d97706' }} /> RECEIVABLES AGING
+                </span>
+                <div className="ent-kpi-title">Pending Balance Due</div>
+              </div>
+              <div className="ent-3d-pod ent-3d-pod-md ent-pod-amber" title="Pending Receivables">
+                <CreditCard size={24} />
+              </div>
+            </div>
+
+            <div className="ent-kpi-value-row">
               <div className="ent-kpi-value" style={{ color: '#b45309' }}>
                 ₹{kpis.totalBalanceDue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
               </div>
-            </div>
-            <div className="ent-3d-pod ent-3d-pod-sm ent-pod-amber">
-              <CreditCard size={22} />
+              <span
+                style={{
+                  background: '#fffbeb',
+                  color: '#b45309',
+                  border: '1px solid #fde68a',
+                  padding: '3px 9px',
+                  borderRadius: '6px',
+                  fontSize: '0.74rem',
+                  fontWeight: 800,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '3px',
+                }}
+              >
+                <AlertCircle size={13} /> Action Required
+              </span>
             </div>
           </div>
-          <div className="ent-kpi-footer">
-            <span style={{ background: '#fef3c7', color: '#d97706', padding: '3px 8px', borderRadius: '6px', fontWeight: 700, fontSize: '0.72rem' }}>
-              Uncollected Receivables
+
+          <div className="ent-kpi-vault-footer">
+            <span style={{ color: '#64748b', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.76rem' }}>
+              <Clock size={14} color="#d97706" />
+              <span>Uncollected Receivables Due</span>
             </span>
             <button
               type="button"
               onClick={() => navigate('/entity/payments/receive-balance')}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: '#d97706',
-                fontWeight: 800,
-                cursor: 'pointer',
-                padding: 0,
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '2px',
-                fontSize: '0.76rem',
-              }}
+              className="ent-kpi-action-link"
+              style={{ color: '#d97706' }}
             >
-              Collect <ChevronRight size={13} />
+              Collect Receivables <ChevronRight size={14} />
             </button>
           </div>
         </div>
 
         {/* Card 4: Platform Fee Retained & Catalog Size */}
         <div className="ent-kpi-card ent-kpi-card-slate">
-          <div className="ent-kpi-top-row">
-            <div>
-              <span className="ent-kpi-title" style={{ color: '#475569' }}>Platform Fee & Catalog</span>
+          <div>
+            <div className="ent-kpi-top-row">
+              <div>
+                <span className="ent-kpi-category-tag" style={{ background: '#f1f5f9', color: '#475569' }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#475569' }} /> PLATFORM & CATALOG
+                </span>
+                <div className="ent-kpi-title">Platform Fee & Catalog Offerings</div>
+              </div>
+              <div className="ent-3d-pod ent-3d-pod-md ent-pod-slate" title="Platform Fee & Catalog">
+                <Layers size={24} />
+              </div>
+            </div>
+
+            <div className="ent-kpi-value-row">
               <div className="ent-kpi-value">
                 ₹{kpis.totalPlatformFeePaid.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
               </div>
-            </div>
-            <div className="ent-3d-pod ent-3d-pod-sm ent-pod-slate">
-              <Layers size={22} />
+              <span
+                style={{
+                  background: '#f4f6ec',
+                  color: '#636B2F',
+                  border: '1px solid #d4dcbe',
+                  padding: '3px 9px',
+                  borderRadius: '6px',
+                  fontSize: '0.74rem',
+                  fontWeight: 800,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '3px',
+                }}
+              >
+                <CheckCircle2 size={13} /> Active Catalog
+              </span>
             </div>
           </div>
-          <div className="ent-kpi-footer">
-            <span style={{ background: '#f1f5f9', color: '#475569', padding: '3px 8px', borderRadius: '6px', fontWeight: 700, fontSize: '0.72rem' }}>
-              {kpis.totalCatalogOfferings} Active Products & Services
+
+          <div className="ent-kpi-vault-footer">
+            <span style={{ color: '#64748b', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.76rem' }}>
+              <Package size={14} color="#475569" />
+              <span><strong>{kpis.totalCatalogOfferings}</strong> Live Deliverable Offerings</span>
             </span>
-            <span style={{ color: '#636B2F', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: '0.74rem' }}>
-              <CheckCircle2 size={13} /> Published
-            </span>
+            <button
+              type="button"
+              onClick={() => navigate('/entity/orders')}
+              className="ent-kpi-action-link"
+              style={{ color: '#475569' }}
+            >
+              Manage Services <ChevronRight size={14} />
+            </button>
           </div>
         </div>
       </div>
