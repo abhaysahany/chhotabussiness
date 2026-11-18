@@ -667,7 +667,7 @@ function AppContent() {
           <Route path="/payouts/withdraw" element={<RequestWithdrawal user={user} onNavigate={handleNavigate} />} />
           <Route path="/payout-withdraw" element={<Navigate to="/payouts/withdraw" replace />} />
 
-          <Route path="/payouts/tds" element={<TdsTaxSummary user={user} />} />
+          <Route path="/payouts/tds" element={<TdsTaxSummary user={user} onNavigate={handleNavigate} />} />
           <Route path="/payout-tds" element={<Navigate to="/payouts/tds" replace />} />
 
           {/* 6. Payments & Earnings */}
