@@ -677,7 +677,7 @@ function AppContent() {
           <Route path="/payments/rewards/:rewardId" element={<RewardItemDetailPage user={user} onNavigate={handleNavigate} />} />
           <Route path="/reward-details" element={<Navigate to="/payments/rewards" replace />} />
 
-          <Route path="/payments/rewards-claimed" element={<RewardsClaimed user={user} />} />
+          <Route path="/payments/rewards-claimed" element={<RewardsClaimed user={user} onNavigate={handleNavigate} />} />
           <Route path="/payments/rewards/claimed" element={<Navigate to="/payments/rewards-claimed" replace />} />
           <Route path="/rewards-claimed" element={<Navigate to="/payments/rewards-claimed" replace />} />
 
