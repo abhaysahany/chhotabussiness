@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Chart from 'react-apexcharts';
+import ApexCharts from 'apexcharts';
 import {
   ShieldCheck,
   Building2,
@@ -47,6 +48,31 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [settlementCountdown, setSettlementCountdown] = useState({ hours: 9, minutes: 24, seconds: 15 });
   const [copiedInvoiceId, setCopiedInvoiceId] = useState(null);
+  const [hiddenCashflowSeries, setHiddenCashflowSeries] = useState({
+    gmv: false,
+    retained: false,
+    commissions: false,
+  });
+
+  const toggleCashflowSeries = (seriesName, key) => {
+    try {
+      ApexCharts.exec('admin-cashflow-chart', 'toggleSeries', seriesName);
+    } catch (e) {
+      console.error('Error toggling cashflow series:', e);
+    }
+    setHiddenCashflowSeries((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const [hiddenPolarSeries, setHiddenPolarSeries] = useState({});
+
+  const togglePolarSeries = (seriesName) => {
+    try {
+      ApexCharts.exec('admin-polar-revenue-chart', 'toggleSeries', seriesName);
+    } catch (e) {
+      console.error('Error toggling polar series:', e);
+    }
+    setHiddenPolarSeries((prev) => ({ ...prev, [seriesName]: !prev[seriesName] }));
+  };
 
   // Weekly automated settlement countdown
   useEffect(() => {
@@ -134,8 +160,9 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
 
     return {
       chart: {
+        id: 'admin-cashflow-chart',
         type: 'area',
-        height: 330,
+        height: 320,
         toolbar: { show: false },
         zoom: { enabled: false },
         fontFamily: 'Plus Jakarta Sans, sans-serif',
@@ -171,11 +198,7 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
         padding: { top: 10, right: 10, bottom: 0, left: 10 },
       },
       legend: {
-        position: 'top',
-        horizontalAlign: 'right',
-        fontSize: '12px',
-        fontWeight: 700,
-        markers: { radius: 4 },
+        show: false,
       },
       tooltip: {
         theme: 'dark',
@@ -197,6 +220,7 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
   // 2. ApexCharts: Polar Area Revenue Allocation
   const polarRevenueOptions = useMemo(() => ({
     chart: {
+      id: 'admin-polar-revenue-chart',
       type: 'polarArea',
       height: 270,
       fontFamily: 'Plus Jakarta Sans, sans-serif',
@@ -206,11 +230,7 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
     colors: ['#3569a7', '#0d9488', '#d97706', '#475569'],
     labels: data?.charts?.revenueDistribution?.labels || ['Products', 'Services', 'Packages', 'General'],
     legend: {
-      position: 'bottom',
-      fontSize: '11px',
-      fontWeight: 700,
-      markers: { radius: 4 },
-      itemMargin: { horizontal: 6, vertical: 4 },
+      show: false,
     },
     yaxis: { show: false },
     tooltip: {
@@ -751,105 +771,235 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
       </div>
 
       {/* 4. Four Diverse ApexChart Analytics Suite */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.25rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.4rem' }}>
         {/* Chart 1: Cashflow Spline Area Chart */}
-        <div className="adm-chart-card" style={{ flex: '2 1 560px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.1rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <div className="adm-3d-pod adm-pod-steel" style={{ width: '38px', height: '38px', borderRadius: '11px' }}>
-                <Activity size={18} strokeWidth={2.4} />
+        <div className="adm-chart-card adm-chart-card-glow" style={{ flex: '2 1 560px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.85rem', marginBottom: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
+                <div className="adm-3d-pod adm-pod-steel" style={{ width: '48px', height: '48px', borderRadius: '14px' }}>
+                  <Activity size={22} strokeWidth={2.4} />
+                </div>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem' }}>
+                    <span style={{ fontSize: '0.66rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#3569a7', background: 'rgba(53, 105, 167, 0.08)', padding: '2px 8px', borderRadius: '9999px', border: '1px solid rgba(53, 105, 167, 0.2)' }}>
+                      ● REAL-TIME TELEMETRY
+                    </span>
+                  </div>
+                  <h3 style={{ margin: 0, fontSize: '1.08rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.015em' }}>
+                    Enterprise Cashflow &amp; Fee Settlement Curve
+                  </h3>
+                  <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.76rem', color: '#64748b' }}>
+                    Gross merchant volume, platform cut, and commission disbursements
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#0f172a' }}>
-                  Enterprise Cashflow &amp; Fee Settlement Curve
-                </h3>
-                <p style={{ margin: '0.15rem 0 0 0', fontSize: '0.76rem', color: '#64748b' }}>
-                  Gross merchant volume, platform cut, and commission disbursements
-                </p>
+
+              {/* Timeline Filter */}
+              <div style={{ display: 'flex', background: '#f8fafc', padding: '3px', borderRadius: '10px', gap: '3px', border: '1.5px solid #e2e8f0' }}>
+                {[
+                  { id: '7d', label: '7D' },
+                  { id: '30d', label: '30D' },
+                  { id: '6m', label: '6M' },
+                ].map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => setTimelinePeriod(t.id)}
+                    style={{
+                      border: 'none',
+                      background: timelinePeriod === t.id ? '#3569a7' : 'transparent',
+                      color: timelinePeriod === t.id ? '#ffffff' : '#64748b',
+                      padding: '0.3rem 0.85rem',
+                      borderRadius: '7px',
+                      fontSize: '0.74rem',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      boxShadow: timelinePeriod === t.id ? '0 2px 8px rgba(53, 105, 167, 0.35)' : 'none',
+                      transition: 'all 0.18s cubic-bezier(0.16, 1, 0.3, 1)',
+                    }}
+                  >
+                    {t.label}
+                  </button>
+                ))}
               </div>
             </div>
 
-            {/* Timeline Filter */}
-            <div style={{ display: 'flex', background: '#f1f5f9', padding: '3px', borderRadius: '8px', gap: '3px', border: '1px solid #e2e8f0' }}>
+            {/* Interactive Single-Line Legend Pills Bar */}
+            <div className="adm-chart-legend-row" style={{ marginBottom: '0.6rem' }}>
+              <button
+                type="button"
+                onClick={() => toggleCashflowSeries('Gross Platform GMV', 'gmv')}
+                className={`adm-legend-pill ${hiddenCashflowSeries.gmv ? 'is-hidden' : ''}`}
+                title="Click to toggle Gross Platform GMV series"
+              >
+                <span className="adm-legend-dot" style={{ background: '#3569a7' }} />
+                <span>Gross Platform GMV</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => toggleCashflowSeries('Retained Admin Fee Pool', 'retained')}
+                className={`adm-legend-pill ${hiddenCashflowSeries.retained ? 'is-hidden' : ''}`}
+                title="Click to toggle Retained Admin Fee Pool series"
+              >
+                <span className="adm-legend-dot" style={{ background: '#0d9488' }} />
+                <span>Retained Admin Fee Pool</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => toggleCashflowSeries('Disbursed Network Payouts', 'commissions')}
+                className={`adm-legend-pill ${hiddenCashflowSeries.commissions ? 'is-hidden' : ''}`}
+                title="Click to toggle Disbursed Network Payouts series"
+              >
+                <span className="adm-legend-dot" style={{ background: '#d97706' }} />
+                <span>Disbursed Network Payouts</span>
+              </button>
+            </div>
+
+            <div style={{ minHeight: '320px' }}>
+              <Chart
+                options={cashflowChartOptions}
+                series={cashflowChartSeries}
+                type="area"
+                height={320}
+              />
+            </div>
+          </div>
+
+          {/* Twin-Vault Footer */}
+          <div className="adm-twin-vault" style={{ marginTop: '0.75rem', paddingTop: '0.85rem', borderTop: '1px solid #f1f5f9' }}>
+            <div style={{ background: '#f8fafc', padding: '0.65rem 0.95rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+              <div style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.04em' }}>
+                PLATFORM TURNOVER (GMV)
+              </div>
+              <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0f172a', marginTop: '0.15rem' }}>
+                ₹{kpis.totalGmv.toLocaleString('en-IN')}
+              </div>
+              <div style={{ fontSize: '0.68rem', color: '#3569a7', fontWeight: 700, marginTop: '0.1rem' }}>
+                ● Merchant &amp; Network Volume
+              </div>
+            </div>
+
+            <div style={{ background: '#f8fafc', padding: '0.65rem 0.95rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+              <div style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.04em' }}>
+                NET RETAINED ADMIN POOL
+              </div>
+              <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0d9488', marginTop: '0.15rem' }}>
+                ₹{kpis.totalPlatformRevenue.toLocaleString('en-IN')}
+              </div>
+              <div style={{ fontSize: '0.68rem', color: '#0d9488', fontWeight: 700, marginTop: '0.1rem' }}>
+                ● Platform Fee Cut Realized
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Chart 2: Polar Area Revenue Allocation */}
+        <div className="adm-chart-card adm-chart-card-glow" style={{ flex: '1 1 360px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
+                <div className="adm-3d-pod adm-pod-emerald" style={{ width: '48px', height: '48px', borderRadius: '14px' }}>
+                  <PieIcon size={22} strokeWidth={2.4} />
+                </div>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem' }}>
+                    <span style={{ fontSize: '0.66rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#0d9488', background: 'rgba(13, 148, 136, 0.08)', padding: '2px 8px', borderRadius: '9999px', border: '1px solid rgba(13, 148, 136, 0.2)' }}>
+                      ● MULTI-VERTICAL ALLOCATION
+                    </span>
+                  </div>
+                  <h3 style={{ margin: 0, fontSize: '1.08rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.015em' }}>
+                    Revenue Share by Offering
+                  </h3>
+                  <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.76rem', color: '#64748b' }}>
+                    Revenue contribution across services, products &amp; packages
+                  </p>
+                </div>
+              </div>
+
+              <span style={{ fontSize: '0.72rem', background: 'rgba(13, 148, 136, 0.1)', color: '#0d9488', padding: '3px 9px', borderRadius: '8px', fontWeight: 800, border: '1px solid rgba(13, 148, 136, 0.2)', whiteSpace: 'nowrap' }}>
+                Polar Analytics
+              </span>
+            </div>
+
+            <div style={{ minHeight: '270px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Chart
+                options={polarRevenueOptions}
+                series={polarRevenueSeries}
+                type="polarArea"
+                height={270}
+              />
+            </div>
+
+            {/* Interactive Polar Legend Pills */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.45rem', flexWrap: 'wrap', margin: '0.4rem 0 0.2rem 0' }}>
               {[
-                { id: '7d', label: '7D' },
-                { id: '30d', label: '30D' },
-                { id: '6m', label: '6M' },
-              ].map((t) => (
+                { name: 'Products', color: '#3569a7' },
+                { name: 'Services', color: '#0d9488' },
+                { name: 'Packages', color: '#d97706' },
+                { name: 'General', color: '#475569' },
+              ].map((item) => (
                 <button
-                  key={t.id}
+                  key={item.name}
                   type="button"
-                  onClick={() => setTimelinePeriod(t.id)}
-                  style={{
-                    border: 'none',
-                    background: timelinePeriod === t.id ? '#3569a7' : 'transparent',
-                    color: timelinePeriod === t.id ? '#ffffff' : '#475569',
-                    padding: '0.25rem 0.75rem',
-                    borderRadius: '6px',
-                    fontSize: '0.74rem',
-                    fontWeight: 800,
-                    cursor: 'pointer',
-                    boxShadow: timelinePeriod === t.id ? '0 2px 6px rgba(53, 105, 167, 0.28)' : 'none',
-                    transition: 'all 0.15s ease',
-                  }}
+                  onClick={() => togglePolarSeries(item.name)}
+                  className={`adm-legend-pill ${hiddenPolarSeries[item.name] ? 'is-hidden' : ''}`}
+                  title={`Click to toggle ${item.name} vertical`}
+                  style={{ fontSize: '0.7rem', padding: '0.22rem 0.55rem' }}
                 >
-                  {t.label}
+                  <span className="adm-legend-dot" style={{ background: item.color }} />
+                  <span>{item.name}</span>
                 </button>
               ))}
             </div>
           </div>
 
-          <div style={{ minHeight: '330px' }}>
-            <Chart
-              options={cashflowChartOptions}
-              series={cashflowChartSeries}
-              type="area"
-              height={330}
-            />
-          </div>
-        </div>
-
-        {/* Chart 2: Polar Area Revenue Allocation */}
-        <div className="adm-chart-card" style={{ flex: '1 1 340px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                <div className="adm-3d-pod adm-pod-emerald" style={{ width: '36px', height: '36px', borderRadius: '10px' }}>
-                  <PieIcon size={17} strokeWidth={2.4} />
-                </div>
-                <h3 style={{ margin: 0, fontSize: '1.02rem', fontWeight: 800, color: '#0f172a' }}>
-                  Revenue Share by Offering
-                </h3>
+          {/* Twin-Vault Footer */}
+          <div className="adm-twin-vault" style={{ marginTop: '0.75rem', paddingTop: '0.85rem', borderTop: '1px solid #f1f5f9' }}>
+            <div style={{ background: '#f8fafc', padding: '0.65rem 0.85rem', borderRadius: '11px', border: '1px solid #e2e8f0' }}>
+              <div style={{ fontSize: '0.64rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748b' }}>
+                DOMINANT VERTICAL
               </div>
-              <span style={{ fontSize: '0.7rem', background: 'rgba(53, 105, 167, 0.1)', color: '#3569a7', padding: '2px 8px', borderRadius: '6px', fontWeight: 800 }}>
-                Polar View
-              </span>
+              <div style={{ fontSize: '0.98rem', fontWeight: 800, color: '#0f172a', marginTop: '0.1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {data?.charts?.revenueDistribution?.labels?.[0] ? `${data.charts.revenueDistribution.labels[0]} (${data.charts.revenueDistribution.series[0] || 0}%)` : 'Services (100%)'}
+              </div>
             </div>
-            <p style={{ margin: '0.2rem 0 0.5rem 0', fontSize: '0.76rem', color: '#64748b' }}>
-              Revenue contribution across services, hardware, packages &amp; royalties
-            </p>
-          </div>
 
-          <div style={{ minHeight: '270px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Chart
-              options={polarRevenueOptions}
-              series={polarRevenueSeries}
-              type="polarArea"
-              height={270}
-            />
-          </div>
+            <div style={{ background: '#f8fafc', padding: '0.65rem 0.85rem', borderRadius: '11px', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <div style={{ fontSize: '0.64rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748b' }}>
+                  CATALOG DIVERSITY
+                </div>
+                <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0f172a', marginTop: '0.1rem' }}>
+                  {kpis.totalCatalogOfferings || 4} Offerings
+                </div>
+              </div>
 
-          <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
-              {data?.charts?.revenueDistribution?.labels?.[0] ? `Leading: ${data.charts.revenueDistribution.labels[0]} (${data.charts.revenueDistribution.series[0] || 0}%)` : 'Catalog Distribution'}
-            </span>
-            <button
-              type="button"
-              onClick={() => onNavigate && onNavigate('orders-management')}
-              style={{ background: 'none', border: 'none', color: '#3569a7', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}
-            >
-              Full Breakdown →
-            </button>
+              <button
+                type="button"
+                onClick={() => onNavigate && onNavigate('orders-management')}
+                style={{
+                  background: 'rgba(53, 105, 167, 0.08)',
+                  border: '1px solid rgba(53, 105, 167, 0.2)',
+                  color: '#3569a7',
+                  fontSize: '0.72rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  padding: '0.35rem 0.65rem',
+                  borderRadius: '7px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.2rem',
+                  transition: 'all 0.15s ease',
+                }}
+                title="View complete order breakdown"
+              >
+                <span>Breakdown</span>
+                <ArrowUpRight size={13} />
+              </button>
+            </div>
           </div>
         </div>
       </div>
