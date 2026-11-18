@@ -28,9 +28,9 @@ function LandingFooter({ onLoginClick, onRegisterClick, onNavigateLegal, onScrol
               }}
             >
               <BrandLogo
-                size={52}
+                size={54}
                 mobileSize={42}
-                maxWidth={220}
+                maxWidth={240}
                 alt={appName || 'Vyapar AdNET'}
                 onClick={() => {
                   if (onScrollToSection) {
