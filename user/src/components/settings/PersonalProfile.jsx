@@ -561,85 +561,121 @@ function PersonalProfile({ user, onNavigate, onUpdateUser }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.35rem' }}>
           {/* 4 Executive KPI Metric Cards in 1 Row */}
           <div className="van-profile-metrics-row">
-            {/* Metric 1 */}
-            <div className="van-profile-kpi-card">
-              <div className="van-profile-kpi-top">
-                <span className="van-profile-kpi-lbl">DIRECT DOWNLINES</span>
-                <div className="van-3d-kpi-icon van-3d-icon-purple">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="9" cy="7" r="4"></circle>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                  </svg>
+            {/* Metric 1: Direct Downlines */}
+            <div className="van-profile-kpi-card purple">
+              <div
+                className="van-profile-kpi-accent-bar"
+                style={{ background: 'linear-gradient(90deg, #C084FC, #7C3AED)' }}
+              />
+              <div>
+                <div className="van-profile-kpi-top">
+                  <span className="van-profile-kpi-lbl" style={{ color: '#7C3AED' }}>
+                    DIRECT DOWNLINES
+                  </span>
+                  <div className="van-3d-kpi-icon van-3d-icon-purple" title="Direct Downlines">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="9" cy="7" r="4"></circle>
+                      <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                  </div>
+                </div>
+                <div className="van-profile-kpi-val">
+                  <span>48</span>
+                  <span style={{ fontSize: '0.95rem', fontWeight: 700, color: '#64748B' }}>Active</span>
                 </div>
               </div>
-              <div>
-                <h3 className="van-profile-kpi-val">48 Active</h3>
-                <div className="van-profile-kpi-sub">
-                  <span className="van-card-badge-pill purple" style={{ padding: '0.15rem 0.45rem', fontSize: '0.7rem' }}>Level 1</span>
-                  <span>Direct team partners</span>
-                </div>
+              <div className="van-profile-kpi-bottom">
+                <span className="van-profile-kpi-desc">Level 1 direct team</span>
+                <span className="van-card-badge-pill purple">Level 1</span>
               </div>
             </div>
 
-            {/* Metric 2 */}
-            <div className="van-profile-kpi-card">
-              <div className="van-profile-kpi-top">
-                <span className="van-profile-kpi-lbl">TOTAL EARNINGS</span>
-                <div className="van-3d-kpi-icon van-3d-icon-emerald">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
-                    <line x1="12" y1="1" x2="12" y2="23"></line>
-                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                  </svg>
+            {/* Metric 2: Total Earnings */}
+            <div className="van-profile-kpi-card emerald">
+              <div
+                className="van-profile-kpi-accent-bar"
+                style={{ background: 'linear-gradient(90deg, #34D399, #059669)' }}
+              />
+              <div>
+                <div className="van-profile-kpi-top">
+                  <span className="van-profile-kpi-lbl" style={{ color: '#059669' }}>
+                    TOTAL EARNINGS
+                  </span>
+                  <div className="van-3d-kpi-icon van-3d-icon-emerald" title="Total Earnings">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
+                      <line x1="12" y1="1" x2="12" y2="23"></line>
+                      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                  </div>
+                </div>
+                <div className="van-profile-kpi-val" style={{ color: '#059669' }}>
+                  <span>₹1,24,500</span>
                 </div>
               </div>
-              <div>
-                <h3 className="van-profile-kpi-val">₹1,24,500</h3>
-                <div className="van-profile-kpi-sub">
-                  <span className="van-card-badge-pill green" style={{ padding: '0.15rem 0.45rem', fontSize: '0.7rem' }}>Realized</span>
-                  <span>Lifetime commissions</span>
-                </div>
+              <div className="van-profile-kpi-bottom">
+                <span className="van-profile-kpi-desc">Lifetime commissions</span>
+                <span className="van-card-badge-pill green">Realized</span>
               </div>
             </div>
 
-            {/* Metric 3 */}
-            <div className="van-profile-kpi-card">
-              <div className="van-profile-kpi-top">
-                <span className="van-profile-kpi-lbl">ACCOUNT ACTIVITY</span>
-                <div className="van-3d-kpi-icon van-3d-icon-blue">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <polyline points="12 6 12 12 16 14"></polyline>
-                  </svg>
+            {/* Metric 3: Account Activity */}
+            <div className="van-profile-kpi-card blue">
+              <div
+                className="van-profile-kpi-accent-bar"
+                style={{ background: 'linear-gradient(90deg, #60A5FA, #2563EB)' }}
+              />
+              <div>
+                <div className="van-profile-kpi-top">
+                  <span className="van-profile-kpi-lbl" style={{ color: '#2563EB' }}>
+                    ACCOUNT ACTIVITY
+                  </span>
+                  <div className="van-3d-kpi-icon van-3d-icon-blue" title="Account Activity">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                  </div>
+                </div>
+                <div className="van-profile-kpi-val" style={{ color: '#0F172A' }}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem' }}>
+                    <span className="van-profile-dot-pulse" style={{ background: '#3B82F6', boxShadow: '0 0 0 2px rgba(59, 130, 246, 0.35)' }}></span>
+                    Active Now
+                  </span>
                 </div>
               </div>
-              <div>
-                <h3 className="van-profile-kpi-val">Active Now</h3>
-                <div className="van-profile-kpi-sub">
-                  <span className="van-card-badge-pill sky" style={{ padding: '0.15rem 0.45rem', fontSize: '0.7rem' }}>Live</span>
-                  <span>Synchronized with MySQL</span>
-                </div>
+              <div className="van-profile-kpi-bottom">
+                <span className="van-profile-kpi-desc">Synced with MySQL</span>
+                <span className="van-card-badge-pill sky">Live Sync</span>
               </div>
             </div>
 
-            {/* Metric 4 */}
-            <div className="van-profile-kpi-card">
-              <div className="van-profile-kpi-top">
-                <span className="van-profile-kpi-lbl">PROFILE HEALTH</span>
-                <div className="van-3d-kpi-icon van-3d-icon-cyan">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                  </svg>
+            {/* Metric 4: Profile Health */}
+            <div className="van-profile-kpi-card cyan">
+              <div
+                className="van-profile-kpi-accent-bar"
+                style={{ background: 'linear-gradient(90deg, #38BDF8, #0284C7)' }}
+              />
+              <div>
+                <div className="van-profile-kpi-top">
+                  <span className="van-profile-kpi-lbl" style={{ color: '#0284C7' }}>
+                    PROFILE HEALTH
+                  </span>
+                  <div className="van-3d-kpi-icon van-3d-icon-cyan" title="Profile Health">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                  </div>
+                </div>
+                <div className="van-profile-kpi-val" style={{ color: '#0284C7' }}>
+                  <span>100% Complete</span>
                 </div>
               </div>
-              <div>
-                <h3 className="van-profile-kpi-val" style={{ color: '#0284c7' }}>100% Complete</h3>
-                <div className="van-profile-kpi-sub">
-                  <span className="van-card-badge-pill cyan" style={{ padding: '0.15rem 0.45rem', fontSize: '0.7rem' }}>Verified</span>
-                  <span>KYC & Bank Vault linked</span>
-                </div>
+              <div className="van-profile-kpi-bottom">
+                <span className="van-profile-kpi-desc">KYC & Bank linked</span>
+                <span className="van-card-badge-pill cyan">Verified</span>
               </div>
             </div>
           </div>
