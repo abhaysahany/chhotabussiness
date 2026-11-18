@@ -1,0 +1,84 @@
+# ==============================================================================
+# VYAPAR AdNET — PRODUCTION ROOT ROUTING & SECURITY (.htaccess)
+# Target: public_html/.htaccess
+# Domain: https://vyaparadnet.com
+# Architecture: User Panel (Root SPA) + Admin SPA + Entity SPA + Laravel API
+# ==============================================================================
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # --------------------------------------------------------------------------
+    # 0. FastCGI & PHP-FPM Authorization Header Forwarding
+    # --------------------------------------------------------------------------
+    SetEnvIfNoCase ^Authorization$ "(.+)" HTTP_AUTHORIZATION=$1
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    RewriteCond %{HTTP:x-xsrf-token} .
+    RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
+
+    # --------------------------------------------------------------------------
+    # 1. Security Denial Rules (Source Code, Backups, Dumps & Sensitive Files)
+    # --------------------------------------------------------------------------
+    RewriteRule \.(zip|tar|gz|rar|7z|bak|sql|log|env|ini|conf|sh|ps1)$ - [F,L,NC]
+    RewriteRule (^|/)\.(?!well-known/) - [F,L]
+    RewriteRule ^backend/\.env - [F,L]
+    RewriteRule ^backend/(app|bootstrap|config|database|resources|routes|storage|tests|vendor)(/.*)?$ - [F,L,NC]
+    RewriteRule ^backend/?$ - [F,L,NC]
+
+    # --------------------------------------------------------------------------
+    # 2. Public Static Media & Storage Mappings
+    # --------------------------------------------------------------------------
+    RewriteCond %{DOCUMENT_ROOT}/backend/public/uploads/$1 -f
+    RewriteRule ^uploads/(.*)$ backend/public/uploads/$1 [L]
+
+    RewriteCond %{DOCUMENT_ROOT}/backend/public/storage/$1 -f
+    RewriteRule ^storage/(.*)$ backend/public/storage/$1 [L]
+
+    # --------------------------------------------------------------------------
+    # 3. Laravel API Routing (/api/* and /api)
+    # --------------------------------------------------------------------------
+    RewriteRule ^api(/.*)?$ backend/public/index.php [L,QSA]
+
+    # --------------------------------------------------------------------------
+    # 4. Backend Public Assets Direct Passthrough
+    # --------------------------------------------------------------------------
+    RewriteCond %{REQUEST_URI} ^/backend/public(/.*)?$
+    RewriteRule ^ - [L]
+
+    # --------------------------------------------------------------------------
+    # 5. Admin Panel SPA Routing (/admin/*)
+    # --------------------------------------------------------------------------
+    # Serve existing files/directories inside admin (assets, js, css, etc.)
+    RewriteCond %{REQUEST_URI} ^/admin
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Fallback all non-file /admin routes to admin/index.html
+    RewriteRule ^admin(/.*)?$ admin/index.html [L]
+
+    # --------------------------------------------------------------------------
+    # 6. Entity Panel SPA Routing (/entity/*)
+    # --------------------------------------------------------------------------
+    # Serve existing files/directories inside entity (assets, js, css, etc.)
+    RewriteCond %{REQUEST_URI} ^/entity
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Fallback all non-file /entity routes to entity/index.html
+    RewriteRule ^entity(/.*)?$ entity/index.html [L]
+
+    # --------------------------------------------------------------------------
+    # 7. User Panel SPA Routing (Root Fallback)
+    # --------------------------------------------------------------------------
+    # Serve existing physical files and directories in root
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Fallback all other routes to root index.html
+    RewriteRule ^ index.html [L]
+</IfModule>
