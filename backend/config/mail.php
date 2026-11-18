@@ -116,4 +116,29 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Official Email Branding Logo URL
+    |--------------------------------------------------------------------------
+    |
+    | Publicly accessible HTTPS URL for the email header logo.
+    | Defaults to official production domain asset if not overridden.
+    |
+    */
+
+    'logo_url' => env('MAIL_LOGO_URL', 'https://vyaparadnet.com/images/logo-email.png'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Inline CID Logo Attachment
+    |--------------------------------------------------------------------------
+    |
+    | When true, the email-optimized logo is attached directly as an inline MIME
+    | CID part (cid:logo-email.png). This prevents broken images in Gmail, Outlook,
+    | and mobile email clients even if external DNS is blocked or unhosted.
+    |
+    */
+
+    'embed_logo' => env('MAIL_EMBED_LOGO', true),
+
 ];

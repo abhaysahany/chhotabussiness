@@ -1,9 +1,29 @@
 import React, { useState, useEffect } from 'react';
+import { 
+  GitFork, 
+  Crown, 
+  TrendingUp, 
+  Layers, 
+  Search, 
+  ZoomIn, 
+  ZoomOut, 
+  RotateCcw, 
+  CheckCircle2, 
+  Award, 
+  Eye, 
+  Phone, 
+  Sparkles, 
+  X, 
+  Users, 
+  ArrowRight 
+} from 'lucide-react';
 import { getGenealogyTree } from '../../api/userNetworkService';
 import { formatINR, formatNumberIN, formatBV } from '../../utils/formatters';
+import { useBranding } from '../../utils/branding';
 import './network.css';
 
 function GenealogyTreePage({ user, onNavigate }) {
+  const { appName } = useBranding();
   const [treeData, setTreeData] = useState(null);
   const [treeStats, setTreeStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -61,50 +81,69 @@ function GenealogyTreePage({ user, onNavigate }) {
           className={`tree-node-card ${node.status} ${isMatchSearch ? 'search-highlight' : ''}`}
           onClick={() => setActiveNodeModal(node)}
         >
+          {/* Top accent tier bar */}
+          <div className="node-top-shimmer" />
+
           {node.level > 0 && (
             <span className={`gen-level-badge level-${node.level}`}>
-              Gen L{node.level} ({node.overridePct})
+              Gen L{node.level} ({node.overridePct || '2%'})
             </span>
           )}
 
+          {/* 3D Floating Avatar Pod with Smoother Animation */}
           <div className="node-avatar-container">
-            {node.avatar && node.avatar !== '/logo.png' ? (
-              <img
-                src={node.avatar}
-                alt={node.name}
-                className="node-avatar-img"
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                  if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
+            <div className="node-avatar-orb-glow" />
+            <div className="node-avatar-orb">
+              {node.avatar && node.avatar !== '/logo.png' ? (
+                <img
+                  src={node.avatar}
+                  alt={node.name}
+                  className="node-avatar-img"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
+                  }}
+                />
+              ) : null}
+              <div
+                className="node-avatar-img node-avatar-fallback"
+                style={{
+                  display: (node.avatar && node.avatar !== '/logo.png') ? 'none' : 'flex',
                 }}
-              />
-            ) : null}
-            <div
-              className="node-avatar-img"
-              style={{
-                display: (node.avatar && node.avatar !== '/logo.png') ? 'none' : 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: '#0F4C81',
-                color: '#ffffff',
-                fontWeight: 700,
-                fontSize: '0.9rem',
-              }}
-            >
-              {node.name ? node.name.charAt(0).toUpperCase() : 'U'}
+              >
+                {node.name ? node.name.charAt(0).toUpperCase() : 'U'}
+              </div>
             </div>
-            <span className={`status-dot ${node.status}`} title={`Status: ${node.status}`}></span>
+            <span className={`status-dot ${node.status}`} title={`Status: ${node.status}`}>
+              {node.status === 'active' && <span className="status-dot-pulse" />}
+            </span>
           </div>
 
           <div className="node-details">
-            <span className={`rank-badge ${node.rankClass}`}>{node.rank}</span>
-            <strong className="node-user-name">{node.name}</strong>
+            <span className={`rank-badge node-rank-badge ${node.rankClass || 'rank-bronze'}`}>
+              <Award size={11} className="node-rank-icon" />
+              {node.rank || 'Member'}
+            </span>
+            <strong className="node-user-name" title={node.name}>{node.name}</strong>
             <span className="node-user-id">{node.id}</span>
           </div>
 
+          {/* Dual 3D Metric Capsules (Spacious & Khula-Khula) */}
           <div className="node-pv-row">
-            <span className="pv-badge left-pv" title="Personal Business Volume">BV: {formatNumberIN(node.personalPv || node.personalBv || 0)}</span>
-            <span className="pv-badge right-pv" title="Team Business Volume">Team: {formatINR(node.groupPv || node.groupBv || 0)}</span>
+            <div className="node-metric-box left-pv-box" title="Personal Business Volume">
+              <span className="node-metric-label">SELF BV</span>
+              <span className="node-metric-val">{formatNumberIN(node.personalPv || node.personalBv || 0)}</span>
+            </div>
+            <div className="node-metric-box right-pv-box" title="Team Business Volume">
+              <span className="node-metric-label">TEAM BV</span>
+              <span className="node-metric-val">{formatINR(node.groupPv || node.groupBv || 0)}</span>
+            </div>
+          </div>
+
+          {/* Subtle click indicator */}
+          <div className="node-card-footer-cue">
+            <span>View Dossier</span>
+            <ArrowRight size={10} />
           </div>
         </div>
 
@@ -139,92 +178,284 @@ function GenealogyTreePage({ user, onNavigate }) {
   const directCount = treeStats ? treeStats.directCount : 0;
 
   return (
-    <div className="network-page-container">
+    <div className="page-container" style={{ maxWidth: '1400px', margin: '0 auto', paddingBottom: '3.5rem' }}>
       {/* Toast Alert */}
       {toastMessage && (
-        <div className="net-toast-alert">
-          <span>⚡ {toastMessage}</span>
+        <div
+          style={{
+            position: 'fixed',
+            top: '24px',
+            right: '24px',
+            background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
+            color: '#FFFFFF',
+            padding: '0.85rem 1.35rem',
+            borderRadius: '14px',
+            zIndex: 99999,
+            boxShadow: '0 20px 35px -5px rgba(15, 23, 42, 0.35)',
+            fontSize: '0.86rem',
+            fontWeight: 600,
+            border: '1px solid rgba(255, 255, 255, 0.12)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.65rem',
+            animation: 'van-scale-pulse 0.25s ease-out',
+          }}
+        >
+          <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <CheckCircle2 size={13} color="#FFFFFF" strokeWidth={3} />
+          </div>
+          <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Header Banner */}
-      <div className="network-header-card">
-        <div className="header-info">
-          <div className="net-badge-pill">10-Level Hierarchy Diagram • MySQL Database</div>
-          <h1 className="network-title">10-Level Genealogy Tree</h1>
-          <p className="network-subtitle">
-            Visual organizational map displaying your 10-level generation downline hierarchy and Business Volume (BV) loaded directly from MySQL database.
-          </p>
+      {/* Hero Header Banner (2-Color Gradient with 3D Depth) */}
+      <div className="van-catalog-hero-3d">
+        <div className="van-catalog-hero-content">
+          <div className="van-catalog-hero-icon-orb">
+            <GitFork size={30} strokeWidth={2.2} />
+          </div>
+          <div>
+            <div className="van-catalog-hero-badge">
+              <span className="van-live-pulse-dot" style={{ width: '7px', height: '7px', background: '#38BDF8', boxShadow: '0 0 8px #38BDF8' }} />
+              <Sparkles size={13} />
+              <span>10-Level Hierarchy Diagram • Visual Unilevel Matrix</span>
+            </div>
+            <h1 className="van-catalog-hero-title">
+              10-Level Genealogy Tree
+            </h1>
+            <p className="van-catalog-hero-desc">
+              Visual organizational map displaying your 10-level generation downline hierarchy and real-time Business Volume (BV) network performance.
+            </p>
+          </div>
         </div>
-        <div className="header-actions">
+
+        {/* Right Action & Stats Area */}
+        <div
+          className="van-directs-hero-action-col"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-end',
+            gap: '1.4rem',
+            flexShrink: 0,
+          }}
+        >
+          {/* Top Row: Stats Chips */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <div className="van-catalog-stat-chip">
+              <div className="van-catalog-stat-chip-val">{formatNumberIN(totalMembersCount)}</div>
+              <div className="van-catalog-stat-chip-lbl">10-Lvl Members</div>
+            </div>
+            <div className="van-catalog-stat-chip">
+              <div className="van-catalog-stat-chip-val" style={{ color: '#34D399' }}>
+                {formatNumberIN(directCount)}
+              </div>
+              <div className="van-catalog-stat-chip-lbl">Direct Legs</div>
+            </div>
+            <div className="van-catalog-stat-chip">
+              <div className="van-catalog-stat-chip-val" style={{ color: '#FBBF24' }}>2.0%</div>
+              <div className="van-catalog-stat-chip-lbl">Equal / Level</div>
+            </div>
+          </div>
+
+          {/* Bottom Row: 3D Direct List View Navigation Button */}
           <button
-            className="net-btn btn-secondary"
-            onClick={() => {
-              setZoomLevel(100);
-              setSearchNodeQuery('');
-              fetchTree();
-              showToast('Genealogy view refreshed from database');
-            }}
-          >
-            🔄 Refresh DB
-          </button>
-          <button
-            className="net-btn btn-primary"
+            type="button"
             onClick={() => onNavigate && onNavigate('network-direct')}
+            className="van-btn-share-3d"
+            style={{
+              padding: '0.75rem 1.65rem',
+              height: 'auto',
+              textDecoration: 'none',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.65rem',
+              fontSize: '0.88rem',
+              fontWeight: 800,
+              borderRadius: '14px',
+              background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+              borderBottom: '3px solid #1E40AF',
+              color: '#FFFFFF',
+              boxShadow: '0 8px 24px -3px rgba(37, 99, 235, 0.45)',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+            }}
+            title="Switch to Direct Connections List View"
           >
-            Direct List View
+            <Users size={16} strokeWidth={2.4} />
+            <span>Direct List View</span>
+            <ArrowRight size={14} />
           </button>
         </div>
       </div>
 
-      {/* 10-Level Network Generation Volume Bar */}
-      <div className="binary-volume-card unilevel-summary-bar">
-        <div className="binary-leg-box">
-          <div className="leg-icon">👑</div>
-          <div className="leg-info">
-            <span className="leg-title">YOUR TOTAL 10-LEVEL NETWORK</span>
-            <strong className="leg-volume">{formatNumberIN(totalMembersCount)} Downline Members</strong>
-            <span className="leg-subtext">{formatNumberIN(directCount)} Direct Sponsored Legs</span>
-          </div>
-        </div>
-
-        <div className="binary-match-center">
-          <div className="match-title-flex">
-            <span>COMBINED 10-LEVEL BUSINESS VOLUME</span>
-            <strong className="matched-amount">{formatINR(treeData?.groupPv || treeData?.groupBv || 4310000)} Total BV</strong>
-          </div>
-          <div className="progress-track">
+      {/* 10-Level Network Generation Summary (Spacious 3-Card Grid) */}
+      <div className="van-genealogy-summary-grid">
+        {/* Card 1: Total 10-Level Network */}
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #F59E0B, #EA580C)' }} />
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
+              style={{
+                color: '#D97706',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
+              }}
+            >
+              Total 10-Level Network
+            </span>
             <div
-              className="progress-fill"
-              style={{ width: '92%' }}
-              title="10-Level Commission Payout Ratio"
-            ></div>
+              className="van-3d-kpi-icon van-3d-icon-amber"
+              style={{ animationDelay: '0s' }}
+              title="10-Level Network Hierarchy"
+            >
+              <Crown size={22} strokeWidth={2.4} />
+            </div>
           </div>
-          <div className="carryover-flex">
-            <span>Level Override Schedule: <strong style={{ color: '#4ade80' }}>2% Equal on 10 Levels</strong></span>
+          <div className="van-stat-card-value">
+            {formatNumberIN(totalMembersCount)}
+            <span style={{ fontSize: '0.9rem', fontWeight: 700, color: '#64748B', marginLeft: '0.4rem' }}>
+              Members
+            </span>
+          </div>
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: 600 }}>
+              {formatNumberIN(directCount)} Direct Sponsored Legs
+            </span>
+            <span className="van-card-badge-pill amber" style={{ background: '#FEF3C7', color: '#92400E', border: '1px solid #FDE68A' }}>
+              10 Levels
+            </span>
           </div>
         </div>
 
-        <div className="binary-leg-box">
-          <div className="leg-info" style={{ textAlign: 'right' }}>
-            <span className="leg-title">EQUAL LEVEL OVERRIDE</span>
-            <strong className="leg-volume">2% (All 10 Levels)</strong>
-            <span className="leg-subtext">Level 1 to 10 Unlocked</span>
+        {/* Card 2: Combined 10-Level Business Volume */}
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #06B6D4, #10B981)' }} />
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
+              style={{
+                color: '#0D9488',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
+              }}
+            >
+              Combined 10-Level Volume
+            </span>
+            <div
+              className="van-3d-kpi-icon van-3d-icon-emerald"
+              style={{ animationDelay: '0.4s' }}
+              title="Combined Group Volume (BV)"
+            >
+              <Layers size={22} strokeWidth={2.4} />
+            </div>
           </div>
-          <div className="leg-icon">📈</div>
+          <div className="van-stat-card-value" style={{ color: '#047857' }}>
+            {formatINR(treeData?.groupPv || treeData?.groupBv || 0)}
+            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#059669', marginLeft: '0.4rem' }}>
+              Total BV
+            </span>
+          </div>
+          <div style={{ margin: '0.15rem 0 0.55rem 0' }}>
+            <div
+              style={{
+                width: '100%',
+                height: '7px',
+                background: '#E2E8F0',
+                borderRadius: '9999px',
+                overflow: 'hidden',
+              }}
+            >
+              <div
+                style={{
+                  width: '92%',
+                  height: '100%',
+                  background: 'linear-gradient(90deg, #06B6D4 0%, #10B981 100%)',
+                  borderRadius: '9999px',
+                  boxShadow: '0 0 8px rgba(16, 185, 129, 0.4)',
+                }}
+              />
+            </div>
+          </div>
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+              Level Override: <strong style={{ color: '#059669' }}>2% / Level</strong>
+            </span>
+            <span className="van-card-badge-pill emerald">
+              20% Pool
+            </span>
+          </div>
+        </div>
+
+        {/* Card 3: Equal Level Override */}
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #3B82F6, #6366F1)' }} />
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
+              style={{
+                color: '#2563EB',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
+              }}
+            >
+              Equal Level Override
+            </span>
+            <div
+              className="van-3d-kpi-icon van-3d-icon-blue"
+              style={{ animationDelay: '0.8s' }}
+              title="2% Equal Distribution Across 10 Levels"
+            >
+              <TrendingUp size={22} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div className="van-stat-card-value" style={{ color: '#1E40AF' }}>
+            2.0%
+            <span style={{ fontSize: '0.88rem', fontWeight: 700, color: '#3B82F6', marginLeft: '0.4rem' }}>
+              (All 10 Levels)
+            </span>
+          </div>
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.78rem', color: '#2563EB', fontWeight: 700 }}>
+              Level 1 to 10 Unlocked
+            </span>
+            <span className="van-card-badge-pill blue">
+              Equal Split
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* Control Bar: Depth, Search, Zoom */}
-      <div className="net-filter-card genealogy-controls-card">
-        <div className="control-group-left">
+      {/* Control Bar: Depth, Search, Zoom (Upgraded to 3D Toolbar) */}
+      <div
+        className="van-library-toolbar-3d"
+        style={{
+          marginBottom: '1.5rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '1.25rem',
+          flexWrap: 'wrap',
+          background: '#FFFFFF',
+          borderRadius: '16px',
+          padding: '0.9rem 1.4rem',
+          border: '1px solid #E2E8F0',
+          boxShadow: '0 4px 16px -2px rgba(15, 23, 42, 0.05)',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
           {/* Depth Selector */}
-          <div className="depth-selector-flex">
-            <span className="control-label">View Depth (Up to 10 Levels):</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#F8FAFC', border: '1.5px solid #E2E8F0', borderRadius: '12px', padding: '0.45rem 0.95rem' }}>
+            <Layers size={15} color="#2563EB" />
+            <span style={{ fontSize: '0.84rem', fontWeight: 700, color: '#475569' }}>View Depth:</span>
             <select
-              className="net-select mini-select"
               value={treeDepth}
               onChange={(e) => setTreeDepth(parseInt(e.target.value, 10))}
+              style={{ border: 'none', background: 'transparent', fontSize: '0.84rem', fontWeight: 700, color: '#1E293B', outline: 'none', cursor: 'pointer' }}
             >
               <option value={2}>2 Levels</option>
               <option value={3}>3 Levels</option>
@@ -237,75 +468,266 @@ function GenealogyTreePage({ user, onNavigate }) {
               <option value={10}>Full 10 Levels</option>
             </select>
           </div>
-        </div>
 
-        {/* Search Node */}
-        <div className="filter-search-input-wrapper mini-search">
-          <svg className="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-          <input
-            type="text"
-            className="net-input"
-            placeholder="Search Member in 10-Level Tree..."
-            value={searchNodeQuery}
-            onChange={(e) => setSearchNodeQuery(e.target.value)}
-          />
-          {searchNodeQuery && (
-            <button className="clear-search-btn" onClick={() => setSearchNodeQuery('')}>×</button>
-          )}
+          {/* Search Node */}
+          <div
+            style={{
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+              background: '#F8FAFC',
+              border: '1.5px solid #E2E8F0',
+              borderRadius: '12px',
+              padding: '0.45rem 0.85rem',
+              minWidth: '260px',
+            }}
+          >
+            <Search size={15} color="#94A3B8" style={{ marginRight: '0.5rem', flexShrink: 0 }} />
+            <input
+              type="text"
+              placeholder="Search Member in 10-Level Tree..."
+              value={searchNodeQuery}
+              onChange={(e) => setSearchNodeQuery(e.target.value)}
+              style={{
+                border: 'none',
+                background: 'transparent',
+                fontSize: '0.84rem',
+                fontWeight: 600,
+                color: '#1E293B',
+                outline: 'none',
+                width: '100%',
+              }}
+            />
+            {searchNodeQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchNodeQuery('')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#94A3B8',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '2px',
+                }}
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Zoom Controls */}
-        <div className="zoom-controls-flex">
-          <button
-            className="zoom-btn"
-            disabled={zoomLevel <= 60}
-            onClick={() => setZoomLevel((z) => Math.max(60, z - 10))}
-            title="Zoom Out"
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              background: '#F8FAFC',
+              border: '1.5px solid #E2E8F0',
+              borderRadius: '12px',
+              padding: '0.25rem 0.5rem',
+              gap: '0.4rem',
+            }}
           >
-            -
-          </button>
-          <span className="zoom-level-text">{zoomLevel}%</span>
-          <button
-            className="zoom-btn"
-            disabled={zoomLevel >= 130}
-            onClick={() => setZoomLevel((z) => Math.min(130, z + 10))}
-            title="Zoom In"
-          >
-            +
-          </button>
+            <button
+              type="button"
+              disabled={zoomLevel <= 60}
+              onClick={() => setZoomLevel((z) => Math.max(60, z - 10))}
+              title="Zoom Out"
+              style={{
+                width: '28px',
+                height: '28px',
+                borderRadius: '8px',
+                border: '1px solid #E2E8F0',
+                background: '#FFFFFF',
+                color: '#334155',
+                fontWeight: 800,
+                fontSize: '1rem',
+                cursor: zoomLevel <= 60 ? 'not-allowed' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                opacity: zoomLevel <= 60 ? 0.5 : 1,
+              }}
+            >
+              -
+            </button>
+            <span style={{ fontSize: '0.84rem', fontWeight: 800, color: '#1E293B', minWidth: '45px', textAlign: 'center' }}>
+              {zoomLevel}%
+            </span>
+            <button
+              type="button"
+              disabled={zoomLevel >= 130}
+              onClick={() => setZoomLevel((z) => Math.min(130, z + 10))}
+              title="Zoom In"
+              style={{
+                width: '28px',
+                height: '28px',
+                borderRadius: '8px',
+                border: '1px solid #E2E8F0',
+                background: '#FFFFFF',
+                color: '#334155',
+                fontWeight: 800,
+                fontSize: '1rem',
+                cursor: zoomLevel >= 130 ? 'not-allowed' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                opacity: zoomLevel >= 130 ? 0.5 : 1,
+              }}
+            >
+              +
+            </button>
+          </div>
+
+          {zoomLevel !== 100 && (
+            <button
+              type="button"
+              onClick={() => setZoomLevel(100)}
+              style={{
+                padding: '0.45rem 0.75rem',
+                borderRadius: '10px',
+                background: '#F1F5F9',
+                border: '1px solid #E2E8F0',
+                color: '#475569',
+                fontSize: '0.78rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+              }}
+            >
+              <RotateCcw size={12} />
+              <span>Reset</span>
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Loading & Error Indicators */}
+      {/* Loading Indicator */}
       {loading && (
-        <div style={{ textAlign: 'center', padding: '3.5rem', background: '#fff', borderRadius: '1rem', border: '1px solid #e2e8f0' }}>
-          <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#6366f1' }}>⏳ Generating 10-Level Tree from Database...</div>
+        <div
+          style={{
+            background: '#FFFFFF',
+            borderRadius: '20px',
+            border: '1px solid #E2E8F0',
+            padding: '4rem 2rem',
+            textAlign: 'center',
+            boxShadow: '0 4px 16px -2px rgba(15, 23, 42, 0.04)',
+          }}
+        >
+          <div
+            style={{
+              width: '46px',
+              height: '46px',
+              borderRadius: '50%',
+              border: '3.5px solid #E2E8F0',
+              borderTopColor: '#2563EB',
+              animation: 'spin 1s linear infinite',
+              margin: '0 auto 1.25rem auto',
+            }}
+          />
+          <h4 style={{ margin: '0 0 0.35rem 0', fontSize: '1.05rem', fontWeight: 800, color: '#0F172A' }}>
+            Generating 10-Level Visual Genealogy Tree...
+          </h4>
+          <p style={{ margin: 0, fontSize: '0.86rem', color: '#64748B' }}>
+            Mapping organizational downline nodes and personal BV turnover directly from database.
+          </p>
         </div>
       )}
 
+      {/* Error Message */}
       {error && !loading && (
-        <div style={{ padding: '1rem', background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', borderRadius: '0.75rem', marginBottom: '1.5rem' }}>
+        <div
+          style={{
+            padding: '1.25rem 1.5rem',
+            background: '#FEF2F2',
+            border: '1px solid #FECACA',
+            color: '#DC2626',
+            borderRadius: '16px',
+            marginBottom: '1.5rem',
+            fontWeight: 600,
+            fontSize: '0.88rem',
+          }}
+        >
           ⚠️ {error}
         </div>
       )}
 
-      {/* Main Interactive Genealogy Canvas View */}
-      {!loading && treeData && (
-        <div className="genealogy-tree-viewport-card">
+      {/* Main Interactive Genealogy Canvas View OR Zero-Overflow Empty Card */}
+      {!loading && !error && (
+        treeData ? (
+          <div className="genealogy-tree-viewport-card">
+            <div
+              className="tree-canvas-inner"
+              style={{
+                transform: `scale(${zoomLevel / 100})`,
+                transformOrigin: 'top center',
+                transition: 'transform 0.2s ease-out',
+              }}
+            >
+              {renderUnilevelNode(treeData, 0)}
+            </div>
+          </div>
+        ) : (
           <div
-            className="tree-canvas-inner"
             style={{
-              transform: `scale(${zoomLevel / 100})`,
-              transformOrigin: 'top center',
-              transition: 'transform 0.2s ease-out',
+              background: '#FFFFFF',
+              borderRadius: '20px',
+              border: '1px solid #E2E8F0',
+              padding: '4.5rem 2rem',
+              textAlign: 'center',
+              boxShadow: '0 6px 24px -3px rgba(15, 23, 42, 0.05)',
+              width: '100%',
+              boxSizing: 'border-box',
             }}
           >
-            {renderUnilevelNode(treeData, 0)}
+            <div
+              className="van-3d-kpi-icon van-3d-icon-blue"
+              style={{
+                width: '68px',
+                height: '68px',
+                borderRadius: '22px',
+                margin: '0 auto 1.5rem auto',
+                boxShadow: '0 12px 30px -4px rgba(37, 99, 235, 0.42), inset 0 2px 2px rgba(255, 255, 255, 0.65)',
+              }}
+            >
+              <GitFork size={32} strokeWidth={2.4} />
+            </div>
+            <h3 style={{ margin: '0 0 0.65rem 0', fontSize: '1.35rem', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.01em' }}>
+              No Genealogy Tree Data Available
+            </h3>
+            <p style={{ margin: '0 auto 1.85rem auto', maxWidth: '520px', fontSize: '0.92rem', color: '#64748B', lineHeight: 1.6 }}>
+              Your visual genealogy tree currently has no downline network nodes. Directly sponsor team members to unlock visual multi-level generation maps and real-time business volume overrides.
+            </p>
+            <button
+              type="button"
+              onClick={() => onNavigate && onNavigate('network-direct')}
+              className="van-btn-share-3d"
+              style={{
+                padding: '0.75rem 1.75rem',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.55rem',
+                fontSize: '0.88rem',
+                fontWeight: 800,
+                borderRadius: '14px',
+                background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                borderBottom: '3px solid #1E40AF',
+                color: '#FFFFFF',
+                boxShadow: '0 8px 20px -3px rgba(37, 99, 235, 0.45)',
+                cursor: 'pointer',
+                margin: '0 auto',
+              }}
+            >
+              <Users size={16} />
+              <span>Go to Direct Connections</span>
+            </button>
           </div>
-        </div>
+        )
       )}
 
       {/* Node Quick Inspector Dossier Modal */}
@@ -322,25 +744,46 @@ function GenealogyTreePage({ user, onNavigate }) {
 
             <div className="modal-body">
               <div className="modal-profile-header">
-                <img
-                  src={activeNodeModal.avatar}
-                  alt={activeNodeModal.name}
+                {activeNodeModal.avatar && activeNodeModal.avatar !== '/logo.png' ? (
+                  <img
+                    src={activeNodeModal.avatar}
+                    alt={activeNodeModal.name}
+                    className="modal-avatar-lg"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
+                    }}
+                  />
+                ) : null}
+                <div
                   className="modal-avatar-lg"
-                />
+                  style={{
+                    display: (activeNodeModal.avatar && activeNodeModal.avatar !== '/logo.png') ? 'none' : 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                    color: '#ffffff',
+                    fontWeight: 800,
+                    fontSize: '1.4rem',
+                    boxShadow: '0 8px 18px -2px rgba(37, 99, 235, 0.35)',
+                  }}
+                >
+                  {activeNodeModal.name ? activeNodeModal.name.charAt(0).toUpperCase() : 'U'}
+                </div>
                 <div className="modal-header-meta">
                   <h2>{activeNodeModal.name}</h2>
                   <span className="code-tag">{activeNodeModal.id}</span>
                   <div className="modal-pills-row">
                     {activeNodeModal.level > 0 && (
                       <span className={`gen-level-badge level-${activeNodeModal.level}`}>
-                        Gen Level {activeNodeModal.level} ({activeNodeModal.overridePct})
+                        Gen Level {activeNodeModal.level} ({activeNodeModal.overridePct || '2%'})
                       </span>
                     )}
-                    <span className={`rank-pill ${activeNodeModal.rankClass}`}>
-                      {activeNodeModal.rank}
+                    <span className={`rank-pill ${activeNodeModal.rankClass || 'rank-bronze'}`}>
+                      {activeNodeModal.rank || 'Member'}
                     </span>
                     <span className={`status-pill ${activeNodeModal.status}`}>
-                      {activeNodeModal.status.toUpperCase()}
+                      {activeNodeModal.status ? activeNodeModal.status.toUpperCase() : 'ACTIVE'}
                     </span>
                   </div>
                 </div>
@@ -349,7 +792,7 @@ function GenealogyTreePage({ user, onNavigate }) {
               <div className="modal-specs-grid">
                 <div className="spec-item">
                   <span className="spec-label">Sponsor / Parent Node</span>
-                  <span className="spec-val text-purple">{activeNodeModal.sponsor}</span>
+                  <span className="spec-val text-purple">{activeNodeModal.sponsor || activeNodeModal.sponsorName || 'N/A'}</span>
                 </div>
                 <div className="spec-item">
                   <span className="spec-label">Direct Sponsored Legs</span>
@@ -365,23 +808,25 @@ function GenealogyTreePage({ user, onNavigate }) {
                 </div>
                 <div className="spec-item">
                   <span className="spec-label">Enrolled Date</span>
-                  <span className="spec-val">{activeNodeModal.joiningDate}</span>
+                  <span className="spec-val">{activeNodeModal.joiningDate || 'N/A'}</span>
                 </div>
                 <div className="spec-item">
                   <span className="spec-label">Commission Override</span>
-                  <span className="spec-val text-purple">{activeNodeModal.overridePct}</span>
+                  <span className="spec-val text-purple">{activeNodeModal.overridePct || '2.0% Equal Override'}</span>
                 </div>
               </div>
             </div>
 
             <div className="modal-footer">
               <button
+                type="button"
                 className="net-btn btn-secondary"
                 onClick={() => setActiveNodeModal(null)}
               >
                 Close
               </button>
               <button
+                type="button"
                 className="net-btn btn-primary"
                 onClick={() => {
                   setActiveNodeModal(null);

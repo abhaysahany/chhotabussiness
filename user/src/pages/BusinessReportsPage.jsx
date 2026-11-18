@@ -1,10 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import {
+  Building2,
+  UserCheck,
+  FileCheck2,
+  FolderKanban,
+  Search,
+  Filter,
+  Sparkles,
+  CheckCircle2,
+  Star,
+  ShieldCheck,
+  ExternalLink,
+  ArrowRight,
+  Grid,
+  List,
+  X,
+  FileText,
+  Briefcase,
+  Layers,
+  ChevronRight,
+  Eye,
+  Check,
+  RotateCcw,
+  Cpu,
+  Scale,
+  Calculator,
+  SlidersHorizontal
+} from 'lucide-react';
+import {
   getPublicCategories,
   getPublicBusinesses,
   getPublicFreelancers,
 } from '../api/publicEntityService';
-import { maskEmail, maskPhone } from '../utils/formatters';
+import { maskEmail, maskPhone, formatNumberIN } from '../utils/formatters';
 
 function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
   const [categories, setCategories] = useState([]);
@@ -114,8 +142,8 @@ function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
     // Search Query
     if (searchTerm) {
       const query = searchTerm.toLowerCase();
-      const nameMatch = item.display_title.toLowerCase().includes(query);
-      const subMatch = item.display_subtitle.toLowerCase().includes(query);
+      const nameMatch = item.display_title?.toLowerCase().includes(query);
+      const subMatch = item.display_subtitle?.toLowerCase().includes(query);
       const emailMatch = item.email ? item.email.toLowerCase().includes(query) : false;
       const catName = item.category?.name ? item.category.name.toLowerCase().includes(query) : false;
       const regMatch = item.reg_identifier ? item.reg_identifier.toLowerCase().includes(query) : false;
@@ -131,229 +159,545 @@ function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
       return a.display_title.localeCompare(b.display_title);
     }
     if (sortBy === 'rating') {
-      return b.rating - a.rating;
+      return (b.rating || 0) - (a.rating || 0);
     }
-    return b.id - a.id; // Newest first
+    return (b.id || 0) - (a.id || 0); // Newest first
   });
+
+  const hasActiveFilters = Boolean(
+    searchTerm.trim() ||
+    categoryFilter ||
+    entityTypeFilter !== 'all' ||
+    statusFilter !== 'all' ||
+    sortBy !== 'newest'
+  );
+
+  const handleResetFilters = () => {
+    setSearchTerm('');
+    setCategoryFilter('');
+    setEntityTypeFilter('all');
+    setStatusFilter('all');
+    setSortBy('newest');
+  };
 
   const totalBusinessesCount = businesses.length;
   const totalFreelancersCount = freelancers.length;
   const totalVerifiedCount = combinedEntities.filter((e) => e.verification_status === 'verified').length;
 
-  return (
-    <div className="page-container">
-      {/* Hero Banner Header */}
-      <div
-        style={{
-          background: 'linear-gradient(135deg, var(--brand-primary-dark) 0%, var(--brand-primary) 100%)',
-          borderRadius: '16px',
-          padding: '2.25rem 2.5rem',
-          color: '#ffffff',
-          marginBottom: '2rem',
-          boxShadow: '0 12px 32px -6px rgba(15, 23, 42, 0.3)',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
-        <div style={{ position: 'relative', zIndex: 2 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.12)', padding: '0.25rem 0.85rem', borderRadius: '20px', fontSize: '0.78rem', fontWeight: '700', color: 'var(--brand-secondary-subtle)', marginBottom: '0.85rem', backdropFilter: 'blur(4px)' }}>
-            <span>🏢 Verified Business Directory & Compliance Reports</span>
-          </div>
-          <h1 style={{ fontSize: '1.85rem', fontWeight: '800', margin: '0 0 0.5rem 0', letterSpacing: '-0.02em', background: 'linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            Business & Freelancer Directory Reports
-          </h1>
-          <p style={{ color: '#94a3b8', fontSize: '0.95rem', maxWidth: '680px', margin: 0, lineHeight: '1.5' }}>
-            Browse verified enterprise business listings, compliance document reports, and professional freelancer credentials across category domains.
-          </p>
+  const getCategoryIconMeta = (catName = '') => {
+    const lower = catName.toLowerCase();
+    if (lower.includes('financial') || lower.includes('consulting')) {
+      return {
+        icon: <Briefcase size={18} strokeWidth={2.4} />,
+        bg: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+        shadow: '0 6px 14px -2px rgba(16, 185, 129, 0.45)',
+      };
+    }
+    if (lower.includes('marketing') || lower.includes('ad')) {
+      return {
+        icon: <Sparkles size={18} strokeWidth={2.4} />,
+        bg: 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)',
+        shadow: '0 6px 14px -2px rgba(139, 92, 246, 0.45)',
+      };
+    }
+    if (lower.includes('it') || lower.includes('software') || lower.includes('dev')) {
+      return {
+        icon: <Cpu size={18} strokeWidth={2.4} />,
+        bg: 'linear-gradient(135deg, #06B6D4 0%, #0284C7 100%)',
+        shadow: '0 6px 14px -2px rgba(6, 182, 212, 0.45)',
+      };
+    }
+    if (lower.includes('legal') || lower.includes('corporate')) {
+      return {
+        icon: <Scale size={18} strokeWidth={2.4} />,
+        bg: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+        shadow: '0 6px 14px -2px rgba(245, 158, 11, 0.45)',
+      };
+    }
+    if (lower.includes('tax') || lower.includes('accounting')) {
+      return {
+        icon: <Calculator size={18} strokeWidth={2.4} />,
+        bg: 'linear-gradient(135deg, #F43F5E 0%, #E11D48 100%)',
+        shadow: '0 6px 14px -2px rgba(244, 63, 94, 0.45)',
+      };
+    }
+    return {
+      icon: <FolderKanban size={18} strokeWidth={2.4} />,
+      bg: 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)',
+      shadow: '0 6px 14px -2px rgba(37, 99, 235, 0.45)',
+    };
+  };
 
-          {/* Category Quick Chips */}
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '1.5rem' }}>
-            <button
-              onClick={() => setCategoryFilter('')}
-              style={{
-                background: categoryFilter === '' ? '#6366f1' : 'rgba(255,255,255,0.1)',
-                color: '#fff',
-                border: 'none',
-                padding: '0.35rem 0.85rem',
-                borderRadius: '20px',
-                fontSize: '0.775rem',
-                fontWeight: '700',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-              }}
-            >
-              All Categories ({combinedEntities.length})
-            </button>
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setCategoryFilter(String(cat.id))}
+  return (
+    <div className="page-container" style={{ maxWidth: '1400px', margin: '0 auto', paddingBottom: '3.5rem' }}>
+      
+      {/* Signature 2-Color Gradient Hero Header Banner with 3D Depth */}
+      <div className="van-catalog-hero-3d">
+        <div className="van-catalog-hero-content">
+          <div className="van-catalog-hero-icon-orb">
+            <Building2 size={32} strokeWidth={2.2} />
+          </div>
+          <div>
+            <div className="van-catalog-hero-badge">
+              <span
+                className="van-live-pulse-dot"
+                style={{ width: '7px', height: '7px', background: '#38BDF8', boxShadow: '0 0 8px #38BDF8' }}
+              />
+              <Sparkles size={13} />
+              <span>Verified Enterprise Directory • Platform Audited</span>
+            </div>
+            <h1 className="van-catalog-hero-title">
+              Business & Freelancer Directory Reports
+            </h1>
+            <p className="van-catalog-hero-desc">
+              Browse verified corporate enterprises, compliance audit reports, and certified freelancer credentials across category domains.
+            </p>
+          </div>
+        </div>
+
+        {/* Right Stats Chips & Action Button Area */}
+        <div
+          className="van-directs-hero-action-col"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-end',
+            gap: '1.25rem',
+            flexShrink: 0,
+          }}
+        >
+          {/* Top Row: Stats Chips */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <div className="van-catalog-stat-chip">
+              <div className="van-catalog-stat-chip-val">{formatNumberIN(totalBusinessesCount)}</div>
+              <div className="van-catalog-stat-chip-lbl">Businesses</div>
+            </div>
+            <div className="van-catalog-stat-chip">
+              <div className="van-catalog-stat-chip-val" style={{ color: '#C084FC' }}>
+                {formatNumberIN(totalFreelancersCount)}
+              </div>
+              <div className="van-catalog-stat-chip-lbl">Freelancers</div>
+            </div>
+            <div className="van-catalog-stat-chip">
+              <div className="van-catalog-stat-chip-val" style={{ color: '#34D399' }}>
+                {formatNumberIN(totalVerifiedCount)}
+              </div>
+              <div className="van-catalog-stat-chip-lbl">100% Audited</div>
+            </div>
+          </div>
+
+          {/* Bottom Row: 3D Refresh Action Button */}
+          <button
+            type="button"
+            onClick={fetchDirectoryData}
+            className="van-btn-share-3d"
+            style={{
+              padding: '0.72rem 1.6rem',
+              height: 'auto',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.65rem',
+              fontSize: '0.88rem',
+              fontWeight: 800,
+              borderRadius: '14px',
+              background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+              borderBottom: '3px solid #1E40AF',
+              color: '#FFFFFF',
+              boxShadow: '0 8px 24px -3px rgba(37, 99, 235, 0.45)',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+            title="Refresh live directory reports from database"
+          >
+            <RotateCcw size={16} strokeWidth={2.4} />
+            <span>Refresh Directory</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Industry Domains & Specialized Sectors (3D Exploration Grid) */}
+      <div style={{ marginBottom: '2.25rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.9rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem' }}>
+            <div style={{ width: '30px', height: '30px', borderRadius: '10px', background: '#EFF6FF', color: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <FolderKanban size={17} strokeWidth={2.4} />
+            </div>
+            <strong style={{ fontSize: '1.02rem', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.01em' }}>
+              Industry Domains & Specialized Sectors
+            </strong>
+          </div>
+          <span style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: 600 }}>
+            Select any industry sector to filter enterprise business listings and freelance experts
+          </span>
+        </div>
+
+        <div className="van-sector-cards-grid">
+          {/* Card: All Categories */}
+          <div
+            onClick={() => setCategoryFilter('')}
+            className={`van-sector-card-3d ${categoryFilter === '' ? 'active' : ''}`}
+            title="Show all domains & sectors"
+          >
+            {categoryFilter === '' && <div className="van-sector-card-top-shimmer" />}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+              <div
+                className="van-sector-icon-pod"
                 style={{
-                  background: String(categoryFilter) === String(cat.id) ? (cat.badge_color || '#6366f1') : 'rgba(255,255,255,0.1)',
-                  color: '#fff',
-                  border: 'none',
-                  padding: '0.35rem 0.85rem',
-                  borderRadius: '20px',
-                  fontSize: '0.775rem',
-                  fontWeight: '700',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease',
+                  background: 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)',
+                  boxShadow: '0 6px 14px -2px rgba(37, 99, 235, 0.45)',
+                  animationDelay: '0s',
                 }}
               >
-                {cat.name}
-              </button>
-            ))}
+                <Layers size={18} strokeWidth={2.4} />
+              </div>
+              <span className="van-sector-count-badge">
+                {combinedEntities.length}
+              </span>
+            </div>
+            <div>
+              <strong style={{ fontSize: '0.86rem', fontWeight: 800, color: '#0F172A', display: 'block', lineHeight: 1.25 }}>
+                All Categories
+              </strong>
+              <span style={{ fontSize: '0.72rem', color: categoryFilter === '' ? '#2563EB' : '#94A3B8', fontWeight: 750, marginTop: '0.2rem', display: 'block' }}>
+                {categoryFilter === '' ? '● Active Filter' : 'All Listings'}
+              </span>
+            </div>
+          </div>
+
+          {/* Dynamic Category Cards */}
+          {categories.map((cat, idx) => {
+            const isSelected = String(categoryFilter) === String(cat.id);
+            const catCount = combinedEntities.filter((e) => String(e.entity_category_id) === String(cat.id)).length;
+            const meta = getCategoryIconMeta(cat.name);
+
+            return (
+              <div
+                key={cat.id}
+                onClick={() => setCategoryFilter(String(cat.id))}
+                className={`van-sector-card-3d ${isSelected ? 'active' : ''}`}
+                title={`Filter by ${cat.name}`}
+              >
+                {isSelected && <div className="van-sector-card-top-shimmer" />}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+                  <div
+                    className="van-sector-icon-pod"
+                    style={{
+                      background: meta.bg,
+                      boxShadow: meta.shadow,
+                      animationDelay: `${(idx + 1) * 0.25}s`,
+                    }}
+                  >
+                    {meta.icon}
+                  </div>
+                  <span className="van-sector-count-badge">
+                    {catCount}
+                  </span>
+                </div>
+                <div>
+                  <strong style={{ fontSize: '0.86rem', fontWeight: 800, color: '#0F172A', display: 'block', lineHeight: 1.25 }}>
+                    {cat.name}
+                  </strong>
+                  <span style={{ fontSize: '0.72rem', color: isSelected ? '#2563EB' : '#94A3B8', fontWeight: 750, marginTop: '0.2rem', display: 'block' }}>
+                    {isSelected ? '● Active Filter' : 'Filter Sector'}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 4 Signature 3D KPI Cards Grid (4 in a row Desktop, 2x2 Tablet, 1 col Mobile) */}
+      <div className="van-business-kpi-grid">
+        {/* Card 1: Registered Businesses */}
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #3B82F6, #1D4ED8)' }} />
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
+              style={{
+                color: '#2563EB',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
+              }}
+            >
+              Registered Businesses
+            </span>
+            <div
+              className="van-3d-kpi-icon van-3d-icon-blue"
+              style={{ animationDelay: '0s' }}
+              title="Corporate Entities"
+            >
+              <Building2 size={22} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div className="van-stat-card-value">
+            {formatNumberIN(totalBusinessesCount)}
+          </div>
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>Enterprise corporate entities</span>
+            <span className="van-card-badge-pill blue">
+              Corporate L1
+            </span>
+          </div>
+        </div>
+
+        {/* Card 2: Verified Freelancers */}
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #8B5CF6, #6D28D9)' }} />
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
+              style={{
+                color: '#7C3AED',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
+              }}
+            >
+              Verified Freelancers
+            </span>
+            <div
+              className="van-3d-kpi-icon van-3d-icon-purple"
+              style={{ animationDelay: '0.4s' }}
+              title="Skilled Professional Experts"
+            >
+              <UserCheck size={22} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div className="van-stat-card-value" style={{ color: '#6D28D9' }}>
+            {formatNumberIN(totalFreelancersCount)}
+          </div>
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>Verified skilled experts</span>
+            <span className="van-card-badge-pill" style={{ background: '#F5F3FF', color: '#6D28D9', border: '1px solid #DDD6FE' }}>
+              Talent Pool
+            </span>
+          </div>
+        </div>
+
+        {/* Card 3: Verified Reports */}
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #10B981, #059669)' }} />
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
+              style={{
+                color: '#059669',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
+              }}
+            >
+              Verified Reports
+            </span>
+            <div
+              className="van-3d-kpi-icon van-3d-icon-emerald"
+              style={{ animationDelay: '0.8s' }}
+              title="100% Platform Document Verified"
+            >
+              <FileCheck2 size={22} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div className="van-stat-card-value" style={{ color: '#047857' }}>
+            {formatNumberIN(totalVerifiedCount)}
+          </div>
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>100% Document Verified</span>
+            <span className="van-card-badge-pill emerald">
+              Audited
+            </span>
+          </div>
+        </div>
+
+        {/* Card 4: Domain Categories */}
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #F59E0B, #D97706)' }} />
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
+              style={{
+                color: '#D97706',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
+              }}
+            >
+              Domain Categories
+            </span>
+            <div
+              className="van-3d-kpi-icon van-3d-icon-amber"
+              style={{ animationDelay: '1.2s' }}
+              title="Industry Classifications"
+            >
+              <FolderKanban size={22} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div className="van-stat-card-value" style={{ color: '#B45309' }}>
+            {categories.length}
+          </div>
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>Industry classifications</span>
+            <span className="van-card-badge-pill amber" style={{ background: '#FEF3C7', color: '#92400E', border: '1px solid #FDE68A' }}>
+              Sectors
+            </span>
           </div>
         </div>
       </div>
 
-      {/* KPI Metrics Row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
-        <div style={{ background: '#fff', borderRadius: '14px', padding: '1.25rem 1.5rem', border: '1px solid #e2e8f0', borderTop: '4px solid #3b82f6', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <span style={{ fontSize: '0.8rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Registered Businesses</span>
-            <span style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#eff6ff', color: '#3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800' }}>🏢</span>
-          </div>
-          <div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a' }}>{totalBusinessesCount}</div>
-          <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '0.2rem' }}>Enterprise corporate entities</div>
-        </div>
-
-        <div style={{ background: '#fff', borderRadius: '14px', padding: '1.25rem 1.5rem', border: '1px solid #e2e8f0', borderTop: '4px solid #7c3aed', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <span style={{ fontSize: '0.8rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Verified Freelancers</span>
-            <span style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#f3e8ff', color: '#7c3aed', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800' }}>👤</span>
-          </div>
-          <div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a' }}>{totalFreelancersCount}</div>
-          <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '0.2rem' }}>Verified skilled experts</div>
-        </div>
-
-        <div style={{ background: '#fff', borderRadius: '14px', padding: '1.25rem 1.5rem', border: '1px solid #e2e8f0', borderTop: '4px solid #10b981', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <span style={{ fontSize: '0.8rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Verified Reports</span>
-            <span style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#ecfdf5', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800' }}>✓</span>
-          </div>
-          <div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a' }}>{totalVerifiedCount}</div>
-          <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '0.2rem' }}>100% Document Verified</div>
-        </div>
-
-        <div style={{ background: '#fff', borderRadius: '14px', padding: '1.25rem 1.5rem', border: '1px solid #e2e8f0', borderTop: '4px solid #f59e0b', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <span style={{ fontSize: '0.8rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Domain Categories</span>
-            <span style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#fffbeb', color: '#f59e0b', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800' }}>📁</span>
-          </div>
-          <div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a' }}>{categories.length}</div>
-          <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '0.2rem' }}>Industry classifications</div>
-        </div>
-      </div>
-
-      {/* Advanced Filter Toolbar */}
-      <div style={{ background: '#fff', borderRadius: '14px', padding: '1.25rem 1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.02)', marginBottom: '1.75rem' }}>
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
-          {/* Search Box */}
-          <div style={{ position: 'relative', flex: '1 1 280px', maxWidth: '420px' }}>
+      {/* Advanced 3D Filter & View Command Toolbar */}
+      <div className="van-dir-toolbar-3d">
+        {/* Top Tier: Search Bar & View Mode Switcher */}
+        <div className="van-dir-toolbar-top">
+          {/* Expanded Search Bar with 3D Pod */}
+          <div className="van-dir-search-wrap">
+            <div className="van-dir-search-icon-pod">
+              <Search size={16} color="#2563EB" strokeWidth={2.4} />
+            </div>
             <input
               type="text"
+              className="van-dir-search-input"
               placeholder="Search entity name, owner, GSTIN, skill or category..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '0.55rem 0.85rem 0.55rem 2.4rem',
-                fontSize: '0.835rem',
-                borderRadius: '8px',
-                border: '1px solid #cbd5e1',
-                outline: 'none',
-              }}
             />
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" style={{ position: 'absolute', left: '0.8rem', top: '50%', transform: 'translateY(-50%)' }}>
-              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-            </svg>
+            {searchTerm && (
+              <button
+                type="button"
+                className="van-dir-search-clear"
+                onClick={() => setSearchTerm('')}
+                title="Clear search"
+              >
+                <X size={14} strokeWidth={2.5} />
+              </button>
+            )}
           </div>
 
-          {/* Filter Selects */}
-          <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap', alignItems: 'center' }}>
-            {/* Entity Type Filter */}
-            <select
-              value={entityTypeFilter}
-              onChange={(e) => setEntityTypeFilter(e.target.value)}
-              style={{ padding: '0.55rem 0.85rem', fontSize: '0.835rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none', background: '#fff', fontWeight: '600', color: '#334155' }}
+          {/* 3D View Mode Switcher */}
+          <div className="van-dir-view-switcher">
+            <button
+              type="button"
+              className={`van-dir-view-btn ${viewMode === 'grid' ? 'active' : ''}`}
+              onClick={() => setViewMode('grid')}
             >
-              <option value="all">All Entity Types</option>
-              <option value="business">🏢 Businesses Only</option>
-              <option value="freelancer">👤 Freelancers Only</option>
-            </select>
+              <Grid size={15} strokeWidth={viewMode === 'grid' ? 2.4 : 2} />
+              <span>Cards View</span>
+            </button>
+            <button
+              type="button"
+              className={`van-dir-view-btn ${viewMode === 'table' ? 'active' : ''}`}
+              onClick={() => setViewMode('table')}
+            >
+              <List size={15} strokeWidth={viewMode === 'table' ? 2.4 : 2} />
+              <span>Report Table</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Subtle Horizontal Divider */}
+        <div className="van-dir-toolbar-divider" />
+
+        {/* Bottom Tier: Filter Capsules & Action Stats */}
+        <div className="van-dir-toolbar-bottom">
+          {/* Left: Filter Capsules Cluster */}
+          <div className="van-dir-filters-cluster">
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.45rem',
+                fontSize: '0.78rem',
+                fontWeight: 850,
+                color: '#64748B',
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+                marginRight: '0.2rem',
+              }}
+            >
+              <Filter size={14} color="#2563EB" strokeWidth={2.5} />
+              <span>Filters</span>
+            </div>
+
+            {/* Entity Type Filter */}
+            <div className={`van-dir-filter-capsule ${entityTypeFilter !== 'all' ? 'active' : ''}`}>
+              <Building2 size={15} color="#2563EB" strokeWidth={2.2} />
+              <select
+                value={entityTypeFilter}
+                onChange={(e) => setEntityTypeFilter(e.target.value)}
+                aria-label="Filter by Entity Type"
+              >
+                <option value="all">All Entity Types</option>
+                <option value="business">🏢 Businesses Only</option>
+                <option value="freelancer">👤 Freelancers Only</option>
+              </select>
+            </div>
 
             {/* Category Filter */}
-            <select
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              style={{ padding: '0.55rem 0.85rem', fontSize: '0.835rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none', background: '#fff', fontWeight: '600', color: '#334155' }}
-            >
-              <option value="">All Categories</option>
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
+            <div className={`van-dir-filter-capsule ${categoryFilter !== '' ? 'active' : ''}`}>
+              <FolderKanban size={15} color="#7C3AED" strokeWidth={2.2} />
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                aria-label="Filter by Category"
+              >
+                <option value="">All Categories</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
             {/* Status Filter */}
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              style={{ padding: '0.55rem 0.85rem', fontSize: '0.835rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none', background: '#fff', fontWeight: '600', color: '#334155' }}
-            >
-              <option value="all">All Statuses</option>
-              <option value="verified">✓ Verified Only</option>
-              <option value="featured">🌟 Featured Ads Only</option>
-            </select>
+            <div className={`van-dir-filter-capsule ${statusFilter !== 'all' ? 'active' : ''}`}>
+              <ShieldCheck size={15} color="#10B981" strokeWidth={2.2} />
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                aria-label="Filter by Status"
+              >
+                <option value="all">All Statuses</option>
+                <option value="verified">✓ Verified Only</option>
+                <option value="featured">🌟 Featured Only</option>
+              </select>
+            </div>
 
-            {/* Sorting */}
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              style={{ padding: '0.55rem 0.85rem', fontSize: '0.835rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none', background: '#fff', fontWeight: '600', color: '#334155' }}
-            >
-              <option value="newest">Sort: Newest First</option>
-              <option value="name_asc">Sort: Name (A-Z)</option>
-              <option value="name_asc">Sort: Name (A-Z)</option>
-            </select>
+            {/* Sorting Filter */}
+            <div className={`van-dir-filter-capsule ${sortBy !== 'newest' ? 'active' : ''}`}>
+              <SlidersHorizontal size={15} color="#D97706" strokeWidth={2.2} />
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                aria-label="Sort Entities"
+              >
+                <option value="newest">Sort: Newest First</option>
+                <option value="name_asc">Sort: Name (A-Z)</option>
+                <option value="rating">Sort: Highest Rated</option>
+              </select>
+            </div>
           </div>
 
-          {/* View Switcher */}
-          <div style={{ display: 'flex', gap: '0.25rem', background: '#f1f5f9', padding: '0.2rem', borderRadius: '8px', border: '1px solid #cbd5e1' }}>
-            <button
-              onClick={() => setViewMode('grid')}
-              style={{
-                padding: '0.35rem 0.75rem',
-                borderRadius: '6px',
-                border: 'none',
-                fontSize: '0.78rem',
-                fontWeight: '700',
-                cursor: 'pointer',
-                background: viewMode === 'grid' ? '#fff' : 'transparent',
-                color: viewMode === 'grid' ? '#4f46e5' : '#64748b',
-                boxShadow: viewMode === 'grid' ? '0 1px 4px rgba(0,0,0,0.06)' : 'none',
-              }}
-            >
-              🎴 Cards View
-            </button>
-            <button
-              onClick={() => setViewMode('table')}
-              style={{
-                padding: '0.35rem 0.75rem',
-                borderRadius: '6px',
-                border: 'none',
-                fontSize: '0.78rem',
-                fontWeight: '700',
-                cursor: 'pointer',
-                background: viewMode === 'table' ? '#fff' : 'transparent',
-                color: viewMode === 'table' ? '#4f46e5' : '#64748b',
-                boxShadow: viewMode === 'table' ? '0 1px 4px rgba(0,0,0,0.06)' : 'none',
-              }}
-            >
-              📋 Report Table
-            </button>
+          {/* Right: Actions Cluster (Reset & Count) */}
+          <div className="van-dir-actions-cluster">
+            {hasActiveFilters && (
+              <button
+                type="button"
+                className="van-dir-reset-btn"
+                onClick={handleResetFilters}
+                title="Reset all active filters"
+              >
+                <RotateCcw size={13} strokeWidth={2.4} />
+                <span>Reset Filters</span>
+              </button>
+            )}
+
+            <div className="van-dir-count-pill">
+              <span style={{ color: '#0F172A', fontWeight: 800 }}>{sortedEntities.length}</span>
+              <span>{sortedEntities.length === 1 ? 'entity found' : 'entities found'}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -362,146 +706,258 @@ function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
       {loading ? (
         <div style={{ textAlign: 'center', padding: '5rem 1rem' }}>
           <div className="spinner" style={{ margin: '0 auto 1rem auto' }}></div>
-          <p style={{ color: '#64748b', fontWeight: '600' }}>Loading entity directory reports...</p>
+          <p style={{ color: '#64748B', fontWeight: '700' }}>Loading entity directory reports...</p>
         </div>
       ) : error ? (
-        <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#b91c1c', padding: '1.25rem', borderRadius: '12px', textAlign: 'center' }}>
-          <p style={{ margin: 0, fontWeight: '600' }}>{error}</p>
+        <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', color: '#B91C1C', padding: '1.25rem', borderRadius: '14px', textAlign: 'center' }}>
+          <p style={{ margin: 0, fontWeight: '700' }}>{error}</p>
         </div>
       ) : sortedEntities.length === 0 ? (
-        <div style={{ background: '#fff', borderRadius: '14px', padding: '4rem 2rem', textAlign: 'center', border: '1px solid #e2e8f0' }}>
-          <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: '0.75rem' }}>🔍</span>
-          <h3 style={{ fontSize: '1.2rem', fontWeight: '800', color: '#0f172a', margin: '0 0 0.5rem 0' }}>No Entity Reports Found</h3>
-          <p style={{ color: '#64748b', fontSize: '0.875rem', margin: '0 0 1.25rem 0' }}>Try adjusting your search query, type filter, or category selection.</p>
-          <button
-            onClick={() => { setSearchTerm(''); setCategoryFilter(''); setEntityTypeFilter('all'); setStatusFilter('all'); }}
-            style={{ background: '#4f46e5', color: '#fff', border: 'none', padding: '0.55rem 1.25rem', borderRadius: '8px', fontWeight: '700', fontSize: '0.825rem', cursor: 'pointer' }}
+        <div
+          style={{
+            background: '#FFFFFF',
+            borderRadius: '20px',
+            padding: '4.5rem 2rem',
+            textAlign: 'center',
+            border: '1px solid #E2E8F0',
+            boxShadow: '0 4px 20px -2px rgba(15, 23, 42, 0.03)',
+          }}
+        >
+          <div
+            style={{
+              width: '64px',
+              height: '64px',
+              borderRadius: '20px',
+              background: '#EFF6FF',
+              color: '#2563EB',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 1.25rem auto',
+            }}
           >
-            Reset All Filters
+            <Search size={30} strokeWidth={2.2} />
+          </div>
+          <h3 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#0F172A', margin: '0 0 0.5rem 0' }}>
+            No Entity Reports Found
+          </h3>
+          <p style={{ color: '#64748B', fontSize: '0.9rem', maxWidth: '420px', margin: '0 auto 1.5rem auto' }}>
+            We could not find any matching business listings or freelancer records. Try adjusting your search query, type filter, or category selection.
+          </p>
+          <button
+            type="button"
+            onClick={() => { setSearchTerm(''); setCategoryFilter(''); setEntityTypeFilter('all'); setStatusFilter('all'); }}
+            style={{
+              background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+              color: '#FFFFFF',
+              border: 'none',
+              padding: '0.65rem 1.45rem',
+              borderRadius: '12px',
+              fontWeight: 800,
+              fontSize: '0.86rem',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              boxShadow: '0 4px 14px rgba(37, 99, 235, 0.3)',
+            }}
+          >
+            <RotateCcw size={15} />
+            <span>Reset All Filters</span>
           </button>
         </div>
       ) : viewMode === 'grid' ? (
         /* GRID CARDS VIEW */
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(330px, 1fr))', gap: '1.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1.5rem' }}>
           {sortedEntities.map((item) => (
             <div
               key={`${item.entity_type}-${item.id}`}
-              style={{
-                background: '#ffffff',
-                borderRadius: '14px',
-                border: '1px solid #e2e8f0',
-                boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
-                padding: '1.5rem',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                transition: 'transform 0.15s ease, box-shadow 0.15s ease',
-              }}
+              className="van-directory-card-3d"
             >
+              {/* Top Accent Shimmer Line */}
+              <div
+                className="van-directory-card-shimmer"
+                style={{
+                  background: item.entity_type === 'business'
+                    ? 'linear-gradient(90deg, #3B82F6 0%, #60A5FA 100%)'
+                    : 'linear-gradient(90deg, #8B5CF6 0%, #A78BFA 100%)',
+                }}
+              />
+
               <div>
-                {/* Header Row */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-                  <div style={{ display: 'flex', gap: '0.85rem', alignItems: 'center' }}>
-                    <img
-                      src={item.display_image}
-                      alt={item.display_title}
+                {/* Header Row: Avatar, Title, Entity Type */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.75rem', marginBottom: '1rem' }}>
+                  <div style={{ display: 'flex', gap: '0.85rem', alignItems: 'center', minWidth: 0 }}>
+                    {item.display_image ? (
+                      <img
+                        src={item.display_image}
+                        alt={item.display_title}
+                        className={`van-directory-card-avatar ${item.entity_type}`}
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <div
+                      className={`van-directory-card-avatar ${item.entity_type}`}
                       style={{
-                        width: '48px',
-                        height: '48px',
-                        borderRadius: item.entity_type === 'freelancer' ? '50%' : '10px',
-                        objectFit: 'cover',
-                        border: '1px solid #e2e8f0',
+                        display: item.display_image ? 'none' : 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: item.entity_type === 'business'
+                          ? 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)'
+                          : 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)',
+                        color: '#FFFFFF',
+                        fontWeight: 800,
+                        fontSize: '1.15rem',
                       }}
-                    />
-                    <div>
+                    >
+                      {item.display_title ? item.display_title.charAt(0).toUpperCase() : 'E'}
+                    </div>
+
+                    <div style={{ minWidth: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                        <h4 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', margin: 0, lineHeight: '1.3' }}>
+                        <h4
+                          style={{
+                            fontSize: '1.05rem',
+                            fontWeight: 800,
+                            color: '#0F172A',
+                            margin: 0,
+                            lineHeight: 1.3,
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                          }}
+                          title={item.display_title}
+                        >
                           {item.display_title}
                         </h4>
                         {item.verification_status === 'verified' && (
-                          <span title="Verified Report" style={{ color: '#059669', fontSize: '0.9rem', fontWeight: '800' }}>✓</span>
+                          <CheckCircle2 size={16} color="#10B981" style={{ flexShrink: 0 }} />
                         )}
                       </div>
-                      <div style={{ fontSize: '0.8rem', color: item.entity_type === 'freelancer' ? '#6366f1' : '#64748b', fontWeight: '600' }}>
+                      <div
+                        style={{
+                          fontSize: '0.8rem',
+                          color: item.entity_type === 'freelancer' ? '#6D28D9' : '#64748B',
+                          fontWeight: 650,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                          marginTop: '0.15rem',
+                        }}
+                      >
                         {item.display_subtitle}
                       </div>
                     </div>
                   </div>
 
+                  {/* Entity Type Badge */}
                   <span
+                    className={`van-card-badge-pill ${item.entity_type === 'business' ? 'blue' : 'purple'}`}
                     style={{
-                      background: item.entity_type === 'business' ? '#eff6ff' : '#f3e8ff',
-                      color: item.entity_type === 'business' ? '#1d4ed8' : '#7e22ce',
-                      fontSize: '0.725rem',
-                      fontWeight: '800',
-                      padding: '0.2rem 0.55rem',
-                      borderRadius: '12px',
-                      textTransform: 'uppercase',
+                      background: item.entity_type === 'business' ? '#EFF6FF' : '#F5F3FF',
+                      color: item.entity_type === 'business' ? '#1D4ED8' : '#6D28D9',
+                      border: item.entity_type === 'business' ? '1px solid #BFDBFE' : '1px solid #DDD6FE',
+                      flexShrink: 0,
                     }}
                   >
                     {item.entity_type}
                   </span>
                 </div>
 
-                {/* Category & Badge Info */}
-                <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginBottom: '0.85rem' }}>
+                {/* Category & Featured Pills */}
+                <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap', marginBottom: '0.85rem' }}>
                   <span
                     style={{
-                      backgroundColor: item.category?.badge_color ? `${item.category.badge_color}18` : '#e0e7ff',
-                      color: item.category?.badge_color || '#3730a3',
-                      padding: '0.25rem 0.65rem',
-                      borderRadius: '14px',
-                      fontSize: '0.775rem',
-                      fontWeight: '700',
+                      backgroundColor: item.category?.badge_color ? `${item.category.badge_color}16` : '#EFF6FF',
+                      color: item.category?.badge_color || '#1E40AF',
+                      border: `1px solid ${item.category?.badge_color ? `${item.category.badge_color}35` : '#BFDBFE'}`,
+                      padding: '0.22rem 0.65rem',
+                      borderRadius: '12px',
+                      fontSize: '0.74rem',
+                      fontWeight: 750,
                     }}
                   >
                     {item.category?.name || 'General Domain'}
                   </span>
 
                   {item.featured && (
-                    <span style={{ background: '#ecfdf5', color: '#047857', border: '1px solid #86efac', padding: '0.25rem 0.65rem', borderRadius: '14px', fontSize: '0.75rem', fontWeight: '700' }}>
-                      🌟 Featured Ad
+                    <span
+                      style={{
+                        background: '#ECFDF5',
+                        color: '#047857',
+                        border: '1px solid #A7F3D0',
+                        padding: '0.22rem 0.65rem',
+                        borderRadius: '12px',
+                        fontSize: '0.74rem',
+                        fontWeight: 750,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.25rem',
+                      }}
+                    >
+                      <Star size={11} fill="#F59E0B" color="#F59E0B" />
+                      <span>Featured</span>
                     </span>
                   )}
                 </div>
 
-                <p style={{ fontSize: '0.835rem', color: '#475569', lineHeight: '1.5', marginBottom: '1rem', minHeight: '38px' }}>
+                {/* Description Bio */}
+                <p
+                  style={{
+                    fontSize: '0.84rem',
+                    color: '#475569',
+                    lineHeight: 1.5,
+                    marginBottom: '1rem',
+                    minHeight: '38px',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                  }}
+                >
                   {item.description || item.bio || 'Verified entity operating within classification standards.'}
                 </p>
               </div>
 
               <div>
                 {/* Details Bar */}
-                <div style={{ background: '#f8fafc', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                  <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
-                    <strong>Reg / Rate:</strong> <code style={{ color: '#0f172a', fontWeight: '700' }}>{item.reg_identifier}</code>
+                <div
+                  style={{
+                    background: '#F8FAFC',
+                    padding: '0.7rem 0.95rem',
+                    borderRadius: '12px',
+                    border: '1px solid #E2E8F0',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: '1rem',
+                    gap: '0.5rem',
+                  }}
+                >
+                  <div style={{ fontSize: '0.78rem', color: '#64748B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <span style={{ fontWeight: 600 }}>ID/Rate:</span>{' '}
+                    <code style={{ color: '#0F172A', fontWeight: 800, fontFamily: 'monospace' }}>
+                      {item.reg_identifier}
+                    </code>
                   </div>
-                  <div style={{ fontSize: '0.78rem', color: '#059669', fontWeight: '700' }}>
-                    📑 {item.documents ? item.documents.length : 0} Docs Verified
+                  <div style={{ fontSize: '0.76rem', color: '#059669', fontWeight: 750, whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                    <FileText size={13} />
+                    <span>{item.documents ? item.documents.length : 0} Docs Audited</span>
                   </div>
                 </div>
 
-                {/* Action Button */}
+                {/* 3D Action Button */}
                 <button
+                  type="button"
                   onClick={() => setSelectedReportEntity(item)}
-                  style={{
-                    width: '100%',
-                    background: 'var(--van-btn-gradient-primary)',
-                    color: '#fff',
-                    border: 'none',
-                    padding: '0.55rem',
-                    borderRadius: '8px',
-                    fontSize: '0.825rem',
-                    fontWeight: '700',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.4rem',
-                    boxShadow: '0 2px 8px rgba(79, 70, 229, 0.2)',
-                  }}
+                  className="van-btn-view-report-3d"
                 >
-                  <span>📋 View Detailed Entity Report</span>
+                  <Eye size={15} />
+                  <span>View Detailed Entity Report</span>
+                  <ArrowRight size={14} />
                 </button>
               </div>
             </div>
@@ -509,64 +965,137 @@ function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
         </div>
       ) : (
         /* DETAILED REPORT TABLE VIEW */
-        <div style={{ background: '#fff', borderRadius: '14px', border: '1px solid #e2e8f0', boxShadow: '0 2px 10px rgba(0,0,0,0.02)', padding: '1.25rem', overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, fontSize: '0.835rem' }}>
+        <div
+          style={{
+            background: '#FFFFFF',
+            borderRadius: '18px',
+            border: '1px solid #E2E8F0',
+            boxShadow: '0 4px 16px -2px rgba(15, 23, 42, 0.04)',
+            padding: '1.25rem',
+            overflowX: 'auto',
+          }}
+        >
+          <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, fontSize: '0.85rem' }}>
             <thead>
-              <tr style={{ background: '#f8fafc', textTransform: 'uppercase', fontSize: '0.75rem', fontWeight: '800', color: '#475569', letterSpacing: '0.05em' }}>
-                <th style={{ padding: '0.75rem 1rem', borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>Entity & Type</th>
-                <th style={{ padding: '0.75rem 1rem', borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>Category</th>
-                <th style={{ padding: '0.75rem 1rem', borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>Owner / Title</th>
-                <th style={{ padding: '0.75rem 1rem', borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>Registration / Rate</th>
-                <th style={{ padding: '0.75rem 1rem', borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>Attached Docs</th>
-                <th style={{ padding: '0.75rem 1rem', borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>Status</th>
-                <th style={{ padding: '0.75rem 1rem', borderBottom: '2px solid #e2e8f0', textAlign: 'right' }}>Action</th>
+              <tr style={{ background: '#F8FAFC', textTransform: 'uppercase', fontSize: '0.74rem', fontWeight: 800, color: '#475569', letterSpacing: '0.05em' }}>
+                <th style={{ padding: '0.85rem 1rem', borderBottom: '2px solid #E2E8F0', textAlign: 'left', borderRadius: '8px 0 0 8px' }}>Entity & Type</th>
+                <th style={{ padding: '0.85rem 1rem', borderBottom: '2px solid #E2E8F0', textAlign: 'left' }}>Category</th>
+                <th style={{ padding: '0.85rem 1rem', borderBottom: '2px solid #E2E8F0', textAlign: 'left' }}>Owner / Title</th>
+                <th style={{ padding: '0.85rem 1rem', borderBottom: '2px solid #E2E8F0', textAlign: 'left' }}>Registration / Rate</th>
+                <th style={{ padding: '0.85rem 1rem', borderBottom: '2px solid #E2E8F0', textAlign: 'left' }}>Audited Docs</th>
+                <th style={{ padding: '0.85rem 1rem', borderBottom: '2px solid #E2E8F0', textAlign: 'left' }}>Status</th>
+                <th style={{ padding: '0.85rem 1rem', borderBottom: '2px solid #E2E8F0', textAlign: 'right', borderRadius: '0 8px 8px 0' }}>Action</th>
               </tr>
             </thead>
             <tbody>
               {sortedEntities.map((item) => (
-                <tr key={`${item.entity_type}-${item.id}`} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                  <td style={{ padding: '0.85rem 1rem' }}>
+                <tr key={`${item.entity_type}-${item.id}`} style={{ borderBottom: '1px solid #F1F5F9' }}>
+                  <td style={{ padding: '0.95rem 1rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                      <img
-                        src={item.display_image}
-                        alt={item.display_title}
-                        style={{ width: '38px', height: '38px', borderRadius: item.entity_type === 'freelancer' ? '50%' : '8px', objectFit: 'cover', border: '1px solid #e2e8f0' }}
-                      />
+                      {item.display_image ? (
+                        <img
+                          src={item.display_image}
+                          alt={item.display_title}
+                          style={{
+                            width: '40px',
+                            height: '40px',
+                            borderRadius: item.entity_type === 'freelancer' ? '50%' : '10px',
+                            objectFit: 'cover',
+                            border: '1.5px solid #E2E8F0',
+                          }}
+                        />
+                      ) : (
+                        <div
+                          style={{
+                            width: '40px',
+                            height: '40px',
+                            borderRadius: item.entity_type === 'freelancer' ? '50%' : '10px',
+                            background: item.entity_type === 'business' ? '#2563EB' : '#7C3AED',
+                            color: '#FFFFFF',
+                            fontWeight: 800,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          {item.display_title?.charAt(0) || 'E'}
+                        </div>
+                      )}
                       <div>
-                        <div style={{ fontWeight: '800', color: '#0f172a' }}>{item.display_title}</div>
-                        <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', fontWeight: '700', color: item.entity_type === 'business' ? '#1d4ed8' : '#7e22ce' }}>
+                        <div style={{ fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                          <span>{item.display_title}</span>
+                          {item.verification_status === 'verified' && (
+                            <CheckCircle2 size={14} color="#10B981" />
+                          )}
+                        </div>
+                        <span
+                          style={{
+                            fontSize: '0.7rem',
+                            textTransform: 'uppercase',
+                            fontWeight: 750,
+                            color: item.entity_type === 'business' ? '#1D4ED8' : '#7C3AED',
+                          }}
+                        >
                           {item.entity_type}
                         </span>
                       </div>
                     </div>
                   </td>
-                  <td style={{ padding: '0.85rem 1rem' }}>
-                    <span style={{ background: `${item.category?.badge_color || '#6366f1'}15`, color: item.category?.badge_color || '#6366f1', padding: '0.2rem 0.6rem', borderRadius: '12px', fontWeight: '700', fontSize: '0.75rem' }}>
+                  <td style={{ padding: '0.95rem 1rem' }}>
+                    <span
+                      style={{
+                        background: `${item.category?.badge_color || '#2563EB'}15`,
+                        color: item.category?.badge_color || '#2563EB',
+                        border: `1px solid ${item.category?.badge_color || '#2563EB'}30`,
+                        padding: '0.22rem 0.65rem',
+                        borderRadius: '12px',
+                        fontWeight: 750,
+                        fontSize: '0.75rem',
+                      }}
+                    >
                       {item.category?.name || 'General'}
                     </span>
                   </td>
-                  <td style={{ padding: '0.85rem 1rem', color: '#334155', fontWeight: '600' }}>
+                  <td style={{ padding: '0.95rem 1rem', color: '#334155', fontWeight: 600 }}>
                     {item.display_subtitle}
                   </td>
-                  <td style={{ padding: '0.85rem 1rem' }}>
-                    <code style={{ background: '#f8fafc', padding: '0.2rem 0.5rem', borderRadius: '4px', border: '1px solid #e2e8f0', color: '#334155', fontWeight: '600' }}>
+                  <td style={{ padding: '0.95rem 1rem' }}>
+                    <code style={{ background: '#F8FAFC', padding: '0.25rem 0.55rem', borderRadius: '6px', border: '1px solid #E2E8F0', color: '#0F172A', fontWeight: 700, fontFamily: 'monospace' }}>
                       {item.reg_identifier}
                     </code>
                   </td>
-                  <td style={{ padding: '0.85rem 1rem' }}>
-                    <span style={{ background: '#ecfdf5', color: '#047857', border: '1px solid #86efac', padding: '0.2rem 0.55rem', borderRadius: '12px', fontWeight: '700', fontSize: '0.75rem' }}>
-                      📑 {item.documents ? item.documents.length : 0} Verified Docs
+                  <td style={{ padding: '0.95rem 1rem' }}>
+                    <span style={{ background: '#ECFDF5', color: '#047857', border: '1px solid #A7F3D0', padding: '0.22rem 0.65rem', borderRadius: '12px', fontWeight: 750, fontSize: '0.74rem' }}>
+                      📄 {item.documents ? item.documents.length : 0} Verified Docs
                     </span>
                   </td>
-                  <td style={{ padding: '0.85rem 1rem' }}>
-                    <span style={{ background: item.verification_status === 'verified' ? '#dcfce7' : '#fef3c7', color: item.verification_status === 'verified' ? '#15803d' : '#b45309', padding: '0.2rem 0.6rem', borderRadius: '12px', fontWeight: '700', fontSize: '0.75rem' }}>
+                  <td style={{ padding: '0.95rem 1rem' }}>
+                    <span
+                      className="van-card-badge-pill"
+                      style={{
+                        background: item.verification_status === 'verified' ? '#DCFCE7' : '#FEF3C7',
+                        color: item.verification_status === 'verified' ? '#15803D' : '#B45309',
+                        border: item.verification_status === 'verified' ? '1px solid #BBF7D0' : '1px solid #FDE68A',
+                      }}
+                    >
                       {item.verification_status}
                     </span>
                   </td>
-                  <td style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>
+                  <td style={{ padding: '0.95rem 1rem', textAlign: 'right' }}>
                     <button
+                      type="button"
                       onClick={() => setSelectedReportEntity(item)}
-                      style={{ background: '#4f46e5', color: '#fff', border: 'none', padding: '0.35rem 0.75rem', borderRadius: '6px', fontSize: '0.775rem', fontWeight: '700', cursor: 'pointer' }}
+                      style={{
+                        background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                        color: '#FFFFFF',
+                        border: 'none',
+                        padding: '0.45rem 0.95rem',
+                        borderRadius: '8px',
+                        fontSize: '0.78rem',
+                        fontWeight: 750,
+                        cursor: 'pointer',
+                        boxShadow: '0 2px 8px rgba(37, 99, 235, 0.25)',
+                      }}
                     >
                       Report Details
                     </button>
@@ -590,8 +1119,8 @@ function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
             position: 'fixed',
             inset: 0,
             backgroundColor: 'rgba(15, 23, 42, 0.65)',
-            backdropFilter: 'blur(6px)',
-            WebkitBackdropFilter: 'blur(6px)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -605,10 +1134,10 @@ function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
             onClick={(e) => e.stopPropagation()}
             style={{
               position: 'relative',
-              background: '#ffffff',
-              borderRadius: '16px',
-              boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.25)',
-              border: '1px solid #e2e8f0',
+              background: '#FFFFFF',
+              borderRadius: '22px',
+              boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.35)',
+              border: '1px solid #E2E8F0',
               width: 'min(900px, 100%)',
               maxHeight: 'calc(100dvh - 48px)',
               display: 'flex',
@@ -616,18 +1145,19 @@ function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
               overflow: 'hidden',
             }}
           >
-            {/* Modal Header — Fixed / Sticky */}
+            {/* Modal Header — Fixed / Sticky with Signature Dark Gradient */}
             <div
               className="business-details-header"
               style={{
                 flexShrink: 0,
-                background: 'linear-gradient(135deg, var(--brand-primary-dark) 0%, var(--brand-primary) 100%)',
-                padding: '1.25rem 1.75rem',
-                color: '#fff',
+                background: 'linear-gradient(135deg, #0F172A 0%, #1E3A8A 100%)',
+                padding: '1.35rem 1.85rem',
+                color: '#FFFFFF',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 gap: '1rem',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
               }}
             >
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', minWidth: 0 }}>
@@ -638,9 +1168,9 @@ function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
                     style={{
                       width: '56px',
                       height: '56px',
-                      borderRadius: selectedReportEntity.entity_type === 'freelancer' ? '50%' : '12px',
+                      borderRadius: selectedReportEntity.entity_type === 'freelancer' ? '50%' : '14px',
                       objectFit: 'cover',
-                      border: '2px solid rgba(255,255,255,0.2)',
+                      border: '2px solid rgba(255, 255, 255, 0.25)',
                       flexShrink: 0,
                     }}
                   />
@@ -649,8 +1179,8 @@ function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
                     style={{
                       width: '56px',
                       height: '56px',
-                      borderRadius: selectedReportEntity.entity_type === 'freelancer' ? '50%' : '12px',
-                      background: 'rgba(255,255,255,0.15)',
+                      borderRadius: selectedReportEntity.entity_type === 'freelancer' ? '50%' : '14px',
+                      background: 'rgba(255, 255, 255, 0.15)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -666,19 +1196,19 @@ function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
                     <h3
                       id="business-details-title"
                       style={{
-                        fontSize: '1.25rem',
-                        fontWeight: '800',
+                        fontSize: '1.35rem',
+                        fontWeight: 800,
                         margin: 0,
                         wordBreak: 'break-word',
                       }}
                     >
                       {selectedReportEntity.display_title}
                     </h3>
-                    <span style={{ background: '#10b981', color: '#fff', fontSize: '0.7rem', fontWeight: '800', padding: '0.15rem 0.45rem', borderRadius: '10px', whiteSpace: 'nowrap' }}>
+                    <span style={{ background: '#10B981', color: '#FFFFFF', fontSize: '0.72rem', fontWeight: 800, padding: '0.2rem 0.55rem', borderRadius: '10px', whiteSpace: 'nowrap' }}>
                       ✓ VERIFIED REPORT
                     </span>
                   </div>
-                  <div style={{ fontSize: '0.835rem', color: '#cbd5e1', marginTop: '0.2rem', wordBreak: 'break-word' }}>
+                  <div style={{ fontSize: '0.85rem', color: '#94A3B8', marginTop: '0.2rem', wordBreak: 'break-word' }}>
                     {selectedReportEntity.display_subtitle}
                   </div>
                 </div>
@@ -690,17 +1220,21 @@ function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
                 onClick={() => setSelectedReportEntity(null)}
                 aria-label="Close Business Details Modal"
                 style={{
-                  background: 'none',
+                  background: 'rgba(255, 255, 255, 0.12)',
                   border: 'none',
-                  color: '#94a3b8',
-                  fontSize: '1.75rem',
+                  color: '#FFFFFF',
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
                   cursor: 'pointer',
-                  lineHeight: 1,
-                  padding: '0.25rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                   flexShrink: 0,
+                  transition: 'background-color 0.15s ease',
                 }}
               >
-                ×
+                <X size={18} />
               </button>
             </div>
 
@@ -712,73 +1246,76 @@ function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
                 minHeight: 0,
                 overflowY: 'auto',
                 WebkitOverflowScrolling: 'touch',
-                padding: '1.5rem 1.75rem',
+                padding: '1.65rem 1.85rem',
               }}
             >
               {/* Category & Status Badges */}
               <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1.25rem' }}>
-                <span style={{ background: `${selectedReportEntity.category?.badge_color || '#6366f1'}18`, color: selectedReportEntity.category?.badge_color || '#6366f1', padding: '0.3rem 0.75rem', borderRadius: '16px', fontWeight: '700', fontSize: '0.8rem' }}>
+                <span style={{ background: `${selectedReportEntity.category?.badge_color || '#2563EB'}18`, color: selectedReportEntity.category?.badge_color || '#2563EB', padding: '0.3rem 0.75rem', borderRadius: '16px', fontWeight: 750, fontSize: '0.8rem' }}>
                   📁 Domain: {selectedReportEntity.category?.name || 'General Domain'}
                 </span>
-                <span style={{ background: '#f1f5f9', color: '#475569', padding: '0.3rem 0.75rem', borderRadius: '16px', fontWeight: '700', fontSize: '0.8rem' }}>
+                <span style={{ background: '#F1F5F9', color: '#475569', padding: '0.3rem 0.75rem', borderRadius: '16px', fontWeight: 750, fontSize: '0.8rem' }}>
                   🏷️ Entity Type: {selectedReportEntity.entity_type.toUpperCase()}
                 </span>
                 {selectedReportEntity.featured && (
-                  <span style={{ background: '#ecfdf5', color: '#047857', border: '1px solid #86efac', padding: '0.3rem 0.75rem', borderRadius: '16px', fontWeight: '700', fontSize: '0.8rem' }}>
+                  <span style={{ background: '#ECFDF5', color: '#047857', border: '1px solid #A7F3D0', padding: '0.3rem 0.75rem', borderRadius: '16px', fontWeight: 750, fontSize: '0.8rem' }}>
                     🌟 Featured Advertisement
                   </span>
                 )}
               </div>
 
               {/* Bio / Description */}
-              <div style={{ background: '#f8fafc', padding: '1rem 1.25rem', borderRadius: '10px', border: '1px solid #e2e8f0', marginBottom: '1.25rem' }}>
-                <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0f172a', margin: '0 0 0.4rem 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Overview & Bio</h4>
-                <p style={{ fontSize: '0.85rem', color: '#475569', margin: 0, lineHeight: '1.5' }}>
+              <div style={{ background: '#F8FAFC', padding: '1.15rem 1.35rem', borderRadius: '14px', border: '1px solid #E2E8F0', marginBottom: '1.5rem' }}>
+                <h4 style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0F172A', margin: '0 0 0.45rem 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Overview & Bio</h4>
+                <p style={{ fontSize: '0.88rem', color: '#475569', margin: 0, lineHeight: 1.55 }}>
                   {selectedReportEntity.description || selectedReportEntity.bio || 'Verified business/freelancer entity operating within platform guidelines.'}
                 </p>
               </div>
 
               {/* Compliance & Registration Info Grid */}
-              <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0f172a', margin: '0 0 0.65rem 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Registration & Compliance Audit</h4>
-              <div className="business-details-compliance-grid">
-                <div style={{ background: '#fff', padding: '0.85rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                  <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: '700' }}>REGISTRATION / GST NO.</div>
-                  <div style={{ fontSize: '0.9rem', fontWeight: '800', color: '#0f172a', marginTop: '0.2rem', wordBreak: 'break-all' }}>{selectedReportEntity.reg_identifier}</div>
+              <h4 style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0F172A', margin: '0 0 0.75rem 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Registration & Compliance Audit</h4>
+              <div className="business-details-compliance-grid" style={{ marginBottom: '1.5rem' }}>
+                <div style={{ background: '#FFFFFF', padding: '0.95rem', borderRadius: '12px', border: '1.5px solid #E2E8F0' }}>
+                  <div style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: 750 }}>REGISTRATION / GST NO.</div>
+                  <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0F172A', marginTop: '0.25rem', wordBreak: 'break-all', fontFamily: 'monospace' }}>{selectedReportEntity.reg_identifier}</div>
                 </div>
 
-                <div style={{ background: '#fff', padding: '0.85rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                  <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: '700' }}>EMAIL ADDRESS (PROTECTED)</div>
-                  <div style={{ fontSize: '0.875rem', fontWeight: '700', color: '#4f46e5', marginTop: '0.2rem', wordBreak: 'break-all' }}>{maskEmail(selectedReportEntity.email)}</div>
+                <div style={{ background: '#FFFFFF', padding: '0.95rem', borderRadius: '12px', border: '1.5px solid #E2E8F0' }}>
+                  <div style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: 750 }}>EMAIL ADDRESS (PROTECTED)</div>
+                  <div style={{ fontSize: '0.9rem', fontWeight: 750, color: '#2563EB', marginTop: '0.25rem', wordBreak: 'break-all' }}>{maskEmail(selectedReportEntity.email)}</div>
                 </div>
 
-                <div style={{ background: '#fff', padding: '0.85rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                  <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: '700' }}>PHONE CONTACT (PROTECTED)</div>
-                  <div style={{ fontSize: '0.875rem', fontWeight: '700', color: '#0f172a', marginTop: '0.2rem', wordBreak: 'break-all' }}>{maskPhone(selectedReportEntity.phone)}</div>
+                <div style={{ background: '#FFFFFF', padding: '0.95rem', borderRadius: '12px', border: '1.5px solid #E2E8F0' }}>
+                  <div style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: 750 }}>PHONE CONTACT (PROTECTED)</div>
+                  <div style={{ fontSize: '0.9rem', fontWeight: 750, color: '#0F172A', marginTop: '0.25rem', wordBreak: 'break-all' }}>{maskPhone(selectedReportEntity.phone)}</div>
                 </div>
 
-                <div style={{ background: '#fff', padding: '0.85rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                  <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: '700' }}>WEBSITE / PORTFOLIO</div>
-                  <div style={{ fontSize: '0.875rem', fontWeight: '700', color: '#0284c7', marginTop: '0.2rem', wordBreak: 'break-all' }}>{selectedReportEntity.website || selectedReportEntity.portfolio_link || 'N/A'}</div>
+                <div style={{ background: '#FFFFFF', padding: '0.95rem', borderRadius: '12px', border: '1.5px solid #E2E8F0' }}>
+                  <div style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: 750 }}>WEBSITE / PORTFOLIO</div>
+                  <div style={{ fontSize: '0.9rem', fontWeight: 750, color: '#0284C7', marginTop: '0.25rem', wordBreak: 'break-all' }}>{selectedReportEntity.website || selectedReportEntity.portfolio_link || 'N/A'}</div>
                 </div>
               </div>
 
               {/* Verified Documents Audit Trail */}
-              <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0f172a', margin: '0 0 0.65rem 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Verified Document Attachments</h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1rem' }}>
+              <h4 style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0F172A', margin: '0 0 0.75rem 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Verified Document Attachments</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
                 {selectedReportEntity.documents && selectedReportEntity.documents.length > 0 ? (
                   selectedReportEntity.documents.map((doc, idx) => (
-                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem 1rem', background: '#ecfdf5', borderRadius: '8px', border: '1px solid #a7f3d0', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.85rem 1.15rem', background: '#ECFDF5', borderRadius: '12px', border: '1px solid #A7F3D0', flexWrap: 'wrap', gap: '0.5rem' }}>
                       <div>
-                        <div style={{ fontWeight: '700', color: '#065f46', fontSize: '0.835rem' }}>📄 {doc.title}</div>
-                        <div style={{ fontSize: '0.75rem', color: '#047857', marginTop: '0.1rem' }}>File Record: {doc.file_name}</div>
+                        <div style={{ fontWeight: 750, color: '#065F46', fontSize: '0.86rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                          <FileText size={16} />
+                          <span>{doc.title}</span>
+                        </div>
+                        <div style={{ fontSize: '0.76rem', color: '#047857', marginTop: '0.15rem' }}>File Record: {doc.file_name}</div>
                       </div>
-                      <span style={{ background: '#10b981', color: '#fff', padding: '0.15rem 0.55rem', borderRadius: '10px', fontSize: '0.725rem', fontWeight: '800', whiteSpace: 'nowrap' }}>
+                      <span style={{ background: '#10B981', color: '#FFFFFF', padding: '0.2rem 0.6rem', borderRadius: '10px', fontSize: '0.74rem', fontWeight: 800, whiteSpace: 'nowrap' }}>
                         ✓ VERIFIED AUDITED
                       </span>
                     </div>
                   ))
                 ) : (
-                  <div style={{ background: '#f8fafc', padding: '0.85rem', borderRadius: '8px', border: '1px solid #e2e8f0', color: '#64748b', fontSize: '0.835rem', fontStyle: 'italic' }}>
+                  <div style={{ background: '#F8FAFC', padding: '1rem', borderRadius: '12px', border: '1px solid #E2E8F0', color: '#64748B', fontSize: '0.85rem', fontStyle: 'italic' }}>
                     Standard document record verified.
                   </div>
                 )}
@@ -790,33 +1327,33 @@ function BusinessReportsPage({ user, initialTypeFilter = 'all' }) {
               className="business-details-footer"
               style={{
                 flexShrink: 0,
-                padding: '1rem 1.75rem',
-                background: '#f8fafc',
-                borderTop: '1px solid #f1f5f9',
+                padding: '1.15rem 1.85rem',
+                background: '#F8FAFC',
+                borderTop: '1px solid #E2E8F0',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                gap: '0.65rem',
+                gap: '0.75rem',
                 flexWrap: 'wrap',
               }}
             >
-              <div style={{ fontSize: '0.78rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: '600' }}>
-                <span>🛡️</span>
-                <span>Direct contact is masked for platform safety and privacy.</span>
+              <div style={{ fontSize: '0.78rem', color: '#64748B', display: 'flex', alignItems: 'center', gap: '0.45rem', fontWeight: 650 }}>
+                <ShieldCheck size={16} color="#2563EB" />
+                <span>Direct contact is masked for platform safety and privacy compliance.</span>
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedReportEntity(null)}
                 style={{
-                  background: '#ffffff',
+                  background: '#FFFFFF',
                   color: '#475569',
-                  border: '1px solid #cbd5e1',
-                  padding: '0.55rem 1.15rem',
-                  borderRadius: '8px',
-                  fontWeight: '700',
-                  fontSize: '0.825rem',
+                  border: '1.5px solid #CBD5E1',
+                  padding: '0.55rem 1.25rem',
+                  borderRadius: '10px',
+                  fontWeight: 750,
+                  fontSize: '0.84rem',
                   cursor: 'pointer',
-                  transition: 'background-color 0.15s ease, border-color 0.15s ease',
+                  transition: 'all 0.15s ease',
                 }}
               >
                 Close Report

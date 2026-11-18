@@ -15,23 +15,27 @@ class SystemSettingController extends Controller
      */
     public function getBranding()
     {
-        $appName = SystemSetting::get('app_name', config('app.name', 'AddNet'));
-        if (empty($appName)) {
-            $appName = 'AddNet';
-        }
+        $appName = config('app.name', 'Vyapar AdNET') ?: 'Vyapar AdNET';
+        $companyLogo = null;
+        $companyLogoUrl = url('logo.png');
 
-        $companyLogo = SystemSetting::get('company_logo');
-        $companyLogoUrl = null;
-
-        if (!empty($companyLogo)) {
-            if (str_starts_with($companyLogo, 'http://') || str_starts_with($companyLogo, 'https://')) {
-                $companyLogoUrl = $companyLogo;
-            } else {
-                $companyLogoUrl = url($companyLogo);
+        try {
+            $dbAppName = SystemSetting::get('app_name');
+            if (!empty($dbAppName)) {
+                $appName = $dbAppName;
             }
-        } else {
-            // Default bundled logo
-            $companyLogoUrl = url('logo.png');
+
+            $dbLogo = SystemSetting::get('company_logo');
+            if (!empty($dbLogo)) {
+                $companyLogo = $dbLogo;
+                if (str_starts_with($companyLogo, 'http://') || str_starts_with($companyLogo, 'https://')) {
+                    $companyLogoUrl = $companyLogo;
+                } else {
+                    $companyLogoUrl = url($companyLogo);
+                }
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('SystemSetting::getBranding database fallback used: ' . $e->getMessage());
         }
 
         return response()->json([

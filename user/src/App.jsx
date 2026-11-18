@@ -47,6 +47,7 @@ import DirectIncomePage from './pages/income/DirectIncomePage';
 import MemberDirectIncomeDetailsPage from './pages/income/MemberDirectIncomeDetailsPage';
 import LevelIncomePage from './pages/income/LevelIncomePage';
 import LevelIncomeDetailsPage from './pages/income/LevelIncomeDetailsPage';
+import MyIncomePage from './pages/income/MyIncomePage';
 import SponsorOnboardingPage from './pages/SponsorOnboardingPage';
 import {
   getSystemStatus,
@@ -76,10 +77,10 @@ export const pageToRouteMap = {
   sales: '/dashboard',
 
   // Income
-  'my-income': '/direct-income',
-  income: '/direct-income',
-  'income-overview': '/direct-income',
-  'income-all': '/direct-income',
+  'my-income': '/my-income',
+  income: '/my-income',
+  'income-overview': '/my-income',
+  'income-all': '/my-income',
   'direct-income': '/direct-income',
   'income-direct': '/direct-income',
   'user-income-direct': '/direct-income',
@@ -603,10 +604,10 @@ function AppContent() {
           <Route path="/sales" element={<Navigate to="/dashboard" replace />} />
 
           {/* 2. My Income Suite */}
-          <Route path="/my-income" element={<Navigate to="/direct-income" replace />} />
-          <Route path="/income" element={<Navigate to="/direct-income" replace />} />
-          <Route path="/income-overview" element={<Navigate to="/direct-income" replace />} />
-          <Route path="/income-all" element={<Navigate to="/direct-income" replace />} />
+          <Route path="/my-income" element={<MyIncomePage user={user} onNavigate={handleNavigate} />} />
+          <Route path="/income" element={<Navigate to="/my-income" replace />} />
+          <Route path="/income-overview" element={<Navigate to="/my-income" replace />} />
+          <Route path="/income-all" element={<Navigate to="/my-income" replace />} />
 
           <Route path="/direct-income" element={<DirectIncomePage user={user} onNavigate={handleNavigate} />} />
           <Route path="/direct-income/:orderId" element={<MemberDirectIncomeDetailsPage user={user} onNavigate={handleNavigate} />} />

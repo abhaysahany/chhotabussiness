@@ -1,10 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { 
+  FolderGit2, 
+  Image as ImageIcon, 
+  Video, 
+  Music, 
+  FileText, 
+  Download, 
+  Share2, 
+  Eye, 
+  RefreshCw, 
+  Search, 
+  X, 
+  Filter, 
+  Sparkles, 
+  Layers, 
+  ShieldCheck, 
+  Check, 
+  Play, 
+  Headphones, 
+  Tag, 
+  Building2,
+  HardDrive
+} from 'lucide-react';
 import { getUserContentAssets, trackAssetDownload, trackAssetShare } from '../api/userContentService';
 import { API_BASE_URL } from '../api/axios';
 
 function UserMediaContentPage({ user }) {
   const [assets, setAssets] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState('all'); // 'all' | 'image' | 'video' | 'audio' | 'pdf'
   const [entityTab, setEntityTab] = useState('all'); // 'all' | 'chhota_business' | 'business' | 'freelance'
   const [searchTerm, setSearchTerm] = useState('');
@@ -34,14 +58,13 @@ function UserMediaContentPage({ user }) {
         setCanShareMediaFiles(false);
       }
     } else {
-      // On desktop browsers, direct file sharing to apps is not supported by OS.
-      // As requested: remove share button on unsupported environments so link sharing is avoided.
       setCanShareMediaFiles(false);
     }
   }, []);
 
   const fetchDatabaseAssets = async () => {
     setLoading(true);
+    setRefreshing(true);
     try {
       const res = await getUserContentAssets();
       if (res && res.assets) {
@@ -52,6 +75,7 @@ function UserMediaContentPage({ user }) {
       showToast('⚠️ Failed to load content library from database.');
     } finally {
       setLoading(false);
+      setTimeout(() => setRefreshing(false), 500);
     }
   };
 
@@ -60,11 +84,20 @@ function UserMediaContentPage({ user }) {
     setTimeout(() => setToastMsg(''), 3500);
   };
 
+  const counts = useMemo(() => {
+    return {
+      all: assets.length,
+      image: assets.filter((a) => (a.type || '').toLowerCase() === 'image').length,
+      video: assets.filter((a) => (a.type || '').toLowerCase() === 'video').length,
+      audio: assets.filter((a) => (a.type || '').toLowerCase() === 'audio').length,
+      pdf: assets.filter((a) => (a.type || '').toLowerCase() === 'pdf').length,
+    };
+  }, [assets]);
+
   /**
    * Helper to fetch media blob safely using backend proxy to bypass any CORS restrictions
    */
   const getMediaBlob = async (asset) => {
-    // Try direct fetch first
     try {
       const directRes = await fetch(asset.file_url, { mode: 'cors' });
       if (directRes.ok) {
@@ -74,7 +107,6 @@ function UserMediaContentPage({ user }) {
       // Direct CORS blocked, fallback to backend proxy
     }
 
-    // Backend proxy attachment stream
     const proxyUrl = `${API_BASE_URL}/content-assets/${asset.id}/download-file`;
     const proxyRes = await fetch(proxyUrl);
     if (!proxyRes.ok) throw new Error('Failed to retrieve file blob.');
@@ -86,16 +118,14 @@ function UserMediaContentPage({ user }) {
    */
   const handleDownload = async (asset) => {
     setDownloadingId(asset.id);
-    showToast(`⏳ Downloading [${asset.title}]...`);
+    showToast(`Downloading [${asset.title}]...`);
 
     try {
-      // 1. Increment download count in database
       trackAssetDownload(asset.id);
       setAssets((prev) =>
         prev.map((a) => (a.id === asset.id ? { ...a, downloads: (a.downloads || 0) + 1 } : a))
       );
 
-      // Determine extension based on type
       let ext = 'jpg';
       if (asset.type === 'video') ext = 'mp4';
       else if (asset.type === 'audio') ext = 'mp3';
@@ -103,7 +133,6 @@ function UserMediaContentPage({ user }) {
 
       const safeFilename = `${asset.title.replace(/[^a-zA-Z0-9_-]/g, '_')}.${ext}`;
 
-      // 2. Fetch blob & trigger native browser file save
       try {
         const blob = await getMediaBlob(asset);
         const blobUrl = window.URL.createObjectURL(blob);
@@ -116,9 +145,8 @@ function UserMediaContentPage({ user }) {
         document.body.removeChild(link);
         window.URL.revokeObjectURL(blobUrl);
 
-        showToast(`✅ [${asset.title}] saved to your device!`);
+        showToast(`Saved [${asset.title}] to your device!`);
       } catch (blobErr) {
-        // Fallback to direct anchor stream download
         const serverDownloadUrl = `${API_BASE_URL}/content-assets/${asset.id}/download-file`;
         const link = document.createElement('a');
         link.href = serverDownloadUrl;
@@ -127,7 +155,7 @@ function UserMediaContentPage({ user }) {
         link.click();
         document.body.removeChild(link);
 
-        showToast(`✅ Download initiated for [${asset.title}]!`);
+        showToast(`Download initiated for [${asset.title}]!`);
       }
     } catch (err) {
       console.error('Download error:', err);
@@ -139,11 +167,10 @@ function UserMediaContentPage({ user }) {
 
   /**
    * Share real media file (image/video/pdf) directly to WhatsApp/Facebook/Apps
-   * Uses backend proxy to avoid CORS errors when converting URL to File object
    */
   const handleShareFile = async (asset) => {
     setSharingId(asset.id);
-    showToast(`⏳ Preparing file to share...`);
+    showToast(`Preparing file to share...`);
 
     try {
       let ext = 'jpg';
@@ -169,23 +196,20 @@ function UserMediaContentPage({ user }) {
           files: [file],
         });
 
-        // Increment database share count
         trackAssetShare(asset.id);
         setAssets((prev) =>
           prev.map((a) => (a.id === asset.id ? { ...a, shares: (a.shares || 0) + 1 } : a))
         );
-        showToast('✅ Media file shared successfully!');
+        showToast('Media file shared successfully!');
       } else {
-        // If native file share is cancelled or unavailable, save file to device
         await handleDownload(asset);
-        showToast('📥 Image saved! You can now send this file to WhatsApp or Facebook.');
+        showToast('Image saved! You can now send this file to WhatsApp or Facebook.');
       }
     } catch (err) {
       if (err.name !== 'AbortError') {
         console.error('File share error:', err);
-        // Fallback: download the file so user has the media file
         await handleDownload(asset);
-        showToast('📥 Image downloaded to your device!');
+        showToast('Image downloaded to your device!');
       }
     } finally {
       setSharingId(null);
@@ -193,303 +217,795 @@ function UserMediaContentPage({ user }) {
   };
 
   // Filter assets by search, type, and connected entity
-  const filteredAssets = assets.filter((a) => {
-    const matchesSearch =
-      !searchTerm ||
-      a.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      a.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (a.entity_name && a.entity_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (a.tags && a.tags.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredAssets = useMemo(() => {
+    return assets.filter((a) => {
+      const q = searchTerm.toLowerCase().trim();
+      const matchesSearch =
+        !q ||
+        a.title.toLowerCase().includes(q) ||
+        (a.category && a.category.toLowerCase().includes(q)) ||
+        (a.entity_name && a.entity_name.toLowerCase().includes(q)) ||
+        (a.tags && a.tags.toLowerCase().includes(q));
 
-    const matchesType = activeTab === 'all' || a.type.toLowerCase() === activeTab.toLowerCase();
-    const matchesEntity = entityTab === 'all' || a.entity_type === entityTab;
+      const matchesType = activeTab === 'all' || (a.type || '').toLowerCase() === activeTab.toLowerCase();
+      const matchesEntity = entityTab === 'all' || a.entity_type === entityTab;
 
-    return matchesSearch && matchesType && matchesEntity;
-  });
+      return matchesSearch && matchesType && matchesEntity;
+    });
+  }, [assets, searchTerm, activeTab, entityTab]);
 
   return (
-    <div className="page-container">
+    <div className="page-container" style={{ maxWidth: '1400px', margin: '0 auto', paddingBottom: '3.5rem' }}>
       {/* Floating Toast Notification */}
       {toastMsg && (
-        <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', backgroundColor: '#0284c7', color: '#fff', padding: '0.85rem 1.35rem', borderRadius: '10px', fontWeight: '700', boxShadow: '0 10px 25px -5px rgba(2,132,199,0.4)', zIndex: 3000, fontSize: '0.875rem' }}>
-          {toastMsg}
+        <div
+          style={{
+            position: 'fixed',
+            top: '24px',
+            right: '24px',
+            background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
+            color: '#FFFFFF',
+            padding: '0.85rem 1.35rem',
+            borderRadius: '14px',
+            zIndex: 99999,
+            boxShadow: '0 20px 35px -5px rgba(15, 23, 42, 0.35)',
+            fontSize: '0.86rem',
+            fontWeight: 600,
+            border: '1px solid rgba(255, 255, 255, 0.12)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.65rem',
+            animation: 'van-scale-pulse 0.25s ease-out',
+          }}
+        >
+          <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Check size={13} color="#FFFFFF" strokeWidth={3} />
+          </div>
+          <span>{toastMsg}</span>
         </div>
       )}
 
-      {/* Hero Header Banner */}
-      <div style={{ background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 50%, #0f172a 100%)', borderRadius: '16px', padding: '2rem 2.25rem', color: '#ffffff', marginBottom: '2rem', boxShadow: '0 10px 25px -5px rgba(2, 132, 199, 0.3)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem' }}>
+      {/* Hero Header Banner (2-Color Gradient with 3D Depth) */}
+      <div className="van-catalog-hero-3d">
+        <div className="van-catalog-hero-content">
+          <div className="van-catalog-hero-icon-orb">
+            <FolderGit2 size={30} strokeWidth={2.2} />
+          </div>
           <div>
-            <span style={{ background: 'rgba(255,255,255,0.15)', padding: '0.25rem 0.85rem', borderRadius: '20px', fontSize: '0.78rem', fontWeight: '700', color: '#e0f2fe', display: 'inline-block', marginBottom: '0.75rem' }}>
-              🖼️ Official Marketing & Media Library
-            </span>
-            <h1 style={{ fontSize: '1.85rem', fontWeight: '800', margin: '0 0 0.4rem 0', color: '#ffffff' }}>Content Library</h1>
-            <p style={{ color: '#bae6fd', fontSize: '0.925rem', maxWidth: '650px', margin: 0, lineHeight: 1.4 }}>
-              Download official creatives, promotional videos, brand sounds, and marketing flyers directly to your computer or mobile storage.
+            <div className="van-catalog-hero-badge">
+              <span className="van-live-pulse-dot" style={{ width: '7px', height: '7px', background: '#38BDF8', boxShadow: '0 0 8px #38BDF8' }} />
+              <Sparkles size={13} />
+              <span>Official Marketing & Media Vault</span>
+            </div>
+            <h1 className="van-catalog-hero-title">
+              Content & Creatives Library
+            </h1>
+            <p className="van-catalog-hero-desc">
+              Download certified banners, promotional video reels, brand audio jingles, and sales flyers directly to your device for social media marketing.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => fetchDatabaseAssets()}
-            style={{
-              background: 'rgba(255,255,255,0.2)',
-              color: '#ffffff',
-              border: '1px solid rgba(255,255,255,0.3)',
-              padding: '0.65rem 1.25rem',
-              borderRadius: '8px',
-              fontWeight: '700',
-              fontSize: '0.82rem',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-            }}
-          >
-            🔄 Refresh Library
-          </button>
+        </div>
+
+        {/* Right Summary Counters */}
+        <div className="van-catalog-hero-stats">
+          <div className="van-catalog-stat-chip">
+            <div className="van-catalog-stat-chip-val">{counts.all}</div>
+            <div className="van-catalog-stat-chip-lbl">Media Files</div>
+          </div>
+          <div className="van-catalog-stat-chip">
+            <div className="van-catalog-stat-chip-val" style={{ color: '#34D399' }}>100%</div>
+            <div className="van-catalog-stat-chip-lbl">Free Download</div>
+          </div>
+          <div className="van-catalog-stat-chip">
+            <div className="van-catalog-stat-chip-val" style={{ color: '#93C5FD' }}>HQ</div>
+            <div className="van-catalog-stat-chip-lbl">Verified Assets</div>
+          </div>
         </div>
       </div>
 
-      {/* Filter & Search Bar */}
-      <div style={{ background: '#fff', borderRadius: '14px', padding: '1.25rem 1.5rem', border: '1px solid #e2e8f0', marginBottom: '1.5rem', display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center' }}>
-        {/* Media Type Tabs */}
-        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-          {[
-            { id: 'all', label: 'All Content' },
-            { id: 'image', label: '🖼️ Banners' },
-            { id: 'video', label: '🎥 Videos' },
-            { id: 'audio', label: '🎵 Sounds' },
-            { id: 'pdf', label: '📄 Flyers' },
-          ].map((tab) => (
+      {/* 2-Tier Structured Filter & Search Toolbar */}
+      <div className="van-library-toolbar-3d">
+        {/* Tier 1: Media Type Tabs + Results Status */}
+        <div className="van-library-toolbar-top">
+          <div className="van-catalog-segmented-switch">
             <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              type="button"
+              onClick={() => setActiveTab('all')}
+              className={`van-catalog-tab-btn ${activeTab === 'all' ? 'active' : ''}`}
+            >
+              <Layers size={15} />
+              <span>All Content</span>
+              <span className="van-catalog-tab-count">{counts.all}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('image')}
+              className={`van-catalog-tab-btn ${activeTab === 'image' ? 'active' : ''}`}
+            >
+              <ImageIcon size={15} />
+              <span>Banners</span>
+              <span className="van-catalog-tab-count">{counts.image}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('video')}
+              className={`van-catalog-tab-btn ${activeTab === 'video' ? 'active' : ''}`}
+            >
+              <Video size={15} />
+              <span>Videos</span>
+              <span className="van-catalog-tab-count">{counts.video}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('audio')}
+              className={`van-catalog-tab-btn ${activeTab === 'audio' ? 'active' : ''}`}
+            >
+              <Music size={15} />
+              <span>Sounds</span>
+              <span className="van-catalog-tab-count">{counts.audio}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('pdf')}
+              className={`van-catalog-tab-btn ${activeTab === 'pdf' ? 'active' : ''}`}
+            >
+              <FileText size={15} />
+              <span>Flyers</span>
+              <span className="van-catalog-tab-count">{counts.pdf}</span>
+            </button>
+          </div>
+
+          <div className="van-library-status-pill">
+            <Sparkles size={12} color="#2563EB" />
+            <span>Showing <strong>{filteredAssets.length}</strong> of <strong>{assets.length}</strong> Assets</span>
+          </div>
+        </div>
+
+        {/* Hairline Divider */}
+        <div className="van-library-divider" />
+
+        {/* Tier 2: Search Input & Entity Filter (Side-by-Side Unified) */}
+        <div className="van-library-toolbar-bottom">
+          {/* Search Input */}
+          <div className="van-catalog-search-wrap" style={{ flex: 1 }}>
+            <Search size={16} className="van-catalog-search-icon" />
+            <input
+              type="text"
+              placeholder="Search content, categories or tags..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="van-catalog-search-input"
+            />
+            {searchTerm && (
+              <button
+                type="button"
+                onClick={() => setSearchTerm('')}
+                style={{
+                  position: 'absolute',
+                  right: '12px',
+                  background: 'none',
+                  border: 'none',
+                  color: '#94A3B8',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '4px',
+                }}
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
+
+          {/* Entity Dropdown */}
+          <div className="van-catalog-select-wrap" style={{ width: '220px', flexShrink: 0 }}>
+            <Filter size={14} className="van-catalog-select-icon" />
+            <select
+              value={entityTab}
+              onChange={(e) => setEntityTab(e.target.value)}
+              className="van-catalog-select"
+              style={{ width: '100%', boxSizing: 'border-box' }}
+            >
+              <option value="all">All Entities</option>
+              <option value="chhota_business">AddNet Platform</option>
+              <option value="business">Business Entities</option>
+              <option value="freelance">Freelancers</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Loading Skeleton */}
+      {loading && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
               style={{
-                padding: '0.5rem 1rem',
-                borderRadius: '8px',
-                border: 'none',
-                background: activeTab === tab.id ? '#0284c7' : '#f1f5f9',
-                color: activeTab === tab.id ? '#ffffff' : '#475569',
-                fontWeight: '700',
-                fontSize: '0.82rem',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
+                background: '#FFFFFF',
+                borderRadius: '22px',
+                border: '1px solid #E2E8F0',
+                height: '380px',
+                animation: 'pulse 1.5s infinite ease-in-out',
+                display: 'flex',
+                flexDirection: 'column',
+                overflow: 'hidden',
               }}
             >
-              {tab.label}
-            </button>
+              <div style={{ height: '185px', background: '#F1F5F9' }} />
+              <div style={{ padding: '1.35rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div style={{ width: '35%', height: '18px', background: '#F1F5F9', borderRadius: '6px' }} />
+                <div style={{ width: '80%', height: '24px', background: '#F1F5F9', borderRadius: '6px' }} />
+                <div style={{ width: '50%', height: '18px', background: '#F1F5F9', borderRadius: '6px' }} />
+                <div style={{ marginTop: 'auto', height: '42px', background: '#F1F5F9', borderRadius: '12px' }} />
+              </div>
+            </div>
           ))}
         </div>
+      )}
 
-        {/* Search input & Entity filter */}
-        <div style={{ display: 'flex', gap: '0.75rem', flex: 1, minWidth: '260px', justifyContent: 'flex-end' }}>
-          <select
-            value={entityTab}
-            onChange={(e) => setEntityTab(e.target.value)}
-            style={{ padding: '0.5rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem', outline: 'none', background: '#fff' }}
+      {/* Empty State */}
+      {!loading && filteredAssets.length === 0 && (
+        <div
+          style={{
+            background: '#FFFFFF',
+            borderRadius: '22px',
+            border: '1px solid #E2E8F0',
+            padding: '4rem 2rem',
+            textAlign: 'center',
+            marginBottom: '2.5rem',
+            boxShadow: '0 4px 14px -2px rgba(15, 23, 42, 0.04)',
+          }}
+        >
+          <div
+            style={{
+              width: '64px',
+              height: '64px',
+              borderRadius: '20px',
+              background: '#EFF6FF',
+              color: '#2563EB',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 1.25rem auto',
+            }}
           >
-            <option value="all">All Entities</option>
-            <option value="chhota_business">AddNet Platform</option>
-            <option value="business">Business Entities</option>
-            <option value="freelance">Freelancers</option>
-          </select>
-
-          <input
-            type="text"
-            placeholder="Search content or tags..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ padding: '0.5rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem', minWidth: '200px', outline: 'none' }}
-          />
-        </div>
-      </div>
-
-      {/* Content Asset Cards Grid */}
-      {loading ? (
-        <div style={{ textAlign: 'center', padding: '3.5rem', color: '#64748b' }}>
-          <div style={{ fontSize: '1.2rem', fontWeight: 600 }}>Loading media content assets from database...</div>
-        </div>
-      ) : filteredAssets.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '4rem 2rem', background: '#fff', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
-          <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>📁</div>
-          <h3 style={{ margin: '0 0 0.5rem 0', color: '#0f172a' }}>No Content Assets Available</h3>
-          <p style={{ color: '#64748b', fontSize: '0.875rem', margin: 0 }}>
-            {searchTerm || activeTab !== 'all' || entityTab !== 'all' ? 'Try adjusting your search query or filters.' : 'Admin has not published any content assets yet.'}
+            <FolderGit2 size={28} />
+          </div>
+          <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', margin: '0 0 0.5rem 0' }}>
+            No media assets found
+          </h3>
+          <p style={{ color: '#64748B', fontSize: '0.9rem', maxWidth: '460px', margin: '0 auto 1.5rem auto' }}>
+            {searchTerm || activeTab !== 'all' || entityTab !== 'all'
+              ? 'No media files match your current filters. Try resetting search or selecting another category.'
+              : 'Official marketing assets will appear here as soon as they are uploaded.'}
           </p>
+          <button
+            type="button"
+            onClick={() => {
+              setActiveTab('all');
+              setEntityTab('all');
+              setSearchTerm('');
+            }}
+            style={{
+              padding: '0.65rem 1.4rem',
+              background: '#2563EB',
+              color: '#FFFFFF',
+              border: 'none',
+              borderRadius: '10px',
+              fontWeight: 700,
+              fontSize: '0.85rem',
+              cursor: 'pointer',
+              boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)',
+            }}
+          >
+            Reset All Filters
+          </button>
         </div>
-      ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.25rem' }}>
-          {filteredAssets.map((asset) => (
-            <div key={asset.id} style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-              {/* Media Thumbnail Container */}
-              <div
-                style={{ height: '165px', background: '#0f172a', position: 'relative', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}
-                onClick={() => setPreviewingAsset(asset)}
-              >
-                {asset.type === 'image' ? (
-                  <img src={asset.file_url} alt={asset.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.src = '/logo.png'; }} />
-                ) : asset.type === 'video' ? (
-                  <div style={{ color: '#38bdf8', fontSize: '3rem', textAlign: 'center' }}>
-                    🎥
-                    <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.2rem' }}>Click to Play Video</div>
-                  </div>
-                ) : asset.type === 'audio' ? (
-                  <div style={{ color: '#a855f7', fontSize: '3rem', textAlign: 'center' }}>
-                    🎵
-                    <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.2rem' }}>Click to Listen Jingle</div>
-                  </div>
-                ) : (
-                  <div style={{ color: '#ef4444', fontSize: '3rem', textAlign: 'center' }}>
-                    📄
-                    <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.2rem' }}>PDF Flyer</div>
-                  </div>
-                )}
+      )}
 
-                <span style={{ position: 'absolute', top: '10px', left: '10px', background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(4px)', color: '#ffffff', padding: '0.2rem 0.55rem', borderRadius: '6px', fontSize: '0.7rem', fontWeight: '800', textTransform: 'uppercase' }}>
-                  {asset.type}
-                </span>
-              </div>
+      {/* Media Content Assets Grid */}
+      {!loading && filteredAssets.length > 0 && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
+          {filteredAssets.map((asset) => {
+            const assetType = (asset.type || 'image').toLowerCase();
+            const isImage = assetType === 'image';
+            const isVideo = assetType === 'video';
+            const isAudio = assetType === 'audio';
+            const isPdf = assetType === 'pdf';
 
-              {/* Asset Content Details */}
-              <div style={{ padding: '1.25rem', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                    <span style={{ fontSize: '0.75rem', color: '#0284c7', fontWeight: '800', textTransform: 'uppercase' }}>{asset.category}</span>
+            return (
+              <div key={asset.id} className="van-product-card-3d">
+                {/* Media Thumbnail Container */}
+                <div
+                  className="van-media-preview-container"
+                  onClick={() => setPreviewingAsset(asset)}
+                  title="Click to preview media"
+                >
+                  {isImage ? (
+                    <>
+                      <img
+                        src={asset.file_url}
+                        alt={asset.title}
+                        className="van-media-preview-img"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = '/logo.png';
+                        }}
+                      />
+                      <div className="van-product-media-scrim" />
+                    </>
+                  ) : isVideo ? (
+                    <div
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        background: 'radial-gradient(circle at 50% 50%, #0369A1 0%, #0B192C 100%)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.65rem',
+                      }}
+                    >
+                      <div className="van-media-3d-orb" style={{ background: 'linear-gradient(135deg, #0284C7 0%, #0369A1 100%)' }}>
+                        <Play size={24} color="#FFFFFF" fill="#FFFFFF" style={{ marginLeft: '3px' }} />
+                      </div>
+                      <span style={{ fontSize: '0.74rem', color: '#BAE6FD', fontWeight: 700, letterSpacing: '0.02em' }}>
+                        Watch Video Reel
+                      </span>
+                    </div>
+                  ) : isAudio ? (
+                    <div
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        background: 'radial-gradient(circle at 50% 50%, #6D28D9 0%, #2E1065 100%)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.65rem',
+                      }}
+                    >
+                      <div className="van-media-3d-orb" style={{ background: 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)' }}>
+                        <Headphones size={24} color="#FFFFFF" strokeWidth={2.2} />
+                      </div>
+                      <span style={{ fontSize: '0.74rem', color: '#E9D5FF', fontWeight: 700, letterSpacing: '0.02em' }}>
+                        Listen Audio Jingle
+                      </span>
+                    </div>
+                  ) : (
+                    <div
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        background: 'radial-gradient(circle at 50% 50%, #BE123C 0%, #4C0519 100%)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.65rem',
+                      }}
+                    >
+                      <div className="van-media-3d-orb" style={{ background: 'linear-gradient(135deg, #E11D48 0%, #BE123C 100%)' }}>
+                        <FileText size={24} color="#FFFFFF" strokeWidth={2.2} />
+                      </div>
+                      <span style={{ fontSize: '0.74rem', color: '#FFE4E6', fontWeight: 700, letterSpacing: '0.02em' }}>
+                        View PDF Flyer
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Top-Left Media Type Badge */}
+                  <div style={{ position: 'absolute', top: '12px', left: '12px', zIndex: 2 }}>
+                    <span
+                      className={`van-badge-pill-3d ${
+                        isImage
+                          ? 'van-media-badge-image'
+                          : isVideo
+                          ? 'van-media-badge-video'
+                          : isAudio
+                          ? 'van-media-badge-audio'
+                          : 'van-media-badge-pdf'
+                      }`}
+                    >
+                      {isImage ? (
+                        <ImageIcon size={12} strokeWidth={2.5} />
+                      ) : isVideo ? (
+                        <Video size={12} strokeWidth={2.5} />
+                      ) : isAudio ? (
+                        <Music size={12} strokeWidth={2.5} />
+                      ) : (
+                        <FileText size={12} strokeWidth={2.5} />
+                      )}
+                      <span>{asset.type}</span>
+                    </span>
                   </div>
 
-                  <h3 style={{ fontSize: '0.98rem', fontWeight: '800', margin: '0 0 0.4rem 0', color: '#0f172a', lineHeight: 1.35 }}>
-                    {asset.title}
-                  </h3>
-
-                  <div style={{ fontSize: '0.78rem', color: '#64748b', marginBottom: '0.65rem' }}>
-                    🏢 <strong>{asset.entity_name}</strong>
-                  </div>
-
-                  <div style={{ fontSize: '0.72rem', background: '#f8fafc', border: '1px solid #e2e8f0', padding: '0.25rem 0.5rem', borderRadius: '6px', color: '#475569', display: 'inline-block', marginBottom: '0.75rem' }}>
-                    🏷️ {asset.tags}
+                  {/* Top-Right Quick Preview Hint */}
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '12px',
+                      right: '12px',
+                      background: 'rgba(15, 23, 42, 0.75)',
+                      backdropFilter: 'blur(8px)',
+                      color: '#FFFFFF',
+                      padding: '0.28rem 0.65rem',
+                      borderRadius: '8px',
+                      fontSize: '0.7rem',
+                      fontWeight: 700,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                      zIndex: 2,
+                    }}
+                  >
+                    <Eye size={11} />
+                    <span>Preview</span>
                   </div>
                 </div>
 
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: '#64748b', padding: '0.65rem 0', borderTop: '1px solid #f1f5f9', borderBottom: '1px solid #f1f5f9', marginBottom: '1rem' }}>
-                    <span>📥 {asset.downloads || 0} Downloads</span>
-                    {canShareMediaFiles && <span>🔗 {asset.shares || 0} Shares</span>}
+                {/* Card Body */}
+                <div className="van-product-card-body">
+                  {/* Category & Entity Row */}
+                  <div className="van-product-category-row">
+                    <span className="van-product-category-chip" title={asset.category}>
+                      {asset.category || 'General'}
+                    </span>
+                    <span className="van-product-vendor-text" title={`Entity: ${asset.entity_name || 'AddNet'}`}>
+                      {asset.entity_name || 'Vyapar AdNET'}
+                    </span>
                   </div>
 
-                  {/* Actions: Download File directly (and native file share ONLY if mobile/supported) */}
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  {/* Title */}
+                  <h3 className="van-product-title" title={asset.title}>
+                    {asset.title}
+                  </h3>
+
+                  {/* Tags Pill Row */}
+                  <div style={{ marginBottom: '1rem', minHeight: '26px' }}>
+                    {asset.tags ? (
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.3rem',
+                          fontSize: '0.74rem',
+                          background: '#F1F5F9',
+                          border: '1px solid #E2E8F0',
+                          padding: '0.22rem 0.6rem',
+                          borderRadius: '8px',
+                          color: '#475569',
+                          fontWeight: 600,
+                        }}
+                      >
+                        <Tag size={11} color="#64748B" />
+                        <span>{asset.tags}</span>
+                      </span>
+                    ) : (
+                      <span style={{ fontSize: '0.74rem', color: '#94A3B8' }}>Verified Official Asset</span>
+                    )}
+                  </div>
+
+                  {/* Stats & Metric Row */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      padding: '0.65rem 0.85rem',
+                      background: '#F8FAFC',
+                      border: '1px solid #E2E8F0',
+                      borderRadius: '12px',
+                      fontSize: '0.76rem',
+                      color: '#64748B',
+                      fontWeight: 600,
+                      marginBottom: '1.15rem',
+                    }}
+                  >
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                      <Download size={13} color="#2563EB" />
+                      <span><strong>{asset.downloads || 0}</strong> Downloads</span>
+                    </span>
+                    {canShareMediaFiles && (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                        <Share2 size={13} color="#10B981" />
+                        <span><strong>{asset.shares || 0}</strong> Shares</span>
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="van-product-actions">
+                    <button
+                      type="button"
+                      onClick={() => setPreviewingAsset(asset)}
+                      className="van-btn-details-3d"
+                      title="Inspect media full screen"
+                    >
+                      <Eye size={15} />
+                      <span>Preview</span>
+                    </button>
+
                     <button
                       type="button"
                       onClick={() => handleDownload(asset)}
                       disabled={downloadingId === asset.id}
+                      className="van-btn-share-3d"
                       style={{
-                        flex: 1,
-                        background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
-                        color: '#fff',
-                        border: 'none',
-                        padding: '0.65rem',
-                        borderRadius: '8px',
-                        fontSize: '0.82rem',
-                        fontWeight: '800',
+                        background: downloadingId === asset.id ? '#94A3B8' : 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                        borderBottomColor: downloadingId === asset.id ? '#64748B' : '#1E40AF',
                         cursor: downloadingId === asset.id ? 'not-allowed' : 'pointer',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '0.4rem',
-                        boxShadow: '0 2px 6px rgba(2, 132, 199, 0.25)',
                       }}
+                      title="Save full resolution file to local device"
                     >
-                      <span>{downloadingId === asset.id ? '⏳ Downloading...' : '📥 Download'}</span>
+                      <Download size={15} className={downloadingId === asset.id ? 'van-spin' : ''} />
+                      <span>{downloadingId === asset.id ? 'Saving...' : 'Download'}</span>
                     </button>
 
-                    {/* Show Share File button ONLY if native file sharing is supported on this device */}
                     {canShareMediaFiles && (
                       <button
                         type="button"
                         onClick={() => handleShareFile(asset)}
                         disabled={sharingId === asset.id}
                         style={{
-                          background: '#25d366',
-                          color: '#fff',
+                          height: '42px',
+                          padding: '0 0.85rem',
+                          background: '#22C55E',
+                          color: '#FFFFFF',
                           border: 'none',
-                          padding: '0.65rem 0.85rem',
-                          borderRadius: '8px',
-                          fontSize: '0.82rem',
-                          fontWeight: '800',
+                          borderBottom: '2.5px solid #16A34A',
+                          borderRadius: '12px',
+                          fontSize: '0.84rem',
+                          fontWeight: 700,
                           cursor: sharingId === asset.id ? 'not-allowed' : 'pointer',
                           display: 'inline-flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          gap: '0.3rem',
+                          gap: '0.35rem',
+                          boxShadow: '0 4px 12px rgba(34, 197, 94, 0.3)',
+                          transition: 'all 0.2s ease',
                         }}
-                        title="Share actual image/media file directly to WhatsApp, Facebook, etc."
+                        title="Share media file directly to WhatsApp or social apps"
                       >
-                        <span>{sharingId === asset.id ? '⏳' : '📤 Share File'}</span>
+                        <Share2 size={15} />
+                        <span>{sharingId === asset.id ? 'Sharing...' : 'Share'}</span>
                       </button>
                     )}
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
       {/* Asset Preview Modal */}
       {previewingAsset && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000, padding: '1rem' }}>
-          <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', maxWidth: '650px', width: '100%', overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }}>
-            <div style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', padding: '1.25rem 1.5rem', color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.75)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 99999,
+            padding: '1.25rem',
+            animation: 'fadeIn 0.2s ease',
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: '22px',
+              maxWidth: '680px',
+              width: '100%',
+              overflow: 'hidden',
+              boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.5)',
+              border: '1px solid #E2E8F0',
+            }}
+          >
+            {/* Modal Header */}
+            <div
+              style={{
+                background: 'linear-gradient(135deg, #0B1727 0%, #1E3A8A 100%)',
+                padding: '1.25rem 1.5rem',
+                color: '#FFFFFF',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.12)',
+              }}
+            >
               <div>
-                <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0 }}>{previewingAsset.title}</h3>
-                <span style={{ fontSize: '0.78rem', color: '#38bdf8' }}>{previewingAsset.category} • {previewingAsset.entity_name}</span>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, margin: 0, color: '#FFFFFF' }}>
+                  {previewingAsset.title}
+                </h3>
+                <span style={{ fontSize: '0.78rem', color: '#BAE6FD', fontWeight: 600 }}>
+                  {previewingAsset.category || 'Media'} • {previewingAsset.entity_name || 'Vyapar AdNET'}
+                </span>
               </div>
-              <button onClick={() => setPreviewingAsset(null)} style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '1.4rem', cursor: 'pointer' }}>×</button>
+              <button
+                type="button"
+                onClick={() => setPreviewingAsset(null)}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.12)',
+                  border: 'none',
+                  borderRadius: '10px',
+                  width: '32px',
+                  height: '32px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#FFFFFF',
+                  cursor: 'pointer',
+                }}
+              >
+                <X size={16} />
+              </button>
             </div>
 
-            <div style={{ padding: '1.5rem', textAlign: 'center', background: '#f8fafc', maxHeight: '420px', overflow: 'auto' }}>
+            {/* Media Canvas Body */}
+            <div style={{ padding: '1.75rem', textAlign: 'center', background: '#F8FAFC', maxHeight: '460px', overflow: 'auto' }}>
               {previewingAsset.type === 'image' ? (
-                <img src={previewingAsset.file_url} alt={previewingAsset.title} style={{ maxWidth: '100%', maxHeight: '360px', borderRadius: '8px', objectFit: 'contain' }} />
+                <img
+                  src={previewingAsset.file_url}
+                  alt={previewingAsset.title}
+                  style={{ maxWidth: '100%', maxHeight: '380px', borderRadius: '14px', objectFit: 'contain', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = '/logo.png';
+                  }}
+                />
               ) : previewingAsset.type === 'video' ? (
-                <video src={previewingAsset.file_url} controls style={{ maxWidth: '100%', maxHeight: '360px', borderRadius: '8px' }} />
+                <video
+                  src={previewingAsset.file_url}
+                  controls
+                  autoPlay
+                  style={{ maxWidth: '100%', maxHeight: '380px', borderRadius: '14px', boxShadow: '0 10px 25px rgba(0,0,0,0.2)' }}
+                />
               ) : previewingAsset.type === 'audio' ? (
-                <div style={{ padding: '2rem' }}>
-                  <div style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>🎵</div>
-                  <audio src={previewingAsset.file_url} controls style={{ width: '100%' }} />
+                <div style={{ padding: '2rem 1rem' }}>
+                  <div
+                    style={{
+                      width: '80px',
+                      height: '80px',
+                      borderRadius: '50%',
+                      background: 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)',
+                      color: '#FFFFFF',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      margin: '0 auto 1.5rem auto',
+                      boxShadow: '0 12px 28px -4px rgba(124, 58, 237, 0.4)',
+                    }}
+                  >
+                    <Headphones size={36} />
+                  </div>
+                  <audio src={previewingAsset.file_url} controls style={{ width: '100%', maxWidth: '420px' }} />
                 </div>
               ) : (
-                <div style={{ padding: '2rem' }}>
-                  <div style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>📄</div>
-                  <a href={previewingAsset.file_url} target="_blank" rel="noreferrer" style={{ color: '#0284c7', fontWeight: '700', textDecoration: 'underline' }}>
-                    Click here to open and view PDF Document
+                <div style={{ padding: '2rem 1rem' }}>
+                  <div
+                    style={{
+                      width: '80px',
+                      height: '80px',
+                      borderRadius: '50%',
+                      background: 'linear-gradient(135deg, #E11D48 0%, #BE123C 100%)',
+                      color: '#FFFFFF',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      margin: '0 auto 1.5rem auto',
+                      boxShadow: '0 12px 28px -4px rgba(225, 29, 72, 0.4)',
+                    }}
+                  >
+                    <FileText size={36} />
+                  </div>
+                  <a
+                    href={previewingAsset.file_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.45rem',
+                      color: '#2563EB',
+                      fontWeight: 700,
+                      textDecoration: 'none',
+                      background: '#EFF6FF',
+                      padding: '0.65rem 1.25rem',
+                      borderRadius: '12px',
+                      border: '1px solid #DBEAFE',
+                    }}
+                  >
+                    <span>Open & View Document in New Tab</span>
                   </a>
                 </div>
               )}
             </div>
 
-            <div style={{ background: '#f8fafc', padding: '1rem 1.5rem', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem' }}>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
+            {/* Modal Footer Controls */}
+            <div
+              style={{
+                background: '#FFFFFF',
+                padding: '1rem 1.5rem',
+                borderTop: '1px solid #E2E8F0',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: '0.75rem',
+              }}
+            >
+              <div style={{ display: 'flex', gap: '0.6rem' }}>
                 <button
                   type="button"
                   onClick={() => handleDownload(previewingAsset)}
                   disabled={downloadingId === previewingAsset.id}
-                  style={{ background: '#0284c7', color: '#ffffff', border: 'none', padding: '0.6rem 1.25rem', borderRadius: '8px', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer' }}
+                  style={{
+                    background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    padding: '0.65rem 1.25rem',
+                    borderRadius: '12px',
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)',
+                  }}
                 >
-                  📥 Download
+                  <Download size={15} />
+                  <span>Download File</span>
                 </button>
 
                 {canShareMediaFiles && (
                   <button
                     type="button"
                     onClick={() => handleShareFile(previewingAsset)}
-                    style={{ background: '#25d366', color: '#ffffff', border: 'none', padding: '0.6rem 1.1rem', borderRadius: '8px', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer' }}
+                    style={{
+                      background: '#22C55E',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      padding: '0.65rem 1.15rem',
+                      borderRadius: '12px',
+                      fontWeight: 700,
+                      fontSize: '0.85rem',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                    }}
                   >
-                    📤 Share File
+                    <Share2 size={15} />
+                    <span>Share File</span>
                   </button>
                 )}
               </div>
 
-              <button onClick={() => setPreviewingAsset(null)} style={{ background: '#0f172a', color: '#fff', border: 'none', padding: '0.6rem 1.25rem', borderRadius: '8px', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer' }}>
+              <button
+                type="button"
+                onClick={() => setPreviewingAsset(null)}
+                style={{
+                  background: '#F1F5F9',
+                  color: '#334155',
+                  border: '1px solid #CBD5E1',
+                  padding: '0.65rem 1.25rem',
+                  borderRadius: '12px',
+                  fontWeight: 700,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                }}
+              >
                 Close
               </button>
             </div>

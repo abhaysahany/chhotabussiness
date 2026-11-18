@@ -1,4 +1,24 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import {
+  TrendingUp,
+  CheckCircle2,
+  Clock,
+  AlertCircle,
+  RotateCcw,
+  Sparkles,
+  Filter,
+  FolderKanban,
+  ShieldCheck,
+  Eye,
+  X,
+  FileText,
+  Calendar,
+  Building2,
+  CreditCard,
+  BarChart3,
+  Check,
+  ArrowRight
+} from 'lucide-react';
 import { getUserBusinessReports } from '../../api/userBusinessReportsService';
 import { formatINR, formatNumberIN } from '../../utils/formatters';
 import DataTable from '../../components/common/DataTable';
@@ -8,7 +28,6 @@ function SalesReportPage({ user }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [dateRange, setDateRange] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -37,6 +56,28 @@ function SalesReportPage({ user }) {
     fetchReports();
   }, [user]);
 
+  // Lock body scroll when modal is active
+  useEffect(() => {
+    if (selectedOrder) {
+      const original = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = original;
+      };
+    }
+  }, [selectedOrder]);
+
+  // Close modal on Escape
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && selectedOrder) {
+        setSelectedOrder(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedOrder]);
+
   const summary = reportData?.summary || {
     totalGrossSales: 0,
     totalReceivedPayment: 0,
@@ -63,15 +104,54 @@ function SalesReportPage({ user }) {
     });
   }, [rawSalesList, statusFilter, categoryFilter]);
 
-  // DataTable Column Definitions
+  const hasActiveFilters = categoryFilter !== 'all' || statusFilter !== 'all';
+
+  const resetFilters = () => {
+    setCategoryFilter('all');
+    setStatusFilter('all');
+  };
+
+  const realizationRate = summary.totalGrossSales > 0
+    ? Math.round((summary.totalReceivedPayment / summary.totalGrossSales) * 100)
+    : 0;
+
+  // Enhanced DataTable Column Definitions
   const columns = [
     {
       header: 'Invoice & Date',
       accessor: 'id',
       render: (val, row) => (
         <div>
-          <div style={{ fontWeight: '800', color: '#0f172a' }}>{val}</div>
-          <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.1rem' }}>{row.date}</div>
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              background: '#EFF6FF',
+              color: '#1D4ED8',
+              padding: '0.2rem 0.55rem',
+              borderRadius: '7px',
+              fontWeight: 800,
+              fontSize: '0.78rem',
+              border: '1px solid #DBEAFE',
+            }}
+          >
+            #{val}
+          </div>
+          <div
+            style={{
+              fontSize: '0.74rem',
+              color: '#64748B',
+              marginTop: '0.35rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              fontWeight: 650,
+            }}
+          >
+            <Calendar size={12} color="#94A3B8" />
+            <span>{row.date}</span>
+          </div>
         </div>
       ),
     },
@@ -80,17 +160,20 @@ function SalesReportPage({ user }) {
       accessor: 'entityName',
       render: (val, row) => (
         <div>
-          <div style={{ fontWeight: '700', color: '#334155' }}>{val}</div>
+          <div style={{ fontWeight: 800, color: '#0F172A', fontSize: '0.86rem', lineHeight: 1.3 }}>
+            {val}
+          </div>
           <span
             style={{
-              background: '#eff6ff',
-              color: '#1d4ed8',
+              background: '#F5F3FF',
+              color: '#7C3AED',
+              border: '1px solid #DDD6FE',
               fontSize: '0.7rem',
-              fontWeight: '700',
-              padding: '0.15rem 0.5rem',
-              borderRadius: '4px',
+              fontWeight: 800,
+              padding: '0.15rem 0.55rem',
+              borderRadius: '6px',
               display: 'inline-block',
-              marginTop: '0.2rem',
+              marginTop: '0.25rem',
             }}
           >
             {row.category}
@@ -101,18 +184,34 @@ function SalesReportPage({ user }) {
     {
       header: 'Service / Package',
       accessor: 'service',
-      render: (val) => <span style={{ fontWeight: '600', color: '#0f172a' }}>{val}</span>,
+      render: (val) => (
+        <span style={{ fontWeight: 700, color: '#1E293B', fontSize: '0.84rem' }}>
+          {val}
+        </span>
+      ),
     },
     {
       header: 'Client / Buyer',
       accessor: 'customer',
       render: (val, row) => (
         <div>
-          <div style={{ fontWeight: '700', color: '#0f172a' }}>{val}</div>
+          <div style={{ fontWeight: 800, color: '#0F172A', fontSize: '0.84rem' }}>{val}</div>
           {row.customerUserCode && (
-            <div style={{ fontSize: '0.75rem', color: '#2563eb', fontWeight: '700' }}>
+            <span
+              style={{
+                fontSize: '0.72rem',
+                color: '#2563EB',
+                fontWeight: 800,
+                background: '#EFF6FF',
+                padding: '0.12rem 0.45rem',
+                borderRadius: '5px',
+                display: 'inline-block',
+                marginTop: '0.2rem',
+                border: '1px solid #DBEAFE',
+              }}
+            >
               ID: {row.customerUserCode}
-            </div>
+            </span>
           )}
         </div>
       ),
@@ -121,21 +220,43 @@ function SalesReportPage({ user }) {
       header: 'Gross Value',
       accessor: 'amount',
       align: 'right',
-      render: (val) => <span style={{ fontWeight: '800', color: '#0f172a' }}>{formatINR(val)}</span>,
+      render: (val) => (
+        <span style={{ fontWeight: 850, color: '#0F172A', fontSize: '0.9rem' }}>
+          {formatINR(val)}
+        </span>
+      ),
     },
     {
       header: 'Received Advance',
       accessor: 'advancePayment',
       align: 'right',
-      render: (val) => <span style={{ fontWeight: '800', color: '#15803d' }}>{formatINR(val)}</span>,
+      render: (val, row) => {
+        const pct = row.amount > 0 ? Math.round((val / row.amount) * 100) : 0;
+        return (
+          <div>
+            <div style={{ fontWeight: 850, color: '#047857', fontSize: '0.9rem' }}>
+              {formatINR(val)}
+            </div>
+            <span style={{ fontSize: '0.7rem', color: '#059669', fontWeight: 750 }}>
+              {pct}% Realized
+            </span>
+          </div>
+        );
+      },
     },
     {
       header: 'Balance Due',
       accessor: 'balanceDue',
       align: 'right',
       render: (val) => (
-        <span style={{ fontWeight: '800', color: val > 0 ? '#b45309' : '#64748b' }}>
-          {formatINR(val)}
+        <span
+          style={{
+            fontWeight: 850,
+            color: val > 0 ? '#B45309' : '#64748B',
+            fontSize: '0.9rem',
+          }}
+        >
+          {val > 0 ? formatINR(val) : '₹0'}
         </span>
       ),
     },
@@ -143,20 +264,32 @@ function SalesReportPage({ user }) {
       header: 'Status',
       accessor: 'status',
       align: 'center',
-      render: (val) => (
-        <span
-          style={{
-            background: val.toLowerCase() === 'completed' ? '#dcfce7' : '#fef3c7',
-            color: val.toLowerCase() === 'completed' ? '#15803d' : '#b45309',
-            padding: '0.2rem 0.6rem',
-            borderRadius: '12px',
-            fontWeight: '800',
-            fontSize: '0.74rem',
-          }}
-        >
-          {val}
-        </span>
-      ),
+      render: (val) => {
+        const isCompleted = val.toLowerCase() === 'completed';
+        return (
+          <span
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              background: isCompleted ? '#ECFDF5' : '#FEF3C7',
+              color: isCompleted ? '#065F46' : '#92400E',
+              border: `1px solid ${isCompleted ? '#A7F3D0' : '#FDE68A'}`,
+              padding: '0.25rem 0.7rem',
+              borderRadius: '9999px',
+              fontWeight: 800,
+              fontSize: '0.74rem',
+            }}
+          >
+            {isCompleted ? (
+              <CheckCircle2 size={12} strokeWidth={2.6} />
+            ) : (
+              <Clock size={12} strokeWidth={2.6} />
+            )}
+            <span>{val}</span>
+          </span>
+        );
+      },
     },
     {
       header: 'Action',
@@ -167,131 +300,366 @@ function SalesReportPage({ user }) {
         <button
           onClick={() => setSelectedOrder(row)}
           style={{
-            background: '#eff6ff',
-            color: '#2563eb',
-            border: '1px solid #bfdbfe',
-            padding: '0.35rem 0.75rem',
-            borderRadius: '6px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.35rem',
+            background: '#EFF6FF',
+            color: '#2563EB',
+            border: '1px solid #BFDBFE',
+            padding: '0.42rem 0.85rem',
+            borderRadius: '9px',
             fontSize: '0.78rem',
-            fontWeight: '700',
+            fontWeight: 800,
             cursor: 'pointer',
+            transition: 'all 0.15s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = '#2563EB';
+            e.currentTarget.style.color = '#FFFFFF';
+            e.currentTarget.style.borderColor = '#1D4ED8';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = '#EFF6FF';
+            e.currentTarget.style.color = '#2563EB';
+            e.currentTarget.style.borderColor = '#BFDBFE';
           }}
         >
-          Details
+          <Eye size={13} strokeWidth={2.4} />
+          <span>Details</span>
         </button>
       ),
     },
   ];
 
   return (
-    <div className="page-container">
-      {/* Top Banner */}
-      <div
-        style={{
-          background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 50%, #0f172a 100%)',
-          borderRadius: '16px',
-          padding: '2rem 2.25rem',
-          color: '#ffffff',
-          marginBottom: '2rem',
-          boxShadow: '0 10px 30px -5px rgba(2, 132, 199, 0.3)',
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem' }}>
+    <div className="page-container" style={{ maxWidth: '1400px', margin: '0 auto', paddingBottom: '3.5rem' }}>
+      
+      {/* Signature 2-Color Gradient Hero Header Banner with 3D Depth */}
+      <div className="van-catalog-hero-3d">
+        <div className="van-catalog-hero-content">
+          <div className="van-catalog-hero-icon-orb">
+            <TrendingUp size={32} strokeWidth={2.2} />
+          </div>
           <div>
-            <span
-              style={{
-                background: 'rgba(255,255,255,0.15)',
-                padding: '0.25rem 0.85rem',
-                borderRadius: '20px',
-                fontSize: '0.78rem',
-                fontWeight: '700',
-                color: '#e0f2fe',
-                display: 'inline-block',
-                marginBottom: '0.75rem',
-              }}
-            >
-              📊 Live Entity Sales & Project Dossier
-            </span>
-            <h1 style={{ fontSize: '1.85rem', fontWeight: '800', margin: '0 0 0.4rem 0', color: '#ffffff' }}>
+            <div className="van-catalog-hero-badge">
+              <span
+                className="van-live-pulse-dot"
+                style={{ width: '7px', height: '7px', background: '#38BDF8', boxShadow: '0 0 8px #38BDF8' }}
+              />
+              <Sparkles size={13} />
+              <span>Live Entity Sales & Project Dossier</span>
+            </div>
+            <h1 className="van-catalog-hero-title">
               Sales Performance Reports
             </h1>
-            <p style={{ color: '#bae6fd', fontSize: '0.925rem', margin: 0 }}>
+            <p className="van-catalog-hero-desc">
               Live audit of all sales done by entities with received advances, outstanding balance receivables, and dump values.
             </p>
           </div>
+        </div>
 
-          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-            <button
-              onClick={fetchReports}
+        {/* Right Stats Chips & Action Button Area */}
+        <div
+          className="van-directs-hero-action-col"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-end',
+            gap: '1.15rem',
+            flexShrink: 0,
+          }}
+        >
+          {/* Top Row: Quick Stats Chips */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <div className="van-catalog-stat-chip">
+              <div className="van-catalog-stat-chip-val">{formatNumberIN(summary.totalSalesCount)}</div>
+              <div className="van-catalog-stat-chip-lbl">Project Orders</div>
+            </div>
+            <div className="van-catalog-stat-chip">
+              <div className="van-catalog-stat-chip-val" style={{ color: '#34D399' }}>
+                {realizationRate}%
+              </div>
+              <div className="van-catalog-stat-chip-lbl">Realized Rate</div>
+            </div>
+          </div>
+
+          {/* Bottom Row: 3D Refresh Action Button */}
+          <button
+            type="button"
+            onClick={fetchReports}
+            className="van-btn-share-3d"
+            style={{
+              padding: '0.72rem 1.6rem',
+              height: 'auto',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.65rem',
+              fontSize: '0.88rem',
+              fontWeight: 800,
+              borderRadius: '14px',
+              background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+              borderBottom: '3px solid #1E40AF',
+              color: '#FFFFFF',
+              boxShadow: '0 8px 24px -3px rgba(37, 99, 235, 0.45)',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+            title="Refresh sales records from database"
+          >
+            <RotateCcw size={16} strokeWidth={2.4} className={loading ? 'animate-spin' : ''} />
+            <span>{loading ? 'Refreshing...' : 'Refresh Records'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* 4 Signature 3D KPI Cards Grid (4 in a row Desktop, 2x2 Tablet, 1 col Mobile) */}
+      <div className="van-business-kpi-grid">
+        {/* Card 1: Gross Sales Done */}
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #3B82F6, #1D4ED8)' }} />
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
               style={{
-                background: 'rgba(255,255,255,0.15)',
-                color: '#ffffff',
-                border: '1px solid rgba(255,255,255,0.3)',
-                padding: '0.65rem 1.25rem',
-                borderRadius: '10px',
-                fontSize: '0.85rem',
-                fontWeight: '700',
-                cursor: 'pointer',
+                color: '#2563EB',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
               }}
             >
-              🔄 Refresh Data
-            </button>
+              Gross Sales Done
+            </span>
+            <div
+              className="van-3d-kpi-icon van-3d-icon-blue"
+              style={{ animationDelay: '0s' }}
+              title="Total Cumulative Sales"
+            >
+              <TrendingUp size={22} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div className="van-stat-card-value">
+            {formatINR(summary.totalGrossSales)}
+          </div>
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+              {summary.totalSalesCount} Project Orders
+            </span>
+            <span className="van-card-badge-pill blue">
+              Gross GMV
+            </span>
+          </div>
+        </div>
+
+        {/* Card 2: Received Advance (Self BV) */}
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #10B981, #059669)' }} />
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
+              style={{
+                color: '#059669',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
+              }}
+            >
+              Received Advance (Self BV)
+            </span>
+            <div
+              className="van-3d-kpi-icon van-3d-icon-emerald"
+              style={{ animationDelay: '0.4s' }}
+              title="Realized Advance Volume"
+            >
+              <CheckCircle2 size={22} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div className="van-stat-card-value" style={{ color: '#047857' }}>
+            {formatINR(summary.totalReceivedPayment)}
+          </div>
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+              Realized Advance Volume
+            </span>
+            <span className="van-card-badge-pill emerald">
+              Realized BV
+            </span>
+          </div>
+        </div>
+
+        {/* Card 3: Balance Receivables */}
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #F59E0B, #D97706)' }} />
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
+              style={{
+                color: '#D97706',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
+              }}
+            >
+              Balance Receivables
+            </span>
+            <div
+              className="van-3d-kpi-icon van-3d-icon-amber"
+              style={{ animationDelay: '0.8s' }}
+              title="Active Pending Dues"
+            >
+              <Clock size={22} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div className="van-stat-card-value" style={{ color: '#B45309' }}>
+            {formatINR(summary.totalBalancePayment)}
+          </div>
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+              Active Pending Dues
+            </span>
+            <span className="van-card-badge-pill amber" style={{ background: '#FEF3C7', color: '#92400E', border: '1px solid #FDE68A' }}>
+              Pending Dues
+            </span>
+          </div>
+        </div>
+
+        {/* Card 4: Dump Payments */}
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #EF4444, #B91C1C)' }} />
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
+              style={{
+                color: '#DC2626',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
+              }}
+            >
+              Dump Payments
+            </span>
+            <div
+              className="van-3d-kpi-icon van-3d-icon-red"
+              style={{ animationDelay: '1.2s' }}
+              title="Unrealized / Default"
+            >
+              <AlertCircle size={22} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div className="van-stat-card-value" style={{ color: '#DC2626' }}>
+            {formatINR(summary.totalDumpPayment)}
+          </div>
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+              Unrealized / Default
+            </span>
+            <span className="van-card-badge-pill" style={{ background: '#FEF2F2', color: '#DC2626', border: '1px solid #FEE2E2' }}>
+              Unrealized
+            </span>
           </div>
         </div>
       </div>
 
-      {/* KPI Counters */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
-        <div style={{ background: '#ffffff', borderRadius: '14px', padding: '1.25rem 1.5rem', border: '1px solid #e2e8f0', borderTop: '4px solid #0284c7' }}>
-          <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>Gross Sales Done</div>
-          <div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', margin: '0.3rem 0' }}>{formatINR(summary.totalGrossSales)}</div>
-          <div style={{ fontSize: '0.78rem', color: '#0284c7', fontWeight: '700' }}>{summary.totalSalesCount} Project Orders</div>
-        </div>
+      {/* Advanced Filter Toolbar (3D Capsule Design) */}
+      <div className="van-dir-toolbar-3d" style={{ marginBottom: '1.75rem' }}>
+        <div className="van-dir-toolbar-bottom">
+          {/* Left: Filter Capsules Cluster */}
+          <div className="van-dir-filters-cluster">
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.45rem',
+                fontSize: '0.78rem',
+                fontWeight: 850,
+                color: '#64748B',
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+                marginRight: '0.2rem',
+              }}
+            >
+              <Filter size={14} color="#2563EB" strokeWidth={2.5} />
+              <span>Filters</span>
+            </div>
 
-        <div style={{ background: '#ffffff', borderRadius: '14px', padding: '1.25rem 1.5rem', border: '1px solid #e2e8f0', borderTop: '4px solid #10b981' }}>
-          <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>Received Advance (Self BV)</div>
-          <div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#15803d', margin: '0.3rem 0' }}>{formatINR(summary.totalReceivedPayment)}</div>
-          <div style={{ fontSize: '0.78rem', color: '#15803d', fontWeight: '700' }}>Realized Advance Volume</div>
-        </div>
+            {/* Service Category Filter */}
+            <div className={`van-dir-filter-capsule ${categoryFilter !== 'all' ? 'active' : ''}`}>
+              <FolderKanban size={15} color="#7C3AED" strokeWidth={2.2} />
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                aria-label="Filter by Service Category"
+              >
+                <option value="all">All Service Categories ({availableCategories.length})</option>
+                {availableCategories.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-        <div style={{ background: '#ffffff', borderRadius: '14px', padding: '1.25rem 1.5rem', border: '1px solid #e2e8f0', borderTop: '4px solid #f59e0b' }}>
-          <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>Balance Receivables</div>
-          <div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#b45309', margin: '0.3rem 0' }}>{formatINR(summary.totalBalancePayment)}</div>
-          <div style={{ fontSize: '0.78rem', color: '#b45309', fontWeight: '700' }}>Active Pending Dues</div>
-        </div>
+            {/* Status Filter */}
+            <div className={`van-dir-filter-capsule ${statusFilter !== 'all' ? 'active' : ''}`}>
+              <ShieldCheck size={15} color="#10B981" strokeWidth={2.2} />
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                aria-label="Filter by Status"
+              >
+                <option value="all">All Statuses</option>
+                <option value="completed">Completed (Full)</option>
+                <option value="partial">Partial Payment</option>
+              </select>
+            </div>
 
-        <div style={{ background: '#ffffff', borderRadius: '14px', padding: '1.25rem 1.5rem', border: '1px solid #e2e8f0', borderTop: '4px solid #ef4444' }}>
-          <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>Dump Payments</div>
-          <div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#dc2626', margin: '0.3rem 0' }}>{formatINR(summary.totalDumpPayment)}</div>
-          <div style={{ fontSize: '0.78rem', color: '#dc2626', fontWeight: '700' }}>Unrealized / Default</div>
-        </div>
-      </div>
+            {/* Reset Button */}
+            {hasActiveFilters && (
+              <button
+                type="button"
+                className="van-dir-reset-btn"
+                onClick={resetFilters}
+                title="Reset all filters"
+              >
+                <RotateCcw size={13} strokeWidth={2.4} />
+                <span>Reset Filters</span>
+              </button>
+            )}
+          </div>
 
-      {/* Filter Controls Bar */}
-      <div style={{ background: '#ffffff', borderRadius: '14px', padding: '1.25rem 1.5rem', border: '1px solid #e2e8f0', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-          <select
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            style={{ padding: '0.55rem 0.95rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', cursor: 'pointer', background: '#fff' }}
-          >
-            <option value="all">All Service Categories</option>
-            {availableCategories.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
+          {/* Right: Actions & Metric Chips */}
+          <div className="van-dir-actions-cluster">
+            <div
+              style={{
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                color: '#475569',
+                background: '#F8FAFC',
+                padding: '0.42rem 0.85rem',
+                borderRadius: '10px',
+                border: '1px solid #E2E8F0',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+              }}
+            >
+              <Sparkles size={13} color="#2563EB" />
+              <span>
+                Avg Deal:{' '}
+                <strong style={{ color: '#0F172A' }}>
+                  {formatINR(
+                    summary.averageDealSize ||
+                      (summary.totalSalesCount > 0 ? summary.totalGrossSales / summary.totalSalesCount : 0)
+                  )}
+                </strong>
+              </span>
+            </div>
 
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            style={{ padding: '0.55rem 0.95rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', cursor: 'pointer', background: '#fff' }}
-          >
-            <option value="all">All Statuses</option>
-            <option value="completed">Completed (Full)</option>
-            <option value="partial">Partial Payment</option>
-          </select>
+            <div className="van-dir-count-pill">
+              <span style={{ color: '#0F172A', fontWeight: 800 }}>{filteredSales.length}</span>
+              <span>{filteredSales.length === 1 ? 'record found' : 'records found'}</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -300,11 +668,11 @@ function SalesReportPage({ user }) {
         columns={columns}
         data={filteredSales}
         defaultPageSize={10}
-        searchPlaceholder="Search invoice, client, or service..."
+        searchPlaceholder="Search invoice, client, service, or entity..."
         loading={loading}
       />
 
-      {/* Sale Record Dossier Modal */}
+      {/* Sale Record Dossier Modal (3D Glassmorphic Experience) */}
       {selectedOrder && (
         <div
           style={{
@@ -313,74 +681,240 @@ function SalesReportPage({ user }) {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(15, 23, 42, 0.65)',
-            backdropFilter: 'blur(4px)',
+            backgroundColor: 'rgba(15, 23, 42, 0.72)',
+            backdropFilter: 'blur(8px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 1000,
-            padding: '1rem',
+            padding: '1.25rem',
+          }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setSelectedOrder(null);
           }}
         >
           <div
             style={{
-              background: '#fff',
-              borderRadius: '16px',
+              background: '#FFFFFF',
+              borderRadius: '22px',
               width: '100%',
-              maxWidth: '560px',
-              boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.25)',
+              maxWidth: '600px',
+              boxShadow: '0 25px 60px -15px rgba(15, 23, 42, 0.35)',
               overflow: 'hidden',
+              border: '1.5px solid #E2E8F0',
+              animation: 'vanFadeScaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
           >
-            <div style={{ background: 'linear-gradient(135deg, #0284c7 0%, #0f172a 100%)', padding: '1.25rem 1.5rem', color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: '800' }}>Invoice #{selectedOrder.id}</h3>
-                <div style={{ fontSize: '0.8rem', color: '#bae6fd', marginTop: '0.2rem' }}>Entity Sales Record</div>
-              </div>
-              <button onClick={() => setSelectedOrder(null)} style={{ background: 'none', border: 'none', color: '#fff', fontSize: '1.5rem', cursor: 'pointer', lineHeight: 1 }}>×</button>
-            </div>
-
-            <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '10px', border: '1px solid #e2e8f0', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-                <div>
-                  <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '700' }}>CREATING ENTITY</div>
-                  <div style={{ fontSize: '0.9rem', fontWeight: '800', color: '#0f172a', marginTop: '0.15rem' }}>{selectedOrder.entityName}</div>
+            {/* Header with 2-Color Gradient & 3D Pod */}
+            <div
+              style={{
+                background: 'linear-gradient(135deg, #0284C7 0%, #0369A1 50%, #0F172A 100%)',
+                padding: '1.35rem 1.6rem',
+                color: '#FFFFFF',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                position: 'relative',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                <div
+                  style={{
+                    width: '42px',
+                    height: '42px',
+                    borderRadius: '12px',
+                    background: 'rgba(255, 255, 255, 0.15)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: '1px solid rgba(255, 255, 255, 0.25)',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                  }}
+                >
+                  <FileText size={20} color="#FFFFFF" strokeWidth={2.4} />
                 </div>
                 <div>
-                  <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '700' }}>BUYER USER</div>
-                  <div style={{ fontSize: '0.9rem', fontWeight: '800', color: '#0f172a', marginTop: '0.15rem' }}>{selectedOrder.customer}</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '700' }}>CATEGORY DOMAIN</div>
-                  <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#2563eb', marginTop: '0.15rem' }}>{selectedOrder.category}</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '700' }}>PAYMENT METHOD</div>
-                  <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#0f172a', marginTop: '0.15rem' }}>{selectedOrder.payMode}</div>
-                </div>
-              </div>
-
-              {/* Payment Summary */}
-              <div style={{ border: '1px solid #e2e8f0', borderRadius: '10px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem' }}>
-                  <span style={{ color: '#64748b' }}>Total Project Value:</span>
-                  <strong style={{ color: '#0f172a' }}>{formatINR(selectedOrder.amount)}</strong>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem' }}>
-                  <span style={{ color: '#15803d', fontWeight: '700' }}>Received Advance (Self BV):</span>
-                  <strong style={{ color: '#15803d' }}>{formatINR(selectedOrder.advancePayment)}</strong>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem', borderTop: '1px dashed #e2e8f0', paddingTop: '0.5rem' }}>
-                  <span style={{ color: '#b45309', fontWeight: '700' }}>Remaining Balance Due:</span>
-                  <strong style={{ color: '#b45309' }}>{formatINR(selectedOrder.balanceDue)}</strong>
+                  <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.01em' }}>
+                    Invoice #{selectedOrder.id}
+                  </h3>
+                  <div style={{ fontSize: '0.78rem', color: '#BAE6FD', marginTop: '0.15rem', fontWeight: 650 }}>
+                    Official Entity Sales & Project Dossier
+                  </div>
                 </div>
               </div>
-            </div>
-
-            <div style={{ padding: '1rem 1.5rem', background: '#f8fafc', borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'flex-end' }}>
               <button
                 onClick={() => setSelectedOrder(null)}
-                style={{ background: '#0284c7', color: '#fff', border: 'none', padding: '0.5rem 1.25rem', borderRadius: '8px', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer' }}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.12)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  color: '#FFFFFF',
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.25)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)'; }}
+                aria-label="Close modal"
+              >
+                <X size={16} strokeWidth={2.5} />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div style={{ padding: '1.6rem', display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
+              {/* 4-Grid Metadata */}
+              <div
+                style={{
+                  background: '#F8FAFC',
+                  padding: '1.15rem 1.25rem',
+                  borderRadius: '14px',
+                  border: '1.5px solid #E2E8F0',
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '1rem',
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <Building2 size={13} color="#2563EB" />
+                    <span>CREATING ENTITY</span>
+                  </div>
+                  <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#0F172A', marginTop: '0.25rem' }}>
+                    {selectedOrder.entityName}
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    BUYER USER
+                  </div>
+                  <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#0F172A', marginTop: '0.25rem' }}>
+                    {selectedOrder.customer}
+                  </div>
+                  {selectedOrder.customerUserCode && (
+                    <span style={{ fontSize: '0.72rem', color: '#2563EB', fontWeight: 800 }}>
+                      ID: {selectedOrder.customerUserCode}
+                    </span>
+                  )}
+                </div>
+
+                <div>
+                  <div style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <FolderKanban size={13} color="#7C3AED" />
+                    <span>CATEGORY DOMAIN</span>
+                  </div>
+                  <div style={{ fontSize: '0.86rem', fontWeight: 800, color: '#7C3AED', marginTop: '0.25rem' }}>
+                    {selectedOrder.category}
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <CreditCard size={13} color="#10B981" />
+                    <span>PAYMENT METHOD</span>
+                  </div>
+                  <div style={{ fontSize: '0.86rem', fontWeight: 800, color: '#0F172A', marginTop: '0.25rem' }}>
+                    {selectedOrder.payMode || 'Standard Banking'}
+                  </div>
+                </div>
+              </div>
+
+              {/* Progress Bar for Advance Realization */}
+              {selectedOrder.amount > 0 && (
+                <div style={{ background: '#F8FAFC', padding: '1rem 1.25rem', borderRadius: '14px', border: '1.5px solid #E2E8F0' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', fontSize: '0.8rem', fontWeight: 750 }}>
+                    <span style={{ color: '#047857', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                      <CheckCircle2 size={13} />
+                      Paid: {Math.round((selectedOrder.advancePayment / selectedOrder.amount) * 100)}%
+                    </span>
+                    <span style={{ color: selectedOrder.balanceDue > 0 ? '#B45309' : '#64748B' }}>
+                      Pending: {Math.round((selectedOrder.balanceDue / selectedOrder.amount) * 100)}%
+                    </span>
+                  </div>
+                  <div style={{ height: '8px', background: '#E2E8F0', borderRadius: '9999px', overflow: 'hidden', display: 'flex' }}>
+                    <div
+                      style={{
+                        width: `${Math.min(100, (selectedOrder.advancePayment / selectedOrder.amount) * 100)}%`,
+                        background: 'linear-gradient(90deg, #10B981, #059669)',
+                        borderRadius: '9999px',
+                        transition: 'width 0.5s ease',
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Financial Breakdown Card */}
+              <div
+                style={{
+                  border: '1.5px solid #E2E8F0',
+                  borderRadius: '14px',
+                  padding: '1.15rem 1.25rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.7rem',
+                  background: '#FFFFFF',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.88rem' }}>
+                  <span style={{ color: '#64748B', fontWeight: 650 }}>Total Project Gross Value:</span>
+                  <strong style={{ color: '#0F172A', fontSize: '0.98rem' }}>{formatINR(selectedOrder.amount)}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.88rem' }}>
+                  <span style={{ color: '#047857', fontWeight: 750, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                    <CheckCircle2 size={14} /> Received Advance (Self BV):
+                  </span>
+                  <strong style={{ color: '#047857', fontSize: '0.98rem' }}>{formatINR(selectedOrder.advancePayment)}</strong>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    fontSize: '0.88rem',
+                    borderTop: '1.5px dashed #E2E8F0',
+                    paddingTop: '0.7rem',
+                  }}
+                >
+                  <span style={{ color: '#B45309', fontWeight: 750, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                    <Clock size={14} /> Remaining Balance Due:
+                  </span>
+                  <strong style={{ color: '#B45309', fontSize: '0.98rem' }}>{formatINR(selectedOrder.balanceDue)}</strong>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div
+              style={{
+                padding: '1.1rem 1.6rem',
+                background: '#F8FAFC',
+                borderTop: '1px solid #F1F5F9',
+                display: 'flex',
+                justifyContent: 'flex-end',
+              }}
+            >
+              <button
+                onClick={() => setSelectedOrder(null)}
+                style={{
+                  background: 'linear-gradient(135deg, #0284C7 0%, #0369A1 100%)',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  padding: '0.55rem 1.4rem',
+                  borderRadius: '10px',
+                  fontWeight: 800,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(2, 132, 199, 0.25)',
+                  transition: 'all 0.15s ease',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
               >
                 Close Dossier
               </button>

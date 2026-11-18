@@ -1,27 +1,80 @@
 /**
  * Vyapar AdNET Design System — Buttons
- * Implements the approved gradient buttons from the Vyapar AdNET logo palette.
+ * Enhanced with 3D tactile depth, glossy lighting, and lively spring micro-animations.
  */
+
+/* 3D Animations & Keyframes */
+@keyframes van-pulse-cta-3d {
+  0%, 100% {
+    box-shadow: 
+      0 4px 10px rgba(217, 119, 6, 0.35),
+      0 2px 4px rgba(217, 119, 6, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.45),
+      inset 0 -2px 0 rgba(180, 83, 9, 0.4);
+  }
+  50% {
+    box-shadow: 
+      0 6px 18px rgba(217, 119, 6, 0.5),
+      0 3px 6px rgba(217, 119, 6, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.6),
+      inset 0 -2px 0 rgba(180, 83, 9, 0.5);
+  }
+}
+
+@keyframes van-bell-ring-3d {
+  0%, 100% { transform: rotate(0); }
+  20% { transform: rotate(14deg); }
+  40% { transform: rotate(-12deg); }
+  60% { transform: rotate(8deg); }
+  80% { transform: rotate(-6deg); }
+}
+
+@keyframes van-float-3d {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-4px) rotate(1deg);
+  }
+}
 
 .van-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.45rem;
+  gap: 0.5rem;
   font-family: inherit;
-  font-weight: 600;
+  font-weight: 700;
   border-radius: var(--van-radius-button);
   border: 1px solid transparent;
   cursor: pointer;
   text-decoration: none;
-  transition: all 0.15s ease-in-out;
   user-select: none;
   white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+  perspective: 600px;
+  transform: translateZ(0);
+  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Icon micro-animations inside buttons */
+.van-btn svg {
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  flex-shrink: 0;
+}
+
+.van-btn:hover svg {
+  transform: scale(1.16) translateY(-1px);
+}
+
+.van-btn:active svg {
+  transform: scale(0.95) translateY(1px);
 }
 
 .van-btn:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.2);
+  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.25);
 }
 
 .van-btn:disabled,
@@ -29,98 +82,152 @@
   opacity: 0.55;
   cursor: not-allowed;
   pointer-events: none;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 /* Button Sizes */
 .van-btn-sm {
   height: 32px;
-  padding: 0 0.65rem;
+  padding: 0 0.75rem;
   font-size: 0.775rem;
 }
 
 .van-btn-md {
-  height: 38px;
-  padding: 0 0.95rem;
-  font-size: 0.835rem;
+  height: 40px;
+  padding: 0 1.05rem;
+  font-size: 0.85rem;
 }
 
 .van-btn-lg {
-  height: 44px;
-  padding: 0 1.25rem;
-  font-size: 0.9rem;
+  height: 46px;
+  padding: 0 1.35rem;
+  font-size: 0.925rem;
 }
 
 .van-btn-block {
   width: 100%;
 }
 
-/* Button Variants */
+/* Button Variants with 3D Depth & Physics */
 
-/* Primary: Navy to Blue Gradient */
+/* Primary: Navy to Blue 3D Gradient */
 .van-btn-primary {
-  background: var(--van-btn-gradient-primary);
+  background: linear-gradient(180deg, #17358F 0%, #0B192C 100%);
   color: #FFFFFF;
-  border: 1px solid rgba(11, 25, 44, 0.4);
-  box-shadow: 0 1px 3px rgba(11, 25, 44, 0.15);
+  border: 1px solid #1E40AF;
+  box-shadow: 
+    0 4px 8px -1px rgba(11, 25, 44, 0.32),
+    0 2px 4px -1px rgba(11, 25, 44, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.35);
 }
 
 .van-btn-primary:hover {
-  background: var(--van-btn-hover-primary);
-  box-shadow: 0 2px 6px rgba(11, 25, 44, 0.22);
+  transform: translateY(-2.5px) scale(1.02);
+  background: linear-gradient(180deg, #1E40AF 0%, #0D2038 100%);
+  box-shadow: 
+    0 8px 18px -2px rgba(11, 25, 44, 0.42),
+    0 4px 6px -1px rgba(11, 25, 44, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.4);
 }
 
 .van-btn-primary:active {
-  transform: translateY(1px);
+  transform: translateY(2px) scale(0.98);
+  box-shadow: 
+    0 1px 2px rgba(11, 25, 44, 0.3),
+    inset 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
-/* Highlighted CTA: Amber to Gold Gradient */
+/* Highlighted CTA: Amber to Gold 3D Gradient (Request Payout) */
 .van-btn-cta {
-  background: var(--van-btn-gradient-cta);
+  background: linear-gradient(180deg, #F59E0B 0%, #D97706 100%);
   color: #FFFFFF;
-  border: 1px solid rgba(217, 119, 6, 0.4);
-  box-shadow: 0 1px 3px rgba(217, 119, 6, 0.2);
+  border: 1px solid #B45309;
+  animation: van-pulse-cta-3d 3s infinite ease-in-out;
+  box-shadow: 
+    0 4px 10px rgba(217, 119, 6, 0.35),
+    0 2px 4px rgba(217, 119, 6, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -2px 0 rgba(180, 83, 9, 0.4);
 }
 
 .van-btn-cta:hover {
-  background: var(--van-btn-hover-cta);
-  box-shadow: 0 2px 6px rgba(217, 119, 6, 0.3);
+  transform: translateY(-2.5px) scale(1.02);
+  background: linear-gradient(180deg, #FBBF24 0%, #EA580C 100%);
+  box-shadow: 
+    0 8px 20px rgba(217, 119, 6, 0.5),
+    0 4px 8px rgba(217, 119, 6, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -2px 0 rgba(180, 83, 9, 0.5);
 }
 
 .van-btn-cta:active {
-  transform: translateY(1px);
+  transform: translateY(2px) scale(0.98);
+  box-shadow: 
+    0 1px 2px rgba(217, 119, 6, 0.3),
+    inset 0 2px 4px rgba(180, 83, 9, 0.5);
 }
 
-/* Secondary Action: Blue to Cyan Gradient */
+/* Secondary Action: Blue to Cyan 3D Gradient (Rewards) */
 .van-btn-secondary {
-  background: var(--van-btn-gradient-secondary);
+  background: linear-gradient(180deg, #0284C7 0%, #1E40AF 100%);
   color: #FFFFFF;
-  border: 1px solid rgba(30, 64, 175, 0.4);
-  box-shadow: 0 1px 3px rgba(2, 132, 199, 0.15);
+  border: 1px solid #0369A1;
+  box-shadow: 
+    0 4px 8px -1px rgba(2, 132, 199, 0.35),
+    0 2px 4px -1px rgba(30, 64, 175, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -2px 0 rgba(15, 23, 42, 0.3);
 }
 
 .van-btn-secondary:hover {
-  background: var(--van-btn-hover-secondary);
-  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+  transform: translateY(-2.5px) scale(1.02);
+  background: linear-gradient(180deg, #0EA5E9 0%, #1D4ED8 100%);
+  box-shadow: 
+    0 8px 18px -2px rgba(2, 132, 199, 0.45),
+    0 4px 6px -1px rgba(30, 64, 175, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -2px 0 rgba(15, 23, 42, 0.4);
 }
 
 .van-btn-secondary:active {
-  transform: translateY(1px);
+  transform: translateY(2px) scale(0.98);
+  box-shadow: 
+    0 1px 2px rgba(2, 132, 199, 0.3),
+    inset 0 2px 4px rgba(15, 23, 42, 0.4);
 }
 
-/* Outline Button */
+/* Outline Button with 3D Beveled Base (Sync Data, QR Card, etc.) */
 .van-btn-outline {
-  background-color: #FFFFFF;
-  color: var(--van-text-secondary);
-  border: 1px solid var(--van-border-default);
+  background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
+  color: var(--van-text-primary);
+  border: 1px solid #CBD5E1;
+  border-bottom: 2px solid #94A3B8;
+  box-shadow: 
+    0 2px 4px rgba(15, 23, 42, 0.06),
+    inset 0 1px 0 #FFFFFF;
 }
 
 .van-btn-outline:hover {
-  background-color: var(--van-bg-surface);
-  border-color: var(--van-border-strong);
-  color: var(--van-text-primary);
+  transform: translateY(-2px);
+  background: linear-gradient(180deg, #FFFFFF 0%, #F1F5F9 100%);
+  border-color: #3B82F6;
+  border-bottom: 2px solid #1E40AF;
+  color: var(--van-brand-blue);
+  box-shadow: 
+    0 6px 14px rgba(30, 64, 175, 0.14),
+    inset 0 1px 0 #FFFFFF;
 }
 
-/* Ghost Button */
+.van-btn-outline:active {
+  transform: translateY(1.5px);
+  border-bottom-width: 1px;
+  box-shadow: inset 0 2px 4px rgba(15, 23, 42, 0.08);
+}
+
+/* Ghost Button 3D Lift */
 .van-btn-ghost {
   background-color: transparent;
   color: var(--van-text-secondary);
@@ -128,28 +235,62 @@
 }
 
 .van-btn-ghost:hover {
+  transform: translateY(-1.5px);
   background-color: var(--van-bg-hover);
   color: var(--van-brand-blue);
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.06);
 }
 
-/* Danger Button */
+.van-btn-ghost:active {
+  transform: translateY(1px);
+}
+
+/* Danger Button 3D */
 .van-btn-danger {
-  background-color: #DC2626;
+  background: linear-gradient(180deg, #EF4444 0%, #DC2626 100%);
   color: #FFFFFF;
   border: 1px solid #B91C1C;
+  box-shadow: 
+    0 4px 8px -1px rgba(220, 38, 38, 0.35),
+    0 2px 4px -1px rgba(220, 38, 38, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -2px 0 rgba(153, 27, 27, 0.4);
 }
 
 .van-btn-danger:hover {
-  background-color: #B91C1C;
+  transform: translateY(-2px) scale(1.02);
+  background: linear-gradient(180deg, #F87171 0%, #B91C1C 100%);
+  box-shadow: 
+    0 8px 18px -2px rgba(220, 38, 38, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
-/* WhatsApp Brand Button */
+.van-btn-danger:active {
+  transform: translateY(1.5px) scale(0.98);
+  box-shadow: inset 0 2px 4px rgba(153, 27, 27, 0.4);
+}
+
+/* WhatsApp Brand Button 3D */
 .van-btn-whatsapp {
-  background: linear-gradient(105deg, #128C7E 0%, #25D366 100%);
+  background: linear-gradient(180deg, #25D366 0%, #128C7E 100%);
   color: #FFFFFF;
-  border: 1px solid rgba(18, 140, 126, 0.3);
+  border: 1px solid #075E54;
+  box-shadow: 
+    0 4px 8px -1px rgba(18, 140, 126, 0.35),
+    0 2px 4px -1px rgba(18, 140, 126, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -2px 0 rgba(7, 94, 84, 0.4);
 }
 
 .van-btn-whatsapp:hover {
-  background: linear-gradient(105deg, #075E54 0%, #128C7E 100%);
+  transform: translateY(-2px) scale(1.02);
+  background: linear-gradient(180deg, #4ADE80 0%, #0F766E 100%);
+  box-shadow: 
+    0 8px 18px -2px rgba(18, 140, 126, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.van-btn-whatsapp:active {
+  transform: translateY(1.5px) scale(0.98);
+  box-shadow: inset 0 2px 4px rgba(7, 94, 84, 0.4);
 }

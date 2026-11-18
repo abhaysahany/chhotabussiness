@@ -1,0 +1,20 @@
+{
+  "name": "vyapar-adnet-email-templates",
+  "version": "1.0.0",
+  "description": "Vyapar AdNET React Email transactional template compiler",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs"
+  },
+  "dependencies": {
+    "@react-email/components": "^0.0.33",
+    "@react-email/render": "^1.0.5",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.7.0"
+  }
+}

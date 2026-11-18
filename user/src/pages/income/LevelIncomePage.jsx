@@ -4,7 +4,6 @@ import {
   RotateCcw,
   Search,
   Filter,
-  ArrowUpDown,
   Layers,
   ChevronLeft,
   ChevronRight,
@@ -12,6 +11,14 @@ import {
   Package,
   ArrowRight,
   TrendingUp,
+  CheckCircle2,
+  Clock,
+  ShieldCheck,
+  Sparkles,
+  SlidersHorizontal,
+  Info,
+  Wallet,
+  ArrowLeft
 } from 'lucide-react';
 import { getUserLevelIncome } from '../../api/userIncomeService';
 import OrderLevelIncomeCard from '../../components/income/OrderLevelIncomeCard';
@@ -63,7 +70,7 @@ function LevelIncomePage({ user, onNavigate }) {
     }
   };
 
-  // Summary Metrics — Only Total Level Income and Remaining Balance retained per prompt
+  // Summary Metrics
   const summary = data?.summary || {
     user_id: user?.id || '—',
     member_id: user?.user_code || '—',
@@ -174,145 +181,169 @@ function LevelIncomePage({ user, onNavigate }) {
     setPage(1);
   };
 
+  const hasActiveFilters = Boolean(
+    search.trim() ||
+    levelFilter !== 'all' ||
+    statusFilter !== 'all' ||
+    sortBy !== 'latest' ||
+    perPage !== 10
+  );
+
   return (
-    <div className="user-page-container" style={{ padding: '1.5rem', maxWidth: '1360px', margin: '0 auto' }}>
-      {/* Header & Breadcrumb Navigation */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '1.5rem',
-          flexWrap: 'wrap',
-          gap: '1rem',
-        }}
-      >
-        <div>
-          <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            My Income • Team Levels (2 to 5)
+    <div className="page-container" style={{ maxWidth: '1400px', margin: '0 auto', paddingBottom: '3.5rem' }}>
+      
+      {/* Signature 2-Color Gradient Hero Header Banner with 3D Depth */}
+      <div className="van-catalog-hero-3d">
+        <div className="van-catalog-hero-content">
+          <div className="van-catalog-hero-icon-orb">
+            <Layers size={32} strokeWidth={2.2} />
           </div>
-          <h1 style={{ margin: '0.25rem 0 0 0', fontSize: '1.65rem', fontWeight: 800, color: '#0f172a' }}>
-            Level Income
-          </h1>
-          <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.86rem', color: '#64748b' }}>
-            Track your indirect Level Income received across Level 2 (40%), Level 3 (30%), Level 4 (20%), and Level 5 (10%).
-          </p>
+          <div>
+            <div className="van-catalog-hero-badge">
+              <span
+                className="van-live-pulse-dot"
+                style={{ width: '7px', height: '7px', background: '#38BDF8', boxShadow: '0 0 8px #38BDF8' }}
+              />
+              <Sparkles size={13} />
+              <span>My Income • Team Levels (2 to 5) Dossier</span>
+            </div>
+            <h1 className="van-catalog-hero-title">
+              Level Income
+            </h1>
+            <p className="van-catalog-hero-desc">
+              Track your indirect Level Income received across Level 2 (40%), Level 3 (30%), Level 4 (20%), and Level 5 (10%).
+            </p>
+          </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-          {onNavigate && (
+        {/* Right Stats Chips & Action Area */}
+        <div
+          className="van-directs-hero-action-col"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-end',
+            gap: '1.15rem',
+            flexShrink: 0,
+          }}
+        >
+          {/* Top Row: Quick Stats Chips */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <div className="van-catalog-stat-chip">
+              <div className="van-catalog-stat-chip-val">40% Pool</div>
+              <div className="van-catalog-stat-chip-lbl">Levels 2 to 5</div>
+            </div>
+            <div className="van-catalog-stat-chip">
+              <div className="van-catalog-stat-chip-val" style={{ color: '#34D399' }}>
+                {formatNumberIN(allRecords.length)}
+              </div>
+              <div className="van-catalog-stat-chip-lbl">Distributions</div>
+            </div>
+          </div>
+
+          {/* Bottom Row: View Full Details Action Button */}
+          <div style={{ display: 'flex', gap: '0.65rem', alignItems: 'center', flexWrap: 'wrap' }}>
             <button
               type="button"
-              onClick={() => onNavigate('my-income')}
+              onClick={() => handleOpenDetails()}
+              className="van-btn-share-3d"
               style={{
-                padding: '0.55rem 1rem',
-                background: '#f8fafc',
-                color: '#1e40af',
-                border: '1px solid #bfdbfe',
-                borderRadius: '8px',
-                fontSize: '0.82rem',
-                fontWeight: 700,
+                padding: '0.72rem 1.5rem',
+                height: 'auto',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.55rem',
+                fontSize: '0.86rem',
+                fontWeight: 800,
+                borderRadius: '12px',
+                background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                borderBottom: '3px solid #1E40AF',
+                color: '#FFFFFF',
+                boxShadow: '0 8px 24px -3px rgba(37, 99, 235, 0.45)',
                 cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
               }}
+              title="View full audit ledger breakdown"
             >
-              ← My Income Overview
+              <span>View Full Details</span>
+              <ArrowRight size={15} strokeWidth={2.4} />
             </button>
-          )}
-
-          {/* View Full Details Button */}
-          <button
-            type="button"
-            onClick={() => handleOpenDetails()}
-            style={{
-              padding: '0.55rem 1.15rem',
-              background: '#2563eb',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '0.82rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.45rem',
-              boxShadow: '0 1px 3px rgba(37, 99, 235, 0.25)',
-              transition: 'background-color 0.15s ease',
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#1d4ed8'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#2563eb'; }}
-          >
-            <span>View Full Details</span>
-            <ArrowRight size={14} />
-          </button>
-
-          <button
-            type="button"
-            onClick={loadLevelIncome}
-            disabled={loading}
-            style={{
-              padding: '0.55rem 1rem',
-              background: '#ffffff',
-              color: '#334155',
-              border: '1px solid #cbd5e1',
-              borderRadius: '8px',
-              fontSize: '0.82rem',
-              fontWeight: 700,
-              cursor: loading ? 'not-allowed' : 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-            }}
-          >
-            <RotateCcw size={14} className={loading ? 'spin-anim' : ''} />
-            <span>{loading ? 'Refreshing...' : 'Refresh'}</span>
-          </button>
+          </div>
         </div>
       </div>
 
-      {/* User Identity Banner */}
+      {/* User Identity & Level Pool Account Strip */}
       <div
         style={{
-          background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-          color: '#ffffff',
-          borderRadius: '14px',
-          padding: '1.15rem 1.5rem',
-          marginBottom: '1.5rem',
+          background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
+          color: '#FFFFFF',
+          borderRadius: '18px',
+          padding: '1.25rem 1.65rem',
+          marginBottom: '1.75rem',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
-          gap: '1rem',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+          gap: '1.25rem',
+          boxShadow: '0 8px 24px -4px rgba(15, 23, 42, 0.25)',
+          border: '1.5px solid rgba(255, 255, 255, 0.1)',
+          position: 'relative',
+          overflow: 'hidden',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.15rem' }}>
           <div
             style={{
-              width: '46px',
-              height: '46px',
-              borderRadius: '10px',
-              background: '#818cf8',
-              color: '#0f172a',
+              width: '52px',
+              height: '52px',
+              borderRadius: '15px',
+              background: 'linear-gradient(135deg, #818CF8 0%, #4F46E5 100%)',
+              color: '#FFFFFF',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontWeight: 800,
-              fontSize: '1.35rem',
+              boxShadow: '0 6px 18px rgba(79, 70, 229, 0.35)',
+              flexShrink: 0,
             }}
           >
-            <Layers size={24} />
+            <Layers size={26} strokeWidth={2.2} />
           </div>
           <div>
-            <div style={{ fontSize: '1.15rem', fontWeight: 800 }}>
-              {summary.user_name || user?.name || 'Partner Member'}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+              <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#FFFFFF', letterSpacing: '-0.01em' }}>
+                {summary.user_name || user?.name || 'Partner Member'}
+              </span>
+              <span
+                style={{
+                  background: 'rgba(99, 102, 241, 0.2)',
+                  color: '#A5B4FC',
+                  border: '1px solid rgba(165, 180, 252, 0.4)',
+                  fontSize: '0.7rem',
+                  fontWeight: 800,
+                  padding: '0.15rem 0.5rem',
+                  borderRadius: '9999px',
+                }}
+              >
+                ● Level Earner
+              </span>
             </div>
-            <div style={{ fontSize: '0.8rem', color: '#94a3b8', display: 'flex', gap: '0.75rem', marginTop: '0.15rem', flexWrap: 'wrap' }}>
-              <span>User ID: <strong>#{summary.user_id || user?.id}</strong></span>
+            <div
+              style={{
+                fontSize: '0.82rem',
+                color: '#94A3B8',
+                display: 'flex',
+                gap: '0.85rem',
+                marginTop: '0.35rem',
+                flexWrap: 'wrap',
+                fontWeight: 650,
+              }}
+            >
+              <span>User ID: <strong style={{ color: '#F1F5F9' }}>#{summary.user_id || user?.id}</strong></span>
               <span>•</span>
-              <span>Member Code: <strong>{summary.member_id || user?.user_code}</strong></span>
+              <span>Member Code: <strong style={{ color: '#818CF8' }}>{summary.member_id || user?.user_code}</strong></span>
               <span>•</span>
-              <span>Level Entries: <strong>{allRecords.length} Record{allRecords.length === 1 ? '' : 's'}</strong></span>
+              <span>Level Entries: <strong style={{ color: '#F1F5F9' }}>{allRecords.length} Record{allRecords.length === 1 ? '' : 's'}</strong></span>
             </div>
           </div>
         </div>
@@ -320,15 +351,16 @@ function LevelIncomePage({ user, onNavigate }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <span
             style={{
-              background: 'rgba(129, 140, 248, 0.15)',
-              border: '1px solid #818cf8',
-              color: '#a5b4fc',
-              padding: '0.35rem 0.85rem',
+              background: 'linear-gradient(135deg, rgba(129, 140, 248, 0.15), rgba(79, 70, 229, 0.25))',
+              border: '1.5px solid #818CF8',
+              color: '#A5B4FC',
+              padding: '0.45rem 1rem',
               borderRadius: '9999px',
-              fontSize: '0.75rem',
-              fontWeight: 700,
+              fontSize: '0.78rem',
+              fontWeight: 850,
               textTransform: 'uppercase',
-              letterSpacing: '0.05em',
+              letterSpacing: '0.04em',
+              boxShadow: '0 4px 14px rgba(99, 102, 241, 0.15)',
             }}
           >
             Level 2 – 5 Accounts (40% Pool)
@@ -340,34 +372,35 @@ function LevelIncomePage({ user, onNavigate }) {
       {error && (
         <div
           style={{
-            background: '#fef2f2',
-            border: '1px solid #fecaca',
-            color: '#b91c1c',
-            borderRadius: '10px',
-            padding: '1rem 1.25rem',
-            marginBottom: '1.5rem',
-            fontSize: '0.85rem',
+            background: '#FEF2F2',
+            border: '1.5px solid #FEE2E2',
+            color: '#B91C1C',
+            borderRadius: '14px',
+            padding: '1.15rem 1.45rem',
+            marginBottom: '1.75rem',
+            fontSize: '0.88rem',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
             flexWrap: 'wrap',
-            gap: '0.75rem',
+            gap: '0.85rem',
+            boxShadow: '0 4px 12px rgba(239, 68, 68, 0.08)',
           }}
         >
           <div>
-            <strong>Error loading data:</strong> {error}
+            <strong style={{ fontWeight: 800 }}>Error loading records:</strong> {error}
           </div>
           <button
             type="button"
             onClick={loadLevelIncome}
             style={{
-              padding: '0.4rem 0.85rem',
-              background: '#ef4444',
-              color: '#ffffff',
+              padding: '0.45rem 1rem',
+              background: '#EF4444',
+              color: '#FFFFFF',
               border: 'none',
-              borderRadius: '6px',
-              fontSize: '0.78rem',
-              fontWeight: 700,
+              borderRadius: '8px',
+              fontSize: '0.82rem',
+              fontWeight: 800,
               cursor: 'pointer',
             }}
           >
@@ -376,56 +409,149 @@ function LevelIncomePage({ user, onNavigate }) {
         </div>
       )}
 
-      {/* Exactly TWO Summary Cards: Total Level Income & Remaining Balance */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-          gap: '1rem',
-          marginBottom: '1.5rem',
-        }}
-      >
+      {/* 4 Signature 3D KPI Cards Grid (4 in a row Desktop, 2x2 Tablet, 1 col Mobile) */}
+      <div className="van-business-kpi-grid">
         {/* Card 1: Total Level Income */}
-        <div
-          style={{
-            background: '#ffffff',
-            borderRadius: '12px',
-            border: '1px solid #e2e8f0',
-            borderLeft: '4px solid #4f46e5',
-            padding: '1.35rem 1.5rem',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-          }}
-        >
-          <div style={{ fontSize: '0.74rem', color: '#4338ca', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            TOTAL LEVEL INCOME
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #4F46E5, #3730A3)' }} />
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
+              style={{
+                color: '#4F46E5',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
+              }}
+            >
+              Total Level Income
+            </span>
+            <div
+              className="van-3d-kpi-icon van-3d-icon-indigo"
+              style={{ animationDelay: '0s' }}
+              title="Cumulative Indirect Team Allocations"
+            >
+              <TrendingUp size={22} strokeWidth={2.4} />
+            </div>
           </div>
-          <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#312e81', marginTop: '0.35rem' }}>
+          <div className="van-stat-card-value" style={{ color: '#1E1B4B' }}>
             {formatINR(totalLevelIncome)}
           </div>
-          <div style={{ fontSize: '0.72rem', color: '#4f46e5', fontWeight: 600, marginTop: '0.25rem' }}>
-            Cumulative indirect team allocations
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+              Cumulative indirect team allocations
+            </span>
+            <span className="van-card-badge-pill" style={{ background: '#EEF2FF', color: '#4F46E5', border: '1px solid #C7D2FE' }}>
+              Gross Pool
+            </span>
           </div>
         </div>
 
         {/* Card 2: Remaining Balance */}
-        <div
-          style={{
-            background: '#ffffff',
-            borderRadius: '12px',
-            border: '1px solid #e2e8f0',
-            borderLeft: '4px solid #f59e0b',
-            padding: '1.35rem 1.5rem',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-          }}
-        >
-          <div style={{ fontSize: '0.74rem', color: '#b45309', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            REMAINING BALANCE
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #F59E0B, #D97706)' }} />
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
+              style={{
+                color: '#D97706',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
+              }}
+            >
+              Remaining Balance
+            </span>
+            <div
+              className="van-3d-kpi-icon van-3d-icon-amber"
+              style={{ animationDelay: '0.4s' }}
+              title="Available for Withdrawal / Payout"
+            >
+              <Clock size={22} strokeWidth={2.4} />
+            </div>
           </div>
-          <div style={{ fontSize: '1.75rem', fontWeight: 800, color: remainingBalance > 0 ? '#b45309' : '#64748b', marginTop: '0.35rem' }}>
+          <div className="van-stat-card-value" style={{ color: remainingBalance > 0 ? '#B45309' : '#64748B' }}>
             {formatINR(remainingBalance)}
           </div>
-          <div style={{ fontSize: '0.72rem', color: '#b45309', fontWeight: 600, marginTop: '0.25rem' }}>
-            Available for withdrawal / payout
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+              Available for withdrawal / payout
+            </span>
+            <span className="van-card-badge-pill amber" style={{ background: '#FEF3C7', color: '#92400E', border: '1px solid #FDE68A' }}>
+              Available
+            </span>
+          </div>
+        </div>
+
+        {/* Card 3: Settled to Wallet */}
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #10B981, #059669)' }} />
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
+              style={{
+                color: '#059669',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
+              }}
+            >
+              Settled to Wallet
+            </span>
+            <div
+              className="van-3d-kpi-icon van-3d-icon-emerald"
+              style={{ animationDelay: '0.8s' }}
+              title="Total Distributed & Settled Cash"
+            >
+              <CheckCircle2 size={22} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div className="van-stat-card-value" style={{ color: '#047857' }}>
+            {formatINR(totalPaid)}
+          </div>
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+              Credited directly to wallet
+            </span>
+            <span className="van-card-badge-pill emerald">
+              Settled
+            </span>
+          </div>
+        </div>
+
+        {/* Card 4: Level Entries */}
+        <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #8B5CF6, #6D28D9)' }} />
+          <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+            <span
+              className="van-stat-card-title"
+              style={{
+                color: '#7C3AED',
+                whiteSpace: 'normal',
+                lineHeight: 1.3,
+                fontSize: '0.78rem',
+              }}
+            >
+              Total Level Entries
+            </span>
+            <div
+              className="van-3d-kpi-icon van-3d-icon-purple"
+              style={{ animationDelay: '1.2s' }}
+              title="Total Level Commission Records"
+            >
+              <Layers size={22} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div className="van-stat-card-value" style={{ color: '#6D28D9' }}>
+            {allRecords.length}
+          </div>
+          <div className="van-stat-card-bottom">
+            <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+              Across Levels 2, 3, 4, 5
+            </span>
+            <span className="van-card-badge-pill" style={{ background: '#F5F3FF', color: '#6D28D9', border: '1px solid #DDD6FE' }}>
+              4 Tiers
+            </span>
           </div>
         </div>
       </div>
@@ -433,33 +559,33 @@ function LevelIncomePage({ user, onNavigate }) {
       {/* Progress & Quick Stats Ribbon */}
       <div
         style={{
-          background: '#ffffff',
-          borderRadius: '12px',
-          border: '1px solid #e2e8f0',
-          padding: '1rem 1.35rem',
-          marginBottom: '1.5rem',
+          background: '#FFFFFF',
+          borderRadius: '16px',
+          border: '1.5px solid #E2E8F0',
+          padding: '1.15rem 1.6rem',
+          marginBottom: '1.75rem',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
-          gap: '1rem',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+          gap: '1.25rem',
+          boxShadow: '0 4px 16px -2px rgba(15, 23, 42, 0.04)',
         }}
       >
-        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap', fontSize: '0.82rem' }}>
+        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap', fontSize: '0.84rem' }}>
           <div>
-            <span style={{ color: '#64748b' }}>Total Level Distributions: </span>
-            <strong style={{ color: '#0f172a' }}>{formatNumberIN(allRecords.length)}</strong>
+            <span style={{ color: '#64748B', fontWeight: 650 }}>Total Level Distributions: </span>
+            <strong style={{ color: '#0F172A', fontWeight: 850 }}>{formatNumberIN(allRecords.length)}</strong>
           </div>
-          <span style={{ color: '#cbd5e1' }}>•</span>
+          <span style={{ color: '#CBD5E1' }}>•</span>
           <div>
-            <span style={{ color: '#64748b' }}>Settled to Wallet: </span>
-            <strong style={{ color: '#15803d' }}>{formatINR(totalPaid)}</strong>
+            <span style={{ color: '#64748B', fontWeight: 650 }}>Settled to Wallet: </span>
+            <strong style={{ color: '#047857', fontWeight: 850 }}>{formatINR(totalPaid)}</strong>
           </div>
-          <span style={{ color: '#cbd5e1' }}>•</span>
+          <span style={{ color: '#CBD5E1' }}>•</span>
           <div>
-            <span style={{ color: '#64748b' }}>Active Pools: </span>
-            <strong style={{ color: '#4f46e5' }}>Levels 2 to 5</strong>
+            <span style={{ color: '#64748B', fontWeight: 650 }}>Active Pools: </span>
+            <strong style={{ color: '#4F46E5', fontWeight: 850 }}>Levels 2 to 5 (40% Pool)</strong>
           </div>
         </div>
 
@@ -468,245 +594,222 @@ function LevelIncomePage({ user, onNavigate }) {
             type="button"
             onClick={() => handleOpenDetails()}
             style={{
-              padding: '0.45rem 0.95rem',
-              background: '#f8fafc',
-              color: '#2563eb',
-              border: '1px solid #bfdbfe',
-              borderRadius: '6px',
-              fontSize: '0.78rem',
-              fontWeight: 700,
+              padding: '0.5rem 1.15rem',
+              background: '#F8FAFC',
+              color: '#2563EB',
+              border: '1.5px solid #BFDBFE',
+              borderRadius: '10px',
+              fontSize: '0.82rem',
+              fontWeight: 800,
               cursor: 'pointer',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '0.35rem',
+              gap: '0.45rem',
+              transition: 'all 0.15s ease',
             }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = '#EFF6FF'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = '#F8FAFC'; }}
           >
             <span>View Full Details Table</span>
-            <ArrowRight size={13} />
+            <ArrowRight size={14} />
           </button>
         </div>
       </div>
 
-      {/* Search, Filter & Sort Toolbar */}
-      <div
-        style={{
-          background: '#ffffff',
-          borderRadius: '12px',
-          border: '1px solid #e2e8f0',
-          padding: '1rem 1.25rem',
-          marginBottom: '1.5rem',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '0.85rem',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-        }}
-      >
-        {/* Search Bar */}
-        <div style={{ position: 'relative', flex: '1 1 280px', minWidth: '220px' }}>
-          <Search
-            size={16}
-            color="#94a3b8"
-            style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)' }}
-          />
-          <input
-            type="text"
-            value={search}
-            onChange={handleSearchChange}
-            placeholder="Search by Record ID, Order ID, Invoice, Level, Buyer..."
-            style={{
-              width: '100%',
-              padding: '0.55rem 2.2rem 0.55rem 2.35rem',
-              borderRadius: '8px',
-              border: '1px solid #cbd5e1',
-              fontSize: '0.82rem',
-              color: '#0f172a',
-              outline: 'none',
-              boxSizing: 'border-box',
-            }}
-          />
-          {search && (
+      {/* Advanced 3D Filter & Search Command Toolbar (2-Tier Layout) */}
+      <div className="van-dir-toolbar-3d" style={{ marginBottom: '1.75rem' }}>
+        {/* Tier 1: Search Bar & Quick Action Status */}
+        <div className="van-dir-toolbar-top">
+          {/* Expanded Search Bar with 3D Pod */}
+          <div className="van-dir-search-wrap">
+            <div className="van-dir-search-icon-pod">
+              <Search size={16} color="#2563EB" strokeWidth={2.4} />
+            </div>
+            <input
+              type="text"
+              className="van-dir-search-input"
+              placeholder="Search by Record ID, Order ID, Invoice, Level, Buyer..."
+              value={search}
+              onChange={handleSearchChange}
+            />
+            {search && (
+              <button
+                type="button"
+                className="van-dir-search-clear"
+                onClick={handleClearSearch}
+                title="Clear search"
+              >
+                <X size={14} strokeWidth={2.5} />
+              </button>
+            )}
+          </div>
+
+          {/* Right: Quick Refresh & Record Count Display */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
             <button
               type="button"
-              onClick={handleClearSearch}
+              onClick={loadLevelIncome}
+              disabled={loading}
+              className="van-dir-reset-btn"
               style={{
-                position: 'absolute',
-                right: '0.65rem',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                background: 'transparent',
-                border: 'none',
-                color: '#94a3b8',
-                cursor: 'pointer',
-                padding: '0.2rem',
-                display: 'flex',
-                alignItems: 'center',
+                background: '#EFF6FF',
+                borderColor: '#BFDBFE',
+                color: '#1D4ED8',
+                padding: '0.52rem 1rem',
               }}
-              title="Clear search"
+              title="Refresh level income records from database"
             >
-              <X size={14} />
+              <RotateCcw size={14} strokeWidth={2.4} className={loading ? 'animate-spin' : ''} />
+              <span>{loading ? 'Refreshing...' : 'Refresh'}</span>
             </button>
-          )}
+
+            <div className="van-dir-count-pill" style={{ padding: '0.5rem 0.95rem' }}>
+              <span style={{ color: '#0F172A', fontWeight: 800 }}>{sortedRecords.length}</span>
+              <span>{sortedRecords.length === 1 ? 'record found' : 'records found'}</span>
+            </div>
+          </div>
         </div>
 
-        {/* Filter & Sort Controls */}
-        <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap', alignItems: 'center' }}>
-          {/* Level Filter */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-            <Layers size={15} color="#64748b" />
-            <select
-              value={levelFilter}
-              onChange={handleLevelChange}
+        {/* Subtle Horizontal Divider */}
+        <div className="van-dir-toolbar-divider" />
+
+        {/* Tier 2: Filter Capsules Cluster & Reset Button */}
+        <div className="van-dir-toolbar-bottom">
+          {/* Left: Filter Capsules Cluster */}
+          <div className="van-dir-filters-cluster">
+            <div
               style={{
-                padding: '0.55rem 0.75rem',
-                borderRadius: '8px',
-                border: '1px solid #cbd5e1',
-                fontSize: '0.82rem',
-                color: '#334155',
-                background: '#ffffff',
-                fontWeight: 600,
-                outline: 'none',
-                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.45rem',
+                fontSize: '0.78rem',
+                fontWeight: 850,
+                color: '#64748B',
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+                marginRight: '0.2rem',
               }}
             >
-              <option value="all">All Levels (2 to 5)</option>
-              <option value="2">Level 2 (40% Pool)</option>
-              <option value="3">Level 3 (30% Pool)</option>
-              <option value="4">Level 4 (20% Pool)</option>
-              <option value="5">Level 5 (10% Pool)</option>
-            </select>
+              <Filter size={14} color="#2563EB" strokeWidth={2.5} />
+              <span>Filters</span>
+            </div>
+
+            {/* Level Filter */}
+            <div className={`van-dir-filter-capsule ${levelFilter !== 'all' ? 'active' : ''}`}>
+              <Layers size={15} color="#7C3AED" strokeWidth={2.2} />
+              <select
+                value={levelFilter}
+                onChange={handleLevelChange}
+                aria-label="Filter by Level Tier"
+              >
+                <option value="all">All Levels (2 to 5)</option>
+                <option value="2">Level 2 (40% Pool)</option>
+                <option value="3">Level 3 (30% Pool)</option>
+                <option value="4">Level 4 (20% Pool)</option>
+                <option value="5">Level 5 (10% Pool)</option>
+              </select>
+            </div>
+
+            {/* Status Filter */}
+            <div className={`van-dir-filter-capsule ${statusFilter !== 'all' ? 'active' : ''}`}>
+              <ShieldCheck size={15} color="#10B981" strokeWidth={2.2} />
+              <select
+                value={statusFilter}
+                onChange={handleStatusChange}
+                aria-label="Filter by Distribution Status"
+              >
+                <option value="all">All Statuses</option>
+                <option value="paid">Credited / Settled Only</option>
+                <option value="partial">Partial / Active Only</option>
+              </select>
+            </div>
+
+            {/* Sort Order */}
+            <div className={`van-dir-filter-capsule ${sortBy !== 'latest' ? 'active' : ''}`}>
+              <SlidersHorizontal size={15} color="#D97706" strokeWidth={2.2} />
+              <select
+                value={sortBy}
+                onChange={handleSortChange}
+                aria-label="Sort Records"
+              >
+                <option value="latest">Sort: Latest First</option>
+                <option value="oldest">Sort: Oldest First</option>
+                <option value="highest_amount">Sort: Highest Amount</option>
+                <option value="lowest_amount">Sort: Lowest Amount</option>
+                <option value="level_asc">Sort: Level (2 → 5)</option>
+                <option value="level_desc">Sort: Level (5 → 2)</option>
+              </select>
+            </div>
+
+            {/* Per Page */}
+            <div className="van-dir-filter-capsule">
+              <Layers size={15} color="#2563EB" strokeWidth={2.2} />
+              <select
+                value={perPage}
+                onChange={(e) => {
+                  setPerPage(Number(e.target.value));
+                  setPage(1);
+                }}
+                aria-label="Cards per page"
+              >
+                <option value={10}>10 per page</option>
+                <option value={20}>20 per page</option>
+                <option value={50}>50 per page</option>
+              </select>
+            </div>
+
+            {/* Reset Filters */}
+            {hasActiveFilters && (
+              <button
+                type="button"
+                className="van-dir-reset-btn"
+                onClick={handleResetFilters}
+                title="Reset all search & filter parameters"
+              >
+                <RotateCcw size={13} strokeWidth={2.4} />
+                <span>Reset Filters</span>
+              </button>
+            )}
           </div>
 
-          {/* Status Filter */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-            <Filter size={15} color="#64748b" />
-            <select
-              value={statusFilter}
-              onChange={handleStatusChange}
-              style={{
-                padding: '0.55rem 0.75rem',
-                borderRadius: '8px',
-                border: '1px solid #cbd5e1',
-                fontSize: '0.82rem',
-                color: '#334155',
-                background: '#ffffff',
-                fontWeight: 600,
-                outline: 'none',
-                cursor: 'pointer',
-              }}
-            >
-              <option value="all">All Statuses</option>
-              <option value="paid">Credited / Settled Only</option>
-              <option value="partial">Partial / Active Only</option>
-            </select>
+          {/* Right: Pool Distribution Note */}
+          <div style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: 650 }}>
+            <span>Dynamic Team Override: </span>
+            <strong style={{ color: '#7C3AED' }}>40% Level Pool</strong>
           </div>
-
-          {/* Sort By Dropdown */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-            <ArrowUpDown size={15} color="#64748b" />
-            <select
-              value={sortBy}
-              onChange={handleSortChange}
-              style={{
-                padding: '0.55rem 0.75rem',
-                borderRadius: '8px',
-                border: '1px solid #cbd5e1',
-                fontSize: '0.82rem',
-                color: '#334155',
-                background: '#ffffff',
-                fontWeight: 600,
-                outline: 'none',
-                cursor: 'pointer',
-              }}
-            >
-              <option value="latest">Sort: Latest First</option>
-              <option value="oldest">Sort: Oldest First</option>
-              <option value="highest_amount">Sort: Highest Amount</option>
-              <option value="lowest_amount">Sort: Lowest Amount</option>
-              <option value="level_asc">Sort: Level (2 → 5)</option>
-              <option value="level_desc">Sort: Level (5 → 2)</option>
-            </select>
-          </div>
-
-          {/* Per Page Dropdown */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-            <select
-              value={perPage}
-              onChange={(e) => {
-                setPerPage(Number(e.target.value));
-                setPage(1);
-              }}
-              style={{
-                padding: '0.55rem 0.65rem',
-                borderRadius: '8px',
-                border: '1px solid #cbd5e1',
-                fontSize: '0.82rem',
-                color: '#334155',
-                background: '#ffffff',
-                fontWeight: 600,
-                outline: 'none',
-                cursor: 'pointer',
-              }}
-              title="Cards per page"
-            >
-              <option value={10}>10 per page</option>
-              <option value={20}>20 per page</option>
-              <option value={50}>50 per page</option>
-            </select>
-          </div>
-
-          {/* Reset Filters */}
-          {(search || levelFilter !== 'all' || statusFilter !== 'all' || sortBy !== 'latest' || perPage !== 10) && (
-            <button
-              type="button"
-              onClick={handleResetFilters}
-              style={{
-                padding: '0.55rem 0.85rem',
-                background: '#f1f5f9',
-                color: '#475569',
-                border: '1px solid #cbd5e1',
-                borderRadius: '8px',
-                fontSize: '0.82rem',
-                fontWeight: 700,
-                cursor: 'pointer',
-              }}
-            >
-              Reset
-            </button>
-          )}
         </div>
       </div>
 
-      {/* Large Clean Cards Section (Style matched exactly with Direct Income cards) */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginBottom: '1.5rem' }}>
+      {/* Large Clean Cards Section */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.35rem', marginBottom: '1.75rem' }}>
         {loading ? (
           // Skeleton loading state
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             {[1, 2].map((n) => (
               <div
                 key={n}
                 style={{
-                  background: '#ffffff',
-                  borderRadius: '14px',
-                  border: '1px solid #e2e8f0',
-                  padding: '2rem 1.5rem',
+                  background: '#FFFFFF',
+                  borderRadius: '20px',
+                  border: '1.5px solid #E2E8F0',
+                  padding: '3rem 1.5rem',
                   textAlign: 'center',
-                  color: '#94a3b8',
+                  color: '#94A3B8',
+                  boxShadow: '0 4px 16px -2px rgba(15, 23, 42, 0.04)',
                 }}
               >
                 <div
+                  className="spinner"
                   style={{
-                    display: 'inline-block',
-                    width: '28px',
-                    height: '28px',
-                    border: '3px solid #cbd5e1',
-                    borderTopColor: '#2563eb',
-                    borderRadius: '50%',
-                    animation: 'spin 1s linear infinite',
+                    width: '32px',
+                    height: '32px',
+                    borderWidth: '3px',
+                    margin: '0 auto 0.75rem auto',
                   }}
                 />
-                <div style={{ marginTop: '0.5rem', fontSize: '0.85rem' }}>Loading Level Income Cards...</div>
+                <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#64748B' }}>
+                  Loading Level Income Cards...
+                </div>
               </div>
             ))}
           </div>
@@ -714,53 +817,55 @@ function LevelIncomePage({ user, onNavigate }) {
           // Empty State
           <div
             style={{
-              background: '#ffffff',
-              borderRadius: '14px',
-              border: '1px solid #e2e8f0',
-              padding: '3.5rem 1.5rem',
+              background: '#FFFFFF',
+              borderRadius: '20px',
+              border: '1.5px solid #E2E8F0',
+              padding: '4rem 1.5rem',
               textAlign: 'center',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+              boxShadow: '0 4px 16px -2px rgba(15, 23, 42, 0.04)',
             }}
           >
             <div
               style={{
                 width: '64px',
                 height: '64px',
-                borderRadius: '50%',
-                background: '#eff6ff',
-                color: '#2563eb',
+                borderRadius: '20px',
+                background: '#EFF6FF',
+                color: '#2563EB',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                margin: '0 auto 1rem auto',
+                margin: '0 auto 1.25rem auto',
+                border: '1px solid #DBEAFE',
               }}
             >
-              <Package size={32} />
+              <Package size={30} />
             </div>
-            <h3 style={{ margin: '0 0 0.4rem 0', fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>
+            <h3 style={{ margin: '0 0 0.45rem 0', fontSize: '1.25rem', fontWeight: 850, color: '#0F172A' }}>
               No Level Income Records Found
             </h3>
-            <p style={{ margin: '0 auto 1.25rem auto', fontSize: '0.85rem', color: '#64748b', maxWidth: '480px' }}>
+            <p style={{ margin: '0 auto 1.35rem auto', fontSize: '0.88rem', color: '#64748B', maxWidth: '480px' }}>
               {search || levelFilter !== 'all' || statusFilter !== 'all'
                 ? 'No level income records matched your current search or filter criteria. Try clearing filters to see all entries.'
-                : 'Your Level Income details will appear here when eligible purchases from downline members in Levels 2 to 5 are processed.'}
+                : 'Your Level Income details will appear here automatically when eligible purchases from downline members in Levels 2 to 5 are processed.'}
             </p>
-            {(search || levelFilter !== 'all' || statusFilter !== 'all') && (
+            {hasActiveFilters && (
               <button
                 type="button"
                 onClick={handleResetFilters}
+                className="van-btn-share-3d"
                 style={{
-                  padding: '0.55rem 1.2rem',
-                  background: '#2563eb',
-                  color: '#ffffff',
-                  border: 'none',
-                  borderRadius: '8px',
-                  fontSize: '0.82rem',
-                  fontWeight: 700,
-                  cursor: 'pointer',
+                  padding: '0.65rem 1.45rem',
+                  borderRadius: '11px',
+                  fontSize: '0.84rem',
+                  fontWeight: 800,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.45rem',
                 }}
               >
-                Clear Filters
+                <RotateCcw size={14} />
+                <span>Clear All Filters</span>
               </button>
             )}
           </div>
@@ -780,58 +885,59 @@ function LevelIncomePage({ user, onNavigate }) {
       {sortedRecords.length > 0 && (
         <div
           style={{
-            background: '#ffffff',
-            borderRadius: '12px',
-            border: '1px solid #e2e8f0',
-            padding: '0.85rem 1.25rem',
-            marginBottom: '1.5rem',
+            background: '#FFFFFF',
+            borderRadius: '16px',
+            border: '1.5px solid #E2E8F0',
+            padding: '1rem 1.45rem',
+            marginBottom: '1.75rem',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
             flexWrap: 'wrap',
-            gap: '0.75rem',
-            fontSize: '0.82rem',
-            color: '#64748b',
+            gap: '0.85rem',
+            fontSize: '0.84rem',
+            color: '#64748B',
+            boxShadow: '0 4px 16px -2px rgba(15, 23, 42, 0.04)',
           }}
         >
           <div>
             Showing records{' '}
-            <strong style={{ color: '#0f172a' }}>
+            <strong style={{ color: '#0F172A', fontWeight: 800 }}>
               {(page - 1) * perPage + 1}
             </strong>{' '}
             to{' '}
-            <strong style={{ color: '#0f172a' }}>
+            <strong style={{ color: '#0F172A', fontWeight: 800 }}>
               {Math.min(page * perPage, sortedRecords.length)}
             </strong>{' '}
-            of{' '}
-            <strong style={{ color: '#0f172a' }}>{sortedRecords.length}</strong> total
+            of <strong style={{ color: '#0F172A', fontWeight: 800 }}>{sortedRecords.length}</strong> total
           </div>
 
-          <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '0.45rem', alignItems: 'center' }}>
             <button
               type="button"
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page <= 1}
               style={{
-                padding: '0.45rem 0.75rem',
-                background: '#ffffff',
-                border: '1px solid #cbd5e1',
-                borderRadius: '6px',
-                color: page <= 1 ? '#94a3b8' : '#334155',
+                padding: '0.45rem 0.85rem',
+                background: page <= 1 ? '#F8FAFC' : '#FFFFFF',
+                border: '1.5px solid #CBD5E1',
+                borderRadius: '8px',
+                color: page <= 1 ? '#94A3B8' : '#334155',
                 cursor: page <= 1 ? 'not-allowed' : 'pointer',
-                display: 'flex',
+                display: 'inline-flex',
                 alignItems: 'center',
-                gap: '0.25rem',
-                fontSize: '0.78rem',
-                fontWeight: 700,
+                gap: '0.3rem',
+                fontSize: '0.8rem',
+                fontWeight: 750,
+                transition: 'all 0.15s ease',
               }}
             >
               <ChevronLeft size={14} />
-              <span>Prev</span>
+              <span>Previous</span>
             </button>
 
-            <span style={{ padding: '0 0.5rem', fontWeight: 700, color: '#0f172a' }}>
-              {page} / {totalPages}
+            <span style={{ padding: '0 0.65rem', fontWeight: 800, color: '#0F172A', fontSize: '0.82rem' }}>
+              Page {page} of {totalPages}
             </span>
 
             <button
@@ -839,17 +945,18 @@ function LevelIncomePage({ user, onNavigate }) {
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page >= totalPages}
               style={{
-                padding: '0.45rem 0.75rem',
-                background: '#ffffff',
-                border: '1px solid #cbd5e1',
-                borderRadius: '6px',
-                color: page >= totalPages ? '#94a3b8' : '#334155',
+                padding: '0.45rem 0.85rem',
+                background: page >= totalPages ? '#F8FAFC' : '#FFFFFF',
+                border: '1.5px solid #CBD5E1',
+                borderRadius: '8px',
+                color: page >= totalPages ? '#94A3B8' : '#334155',
                 cursor: page >= totalPages ? 'not-allowed' : 'pointer',
-                display: 'flex',
+                display: 'inline-flex',
                 alignItems: 'center',
-                gap: '0.25rem',
-                fontSize: '0.78rem',
-                fontWeight: 700,
+                gap: '0.3rem',
+                fontSize: '0.8rem',
+                fontWeight: 750,
+                transition: 'all 0.15s ease',
               }}
             >
               <span>Next</span>
@@ -862,16 +969,28 @@ function LevelIncomePage({ user, onNavigate }) {
       {/* Accounting Note */}
       <div
         style={{
-          background: '#f8fafc',
-          border: '1px solid #e2e8f0',
-          borderRadius: '10px',
-          padding: '1rem 1.25rem',
-          fontSize: '0.78rem',
-          color: '#64748b',
-          lineHeight: 1.5,
+          background: '#F8FAFC',
+          border: '1.5px solid #E2E8F0',
+          borderRadius: '16px',
+          padding: '1.25rem 1.5rem',
+          fontSize: '0.82rem',
+          color: '#64748B',
+          lineHeight: 1.65,
         }}
       >
-        ℹ️ <strong>System Note:</strong> Level Income represents the 40% Admin Cut pool distributed dynamically across team downlines: Level 2 = 40%, Level 3 = 30%, Level 4 = 20%, and Level 5 = 10%. Direct sponsors receive Direct Income (Level 1 excluded from level pool). All figures reflect real-time records from the <code>level_incomes</code> database table for Member <strong>{summary.member_id}</strong>.
+        <div style={{ fontWeight: 850, color: '#0F172A', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.88rem' }}>
+          <Info size={16} color="#2563EB" />
+          <span>Vyapar Adnet Level Income Accounting System</span>
+        </div>
+        <div>
+          • <strong>System Allocation:</strong> Level Income represents the 40% Admin Cut pool distributed dynamically across team downlines: Level 2 = 40%, Level 3 = 30%, Level 4 = 20%, and Level 5 = 10%.
+        </div>
+        <div>
+          • <strong>Direct Sponsor Exclusion:</strong> Direct sponsors receive Direct Income (Level 1 excluded from the level pool).
+        </div>
+        <div>
+          • <strong>Real-Time Verification:</strong> All figures reflect verified real-time records from the <code>level_incomes</code> database table for Member <strong>{summary.member_id}</strong>.
+        </div>
       </div>
     </div>
   );
