@@ -479,12 +479,12 @@ function AdminSettingsPage() {
               </p>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
-                {/* Logo Preview Circle / Box */}
-                <div style={{ width: '72px', height: '72px', borderRadius: '16px', background: '#ffffff', border: '2px dashed #cbd5e1', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: '4px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                {/* Logo Preview Container */}
+                <div style={{ minWidth: '80px', maxWidth: '200px', height: '60px', borderRadius: '12px', background: '#ffffff', border: '2px dashed #cbd5e1', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: '6px 12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
                   <img
                     src={logoPreview || currentLogoUrl || '/logo.png'}
                     alt="Company Logo Preview"
-                    style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+                    style={{ maxHeight: '48px', height: '48px', width: 'auto', maxWidth: '100%', objectFit: 'contain' }}
                     onError={(e) => {
                       e.target.src = '/logo.png';
                     }}
@@ -575,18 +575,17 @@ function AdminSettingsPage() {
               <div style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.5px', marginBottom: '0.75rem' }}>
                 Live Portal Header Preview
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '0.75rem 1.25rem' }}>
-                <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: '3px' }}>
-                  <img
-                    src={logoPreview || currentLogoUrl || '/logo.png'}
-                    alt="Logo Header Preview"
-                    style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
-                    onError={(e) => {
-                      e.target.src = '/logo.png';
-                    }}
-                  />
-                </div>
-                <div>
+              <div style={{ display: 'flex', alignItems: 'center', minHeight: '60px', background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '0.75rem 1.25rem' }}>
+                <img
+                  src={logoPreview || currentLogoUrl || '/logo.png'}
+                  alt="Logo Header Preview"
+                  style={{ maxHeight: '44px', height: '44px', width: 'auto', maxWidth: '220px', objectFit: 'contain' }}
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    if (e.target.nextElementSibling) e.target.nextElementSibling.style.display = 'block';
+                  }}
+                />
+                <div style={{ display: 'none' }}>
                   <div style={{ fontFamily: 'Poppins, sans-serif', fontSize: '1.15rem', fontWeight: 900, color: '#0F4C81' }}>
                     {appNameInput.trim() || 'Vyapar AdNET'}
                   </div>

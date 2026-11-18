@@ -30,10 +30,10 @@
     # --------------------------------------------------------------------------
     # 2. Public Static Media & Storage Mappings
     # --------------------------------------------------------------------------
-    RewriteCond %{DOCUMENT_ROOT}/backend/public/uploads/$1 -f
+    RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^uploads/(.*)$ backend/public/uploads/$1 [L]
 
-    RewriteCond %{DOCUMENT_ROOT}/backend/public/storage/$1 -f
+    RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^storage/(.*)$ backend/public/storage/$1 [L]
 
     # --------------------------------------------------------------------------

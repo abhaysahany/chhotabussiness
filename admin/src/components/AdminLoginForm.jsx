@@ -13,7 +13,12 @@ import { FieldError, getInputErrorStyle } from '../utils/validation';
 function AdminLoginForm({ onLoginSuccess }) {
   const navigate = useNavigate();
   const { appName, logoUrl } = useBranding();
+  const [logoFailed, setLogoFailed] = useState(false);
   const [login, setLogin] = useState('admin');
+
+  useEffect(() => {
+    setLogoFailed(false);
+  }, [logoUrl]);
   const [password, setPassword] = useState('123456');
   const [loginFieldErrors, setLoginFieldErrors] = useState({});
   const [rememberMe, setRememberMe] = useState(false);
@@ -235,49 +240,51 @@ function AdminLoginForm({ onLoginSuccess }) {
     <div className="auth-page-container">
       {/* Brand Header */}
       <div className="auth-header">
-        <div className="brand-logo">
-          {logoUrl ? (
+        <div className="brand-logo" style={{ justifyContent: 'center' }}>
+          {logoUrl && !logoFailed ? (
             <img
               src={logoUrl}
               alt={appName}
-              style={{ maxHeight: '48px', height: '48px', width: 'auto', maxWidth: '200px', objectFit: 'contain' }}
-              onError={(e) => { e.target.style.display = 'none'; }}
+              style={{ maxHeight: '52px', height: '52px', width: 'auto', maxWidth: '240px', objectFit: 'contain' }}
+              onError={() => setLogoFailed(true)}
             />
           ) : (
-            <svg
-              width="32"
-              height="32"
-              viewBox="0 0 32 32"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <rect width="32" height="32" rx="8" fill="url(#logo-grad)" />
-              <path
-                d="M10 10H16C18.2091 10 20 11.7909 20 14V14C20 16.2091 18.2091 18 16 18H10V10Z"
-                fill="white"
-              />
-              <path
-                d="M16 18H22V22H16C13.7909 22 12 20.2091 12 18V18"
-                stroke="white"
-                strokeWidth="3"
-              />
-              <defs>
-                <linearGradient
-                  id="logo-grad"
-                  x1="0"
-                  y1="0"
-                  x2="32"
-                  y2="32"
-                  gradientUnits="userSpaceOnUse"
-                >
-                  <stop stopColor="#3569a7" />
-                  <stop offset="1" stopColor="#264e7e" />
-                </linearGradient>
-              </defs>
-            </svg>
+            <>
+              <svg
+                width="32"
+                height="32"
+                viewBox="0 0 32 32"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect width="32" height="32" rx="8" fill="url(#logo-grad)" />
+                <path
+                  d="M10 10H16C18.2091 10 20 11.7909 20 14V14C20 16.2091 18.2091 18 16 18H10V10Z"
+                  fill="white"
+                />
+                <path
+                  d="M16 18H22V22H16C13.7909 22 12 20.2091 12 18V18"
+                  stroke="white"
+                  strokeWidth="3"
+                />
+                <defs>
+                  <linearGradient
+                    id="logo-grad"
+                    x1="0"
+                    y1="0"
+                    x2="32"
+                    y2="32"
+                    gradientUnits="userSpaceOnUse"
+                  >
+                    <stop stopColor="#3569a7" />
+                    <stop offset="1" stopColor="#264e7e" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <span className="brand-name">{appName}</span>
+              <span className="brand-badge">ADMIN</span>
+            </>
           )}
-          <span className="brand-name">{appName}</span>
-          <span className="brand-badge">ADMIN</span>
         </div>
         <h1 className="auth-title">Administrator Portal</h1>
         <p className="auth-subtitle">
