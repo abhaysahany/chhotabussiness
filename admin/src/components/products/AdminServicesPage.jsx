@@ -467,7 +467,7 @@ function AdminServicesPage() {
           </button>
         </div>
       ) : viewMode === 'table' ? (
-        <div className="pro-table-wrapper">
+        <div className="pro-table-wrapper table-responsive">
           <table className="pro-data-table">
             <thead>
               <tr>

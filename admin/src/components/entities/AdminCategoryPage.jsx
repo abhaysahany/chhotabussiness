@@ -151,7 +151,7 @@ function AdminCategoryPage({ onNavigate }) {
   const totalFreelancers = categories.reduce((sum, c) => sum + (c.freelancers_count || 0), 0);
 
   return (
-    <div className="page-content-wrapper">
+    <div className="page-content-wrapper pro-entity-page-container">
       {/* Pro Hero Banner */}
       <div className="pro-entity-hero">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem', position: 'relative', zIndex: 1 }}>

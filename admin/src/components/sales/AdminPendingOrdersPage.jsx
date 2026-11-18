@@ -248,7 +248,7 @@ function AdminPendingOrdersPage({ onNavigate }) {
   };
 
   return (
-    <div className="admin-page-container" style={{ padding: '1.5rem', maxWidth: '1400px', margin: '0 auto' }}>
+    <div className="admin-page-container pro-orders-container">
       {/* Toast Notification */}
       {toastMessage && (
         <div
@@ -274,20 +274,10 @@ function AdminPendingOrdersPage({ onNavigate }) {
       )}
 
       {/* Page Header */}
-      <div
-        className="page-header"
-        style={{
-          marginBottom: '1.5rem',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '1rem',
-        }}
-      >
+      <div className="page-header pro-orders-header">
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <h1 className="page-title" style={{ margin: 0, fontSize: '1.45rem', fontWeight: 800, color: '#0f172a' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <h1 className="page-title pro-orders-header-title" style={{ margin: 0, fontSize: '1.45rem', fontWeight: 800, color: '#0f172a' }}>
               Pending Orders
             </h1>
             <span
@@ -309,7 +299,7 @@ function AdminPendingOrdersPage({ onNavigate }) {
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+        <div className="pro-orders-header-actions">
           <button
             type="button"
             onClick={loadPendingOrders}
@@ -335,14 +325,7 @@ function AdminPendingOrdersPage({ onNavigate }) {
       </div>
 
       {/* Summary KPI Cards (Dynamic from Pending Orders) */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: '1rem',
-          marginBottom: '1.5rem',
-        }}
-      >
+      <div className="pro-orders-kpi-grid">
         <div
           className="stat-card"
           style={{
@@ -429,21 +412,8 @@ function AdminPendingOrdersPage({ onNavigate }) {
       </div>
 
       {/* Filter and Search Bar */}
-      <div
-        style={{
-          background: '#ffffff',
-          borderRadius: '12px',
-          border: '1px solid #e2e8f0',
-          padding: '1rem 1.25rem',
-          marginBottom: '1.5rem',
-          display: 'flex',
-          gap: '0.85rem',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <div style={{ flex: 1, minWidth: '260px' }}>
+      <div className="pro-orders-filter-bar">
+        <div className="pro-orders-search-wrap">
           <input
             type="text"
             placeholder="Search by Invoice #, Customer, Member ID, Entity, or Offering..."
@@ -463,7 +433,7 @@ function AdminPendingOrdersPage({ onNavigate }) {
           />
         </div>
 
-        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
+        <div className="pro-orders-filter-controls">
           <select
             value={itemTypeFilter}
             onChange={(e) => {
@@ -547,17 +517,9 @@ function AdminPendingOrdersPage({ onNavigate }) {
       )}
 
       {/* Pending Orders Table Container */}
-      <div
-        style={{
-          background: '#ffffff',
-          borderRadius: '12px',
-          border: '1px solid #e2e8f0',
-          overflow: 'hidden',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-        }}
-      >
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
+      <div className="pro-orders-table-wrapper table-responsive">
+        <div className="table-responsive-inner" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', width: '100%' }}>
+          <table className="pro-orders-table" style={{ width: '100%', minWidth: '850px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
             <thead>
               <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
                 <th style={{ padding: '0.85rem 1rem', color: '#475569', fontWeight: 700, fontSize: '0.75rem' }}>ORDER / INVOICE</th>
@@ -744,6 +706,7 @@ function AdminPendingOrdersPage({ onNavigate }) {
         {/* Pagination Bar */}
         {filteredOrders.length > pageSize && (
           <div
+            className="pro-orders-pagination-bar"
             style={{
               padding: '0.85rem 1.25rem',
               display: 'flex',
@@ -803,6 +766,7 @@ function AdminPendingOrdersPage({ onNavigate }) {
       {/* ========================================================================= */}
       {selectedOrderForReview && liveFinancials && (
         <div
+          className="pro-orders-modal-backdrop"
           style={{
             position: 'fixed',
             top: 0,
@@ -824,6 +788,7 @@ function AdminPendingOrdersPage({ onNavigate }) {
           }}
         >
           <div
+            className="pro-orders-modal-dialog"
             style={{
               background: '#ffffff',
               borderRadius: '16px',
@@ -891,6 +856,7 @@ function AdminPendingOrdersPage({ onNavigate }) {
               </div>
 
               <div
+                className="pro-orders-modal-grid-3col"
                 style={{
                   display: 'grid',
                   gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
@@ -1163,7 +1129,7 @@ function AdminPendingOrdersPage({ onNavigate }) {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <div className="pro-orders-modal-actions" style={{ display: 'flex', gap: '0.75rem' }}>
                 <button
                   type="button"
                   onClick={closeReviewModal}
@@ -1213,6 +1179,7 @@ function AdminPendingOrdersPage({ onNavigate }) {
       {/* ========================================================================= */}
       {selectedOrderForCancel && (
         <div
+          className="pro-orders-modal-backdrop"
           style={{
             position: 'fixed',
             top: 0,
@@ -1234,6 +1201,7 @@ function AdminPendingOrdersPage({ onNavigate }) {
           }}
         >
           <div
+            className="pro-orders-modal-dialog pro-orders-modal-dialog-sm"
             style={{
               background: '#ffffff',
               borderRadius: '16px',
@@ -1391,6 +1359,7 @@ function AdminPendingOrdersPage({ onNavigate }) {
 
             {/* Actions */}
             <div
+              className="pro-orders-modal-actions"
               style={{
                 display: 'flex',
                 justifyContent: 'flex-end',

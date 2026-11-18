@@ -99,7 +99,7 @@ function AdminPaymentHistoryPage() {
   }, [filteredPayments]);
 
   return (
-    <div className="admin-page-container">
+    <div className="admin-page-container pro-orders-container">
       {/* Toast Notification */}
       {toastMessage && (
         <div
@@ -122,10 +122,10 @@ function AdminPaymentHistoryPage() {
       )}
 
       {/* Page Header */}
-      <div className="page-header" style={{ marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+      <div className="page-header pro-orders-header">
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-            <h1 className="page-title" style={{ margin: 0, fontSize: '1.45rem', fontWeight: 800, color: '#0f172a' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+            <h1 className="page-title pro-orders-header-title">
               Payment Receipts & History
             </h1>
             <span style={{ background: '#ecfdf5', color: '#059669', border: '1px solid #a7f3d0', fontSize: '0.72rem', fontWeight: 700, padding: '0.2rem 0.55rem', borderRadius: '6px' }}>
@@ -136,13 +136,13 @@ function AdminPaymentHistoryPage() {
             Permanent historical audit trail of individual payment receipts whose Admin Income Allocation (40% Direct / 40% Level / 20% Reward) has been successfully completed.
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+        <div className="pro-orders-header-actions">
           <button
             type="button"
             onClick={loadPayments}
             disabled={loading}
             style={{
-              padding: '0.5rem 0.95rem',
+              padding: '0.55rem 1rem',
               background: '#f8fafc',
               color: '#334155',
               border: '1px solid #cbd5e1',
@@ -177,7 +177,7 @@ function AdminPaymentHistoryPage() {
           color: '#0369a1',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
           <span style={{ fontSize: '1.1rem' }}>ℹ️</span>
           <span>
             <strong>Read-Only Notice:</strong> This audit page displays <strong>only successfully distributed payments</strong>. To inspect pending payments or distribute Admin Commission, please use <strong>Sidebar → Orders & Payments → Order Management</strong>.
@@ -189,8 +189,8 @@ function AdminPaymentHistoryPage() {
       </div>
 
       {/* KPI Stats Cards — Strictly from successfully distributed receipts */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.85rem', marginBottom: '1.5rem' }}>
-        <div className="stat-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', borderLeft: '4px solid #2563eb' }}>
+      <div className="pro-orders-kpi-grid">
+        <div className="stat-card pro-orders-kpi-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', borderLeft: '4px solid #2563eb' }}>
           <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             Distributed Payments
           </div>
@@ -202,7 +202,7 @@ function AdminPaymentHistoryPage() {
           </div>
         </div>
 
-        <div className="stat-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', borderLeft: '4px solid #059669' }}>
+        <div className="stat-card pro-orders-kpi-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', borderLeft: '4px solid #059669' }}>
           <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             Admin Cut Distributed
           </div>
@@ -214,7 +214,7 @@ function AdminPaymentHistoryPage() {
           </div>
         </div>
 
-        <div className="stat-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', borderLeft: '4px solid #7c3aed' }}>
+        <div className="stat-card pro-orders-kpi-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', borderLeft: '4px solid #7c3aed' }}>
           <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             Direct Income (40%)
           </div>
@@ -226,7 +226,7 @@ function AdminPaymentHistoryPage() {
           </div>
         </div>
 
-        <div className="stat-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', borderLeft: '4px solid #d97706' }}>
+        <div className="stat-card pro-orders-kpi-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', borderLeft: '4px solid #d97706' }}>
           <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             Level Income (40%)
           </div>
@@ -238,7 +238,7 @@ function AdminPaymentHistoryPage() {
           </div>
         </div>
 
-        <div className="stat-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', borderLeft: '4px solid #0891b2' }}>
+        <div className="stat-card pro-orders-kpi-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', borderLeft: '4px solid #0891b2' }}>
           <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             Reward Income (20%)
           </div>
@@ -250,7 +250,7 @@ function AdminPaymentHistoryPage() {
           </div>
         </div>
 
-        <div className="stat-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', borderLeft: '4px solid #475569' }}>
+        <div className="stat-card pro-orders-kpi-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', borderLeft: '4px solid #475569' }}>
           <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             Receipt Count
           </div>
@@ -264,8 +264,8 @@ function AdminPaymentHistoryPage() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', padding: '1rem', marginBottom: '1.5rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ flex: 1, minWidth: '280px' }}>
+      <div className="pro-orders-filter-bar">
+        <div className="pro-orders-search-wrap" style={{ flex: 1, minWidth: '260px' }}>
           <input
             type="text"
             placeholder="Search by Invoice #, Customer, Member ID, Sponsor, Seller Entity, or UTR..."
@@ -275,7 +275,7 @@ function AdminPaymentHistoryPage() {
           />
         </div>
 
-        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+        <div className="pro-orders-filter-controls">
           <select
             value={paymentTypeFilter}
             onChange={(e) => setPaymentTypeFilter(e.target.value)}
@@ -286,16 +286,16 @@ function AdminPaymentHistoryPage() {
             <option value="balance">Balance Installment Only</option>
           </select>
 
-          <span style={{ fontSize: '0.78rem', color: '#64748b', background: '#f1f5f9', padding: '0.45rem 0.75rem', borderRadius: '6px', fontWeight: 600 }}>
+          <span style={{ fontSize: '0.78rem', color: '#64748b', background: '#f1f5f9', padding: '0.45rem 0.75rem', borderRadius: '6px', fontWeight: 600, whiteSpace: 'nowrap' }}>
             Showing: {filteredPayments.length} of {payments.length} distributed
           </span>
         </div>
       </div>
 
       {/* Payment Receipts & History Table — 21 Columns */}
-      <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 1px 3px 0 rgba(0,0,0,0.05)' }}>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', minWidth: '1650px' }}>
+      <div className="pro-orders-table-wrapper table-responsive">
+        <div className="table-responsive-inner" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <table className="pro-orders-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', minWidth: '1650px' }}>
             <thead>
               <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left', color: '#475569', whiteSpace: 'nowrap' }}>
                 <th style={{ padding: '0.75rem 0.85rem' }}>Receipt # / ID</th>
@@ -513,37 +513,16 @@ function AdminPaymentHistoryPage() {
       {/* Read-Only Modal: View Distribution Breakdown Log */}
       {viewingPayment && (
         <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(15, 23, 42, 0.75)',
-            backdropFilter: 'blur(4px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 99999,
-            padding: '1rem',
+          className="pro-orders-modal-backdrop"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setViewingPayment(null);
           }}
         >
-          <div
-            style={{
-              background: '#ffffff',
-              borderRadius: '16px',
-              width: '100%',
-              maxWidth: '560px',
-              padding: '1.75rem',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-              maxHeight: '90vh',
-              overflowY: 'auto',
-            }}
-          >
+          <div className="pro-orders-modal-dialog pro-orders-modal-dialog-sm">
             {/* Modal Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.85rem', marginBottom: '1.25rem' }}>
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                   <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>
                     Payment Distribution Audit
                   </h3>
@@ -566,7 +545,7 @@ function AdminPaymentHistoryPage() {
 
             {/* Receipt Summary Cards */}
             <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '1rem', marginBottom: '1.25rem' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.65rem', fontSize: '0.82rem' }}>
+              <div className="pro-orders-modal-grid-2col" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.65rem', fontSize: '0.82rem' }}>
                 <div>
                   <span style={{ color: '#64748b' }}>Customer:</span>
                   <div style={{ fontWeight: 700, color: '#0f172a' }}>{viewingPayment.customer_name || viewingPayment.customerName}</div>

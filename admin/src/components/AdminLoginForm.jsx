@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useBranding } from '../utils/branding';
 import {
   adminLogin,
@@ -10,8 +10,10 @@ import {
 import { initSession, getExpiredNotice } from '../utils/sessionManager';
 import { FieldError, getInputErrorStyle } from '../utils/validation';
 
-function AdminLoginForm({ onLoginSuccess }) {
+function AdminLoginForm({ onLoginSuccess, initialShowForgot = false }) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isForgotRoute = location.pathname.includes('/forgot-password') || location.pathname.includes('/reset-password');
   const { appName, logoUrl } = useBranding();
   const [logoFailed, setLogoFailed] = useState(false);
   const [login, setLogin] = useState('admin');
@@ -36,8 +38,14 @@ function AdminLoginForm({ onLoginSuccess }) {
   }, []);
 
   // Forgot Password Modal States
-  const [showForgotModal, setShowForgotModal] = useState(false);
+  const [showForgotModal, setShowForgotModal] = useState(() => Boolean(initialShowForgot || isForgotRoute));
   const [forgotStep, setForgotStep] = useState(1); // 1: Login/Email, 2: OTP, 3: New Password, 4: Success
+
+  useEffect(() => {
+    if (initialShowForgot || isForgotRoute) {
+      setShowForgotModal(true);
+    }
+  }, [initialShowForgot, isForgotRoute]);
   const [resetLogin, setResetLogin] = useState('');
   const [resetOtp, setResetOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -123,6 +131,14 @@ function AdminLoginForm({ onLoginSuccess }) {
     setMaskedEmail('');
     setResendCooldown(0);
     setShowForgotModal(true);
+  };
+
+  // Close Forgot Password Modal
+  const handleCloseForgotModal = () => {
+    setShowForgotModal(false);
+    if (isForgotRoute) {
+      navigate('/login', { replace: true });
+    }
   };
 
   // Step 1: Send OTP to Admin Email
@@ -245,7 +261,7 @@ function AdminLoginForm({ onLoginSuccess }) {
             <img
               src={logoUrl}
               alt={appName}
-              style={{ maxHeight: '52px', height: '52px', width: 'auto', maxWidth: '240px', objectFit: 'contain' }}
+              className="admin-login-logo"
               onError={() => setLogoFailed(true)}
             />
           ) : (
@@ -466,59 +482,23 @@ function AdminLoginForm({ onLoginSuccess }) {
 
       {/* ADMIN FORGOT PASSWORD MODAL */}
       {showForgotModal && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(15, 23, 42, 0.7)',
-            backdropFilter: 'blur(6px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-            padding: '1rem',
-          }}
-        >
-          <div
-            style={{
-              background: '#ffffff',
-              borderRadius: '16px',
-              width: '100%',
-              maxWidth: '460px',
-              padding: '1.75rem',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-              position: 'relative',
-            }}
-          >
+        <div className="auth-modal-overlay" onClick={handleCloseForgotModal}>
+          <div className="auth-modal-card" onClick={(e) => e.stopPropagation()}>
             {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem' }}>
+            <div className="auth-modal-header">
               <div>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#eaf1f8', color: '#3569a7', padding: '0.2rem 0.6rem', borderRadius: '12px', fontSize: '0.72rem', fontWeight: '700', marginBottom: '0.4rem' }}>
+                <div className="auth-modal-badge">
                   <span>🔐 Admin Security</span>
                 </div>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
+                <h3 className="auth-modal-title">
                   Reset Admin Password
                 </h3>
               </div>
               <button
                 type="button"
-                onClick={() => setShowForgotModal(false)}
-                style={{
-                  background: '#f1f5f9',
-                  border: 'none',
-                  borderRadius: '50%',
-                  width: '32px',
-                  height: '32px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#64748b',
-                  fontSize: '1.25rem',
-                  cursor: 'pointer',
-                }}
+                className="auth-modal-close-btn"
+                onClick={handleCloseForgotModal}
+                aria-label="Close"
               >
                 ×
               </button>
@@ -526,56 +506,69 @@ function AdminLoginForm({ onLoginSuccess }) {
 
             {/* Stepper Indicator */}
             {forgotStep < 4 && (
-              <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem' }}>
-                <div style={{ flex: 1, height: '4px', borderRadius: '2px', background: forgotStep >= 1 ? '#3569a7' : '#e2e8f0' }} />
-                <div style={{ flex: 1, height: '4px', borderRadius: '2px', background: forgotStep >= 2 ? '#3569a7' : '#e2e8f0' }} />
-                <div style={{ flex: 1, height: '4px', borderRadius: '2px', background: forgotStep >= 3 ? '#3569a7' : '#e2e8f0' }} />
+              <div className="auth-modal-stepper">
+                <div className={`auth-modal-step-bar ${forgotStep >= 1 ? 'active' : ''}`} />
+                <div className={`auth-modal-step-bar ${forgotStep >= 2 ? 'active' : ''}`} />
+                <div className={`auth-modal-step-bar ${forgotStep >= 3 ? 'active' : ''}`} />
               </div>
             )}
 
             {/* Error Message */}
             {forgotError && (
-              <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#b91c1c', padding: '0.65rem 0.85rem', borderRadius: '8px', fontSize: '0.8rem', marginBottom: '1rem' }}>
-                ⚠️ {forgotError}
+              <div className="alert alert-error" style={{ marginBottom: '1rem', fontSize: '0.85rem' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ flexShrink: 0 }}>
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                <span>{forgotError}</span>
               </div>
             )}
 
             {/* STEP 1: Enter Username/Email */}
             {forgotStep === 1 && (
               <form onSubmit={handleSendOtp}>
-                <p style={{ color: '#64748b', fontSize: '0.85rem', marginBottom: '1rem' }}>
+                <p className="auth-modal-desc">
                   Enter your registered administrator email address or username to receive a 6-digit verification code.
                 </p>
 
-                <div style={{ marginBottom: '1.25rem' }}>
-                  <label style={{ display: 'block', fontWeight: '600', fontSize: '0.8125rem', color: '#334155', marginBottom: '0.4rem' }}>
-                    Admin Email or Username *
+                <div className="form-group" style={{ marginBottom: '1.25rem' }}>
+                  <label htmlFor="resetLogin">
+                    Admin Email or Username <span className="required-asterisk">*</span>
                   </label>
                   <input
+                    id="resetLogin"
                     type="text"
                     required
                     className="form-input"
                     placeholder="e.g. admin@addnet.com or admin"
                     value={resetLogin}
                     onChange={(e) => setResetLogin(e.target.value)}
-                    style={{ width: '100%' }}
+                    autoComplete="username"
                   />
                 </div>
 
-                <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+                <div className="auth-modal-actions">
                   <button
                     type="button"
-                    onClick={() => setShowForgotModal(false)}
-                    style={{ padding: '0.6rem 1.25rem', background: '#f1f5f9', color: '#475569', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '0.85rem', cursor: 'pointer' }}
+                    className="auth-modal-btn auth-modal-btn-secondary"
+                    onClick={handleCloseForgotModal}
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={forgotLoading}
-                    style={{ padding: '0.6rem 1.25rem', background: 'linear-gradient(135deg, #3569a7 0%, #264e7e 100%)', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', boxShadow: '0 4px 12px rgba(53, 105, 167, 0.25)' }}
+                    className="auth-modal-btn auth-modal-btn-primary"
                   >
-                    {forgotLoading ? 'Sending...' : 'Send Verification OTP →'}
+                    {forgotLoading ? (
+                      <>
+                        <span className="spinner" style={{ width: '14px', height: '14px', borderWidth: '2px' }}></span>
+                        Sending...
+                      </>
+                    ) : (
+                      'Send Verification OTP →'
+                    )}
                   </button>
                 </div>
               </form>
@@ -584,63 +577,73 @@ function AdminLoginForm({ onLoginSuccess }) {
             {/* STEP 2: Enter OTP */}
             {forgotStep === 2 && (
               <form onSubmit={handleVerifyOtp}>
-                <p style={{ color: '#64748b', fontSize: '0.85rem', marginBottom: '0.5rem' }}>
+                <p className="auth-modal-desc">
                   Enter the 6-digit verification code sent to {maskedEmail ? <strong style={{ color: '#0f172a' }}>{maskedEmail}</strong> : `administrator ${resetLogin}`}.
                 </p>
 
                 {demoOtpHint && (
-                  <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', color: '#15803d', padding: '0.5rem 0.75rem', borderRadius: '6px', fontSize: '0.78rem', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div className="demo-otp-box">
                     <span>⚡ Demo OTP: <strong>{demoOtpHint}</strong></span>
                     <button
                       type="button"
                       onClick={() => setResetOtp(demoOtpHint)}
-                      style={{ background: '#dcfce7', border: 'none', color: '#166534', padding: '0.15rem 0.45rem', borderRadius: '4px', fontSize: '0.7rem', cursor: 'pointer', fontWeight: '600' }}
+                      className="demo-otp-fill-btn"
                     >
                       Fill Code
                     </button>
                   </div>
                 )}
 
-                <div style={{ marginBottom: '1.25rem' }}>
-                  <label style={{ display: 'block', fontWeight: '600', fontSize: '0.8125rem', color: '#334155', marginBottom: '0.4rem' }}>
-                    6-Digit Verification Code *
+                <div className="form-group" style={{ marginBottom: '1.25rem' }}>
+                  <label htmlFor="resetOtp">
+                    6-Digit Verification Code <span className="required-asterisk">*</span>
                   </label>
                   <input
+                    id="resetOtp"
                     type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    autoComplete="one-time-code"
                     required
                     maxLength={6}
-                    className="form-input"
+                    className="form-input otp-input-field"
                     placeholder="123456"
                     value={resetOtp}
                     onChange={(e) => setResetOtp(e.target.value.replace(/\D/g, ''))}
-                    style={{ width: '100%', letterSpacing: '4px', fontSize: '1.25rem', textAlign: 'center', fontWeight: '700' }}
                   />
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div className="step-2-actions-row">
                   <button
                     type="button"
+                    className="auth-modal-btn-link"
                     onClick={() => setForgotStep(1)}
-                    style={{ background: 'none', border: 'none', color: '#64748b', fontSize: '0.8rem', cursor: 'pointer', textDecoration: 'underline' }}
                   >
                     ← Change Username
                   </button>
 
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <div className="step-2-buttons-group">
                     <button
                       type="button"
                       onClick={handleSendOtp}
                       disabled={forgotLoading || resendCooldown > 0}
-                      style={{ padding: '0.55rem 0.85rem', background: '#f1f5f9', color: resendCooldown > 0 ? '#94a3b8' : '#475569', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '0.8rem', cursor: resendCooldown > 0 ? 'not-allowed' : 'pointer' }}
+                      className="auth-modal-btn auth-modal-btn-secondary"
                     >
                       {resendCooldown > 0 ? `Resend (${resendCooldown}s)` : 'Resend Code'}
                     </button>
                     <button
                       type="submit"
                       disabled={forgotLoading}
-                      style={{ padding: '0.55rem 1.2rem', background: 'linear-gradient(135deg, #3569a7 0%, #264e7e 100%)', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer', boxShadow: '0 4px 12px rgba(53, 105, 167, 0.25)' }}
+                      className="auth-modal-btn auth-modal-btn-primary"
                     >
-                      {forgotLoading ? 'Verifying...' : 'Verify OTP →'}
+                      {forgotLoading ? (
+                        <>
+                          <span className="spinner" style={{ width: '14px', height: '14px', borderWidth: '2px' }}></span>
+                          Verifying...
+                        </>
+                      ) : (
+                        'Verify OTP →'
+                      )}
                     </button>
                   </div>
                 </div>
@@ -650,16 +653,17 @@ function AdminLoginForm({ onLoginSuccess }) {
             {/* STEP 3: Enter New Password */}
             {forgotStep === 3 && (
               <form onSubmit={handleResetPassword}>
-                <p style={{ color: '#64748b', fontSize: '0.85rem', marginBottom: '1rem' }}>
+                <p className="auth-modal-desc">
                   Create a new administrator password for <strong style={{ color: '#0f172a' }}>{resetLogin}</strong>.
                 </p>
 
-                <div style={{ marginBottom: '1rem' }}>
-                  <label style={{ display: 'block', fontWeight: '600', fontSize: '0.8125rem', color: '#334155', marginBottom: '0.4rem' }}>
-                    New Admin Password *
+                <div className="form-group" style={{ marginBottom: '1rem' }}>
+                  <label htmlFor="newPassword">
+                    New Admin Password <span className="required-asterisk">*</span>
                   </label>
-                  <div style={{ position: 'relative' }}>
+                  <div className="password-input-wrapper">
                     <input
+                      id="newPassword"
                       type={showNewPassword ? 'text' : 'password'}
                       required
                       minLength={6}
@@ -667,23 +671,25 @@ function AdminLoginForm({ onLoginSuccess }) {
                       placeholder="Minimum 6 characters"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      style={{ width: '100%', paddingRight: '4.5rem' }}
+                      autoComplete="new-password"
                     />
                     <button
                       type="button"
+                      className="password-toggle-btn"
                       onClick={() => setShowNewPassword(!showNewPassword)}
-                      style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#64748b', fontSize: '0.75rem', cursor: 'pointer', fontWeight: '600' }}
+                      title={showNewPassword ? 'Hide password' : 'Show password'}
                     >
                       {showNewPassword ? 'Hide' : 'Show'}
                     </button>
                   </div>
                 </div>
 
-                <div style={{ marginBottom: '1.25rem' }}>
-                  <label style={{ display: 'block', fontWeight: '600', fontSize: '0.8125rem', color: '#334155', marginBottom: '0.4rem' }}>
-                    Confirm New Password *
+                <div className="form-group" style={{ marginBottom: '1.25rem' }}>
+                  <label htmlFor="confirmPassword">
+                    Confirm New Password <span className="required-asterisk">*</span>
                   </label>
                   <input
+                    id="confirmPassword"
                     type="password"
                     required
                     minLength={6}
@@ -691,24 +697,31 @@ function AdminLoginForm({ onLoginSuccess }) {
                     placeholder="Re-enter password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    style={{ width: '100%' }}
+                    autoComplete="new-password"
                   />
                 </div>
 
-                <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+                <div className="auth-modal-actions">
                   <button
                     type="button"
+                    className="auth-modal-btn auth-modal-btn-secondary"
                     onClick={() => setForgotStep(2)}
-                    style={{ padding: '0.6rem 1.25rem', background: '#f1f5f9', color: '#475569', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '0.85rem', cursor: 'pointer' }}
                   >
                     Back
                   </button>
                   <button
                     type="submit"
                     disabled={forgotLoading}
-                    style={{ padding: '0.6rem 1.25rem', background: 'linear-gradient(135deg, #3569a7 0%, #264e7e 100%)', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer', boxShadow: '0 4px 12px rgba(53, 105, 167, 0.25)' }}
+                    className="auth-modal-btn auth-modal-btn-primary"
                   >
-                    {forgotLoading ? 'Updating...' : 'Update Password ✓'}
+                    {forgotLoading ? (
+                      <>
+                        <span className="spinner" style={{ width: '14px', height: '14px', borderWidth: '2px' }}></span>
+                        Updating...
+                      </>
+                    ) : (
+                      'Update Password ✓'
+                    )}
                   </button>
                 </div>
               </form>
@@ -716,20 +729,21 @@ function AdminLoginForm({ onLoginSuccess }) {
 
             {/* STEP 4: Success */}
             {forgotStep === 4 && (
-              <div style={{ textAlign: 'center', padding: '1rem 0' }}>
-                <div style={{ width: '56px', height: '56px', background: '#dcfce7', color: '#16a34a', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem auto', fontSize: '1.75rem' }}>
+              <div className="auth-modal-success-box">
+                <div className="auth-modal-success-icon">
                   ✓
                 </div>
-                <h4 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0f172a', margin: '0 0 0.5rem 0' }}>
+                <h4 className="auth-modal-success-title">
                   Admin Password Updated!
                 </h4>
-                <p style={{ color: '#64748b', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
+                <p className="auth-modal-desc" style={{ marginBottom: '1.5rem' }}>
                   Your administrator password has been reset. You can now log in to the admin panel with your new password.
                 </p>
                 <button
                   type="button"
-                  onClick={() => setShowForgotModal(false)}
-                  style={{ width: '100%', padding: '0.75rem', background: 'linear-gradient(135deg, #3569a7 0%, #264e7e 100%)', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: '700', fontSize: '0.9rem', cursor: 'pointer', boxShadow: '0 4px 12px rgba(53, 105, 167, 0.25)' }}
+                  className="auth-modal-btn auth-modal-btn-primary"
+                  style={{ width: '100%', height: '44px' }}
+                  onClick={handleCloseForgotModal}
                 >
                   Proceed to Sign In →
                 </button>

@@ -12,6 +12,10 @@ import {
 function EntityLogin({ onLoginSuccess }) {
   const { appName, logoUrl } = useBranding();
   const [logoFailed, setLogoFailed] = useState(false);
+
+  useEffect(() => {
+    setLogoFailed(false);
+  }, [logoUrl]);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -22,10 +26,6 @@ function EntityLogin({ onLoginSuccess }) {
   const [successMsg, setSuccessMsg] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [sessionExpiredNotice, setSessionExpiredNotice] = useState(null);
-
-  useEffect(() => {
-    setLogoFailed(false);
-  }, [logoUrl]);
 
   useEffect(() => {
     const notice = getExpiredNotice();
@@ -49,10 +49,6 @@ function EntityLogin({ onLoginSuccess }) {
   const [demoOtpHint, setDemoOtpHint] = useState(null);
   const [maskedEmail, setMaskedEmail] = useState('');
   const [resendCooldown, setResendCooldown] = useState(0);
-
-  useEffect(() => {
-    setLogoFailed(false);
-  }, [logoUrl]);
 
   useEffect(() => {
     let timer;

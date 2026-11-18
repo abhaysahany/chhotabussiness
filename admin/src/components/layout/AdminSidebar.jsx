@@ -2,7 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useBranding } from '../../utils/branding';
 
-function AdminSidebar({ collapsed, setCollapsed, onLogout, currentAdmin }) {
+function AdminSidebar({
+  collapsed,
+  setCollapsed,
+  mobileSidebarOpen,
+  setMobileSidebarOpen,
+  onLogout,
+  currentAdmin,
+}) {
   const { appName, logoUrl } = useBranding();
   const [logoFailed, setLogoFailed] = useState(false);
   const location = useLocation();
@@ -33,7 +40,7 @@ function AdminSidebar({ collapsed, setCollapsed, onLogout, currentAdmin }) {
   }, [currentPath]);
 
   return (
-    <aside className={`sidebar-container ${collapsed ? 'collapsed' : ''}`}>
+    <aside className={`sidebar-container ${collapsed ? 'collapsed' : ''} ${mobileSidebarOpen ? 'mobile-open' : ''}`}>
       {/* Sidebar Top Logo */}
       <div className="sidebar-header">
         <div className="sidebar-brand">
@@ -62,13 +69,27 @@ function AdminSidebar({ collapsed, setCollapsed, onLogout, currentAdmin }) {
           )}
         </div>
         <button
-          className="sidebar-toggle-btn"
+          className="sidebar-toggle-btn desktop-only-btn"
           onClick={() => setCollapsed(!collapsed)}
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             {collapsed ? <polyline points="13 17 18 12 13 7" /> : <polyline points="11 17 6 12 11 7" />}
             <line x1={collapsed ? '6' : '18'} y1="12" x2={collapsed ? '18' : '6'} y2="12" />
+          </svg>
+        </button>
+
+        {/* Mobile Close Button */}
+        <button
+          type="button"
+          className="sidebar-mobile-close-btn"
+          onClick={() => setMobileSidebarOpen && setMobileSidebarOpen(false)}
+          title="Close Navigation Menu"
+          aria-label="Close Navigation Menu"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
           </svg>
         </button>
       </div>

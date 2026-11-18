@@ -150,7 +150,7 @@ function AdminDumpRequestsPage({ onNavigate }) {
   };
 
   return (
-    <div style={{ padding: '24px', maxWidth: '1440px', margin: '0 auto', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+    <div className="admin-page-container pro-orders-container">
       {/* Toast Notification */}
       {toastMessage && (
         <div style={{
@@ -170,16 +170,16 @@ function AdminDumpRequestsPage({ onNavigate }) {
       )}
 
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+      <div className="page-header pro-orders-header">
         <div>
-          <h1 style={{ fontSize: '24px', fontWeight: '700', color: '#111827', margin: '0 0 6px 0' }}>
+          <h1 className="page-title pro-orders-header-title" style={{ margin: '0 0 6px 0' }}>
             Dump Payment Requests
           </h1>
           <p style={{ fontSize: '14px', color: '#6B7280', margin: 0 }}>
             Review, approve, or reject unpaid uncollectible balances reported by entities.
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
+        <div className="pro-orders-header-actions">
           <button
             onClick={() => onNavigate && onNavigate('orders-management')}
             style={{
@@ -215,7 +215,7 @@ function AdminDumpRequestsPage({ onNavigate }) {
       </div>
 
       {/* KPI Summary Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+      <div className="pro-orders-kpi-grid">
         <div style={{ backgroundColor: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: '12px', padding: '18px' }}>
           <div style={{ fontSize: '13px', color: '#92400E', fontWeight: '600', textTransform: 'uppercase' }}>Pending Requests</div>
           <div style={{ fontSize: '26px', fontWeight: '700', color: '#B45309', marginTop: '6px' }}>
@@ -258,20 +258,9 @@ function AdminDumpRequestsPage({ onNavigate }) {
       </div>
 
       {/* Filter Tabs and Search */}
-      <div style={{
-        backgroundColor: '#fff',
-        border: '1px solid #E5E7EB',
-        borderRadius: '12px',
-        padding: '16px 20px',
-        marginBottom: '20px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        gap: '16px',
-      }}>
+      <div className="pro-orders-filter-bar">
         {/* Status Filter Tabs */}
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div className="pro-orders-tabs-scroll">
           {[
             { id: 'all', label: 'All Requests' },
             { id: 'pending', label: 'Pending Approval' },
@@ -302,7 +291,7 @@ function AdminDumpRequestsPage({ onNavigate }) {
         </div>
 
         {/* Search Input */}
-        <div style={{ display: 'flex', gap: '8px', flex: '1', maxWidth: '400px' }}>
+        <div className="pro-orders-search-wrap" style={{ flex: '1', maxWidth: '400px' }}>
           <input
             type="text"
             placeholder="Search invoice, customer, entity, reason..."
@@ -323,13 +312,7 @@ function AdminDumpRequestsPage({ onNavigate }) {
       </div>
 
       {/* Dump Requests Table */}
-      <div style={{
-        backgroundColor: '#fff',
-        border: '1px solid #E5E7EB',
-        borderRadius: '12px',
-        overflow: 'hidden',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-      }}>
+      <div className="pro-orders-table-wrapper table-responsive">
         {loading ? (
           <div style={{ padding: '60px', textAlign: 'center', color: '#6B7280' }}>
             <div style={{ fontSize: '16px', fontWeight: '500' }}>Loading dump payment requests...</div>
@@ -354,8 +337,8 @@ function AdminDumpRequestsPage({ onNavigate }) {
             </p>
           </div>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
+          <div className="table-responsive-inner" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', width: '100%' }}>
+            <table className="pro-orders-table" style={{ width: '100%', minWidth: '920px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
               <thead>
                 <tr style={{ backgroundColor: '#F9FAFB', borderBottom: '1px solid #E5E7EB', color: '#4B5563', textTransform: 'uppercase', fontSize: '11px', letterSpacing: '0.05em' }}>
                   <th style={{ padding: '14px 16px' }}>ID / Invoice</th>
@@ -507,15 +490,18 @@ function AdminDumpRequestsPage({ onNavigate }) {
 
         {/* Pagination Footer */}
         {filteredDumps.length > pageSize && (
-          <div style={{
-            padding: '14px 20px',
-            borderTop: '1px solid #E5E7EB',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            fontSize: '13px',
-            color: '#6B7280',
-          }}>
+          <div
+            className="pro-orders-pagination-bar"
+            style={{
+              padding: '14px 20px',
+              borderTop: '1px solid #E5E7EB',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              fontSize: '13px',
+              color: '#6B7280',
+            }}
+          >
             <div>
               Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, filteredDumps.length)} of {filteredDumps.length} requests
             </div>
@@ -576,28 +562,34 @@ function AdminDumpRequestsPage({ onNavigate }) {
         const balanceAfterDump = Math.max(0, currentBalance - dumpAmt);
 
         return (
-          <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 9999,
-            padding: '16px',
-          }}>
-            <div style={{
-              backgroundColor: '#fff',
-              borderRadius: '16px',
-              maxWidth: '650px',
-              width: '100%',
-              maxHeight: '90vh',
-              overflowY: 'auto',
-              boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)',
-            }}>
+          <div
+            className="pro-orders-modal-backdrop"
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(0,0,0,0.5)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 9999,
+              padding: '16px',
+            }}
+          >
+            <div
+              className="pro-orders-modal-dialog pro-orders-modal-dialog-sm"
+              style={{
+                backgroundColor: '#fff',
+                borderRadius: '16px',
+                maxWidth: '650px',
+                width: '100%',
+                maxHeight: '90vh',
+                overflowY: 'auto',
+                boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)',
+              }}
+            >
               {/* Modal Header */}
               <div style={{ padding: '20px 24px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
@@ -747,26 +739,32 @@ function AdminDumpRequestsPage({ onNavigate }) {
 
       {/* MODAL 2: REJECT DUMP MODAL */}
       {selectedDumpForReject && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 9999,
-          padding: '16px',
-        }}>
-          <div style={{
-            backgroundColor: '#fff',
-            borderRadius: '16px',
-            maxWidth: '520px',
-            width: '100%',
-            boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)',
-          }}>
+        <div
+          className="pro-orders-modal-backdrop"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '16px',
+          }}
+        >
+          <div
+            className="pro-orders-modal-dialog pro-orders-modal-dialog-sm"
+            style={{
+              backgroundColor: '#fff',
+              borderRadius: '16px',
+              maxWidth: '520px',
+              width: '100%',
+              boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)',
+            }}
+          >
             <div style={{ padding: '20px 24px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h3 style={{ fontSize: '18px', fontWeight: '700', color: '#111827', margin: 0 }}>
                 Reject Dump Payment Request
@@ -850,28 +848,8 @@ function AdminDumpRequestsPage({ onNavigate }) {
 
       {/* MODAL 3: VIEW DETAILS MODAL */}
       {selectedDumpForDetails && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 9999,
-          padding: '16px',
-        }}>
-          <div style={{
-            backgroundColor: '#fff',
-            borderRadius: '16px',
-            maxWidth: '600px',
-            width: '100%',
-            maxHeight: '90vh',
-            overflowY: 'auto',
-            boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)',
-          }}>
+        <div className="pro-orders-modal-backdrop">
+          <div className="pro-orders-modal-dialog pro-orders-modal-dialog-sm">
             <div style={{ padding: '20px 24px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h3 style={{ fontSize: '18px', fontWeight: '700', color: '#111827', margin: 0 }}>
                 Dump Request Details #{selectedDumpForDetails.id}
@@ -884,7 +862,7 @@ function AdminDumpRequestsPage({ onNavigate }) {
               </button>
             </div>
             <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', fontSize: '13px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
                 <div><strong style={{ color: '#6B7280' }}>Invoice:</strong> <div>{selectedDumpForDetails.invoice_number}</div></div>
                 <div><strong style={{ color: '#6B7280' }}>Status:</strong> <div style={{ textTransform: 'uppercase', fontWeight: '700' }}>{selectedDumpForDetails.status}</div></div>
                 <div><strong style={{ color: '#6B7280' }}>Entity:</strong> <div>{selectedDumpForDetails.entity_name}</div></div>
@@ -898,7 +876,7 @@ function AdminDumpRequestsPage({ onNavigate }) {
               {selectedDumpForDetails.status === 'approved' && (
                 <div style={{ backgroundColor: '#F0FDF4', border: '1px solid #BBF7D0', padding: '14px', borderRadius: '8px' }}>
                   <div style={{ fontWeight: '700', color: '#166534', marginBottom: '8px' }}>Approved Dump Accounting (40/40/20)</div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', textAlign: 'center' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', gap: '8px', textAlign: 'center' }}>
                     <div>
                       <div style={{ fontSize: '11px', color: '#15803D' }}>Direct Dump (40%)</div>
                       <div style={{ fontWeight: '700' }}>{formatCurrency(selectedDumpForDetails.direct_income_amount)}</div>
