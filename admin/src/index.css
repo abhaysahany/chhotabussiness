@@ -1946,3 +1946,331 @@ body {
   color: #475569;
   transform: translateY(-1px);
 }
+
+/* ==========================================================================
+   Comprehensive Admin Panel Responsive System (Laptop, Tablet & Mobile)
+   ========================================================================== */
+
+/* 1. Mobile & Laptop Drawer Navigation & Backdrop */
+.mobile-hamburger-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  background: transparent;
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 8px;
+  color: #3569a7;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.mobile-hamburger-btn:hover {
+  background-color: #f1f5f9;
+}
+
+.desktop-sidebar-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 8px;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.desktop-sidebar-toggle-btn:hover {
+  background-color: #f1f5f9;
+  color: #3569a7;
+}
+
+.sidebar-mobile-close-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  background: #f1f5f9;
+  border: none;
+  border-radius: 8px;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.sidebar-mobile-close-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 999;
+  animation: adminBackdropFadeIn 0.2s ease-out;
+}
+
+@keyframes adminBackdropFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 2. Universal Data Tables Horizontal Scroll & Styling */
+table {
+  max-width: 100%;
+}
+
+.table-responsive,
+.pro-table-wrapper,
+div:has(> table) {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
+}
+
+div:has(> table)::-webkit-scrollbar,
+.table-responsive::-webkit-scrollbar,
+.pro-table-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+div:has(> table)::-webkit-scrollbar-track,
+.table-responsive::-webkit-scrollbar-track,
+.pro-table-wrapper::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+div:has(> table)::-webkit-scrollbar-thumb,
+.table-responsive::-webkit-scrollbar-thumb,
+.pro-table-wrapper::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+div:has(> table)::-webkit-scrollbar-thumb:hover,
+.table-responsive::-webkit-scrollbar-thumb:hover,
+.pro-table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* 3. Universal Modal Adaptations across Admin Views */
+div[style*="position: fixed"]:not(.sidebar-container):not(.sidebar-backdrop):not(.topbar-header) > div[style*="background: #ffffff"],
+div[style*="position: fixed"]:not(.sidebar-container):not(.sidebar-backdrop):not(.topbar-header) > div[style*="background:#ffffff"],
+div[style*="position: fixed"]:not(.sidebar-container):not(.sidebar-backdrop):not(.topbar-header) > div[style*="background: white"],
+div[style*="position: fixed"]:not(.sidebar-container):not(.sidebar-backdrop):not(.topbar-header) > div[style*="background:rgb(255, 255, 255)"] {
+  max-height: calc(100dvh - 2rem) !important;
+  overflow-y: auto !important;
+  box-sizing: border-box !important;
+}
+
+/* ==========================================================================
+   BREAKPOINT 1: Laptop Screens Optimization (1024px to 1440px)
+   ========================================================================== */
+@media (min-width: 1024px) and (max-width: 1440px) {
+  .admin-page-body {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .topbar-header {
+    padding: 0 1.25rem;
+  }
+
+  .search-input {
+    width: 180px;
+  }
+
+  .search-input:focus {
+    width: 220px;
+  }
+
+  .status-grid {
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 1rem;
+  }
+
+  .card {
+    padding: 1rem;
+  }
+
+  /* Compact spacing for data dense tables on standard laptops */
+  .pro-table th,
+  .pro-table td {
+    padding: 0.75rem 0.85rem;
+    font-size: 0.82rem;
+  }
+
+  /* Form inputs in two columns on laptop */
+  .form-row,
+  .settings-grid {
+    gap: 1rem;
+  }
+}
+
+/* ==========================================================================
+   BREAKPOINT 2: Tablets & Small Laptops (768px to 1023px)
+   ========================================================================== */
+@media (max-width: 1023px) {
+  .desktop-sidebar-toggle-btn {
+    display: none !important;
+  }
+
+  .mobile-hamburger-btn {
+    display: inline-flex !important;
+  }
+
+  .sidebar-mobile-close-btn {
+    display: inline-flex !important;
+  }
+
+  .sidebar-toggle-btn.desktop-only-btn {
+    display: none !important;
+  }
+
+  /* Transform Sidebar into Off-Canvas Drawer */
+  .sidebar-container {
+    transform: translateX(-100%);
+    width: 260px !important;
+    max-width: 82vw !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    z-index: 1000;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .sidebar-container.mobile-open {
+    transform: translateX(0);
+  }
+
+  /* Full width main content on tablets & mobile */
+  .admin-main-wrapper,
+  .admin-main-wrapper.sidebar-collapsed {
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .admin-page-body {
+    padding: 1rem 1.25rem;
+    overflow-x: hidden;
+  }
+
+  .topbar-header {
+    padding: 0 1rem;
+  }
+
+  .status-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+/* ==========================================================================
+   BREAKPOINT 3: Mobile Phones (< 768px)
+   ========================================================================== */
+@media (max-width: 767px) {
+  .topbar-header {
+    padding: 0 0.75rem;
+    height: 56px;
+  }
+
+  .topbar-left {
+    gap: 0.5rem;
+  }
+
+  .search-input {
+    width: 135px;
+    height: 34px;
+    font-size: 0.75rem;
+    padding-left: 0.65rem;
+  }
+
+  .search-input:focus {
+    width: 165px;
+  }
+
+  .topbar-right {
+    gap: 0.35rem;
+  }
+
+  .desktop-only-btn {
+    display: none !important;
+  }
+
+  .profile-name {
+    display: none !important;
+  }
+
+  .profile-btn {
+    padding: 2px 4px !important;
+    gap: 0.25rem !important;
+  }
+
+  .admin-page-body {
+    padding: 0.75rem 0.6rem;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  .status-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem;
+  }
+
+  .admin-app-footer {
+    height: 44px;
+    font-size: 0.75rem;
+    padding: 0 0.5rem;
+    text-align: center;
+  }
+
+  /* Universal Action Bars & Filter Wrappers on Mobile */
+  div[style*="display: flex"][style*="justify-content: space-between"] {
+    flex-wrap: wrap !important;
+    gap: 0.75rem !important;
+  }
+
+  /* Prevent inputs auto-zooming on mobile iOS Safari */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* ==========================================================================
+   BREAKPOINT 4: Ultra-Compact Mobile (< 420px)
+   ========================================================================== */
+@media (max-width: 420px) {
+  .search-box {
+    display: none;
+  }
+
+  .admin-page-body {
+    padding: 0.6rem 0.4rem;
+  }
+
+  .sidebar-container {
+    width: 250px !important;
+    max-width: 86vw !important;
+  }
+}

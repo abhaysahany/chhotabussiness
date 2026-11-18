@@ -889,7 +889,26 @@
   }
 }
 
+@media (max-width: 1024px) {
+  .pro-products-container {
+    padding: 1rem 0;
+  }
+}
+
 @media (max-width: 640px) {
+  .pro-products-container {
+    padding: 0;
+  }
+
+  .pro-header-banner {
+    padding: 1.25rem 1rem;
+    border-radius: 14px;
+  }
+
+  .pro-header-title-group h2 {
+    font-size: 1.35rem !important;
+  }
+
   .pro-toast-notification {
     top: 1rem;
     right: 1rem;

@@ -20,6 +20,24 @@
   align-items: center;
   position: relative;
   overflow: hidden;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+@media (max-width: 640px) {
+  .pro-sales-banner {
+    padding: 1.25rem 1rem;
+    border-radius: 14px;
+  }
+
+  .pro-sales-title-group h2 {
+    font-size: 1.35rem !important;
+  }
+
+  .pro-sales-card {
+    padding: 1rem !important;
+    border-radius: 14px !important;
+  }
 }
 
 .pro-sales-banner::before {
