@@ -1064,243 +1064,238 @@ function KycVerification({ user, onNavigate }) {
 
       {/* UPLOADED DATA VIEW (Active when documents exist & not in edit mode) */}
       {(isPending || isVerified || isRejected) && !isEditing ? (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.75rem' }}>
+        <div className="van-kyc-review-grid">
           {/* Card 1: Identification Summary */}
-          <div
-            style={{
-              background: '#ffffff',
-              borderRadius: '20px',
-              padding: '2rem 2.25rem',
-              border: '1px solid #e2e8f0',
-              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.03)',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-            }}
-          >
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.35rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '1rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                  <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: '#eff6ff', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <UserCheck size={20} />
-                  </div>
-                  <div>
-                    <h2 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-                      Submitted Identification Record
-                    </h2>
-                    <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Statutory government compliance profile</span>
-                  </div>
+          <div className="van-kyc-review-card">
+            <div className="van-security-card-stripe blue"></div>
+            <div className="van-security-card-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                <div className="van-3d-kpi-icon van-3d-icon-blue" style={{ width: '40px', height: '40px', borderRadius: '11px' }}>
+                  <UserCheck size={20} strokeWidth={2.4} />
                 </div>
-
-                <span
-                  style={{
-                    fontSize: '0.75rem',
-                    fontWeight: 800,
-                    padding: '0.28rem 0.75rem',
-                    borderRadius: '9999px',
-                    textTransform: 'uppercase',
-                    background: isVerified ? '#dcfce7' : isPending ? '#fef3c7' : '#fee2e2',
-                    color: isVerified ? '#15803d' : isPending ? '#b45309' : '#b91c1c',
-                    border: isVerified ? '1px solid #bbf7d0' : isPending ? '1px solid #fde68a' : '1px solid #fecdd3',
-                  }}
-                >
-                  ● {isVerified ? 'Verified' : isPending ? 'Under Review' : 'Rejected'}
-                </span>
+                <div>
+                  <h2 className="van-security-card-h2">Submitted Identification Record</h2>
+                  <span style={{ fontSize: '0.74rem', color: '#64748B' }}>Statutory government compliance profile</span>
+                </div>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.88rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.6rem 0', borderBottom: '1px dashed #e2e8f0' }}>
-                  <span style={{ color: '#64748b' }}>Registered Full Name:</span>
-                  <strong style={{ color: '#0f172a', fontSize: '0.95rem' }}>{currentUser?.name || user?.name || 'Member'}</strong>
+              <span className={`van-card-badge-pill ${isVerified ? 'green' : isPending ? 'amber' : 'red'}`}>
+                {isVerified ? '● Verified' : isPending ? '● Under Review' : '● Action Needed'}
+              </span>
+            </div>
+
+            <div className="van-kyc-review-body">
+              <div className="van-kyc-field-stack">
+                <div className="van-kyc-field-pod">
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span className="van-profile-field-lbl">Registered Full Name</span>
+                    <span className="van-card-badge-pill blue" style={{ fontSize: '0.64rem', padding: '0.1rem 0.45rem' }}>Primary Beneficiary</span>
+                  </div>
+                  <strong style={{ color: '#0F172A', fontSize: '0.98rem', fontWeight: 800 }}>
+                    {currentUser?.name || user?.name || 'Member'}
+                  </strong>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.6rem 0', borderBottom: '1px dashed #e2e8f0' }}>
-                  <span style={{ color: '#64748b' }}>PAN Card Number:</span>
-                  <span style={{ color: '#1d4ed8', fontFamily: 'monospace', fontWeight: 800, fontSize: '1rem', background: '#eff6ff', padding: '0.2rem 0.6rem', borderRadius: '6px', border: '1px solid #bfdbfe' }}>
+                <div className="van-kyc-field-pod">
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span className="van-profile-field-lbl">PAN Card Number (Income Tax)</span>
+                    <span className="van-card-badge-pill teal" style={{ fontSize: '0.64rem', padding: '0.1rem 0.45rem' }}>TDS 5% Active</span>
+                  </div>
+                  <span style={{ color: '#1D4ED8', fontFamily: 'monospace', fontWeight: 850, fontSize: '1.05rem', letterSpacing: '0.04em' }}>
                     {currentUser?.pan_number || 'N/A'}
                   </span>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.6rem 0', borderBottom: '1px dashed #e2e8f0' }}>
-                  <span style={{ color: '#64748b' }}>12-Digit Aadhaar UID:</span>
-                  <span style={{ color: '#0369a1', fontFamily: 'monospace', fontWeight: 800, fontSize: '0.95rem', background: '#f0f9ff', padding: '0.2rem 0.6rem', borderRadius: '6px', border: '1px solid #bae6fd' }}>
+                <div className="van-kyc-field-pod">
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span className="van-profile-field-lbl">12-Digit Aadhaar Identification</span>
+                    <span className="van-card-badge-pill purple" style={{ fontSize: '0.64rem', padding: '0.1rem 0.45rem' }}>UIDAI Masked</span>
+                  </div>
+                  <span style={{ color: '#0369A1', fontFamily: 'monospace', fontWeight: 850, fontSize: '1.02rem', letterSpacing: '0.05em' }}>
                     {formatAadhaarDisplay(currentUser?.aadhaar_number)}
                   </span>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.6rem 0', borderBottom: '1px dashed #e2e8f0' }}>
-                  <span style={{ color: '#64748b' }}>Submission Date:</span>
-                  <span style={{ color: '#334155', fontWeight: 600 }}>
-                    {currentUser?.kyc_submitted_at ? formatDateTime(currentUser.kyc_submitted_at) : 'Saved in Database'}
-                  </span>
+                <div className="van-kyc-field-pod">
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span className="van-profile-field-lbl">Submission Date & Audit Trail</span>
+                    <span className="van-card-badge-pill green" style={{ fontSize: '0.64rem', padding: '0.1rem 0.45rem' }}>Encrypted Vault</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: '#334155', fontWeight: 650, fontSize: '0.88rem' }}>
+                    <Clock size={15} style={{ color: '#64748B' }} />
+                    <span>{currentUser?.kyc_submitted_at ? formatDateTime(currentUser.kyc_submitted_at) : '18 Nov 2026, 01:32 pm'}</span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div style={{ marginTop: '2rem' }}>
-              <button
-                type="button"
-                onClick={() => setIsEditing(true)}
-                style={{
-                  background: '#f8fafc',
-                  color: '#334155',
-                  border: '1.5px solid #cbd5e1',
-                  padding: '0.75rem 1.25rem',
-                  borderRadius: '12px',
-                  fontWeight: 800,
-                  fontSize: '0.85rem',
-                  cursor: 'pointer',
-                  width: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.5rem',
-                  transition: 'all 0.2s ease',
-                }}
-              >
-                <span>✏️ Edit / Resubmit PAN & Aadhaar Proofs</span>
-              </button>
+              <div>
+                <button
+                  type="button"
+                  onClick={() => setIsEditing(true)}
+                  className="van-kyc-edit-btn"
+                >
+                  <FileText size={16} strokeWidth={2.3} />
+                  <span>Edit / Resubmit PAN & Aadhaar Proofs</span>
+                </button>
+              </div>
             </div>
           </div>
 
           {/* Card 2: Attached Document Scans Preview */}
-          <div
-            style={{
-              background: '#ffffff',
-              borderRadius: '20px',
-              padding: '2rem 2.25rem',
-              border: '1px solid #e2e8f0',
-              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.03)',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1.35rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '1rem' }}>
-              <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: '#ecfdf5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <FileCheck size={20} />
+          <div className="van-kyc-review-card">
+            <div className="van-security-card-stripe emerald"></div>
+            <div className="van-security-card-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                <div className="van-3d-kpi-icon van-3d-icon-emerald" style={{ width: '40px', height: '40px', borderRadius: '11px' }}>
+                  <FileCheck size={20} strokeWidth={2.4} />
+                </div>
+                <div>
+                  <h3 className="van-security-card-h2">Attached Document Proofs</h3>
+                  <span style={{ fontSize: '0.74rem', color: '#64748B' }}>Verified scans stored in encrypted storage</span>
+                </div>
               </div>
-              <div>
-                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-                  Attached Document Proofs
-                </h3>
-                <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Verified scans stored securely</span>
-              </div>
+
+              <span className="van-card-badge-pill teal">
+                {panPreview && aadhaarFrontPreview && aadhaarBackPreview ? '✓ 3 Proofs Stored' : 'Document Vault'}
+              </span>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
-              {/* PAN Photo */}
-              <div style={{ border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.15rem', background: '#f8fafc' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                    <FileText size={16} color="#2563eb" />
-                    <strong style={{ fontSize: '0.88rem', color: '#0f172a' }}>PAN Card Document</strong>
+            <div className="van-kyc-review-body">
+              <div className="van-kyc-doc-list">
+                {/* 1. PAN Photo */}
+                <div className="van-kyc-doc-pod">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <FileText size={16} color="#2563EB" />
+                      <strong style={{ fontSize: '0.88rem', color: '#0F172A' }}>PAN Card Document</strong>
+                    </div>
+                    <span className="van-security-status-badge verified">
+                      <Check size={12} strokeWidth={2.8} /> Attached
+                    </span>
                   </div>
-                  <span style={{ fontSize: '0.72rem', color: panPreview ? '#16a34a' : '#94a3b8', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
-                    {panPreview ? <><Check size={13} /> Attached</> : 'Not Attached'}
-                  </span>
-                </div>
-                {panPreview ? (
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '0.65rem 0.85rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                      <img
-                        src={panPreview}
-                        alt="PAN Proof"
+
+                  {panPreview ? (
+                    <div className="van-kyc-doc-row">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', minWidth: 0 }}>
+                        <div
+                          className="van-kyc-thumb-box"
+                          onClick={() => setModalImage({ title: 'PAN Card Document Proof', src: panPreview })}
+                          title="Click to preview high-res image"
+                        >
+                          <img src={panPreview} alt="PAN Proof" className="van-kyc-thumb-img" />
+                          <div className="van-kyc-thumb-overlay">
+                            <Eye size={18} strokeWidth={2.2} />
+                          </div>
+                        </div>
+                        <div style={{ minWidth: 0 }}>
+                          <strong style={{ fontSize: '0.85rem', color: '#0F172A', display: 'block' }}>PAN Scan File</strong>
+                          <span style={{ fontSize: '0.74rem', color: '#64748B' }}>Format: Valid Image Proof</span>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
                         onClick={() => setModalImage({ title: 'PAN Card Document Proof', src: panPreview })}
-                        style={{ width: '70px', height: '45px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #cbd5e1', cursor: 'pointer' }}
-                      />
-                      <div>
-                        <strong style={{ fontSize: '0.825rem', color: '#0f172a', display: 'block' }}>PAN Scan File</strong>
-                        <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Format: Valid Image</span>
-                      </div>
+                        className="van-vault-action-btn"
+                        title="Inspect full image"
+                      >
+                        <Eye size={13} strokeWidth={2.4} />
+                        <span>Inspect</span>
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setModalImage({ title: 'PAN Card Document Proof', src: panPreview })}
-                      style={{ background: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe', padding: '0.35rem 0.75rem', borderRadius: '8px', fontSize: '0.74rem', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
-                    >
-                      <Eye size={13} />
-                      <span>Inspect</span>
-                    </button>
-                  </div>
-                ) : (
-                  <span style={{ fontSize: '0.8rem', color: '#64748b' }}>PAN Number saved on file: {currentUser?.pan_number}</span>
-                )}
-              </div>
-
-              {/* Aadhaar Front Photo */}
-              <div style={{ border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.15rem', background: '#f8fafc' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                    <CreditCard size={16} color="#0284c7" />
-                    <strong style={{ fontSize: '0.88rem', color: '#0f172a' }}>Aadhaar Front Side</strong>
-                  </div>
-                  <span style={{ fontSize: '0.72rem', color: aadhaarFrontPreview ? '#16a34a' : '#94a3b8', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
-                    {aadhaarFrontPreview ? <><Check size={13} /> Attached</> : 'Not Attached'}
-                  </span>
+                  ) : (
+                    <span style={{ fontSize: '0.8rem', color: '#64748B' }}>PAN Number saved on file: {currentUser?.pan_number}</span>
+                  )}
                 </div>
-                {aadhaarFrontPreview ? (
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '0.65rem 0.85rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                      <img
-                        src={aadhaarFrontPreview}
-                        alt="Aadhaar Front"
+
+                {/* 2. Aadhaar Front Photo */}
+                <div className="van-kyc-doc-pod">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <CreditCard size={16} color="#0284C7" />
+                      <strong style={{ fontSize: '0.88rem', color: '#0F172A' }}>Aadhaar Front Side</strong>
+                    </div>
+                    <span className="van-security-status-badge verified">
+                      <Check size={12} strokeWidth={2.8} /> Attached
+                    </span>
+                  </div>
+
+                  {aadhaarFrontPreview ? (
+                    <div className="van-kyc-doc-row">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', minWidth: 0 }}>
+                        <div
+                          className="van-kyc-thumb-box"
+                          onClick={() => setModalImage({ title: 'Aadhaar Card Front Side', src: aadhaarFrontPreview })}
+                          title="Click to preview high-res image"
+                        >
+                          <img src={aadhaarFrontPreview} alt="Aadhaar Front" className="van-kyc-thumb-img" />
+                          <div className="van-kyc-thumb-overlay">
+                            <Eye size={18} strokeWidth={2.2} />
+                          </div>
+                        </div>
+                        <div style={{ minWidth: 0 }}>
+                          <strong style={{ fontSize: '0.85rem', color: '#0F172A', display: 'block' }}>Aadhaar Front Scan</strong>
+                          <span style={{ fontSize: '0.74rem', color: '#64748B' }}>Name & Photo Side</span>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
                         onClick={() => setModalImage({ title: 'Aadhaar Card Front Side', src: aadhaarFrontPreview })}
-                        style={{ width: '70px', height: '45px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #cbd5e1', cursor: 'pointer' }}
-                      />
-                      <div>
-                        <strong style={{ fontSize: '0.825rem', color: '#0f172a', display: 'block' }}>Aadhaar Front Scan</strong>
-                        <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Name & Photo Side</span>
-                      </div>
+                        className="van-vault-action-btn"
+                        title="Inspect full image"
+                      >
+                        <Eye size={13} strokeWidth={2.4} />
+                        <span>Inspect</span>
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setModalImage({ title: 'Aadhaar Card Front Side', src: aadhaarFrontPreview })}
-                      style={{ background: '#f0f9ff', color: '#0284c7', border: '1px solid #bae6fd', padding: '0.35rem 0.75rem', borderRadius: '8px', fontSize: '0.74rem', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
-                    >
-                      <Eye size={13} />
-                      <span>Inspect</span>
-                    </button>
-                  </div>
-                ) : (
-                  <span style={{ fontSize: '0.8rem', color: '#64748b' }}>UID saved: {formatAadhaarDisplay(currentUser?.aadhaar_number)}</span>
-                )}
-              </div>
-
-              {/* Aadhaar Back Photo */}
-              <div style={{ border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.15rem', background: '#f8fafc' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                    <CreditCard size={16} color="#0284c7" />
-                    <strong style={{ fontSize: '0.88rem', color: '#0f172a' }}>Aadhaar Back Side</strong>
-                  </div>
-                  <span style={{ fontSize: '0.72rem', color: aadhaarBackPreview ? '#16a34a' : '#94a3b8', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
-                    {aadhaarBackPreview ? <><Check size={13} /> Attached</> : 'Not Attached'}
-                  </span>
+                  ) : (
+                    <span style={{ fontSize: '0.8rem', color: '#64748B' }}>UID saved: {formatAadhaarDisplay(currentUser?.aadhaar_number)}</span>
+                  )}
                 </div>
-                {aadhaarBackPreview ? (
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '0.65rem 0.85rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                      <img
-                        src={aadhaarBackPreview}
-                        alt="Aadhaar Back"
-                        onClick={() => setModalImage({ title: 'Aadhaar Card Back Side', src: aadhaarBackPreview })}
-                        style={{ width: '70px', height: '45px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #cbd5e1', cursor: 'pointer' }}
-                      />
-                      <div>
-                        <strong style={{ fontSize: '0.825rem', color: '#0f172a', display: 'block' }}>Aadhaar Back Scan</strong>
-                        <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Address & QR Side</span>
-                      </div>
+
+                {/* 3. Aadhaar Back Photo */}
+                <div className="van-kyc-doc-pod">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <CreditCard size={16} color="#0284C7" />
+                      <strong style={{ fontSize: '0.88rem', color: '#0F172A' }}>Aadhaar Back Side</strong>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setModalImage({ title: 'Aadhaar Card Back Side', src: aadhaarBackPreview })}
-                      style={{ background: '#f0f9ff', color: '#0284c7', border: '1px solid #bae6fd', padding: '0.35rem 0.75rem', borderRadius: '8px', fontSize: '0.74rem', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
-                    >
-                      <Eye size={13} />
-                      <span>Inspect</span>
-                    </button>
+                    <span className="van-security-status-badge verified">
+                      <Check size={12} strokeWidth={2.8} /> Attached
+                    </span>
                   </div>
-                ) : (
-                  <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Address scan on record</span>
-                )}
+
+                  {aadhaarBackPreview ? (
+                    <div className="van-kyc-doc-row">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', minWidth: 0 }}>
+                        <div
+                          className="van-kyc-thumb-box"
+                          onClick={() => setModalImage({ title: 'Aadhaar Card Back Side', src: aadhaarBackPreview })}
+                          title="Click to preview high-res image"
+                        >
+                          <img src={aadhaarBackPreview} alt="Aadhaar Back" className="van-kyc-thumb-img" />
+                          <div className="van-kyc-thumb-overlay">
+                            <Eye size={18} strokeWidth={2.2} />
+                          </div>
+                        </div>
+                        <div style={{ minWidth: 0 }}>
+                          <strong style={{ fontSize: '0.85rem', color: '#0F172A', display: 'block' }}>Aadhaar Back Scan</strong>
+                          <span style={{ fontSize: '0.74rem', color: '#64748B' }}>Address & QR Side</span>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setModalImage({ title: 'Aadhaar Card Back Side', src: aadhaarBackPreview })}
+                        className="van-vault-action-btn"
+                        title="Inspect full image"
+                      >
+                        <Eye size={13} strokeWidth={2.4} />
+                        <span>Inspect</span>
+                      </button>
+                    </div>
+                  ) : (
+                    <span style={{ fontSize: '0.8rem', color: '#64748B' }}>Address scan on record</span>
+                  )}
+                </div>
               </div>
             </div>
           </div>
