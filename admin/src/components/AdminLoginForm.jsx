@@ -240,7 +240,7 @@ function AdminLoginForm({ onLoginSuccess }) {
             <img
               src={logoUrl}
               alt={appName}
-              style={{ width: '32px', height: '32px', borderRadius: '8px', objectFit: 'contain' }}
+              style={{ maxHeight: '48px', height: '48px', width: 'auto', maxWidth: '200px', objectFit: 'contain' }}
               onError={(e) => { e.target.style.display = 'none'; }}
             />
           ) : (

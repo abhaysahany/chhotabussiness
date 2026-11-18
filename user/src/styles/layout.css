@@ -75,14 +75,18 @@
 }
 
 .van-sidebar-logo-img {
-  max-height: 52px;
-  max-width: 52px;
-  width: 52px;
-  height: 52px;
-  aspect-ratio: 1 / 1;
+  max-height: 44px;
+  height: 44px;
+  width: auto;
+  max-width: 190px;
   object-fit: contain;
   flex-shrink: 0;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, max-width 0.2s ease;
+}
+
+.pro-sidebar.collapsed .van-sidebar-logo-img {
+  max-width: 48px;
+  max-height: 38px;
 }
 
 .van-sidebar-brand:hover .van-sidebar-logo-img {

@@ -102,7 +102,7 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
       {/* Brand & System Logo Header (Logo-Only Presentation) */}
       <div className="van-sidebar-header">
         <div className="van-sidebar-brand" onClick={() => handleNav('/dashboard')} title={`${appName} Dashboard`} style={{ cursor: 'pointer' }}>
-          <BrandLogo size={52} alt={`${appName} Logo`} className="van-sidebar-logo-img" />
+          <BrandLogo size={44} mobileSize={36} maxWidth={collapsed ? 48 : 190} alt={`${appName} Logo`} className="van-sidebar-logo-img" />
         </div>
       </div>
 

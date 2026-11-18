@@ -26,22 +26,22 @@ function EntitySidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLog
       {/* Brand & Toggle Header */}
       <div className="sidebar-header">
         <div className="sidebar-brand" onClick={() => handleNav('dashboard', '/entity/dashboard')} style={{ cursor: 'pointer' }}>
-          <div className="entity-brand-icon-box">
-            {logoUrl ? (
-              <img
-                src={logoUrl}
-                alt={appName}
-                style={{ width: '24px', height: '24px', objectFit: 'contain' }}
-                onError={(e) => { e.target.style.display = 'none'; }}
-              />
-            ) : (
+          {logoUrl ? (
+            <img
+              src={logoUrl}
+              alt={appName}
+              style={{ maxHeight: '36px', height: '36px', width: 'auto', maxWidth: collapsed ? '44px' : '150px', objectFit: 'contain', flexShrink: 0 }}
+              onError={(e) => { e.target.style.display = 'none'; }}
+            />
+          ) : (
+            <div className="entity-brand-icon-box">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 2L2 7l10 5 10-5-10-5z" />
                 <path d="M2 17l10 5 10-5" />
                 <path d="M2 12l10 5 10-5" />
               </svg>
-            )}
-          </div>
+            </div>
+          )}
           {!collapsed && (
             <div className="entity-brand-text-col">
               <div className="entity-brand-title-row">
