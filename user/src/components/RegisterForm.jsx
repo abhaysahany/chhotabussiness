@@ -108,12 +108,12 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
         const status = err.response?.status;
         const rawMsg = err.response?.data?.message || '';
 
-        if (status === 503 || /SQLSTATE|Access denied|database|connection|PDOException/i.test(rawMsg)) {
+        if (status === 503 || /SQLSTATE|Access denied|PDOException/i.test(rawMsg)) {
           setSponsorError('Service temporarily unavailable. Please try again shortly.');
         } else if (rawMsg) {
           setSponsorError(rawMsg);
         } else {
-          setSponsorError('Invalid Sponsor ID. Sponsor does not exist in our database.');
+          setSponsorError('Invalid Sponsor ID. Sponsor does not exist.');
         }
       } finally {
         setVerifyingSponsor(false);
@@ -200,7 +200,7 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
         setFieldErrors(data.errors);
       }
       let msg = data?.message || err.message || 'Failed to send verification OTP to email.';
-      if (err.response?.status === 503 || /SQLSTATE|Access denied|database|connection|PDOException/i.test(msg)) {
+      if (err.response?.status === 503 || /SQLSTATE|Access denied|PDOException/i.test(msg)) {
         msg = 'Service temporarily unavailable. Please try again shortly.';
       }
       setErrorMessage(msg);
@@ -236,7 +236,7 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
       console.error('Resend OTP error:', err);
       const data = err.response?.data;
       let msg = data?.message || err.message || 'Failed to resend verification OTP.';
-      if (err.response?.status === 503 || /SQLSTATE|Access denied|database|connection|PDOException/i.test(msg)) {
+      if (err.response?.status === 503 || /SQLSTATE|Access denied|PDOException/i.test(msg)) {
         msg = 'Service temporarily unavailable. Please try again shortly.';
       }
       setErrorMessage(msg);
@@ -284,7 +284,7 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
         setFieldErrors(data.errors);
       }
       let msg = data?.message || err.message || 'Registration failed. Please verify the OTP and try again.';
-      if (err.response?.status === 503 || /SQLSTATE|Access denied|database|connection|PDOException/i.test(msg)) {
+      if (err.response?.status === 503 || /SQLSTATE|Access denied|PDOException/i.test(msg)) {
         msg = 'Service temporarily unavailable. Please try again shortly.';
       }
       setErrorMessage(msg);

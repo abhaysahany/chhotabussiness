@@ -27,7 +27,7 @@ class AuthController extends Controller
      */
     public function verifySponsor(Request $request)
     {
-        $sponsorId = $request->input('sponsor_id') ?? $request->input('sponsorId') ?? $request->input('user_code');
+        $sponsorId = trim($request->input('sponsor_id') ?? $request->input('sponsorId') ?? $request->input('user_code') ?? '');
 
         if (empty($sponsorId)) {
             return response()->json([
@@ -37,10 +37,13 @@ class AuthController extends Controller
         }
 
         try {
-            $sponsor = User::whereRaw('LOWER(user_code) = ?', [strtolower($sponsorId)])
-                ->orWhere('email', $sponsorId)
-                ->orWhere('id', $sponsorId)
-                ->first();
+            $sponsor = User::where(function ($query) use ($sponsorId) {
+                $query->whereRaw('LOWER(user_code) = ?', [strtolower($sponsorId)])
+                      ->orWhere('email', $sponsorId);
+                if (is_numeric($sponsorId)) {
+                    $query->orWhere('id', (int) $sponsorId);
+                }
+            })->first();
         } catch (\Throwable $e) {
             Log::error("Sponsor verification database exception [ID: {$sponsorId}]: " . $e->getMessage(), [
                 'exception' => get_class($e),
@@ -56,7 +59,7 @@ class AuthController extends Controller
         if (!$sponsor) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Invalid Sponsor ID. Sponsor does not exist in our database.',
+                'message' => 'Invalid Sponsor ID. Sponsor does not exist.',
                 'verified' => false,
             ], 404);
         }
@@ -89,10 +92,13 @@ class AuthController extends Controller
         }
 
         try {
-            $member = User::whereRaw('LOWER(user_code) = ?', [strtolower($memberId)])
-                ->orWhere('email', $memberId)
-                ->orWhere('id', $memberId)
-                ->first();
+            $member = User::where(function ($query) use ($memberId) {
+                $query->whereRaw('LOWER(user_code) = ?', [strtolower($memberId)])
+                      ->orWhere('email', $memberId);
+                if (is_numeric($memberId)) {
+                    $query->orWhere('id', (int) $memberId);
+                }
+            })->first();
         } catch (\Throwable $e) {
             Log::error("Member verification database exception [ID: {$memberId}]: " . $e->getMessage(), [
                 'exception' => get_class($e),
@@ -108,7 +114,7 @@ class AuthController extends Controller
         if (!$member) {
             return response()->json([
                 'status' => 'error',
-                'message' => "Member ID '{$memberId}' not found in database. Please enter a valid registered Member ID.",
+                'message' => "Member ID '{$memberId}' not found. Please enter a valid registered Member ID.",
                 'verified' => false,
             ], 404);
         }
@@ -189,10 +195,13 @@ class AuthController extends Controller
 
         // 2. Verify Sponsor ID against Database
         try {
-            $sponsor = User::whereRaw('LOWER(user_code) = ?', [strtolower($sponsorId)])
-                ->orWhere('email', $sponsorId)
-                ->orWhere('id', $sponsorId)
-                ->first();
+            $sponsor = User::where(function ($query) use ($sponsorId) {
+                $query->whereRaw('LOWER(user_code) = ?', [strtolower($sponsorId)])
+                      ->orWhere('email', $sponsorId);
+                if (is_numeric($sponsorId)) {
+                    $query->orWhere('id', (int) $sponsorId);
+                }
+            })->first();
         } catch (\Throwable $e) {
             Log::error("Sponsor verification database exception [ID: {$sponsorId}]: " . $e->getMessage(), [
                 'exception' => get_class($e),
@@ -208,9 +217,9 @@ class AuthController extends Controller
         if (!$sponsor) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Invalid Sponsor ID. Sponsor does not exist in our database.',
+                'message' => 'Invalid Sponsor ID. Sponsor does not exist.',
                 'errors' => [
-                    'sponsor_id' => ['Invalid Sponsor ID. Sponsor does not exist in our database.'],
+                    'sponsor_id' => ['Invalid Sponsor ID. Sponsor does not exist.'],
                 ],
             ], 422);
         }
@@ -534,9 +543,9 @@ class AuthController extends Controller
         if (!$sponsor) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Invalid Sponsor ID. Sponsor does not exist in our database.',
+                'message' => 'Invalid Sponsor ID. Sponsor does not exist.',
                 'errors' => [
-                    'sponsor_id' => ['Invalid Sponsor ID. Sponsor does not exist in our database.'],
+                    'sponsor_id' => ['Invalid Sponsor ID. Sponsor does not exist.'],
                 ],
             ], 422);
         }
@@ -697,7 +706,7 @@ class AuthController extends Controller
             if (!$sponsor) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Invalid Sponsor ID. Sponsor does not exist in our database.',
+                    'message' => 'Invalid Sponsor ID. Sponsor does not exist.',
                 ], 422);
             }
 
@@ -811,7 +820,7 @@ class AuthController extends Controller
             if (!$sponsor) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Invalid Sponsor ID. Sponsor does not exist in our database.',
+                    'message' => 'Invalid Sponsor ID. Sponsor does not exist.',
                 ], 422);
             }
         }
@@ -1059,9 +1068,9 @@ class AuthController extends Controller
         if (!$sponsor) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Invalid Sponsor ID. Sponsor does not exist in our database.',
+                'message' => 'Invalid Sponsor ID. Sponsor does not exist.',
                 'errors' => [
-                    'sponsor_id' => ['Invalid Sponsor ID. Sponsor does not exist in our database.'],
+                    'sponsor_id' => ['Invalid Sponsor ID. Sponsor does not exist.'],
                 ],
             ], 422);
         }
