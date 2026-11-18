@@ -367,210 +367,209 @@ function PayoutHistory({ user, onNavigate }) {
         </div>
       )}
 
-      {/* Signature 3D Hero Header Banner */}
-      <div
-        className="van-catalog-hero"
-        style={{
-          background: 'linear-gradient(135deg, #0b1329 0%, #172554 40%, #1e3a8a 100%)',
-          borderRadius: '24px',
-          padding: '2.5rem 2.5rem',
-          color: '#ffffff',
-          marginBottom: '2rem',
-          position: 'relative',
-          overflow: 'hidden',
-          boxShadow: '0 20px 40px -10px rgba(15, 23, 42, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15)',
-        }}
-      >
-        {/* Decorative Ambient Background Rings */}
-        <div style={{ position: 'absolute', top: '-60px', right: '-60px', width: '280px', height: '280px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.25) 0%, rgba(59, 130, 246, 0) 70%)', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: '-80px', left: '20%', width: '320px', height: '320px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0) 70%)', pointerEvents: 'none' }} />
-
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '2rem' }}>
-          {/* Left: 3D Floating Icon + Title */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap', flex: '1 1 500px' }}>
+      {/* Signature 2-Color Gradient Hero Header Banner with 3D Depth */}
+      <div className="van-catalog-hero-3d">
+        <div className="van-catalog-hero-content">
+          <div className="van-catalog-hero-icon-orb">
+            <History size={32} strokeWidth={2.2} />
+          </div>
+          <div>
+            {/* Top Badges Row: Category Chip & KYC Status Pill */}
             <div
-              className="van-avatar-3d-orb"
               style={{
-                width: '74px',
-                height: '74px',
-                borderRadius: '22px',
-                background: 'linear-gradient(135deg, #60A5FA 0%, #2563EB 50%, #1D4ED8 100%)',
-                border: '2px solid rgba(255, 255, 255, 0.4)',
-                boxShadow: '0 12px 28px -4px rgba(37, 99, 235, 0.5), inset 0 2px 2px rgba(255, 255, 255, 0.7), inset 0 -3px 4px rgba(30, 58, 138, 0.6)',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
-                color: '#ffffff',
-                flexShrink: 0,
+                gap: '0.65rem',
+                marginBottom: '0.65rem',
+                flexWrap: 'wrap',
               }}
             >
-              <History size={38} strokeWidth={2.4} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }} />
-            </div>
+              <div className="van-catalog-hero-badge" style={{ marginBottom: 0 }}>
+                <span
+                  className="van-live-pulse-dot"
+                  style={{ width: '8px', height: '8px', background: '#38BDF8', boxShadow: '0 0 10px #38BDF8', flexShrink: 0 }}
+                />
+                <span>Audit Trail & Withdrawal Archive</span>
+              </div>
 
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap', marginBottom: '0.55rem' }}>
+              {isKycVerified ? (
                 <div
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '0.45rem',
-                    background: 'rgba(255, 255, 255, 0.12)',
-                    padding: '0.3rem 0.85rem',
+                    gap: '0.4rem',
+                    background: 'rgba(34, 197, 94, 0.2)',
+                    border: '1px solid rgba(74, 222, 128, 0.45)',
+                    color: '#86efac',
+                    padding: '0.32rem 0.85rem',
                     borderRadius: '9999px',
                     fontSize: '0.74rem',
                     fontWeight: 800,
-                    color: '#93C5FD',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    whiteSpace: 'nowrap',
+                    letterSpacing: '0.025em',
                     backdropFilter: 'blur(10px)',
+                    boxShadow: '0 2px 10px rgba(34, 197, 94, 0.2)',
                   }}
                 >
-                  <span className="van-live-pulse-dot" style={{ width: '8px', height: '8px', background: '#38BDF8', boxShadow: '0 0 10px #38BDF8', flexShrink: 0 }} />
-                  <span>Audit Trail & Withdrawal Archive</span>
+                  <CheckCircle2 size={13} color="#4ade80" />
+                  <span>KYC Verified</span>
                 </div>
-
-                {isKycVerified ? (
-                  <div
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => handleNav('kyc-verification')}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.45rem',
+                    background: 'rgba(245, 158, 11, 0.22)',
+                    border: '1px solid rgba(251, 191, 36, 0.55)',
+                    color: '#fef08a',
+                    padding: '0.32rem 0.85rem',
+                    borderRadius: '9999px',
+                    fontSize: '0.74rem',
+                    fontWeight: 800,
+                    whiteSpace: 'nowrap',
+                    letterSpacing: '0.025em',
+                    backdropFilter: 'blur(10px)',
+                    boxShadow: '0 2px 12px rgba(245, 158, 11, 0.22)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                  }}
+                  title="Click to complete KYC verification"
+                >
+                  <AlertTriangle size={13} color="#fbbf24" />
+                  <span>KYC Pending</span>
+                  <span
                     style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.35rem',
-                      background: 'rgba(34, 197, 94, 0.2)',
-                      padding: '0.3rem 0.75rem',
-                      borderRadius: '9999px',
-                      fontSize: '0.72rem',
+                      background: 'rgba(245, 158, 11, 0.45)',
+                      padding: '0.1rem 0.45rem',
+                      borderRadius: '6px',
+                      fontSize: '0.68rem',
                       fontWeight: 800,
-                      color: '#86efac',
-                      border: '1px solid rgba(74, 222, 128, 0.4)',
+                      color: '#ffffff',
+                      marginLeft: '0.15rem',
                     }}
                   >
-                    <CheckCircle2 size={12} color="#4ade80" />
-                    <span>KYC Verified</span>
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => handleNav('kyc-verification')}
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.35rem',
-                      background: 'rgba(245, 158, 11, 0.22)',
-                      padding: '0.3rem 0.75rem',
-                      borderRadius: '9999px',
-                      fontSize: '0.72rem',
-                      fontWeight: 800,
-                      color: '#fef08a',
-                      border: '1px solid rgba(251, 191, 36, 0.55)',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <AlertTriangle size={12} color="#fbbf24" />
-                    <span>KYC Pending</span>
-                  </button>
-                )}
-              </div>
-
-              <h1 style={{ fontSize: '1.95rem', fontWeight: 900, margin: '0 0 0.45rem 0', color: '#ffffff', letterSpacing: '-0.025em' }}>
-                Payout History & Disbursement Ledger
-              </h1>
-              <p style={{ color: '#cbd5e1', fontSize: '0.92rem', maxWidth: '720px', margin: 0, lineHeight: 1.55 }}>
-                Complete chronological ledger of all requested and disbursed commission payments, UTR transaction references, 5% statutory TDS deductions, and downloadable vouchers.
-              </p>
+                    Action Required →
+                  </span>
+                </button>
+              )}
             </div>
-          </div>
 
-          {/* Right: Glass Quick Metric + Actions */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.85rem', flexShrink: 0 }}>
-            {/* Quick Metric Pod */}
-            <div
+            <h1 className="van-catalog-hero-title">
+              Payout History & Disbursement Ledger
+            </h1>
+            <p className="van-catalog-hero-desc">
+              Complete chronological ledger of all requested and disbursed commission payments, UTR transaction references, 5% statutory TDS deductions, and downloadable vouchers.
+            </p>
+          </div>
+        </div>
+
+        {/* Right Balance Pod & Action Controls */}
+        <div
+          className="van-directs-hero-action-col"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-end',
+            gap: '0.85rem',
+            flexShrink: 0,
+          }}
+        >
+          {/* Total Net Realized Glass Pod */}
+          <div
+            style={{
+              background: 'rgba(255, 255, 255, 0.12)',
+              backdropFilter: 'blur(16px)',
+              border: '1px solid rgba(255, 255, 255, 0.25)',
+              borderRadius: '16px',
+              padding: '0.85rem 1.4rem',
+              textAlign: 'center',
+              minWidth: '220px',
+              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)',
+            }}
+          >
+            <span
               style={{
-                background: 'rgba(255, 255, 255, 0.12)',
-                backdropFilter: 'blur(16px)',
-                border: '1px solid rgba(255, 255, 255, 0.25)',
-                borderRadius: '16px',
-                padding: '0.85rem 1.4rem',
-                textAlign: 'center',
-                minWidth: '220px',
-                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)',
+                fontSize: '0.72rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+                color: '#c7d2fe',
+                fontWeight: 800,
+                display: 'block',
               }}
             >
-              <span
-                style={{
-                  fontSize: '0.72rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
-                  color: '#c7d2fe',
-                  fontWeight: 800,
-                  display: 'block',
-                }}
-              >
-                Total Net Realized
-              </span>
-              <div
-                style={{
-                  fontSize: '1.9rem',
-                  fontWeight: 900,
-                  color: '#34d399',
-                  marginTop: '0.15rem',
-                  textShadow: '0 2px 10px rgba(52, 211, 153, 0.35)',
-                }}
-              >
-                {formatINR(summary?.totalWithdrawnNet || 0)}
-              </div>
-              <span style={{ fontSize: '0.72rem', color: '#93c5fd', marginTop: '0.15rem', display: 'block' }}>
-                {summary?.completedCount || 0} Successful Disbursals
-              </span>
+              Total Net Realized
+            </span>
+            <div
+              style={{
+                fontSize: '1.9rem',
+                fontWeight: 900,
+                color: '#34d399',
+                marginTop: '0.15rem',
+                textShadow: '0 2px 10px rgba(52, 211, 153, 0.35)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.35rem',
+              }}
+            >
+              <span>{formatINR(summary?.totalWithdrawnNet || 0)}</span>
             </div>
+            <span style={{ fontSize: '0.72rem', color: '#93c5fd', marginTop: '0.15rem', display: 'block' }}>
+              {summary?.completedCount || 0} Successful Disbursals
+            </span>
+          </div>
 
-            {/* Action Buttons */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
-              <button
-                type="button"
-                onClick={() => fetchHistory(true)}
-                disabled={refreshing}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.45rem',
-                  padding: '0.52rem 1.05rem',
-                  borderRadius: '9999px',
-                  border: '1px solid rgba(255, 255, 255, 0.25)',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  backdropFilter: 'blur(10px)',
-                  color: '#ffffff',
-                  fontSize: '0.82rem',
-                  fontWeight: 700,
-                  cursor: refreshing ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.2s ease',
-                }}
-              >
-                <RotateCcw size={14} className={refreshing ? 'spin-anim' : ''} />
-                <span>{refreshing ? 'Syncing...' : 'Sync Ledger'}</span>
-              </button>
+          {/* Action Pills */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={() => fetchHistory(true)}
+              disabled={refreshing}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.45rem',
+                padding: '0.48rem 0.95rem',
+                borderRadius: '9999px',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                background: 'rgba(255, 255, 255, 0.1)',
+                backdropFilter: 'blur(10px)',
+                color: '#ffffff',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                cursor: refreshing ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              <RotateCcw size={14} className={refreshing ? 'spin-anim' : ''} />
+              <span>{refreshing ? 'Syncing...' : 'Sync Ledger'}</span>
+            </button>
 
-              <button
-                type="button"
-                onClick={exportLedgerCsv}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.45rem',
-                  padding: '0.52rem 1.25rem',
-                  borderRadius: '9999px',
-                  border: 'none',
-                  background: 'linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%)',
-                  color: '#1e3a8a',
-                  fontSize: '0.82rem',
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.15)',
-                  transition: 'all 0.2s ease',
-                }}
-              >
-                <FileSpreadsheet size={15} color="#2563EB" />
-                <span>Export CSV</span>
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={exportLedgerCsv}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.45rem',
+                padding: '0.48rem 1.15rem',
+                borderRadius: '9999px',
+                border: 'none',
+                background: 'linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%)',
+                color: '#1e3a8a',
+                fontSize: '0.825rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                boxShadow: '0 4px 14px rgba(0, 0, 0, 0.15)',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              <FileSpreadsheet size={14} color="#2563EB" />
+              <span>Export CSV</span>
+            </button>
           </div>
         </div>
       </div>
