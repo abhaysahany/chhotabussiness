@@ -69,37 +69,51 @@ body {
 .entity-app-layout {
   display: flex;
   min-height: 100vh;
+  width: 100%;
+  max-width: 100vw;
   background-color: var(--bg-main);
   color: var(--text-primary);
+  overflow-x: hidden;
+  position: relative;
 }
 
 .entity-main-wrapper {
   flex: 1;
   margin-left: var(--sidebar-width);
+  width: calc(100% - var(--sidebar-width));
+  max-width: calc(100vw - var(--sidebar-width));
+  min-width: 0;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   background-color: var(--bg-main);
-  transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1), width 0.25s cubic-bezier(0.4, 0, 0.2, 1), max-width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-x: hidden;
 }
 
 .entity-main-wrapper.sidebar-collapsed {
   margin-left: var(--sidebar-collapsed-width);
+  width: calc(100% - var(--sidebar-collapsed-width));
+  max-width: calc(100vw - var(--sidebar-collapsed-width));
 }
 
 .entity-page-body {
   flex: 1;
-  padding: 1.5rem 2rem;
+  padding: 1.5rem 1.75rem;
   background-color: var(--bg-main);
   width: 100%;
   max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .page-container {
   width: 100%;
   max-width: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 }
 
 /* ==========================================================================
@@ -2945,5 +2959,183 @@ body {
   background: #94a3b8;
   cursor: not-allowed;
   box-shadow: none;
+}
+
+/* ==========================================================================
+   Orders & Fulfilment Luxury 3D Fintech Styling
+   ========================================================================== */
+
+.ent-orders-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.15rem;
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.ent-orders-filter-vault {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.ent-orders-search-box {
+  display: flex;
+  align-items: center;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.5rem 0.85rem;
+  flex: 1;
+  min-width: 260px;
+  max-width: 480px;
+  transition: all 0.2s ease;
+  box-shadow: inset 0 1.5px 3px rgba(0, 0, 0, 0.03);
+}
+
+.ent-orders-search-box:focus-within {
+  background: #ffffff;
+  border-color: #636B2F;
+  box-shadow: 0 0 0 3px rgba(99, 107, 47, 0.12), inset 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.ent-orders-search-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.84rem;
+  color: #0f172a;
+  width: 100%;
+  margin-left: 0.5rem;
+  font-weight: 500;
+}
+
+.ent-filter-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.42rem 0.8rem;
+  border-radius: 9px;
+  font-size: 0.77rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.ent-filter-pill-btn:hover {
+  transform: translateY(-1px);
+}
+
+.ent-orders-table-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+  width: 100%;
+  min-width: 0;
+  margin-bottom: 2rem;
+}
+
+.ent-table-responsive-box {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  min-width: 0;
+}
+
+.ent-table-responsive-box::-webkit-scrollbar {
+  height: 8px;
+}
+
+.ent-table-responsive-box::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.ent-table-responsive-box::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.ent-table-responsive-box::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.ent-lux-thead {
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  color: #ffffff;
+}
+
+.ent-lux-thead th {
+  padding: 0.95rem 1rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #cbd5e1;
+  border-bottom: 1px solid #334155;
+  white-space: nowrap;
+}
+
+.ent-cust-avatar-pod {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #ffffff;
+  background: linear-gradient(135deg, #636B2F 0%, #3e441c 100%);
+  box-shadow: 0 3px 8px rgba(99, 107, 47, 0.28), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+}
+
+.ent-code-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.5rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.ent-action-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.38rem 0.72rem;
+  border-radius: 8px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  border: none;
+}
+
+.ent-action-pill:hover {
+  transform: translateY(-1.5px);
+}
+
+.ent-action-pill:active {
+  transform: translateY(0);
 }
 

@@ -5,6 +5,32 @@ import { getEntityOrders, reportOrderDump } from '../api/entityService';
 import { useBranding } from '../utils/branding';
 import { computeInvoiceFinancials } from '../utils/invoiceCalculations';
 import EntityInvoicePrintView from '../components/EntityInvoicePrintView';
+import {
+  ShoppingBag,
+  PlusCircle,
+  RefreshCw,
+  Search,
+  X,
+  XCircle,
+  CheckCircle2,
+  Clock,
+  AlertCircle,
+  CreditCard,
+  FileText,
+  Printer,
+  ShieldAlert,
+  Wallet,
+  Receipt,
+  User,
+  Calendar,
+  Layers,
+  ArrowRight,
+  Sparkles,
+  ChevronRight,
+  Copy,
+  Check,
+  AlertTriangle,
+} from 'lucide-react';
 
 function EntityOrders() {
   const navigate = useNavigate();
@@ -27,6 +53,7 @@ function EntityOrders() {
   const [dateFilter, setDateFilter] = useState('all'); // 'all' | 'today'
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [selectedReceiptPaymentId, setSelectedReceiptPaymentId] = useState(null);
+  const [copiedInvoiceId, setCopiedInvoiceId] = useState(null);
 
   useEffect(() => {
     if (selectedInvoice) {
@@ -60,6 +87,12 @@ function EntityOrders() {
         )
       ).then(() => window.print());
     });
+  };
+
+  const handleCopyCode = (text, id) => {
+    navigator.clipboard?.writeText(text);
+    setCopiedInvoiceId(id);
+    setTimeout(() => setCopiedInvoiceId(null), 2000);
   };
 
   // Dump Payment Request State
@@ -159,7 +192,7 @@ function EntityOrders() {
 
       const matchSearch =
         (s.invoiceNumber || s.invoice_number || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (s.customer || s.customer_name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (s.customer || s.customer_name || s.customerName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
         (s.customer_user_code || s.customerUserCode || s.sponsor || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
         (s.item || '').toLowerCase().includes(searchQuery.toLowerCase());
 
@@ -208,173 +241,381 @@ function EntityOrders() {
     return salesList.filter((s) => (s.approval_status ?? s.approvalStatus ?? 'confirmed').toLowerCase() === 'pending').length;
   }, [salesList]);
 
+  const confirmedCount = useMemo(() => {
+    return salesList.filter((s) => (s.approval_status ?? s.approvalStatus ?? 'confirmed').toLowerCase() === 'confirmed').length;
+  }, [salesList]);
+
   const cancelledCount = useMemo(() => {
     return salesList.filter((s) => (s.approval_status ?? s.approvalStatus ?? 'confirmed').toLowerCase() === 'cancelled').length;
   }, [salesList]);
 
+  const getInitials = (name) => {
+    if (!name) return 'CU';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
+  };
+
   return (
-    <div className="page-container" style={{ width: '100%', padding: '1.5rem', maxWidth: '1400px', margin: '0 auto' }}>
-      {/* Header Banner */}
-      <div className="page-subheader" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <h1 className="page-title" style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: '#0f172a' }}>
-              My Orders & Fulfilment
-            </h1>
-            {pendingCount > 0 && (
+    <div className="page-container" style={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
+      {/* Top Header / Subheader */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '1.25rem',
+          marginBottom: '1.5rem',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          {/* Floating 3D Icon Pod */}
+          <div
+            style={{
+              width: '52px',
+              height: '52px',
+              borderRadius: '16px',
+              background: 'radial-gradient(135% 135% at 20% 20%, #838e3e 0%, #636B2F 55%, #3d431c 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#ffffff',
+              boxShadow: '0 8px 20px rgba(99, 107, 47, 0.3), inset 0 2px 2px rgba(255, 255, 255, 0.4)',
+              border: '1px solid rgba(255, 255, 255, 0.25)',
+              flexShrink: 0,
+            }}
+          >
+            <ShoppingBag size={26} strokeWidth={2.2} />
+          </div>
+
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
               <span
                 style={{
-                  background: '#fef3c7',
-                  color: '#92400e',
-                  fontSize: '0.75rem',
-                  fontWeight: 700,
-                  padding: '0.2rem 0.6rem',
-                  borderRadius: '9999px',
-                  border: '1px solid #fde68a',
+                  fontSize: '0.68rem',
+                  fontWeight: 800,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  color: '#636B2F',
+                  background: 'rgba(99, 107, 47, 0.1)',
+                  padding: '2px 8px',
+                  borderRadius: '6px',
+                  border: '1px solid rgba(99, 107, 47, 0.2)',
                 }}
               >
-                {pendingCount} Pending Approval
+                ● ORDER FULFILMENT
               </span>
-            )}
+              <span
+                style={{
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  color: '#475569',
+                  background: '#f1f5f9',
+                  padding: '2px 8px',
+                  borderRadius: '6px',
+                }}
+              >
+                {entityName}
+              </span>
+              {pendingCount > 0 && (
+                <span
+                  style={{
+                    background: '#fef3c7',
+                    color: '#92400e',
+                    fontSize: '0.72rem',
+                    fontWeight: 800,
+                    padding: '2px 8px',
+                    borderRadius: '9999px',
+                    border: '1px solid #fde68a',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.3rem',
+                  }}
+                >
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#d97706' }}></span>
+                  {pendingCount} Pending Approval
+                </span>
+              )}
+            </div>
+            <h1
+              style={{
+                margin: '0.2rem 0 0 0',
+                fontSize: '1.45rem',
+                fontWeight: 800,
+                color: '#0f172a',
+                letterSpacing: '-0.02em',
+              }}
+            >
+              My Orders &amp; Fulfilment
+            </h1>
+            <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.82rem', color: '#64748b' }}>
+              Track contracts, monitor approval milestones, and collect customer balances for <strong>{entityName}</strong>.
+            </p>
           </div>
-          <p className="page-description" style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>
-            Track orders, view approval milestones, and collect balance installments for <strong>{entityName}</strong>.
-          </p>
         </div>
-        <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center', flexWrap: 'wrap' }}>
+
+        {/* Action Controls */}
+        <div style={{ display: 'flex', gap: '0.65rem', alignItems: 'center', flexWrap: 'wrap' }}>
           {cancelledCount > 0 && (
             <button
               type="button"
               onClick={() => navigate('/entity/orders/cancelled')}
               style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.45rem',
                 padding: '0.55rem 0.95rem',
                 background: '#fee2e2',
                 color: '#991b1b',
                 border: '1px solid #fecaca',
-                borderRadius: '8px',
+                borderRadius: '10px',
                 fontWeight: 700,
-                fontSize: '0.82rem',
+                fontSize: '0.8rem',
                 cursor: 'pointer',
+                transition: 'all 0.2s ease',
               }}
             >
-              Cancelled Orders ({cancelledCount}) →
+              <XCircle size={15} />
+              Cancelled Orders ({cancelledCount})
             </button>
           )}
+
           <button
             type="button"
             onClick={loadSales}
+            disabled={loading}
             style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.45rem',
               padding: '0.55rem 0.95rem',
-              background: '#f1f5f9',
+              background: '#ffffff',
               color: '#334155',
-              border: '1px solid #cbd5e1',
-              borderRadius: '8px',
-              fontWeight: 600,
-              fontSize: '0.82rem',
-              cursor: 'pointer',
+              border: '1px solid #e2e8f0',
+              borderRadius: '10px',
+              fontWeight: 700,
+              fontSize: '0.8rem',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.03)',
+              transition: 'all 0.2s ease',
             }}
           >
-            🔄 Refresh
+            <RefreshCw size={14} className={loading ? 'spin' : ''} />
+            {loading ? 'Refreshing...' : 'Sync DB'}
           </button>
+
           <button
             type="button"
             onClick={() => navigate('/entity/orders/create')}
             style={{
-              padding: '0.55rem 1.15rem',
-              background: 'linear-gradient(135deg, #636B2F 0%, #505726 100%)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.58rem 1.25rem',
+              background: 'linear-gradient(135deg, #788434 0%, #505726 100%)',
               color: '#ffffff',
               border: 'none',
-              borderRadius: '8px',
-              fontWeight: 700,
-              fontSize: '0.82rem',
+              borderRadius: '10px',
+              fontWeight: 800,
+              fontSize: '0.84rem',
               cursor: 'pointer',
-              boxShadow: '0 2px 4px rgba(99, 107, 47, 0.25)',
+              boxShadow: '0 4px 14px rgba(99, 107, 47, 0.32), inset 0 1px 1px rgba(255, 255, 255, 0.3)',
+              transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
           >
-            + Create New Order
+            <PlusCircle size={16} />
+            Create New Order
           </button>
         </div>
       </div>
 
-      {/* KPI Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.15rem', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-          <div style={{ fontSize: '0.725rem', color: '#64748b', fontWeight: 700, letterSpacing: '0.04em' }}>TOTAL ACTIVE CONTRACTS</div>
-          <div style={{ fontSize: '1.55rem', fontWeight: 800, color: '#0f172a', marginTop: '0.35rem' }}>
-            {formatCurrency(totalGross)}
+      {/* 5 Financial Vault KPI Cards */}
+      <div className="ent-orders-kpi-grid">
+        {/* KPI 1: Gross GMV */}
+        <div className="ent-kpi-card">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <span className="ent-kpi-tag" style={{ color: '#636B2F', background: 'rgba(99, 107, 47, 0.08)' }}>
+              ● CONTRACTS GMV
+            </span>
+            <div
+              className="ent-3d-pod ent-3d-pod-olive"
+              style={{ width: '40px', height: '40px', borderRadius: '12px' }}
+            >
+              <Receipt size={18} strokeWidth={2.4} />
+            </div>
           </div>
-          <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '0.2rem' }}>
-            {activeOrders.length} Active Orders
-          </div>
-        </div>
-
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.15rem', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-          <div style={{ fontSize: '0.725rem', color: '#64748b', fontWeight: 700, letterSpacing: '0.04em' }}>AMOUNT COLLECTED</div>
-          <div style={{ fontSize: '1.55rem', fontWeight: 800, color: '#16a34a', marginTop: '0.35rem' }}>
-            {formatCurrency(totalCollected)}
-          </div>
-          <div style={{ fontSize: '0.72rem', color: '#16a34a', marginTop: '0.2rem' }}>
-            Advance & Balance Payments
-          </div>
-        </div>
-
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.15rem', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-          <div style={{ fontSize: '0.725rem', color: '#64748b', fontWeight: 700, letterSpacing: '0.04em' }}>OUTSTANDING BALANCE</div>
-          <div style={{ fontSize: '1.55rem', fontWeight: 800, color: totalBalanceDue > 0 ? '#b45309' : '#16a34a', marginTop: '0.35rem' }}>
-            {formatCurrency(totalBalanceDue)}
-          </div>
-          <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '0.2rem' }}>
-            To be collected on delivery
+          <div style={{ marginTop: '0.75rem' }}>
+            <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 800, letterSpacing: '0.04em' }}>
+              TOTAL ACTIVE CONTRACTS
+            </div>
+            <div style={{ fontSize: '1.65rem', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.02em', marginTop: '0.2rem' }}>
+              {formatCurrency(totalGross)}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginTop: '0.35rem', fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>
+              <Layers size={13} color="#636B2F" />
+              <span>{activeOrders.length} Active Orders Recorded</span>
+            </div>
           </div>
         </div>
 
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.15rem', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-          <div style={{ fontSize: '0.725rem', color: '#64748b', fontWeight: 700, letterSpacing: '0.04em' }}>ADMIN COMMISSION</div>
-          <div style={{ fontSize: '1.55rem', fontWeight: 800, color: '#dc2626', marginTop: '0.35rem' }}>
-            {formatCurrency(totalAdminCommission)}
+        {/* KPI 2: Amount Collected */}
+        <div className="ent-kpi-card">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <span className="ent-kpi-tag" style={{ color: '#059669', background: 'rgba(16, 185, 129, 0.08)' }}>
+              ● REVENUE COLLECTED
+            </span>
+            <div
+              className="ent-3d-pod ent-3d-pod-emerald"
+              style={{ width: '40px', height: '40px', borderRadius: '12px' }}
+            >
+              <CheckCircle2 size={18} strokeWidth={2.4} />
+            </div>
           </div>
-          <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '0.2rem' }}>
-            Cut on Collected Funds
+          <div style={{ marginTop: '0.75rem' }}>
+            <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 800, letterSpacing: '0.04em' }}>
+              AMOUNT COLLECTED
+            </div>
+            <div style={{ fontSize: '1.65rem', fontWeight: 900, color: '#059669', letterSpacing: '-0.02em', marginTop: '0.2rem' }}>
+              {formatCurrency(totalCollected)}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginTop: '0.35rem', fontSize: '0.72rem', color: '#059669', fontWeight: 600 }}>
+              <CreditCard size={13} />
+              <span>Advance &amp; Balance Received</span>
+            </div>
           </div>
         </div>
 
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.15rem', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-          <div style={{ fontSize: '0.725rem', color: '#64748b', fontWeight: 700, letterSpacing: '0.04em' }}>NET REALIZED EARNINGS</div>
-          <div style={{ fontSize: '1.55rem', fontWeight: 800, color: '#636B2F', marginTop: '0.35rem' }}>
-            {formatCurrency(totalNetEarnings)}
+        {/* KPI 3: Outstanding Balance */}
+        <div className="ent-kpi-card">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <span className="ent-kpi-tag" style={{ color: '#d97706', background: 'rgba(217, 119, 6, 0.08)' }}>
+              ● RECEIVABLES DUE
+            </span>
+            <div
+              className="ent-3d-pod ent-3d-pod-amber"
+              style={{ width: '40px', height: '40px', borderRadius: '12px' }}
+            >
+              <Clock size={18} strokeWidth={2.4} />
+            </div>
           </div>
-          <div style={{ fontSize: '0.72rem', color: '#16a34a', marginTop: '0.2rem' }}>
-            Net Entity Retained
+          <div style={{ marginTop: '0.75rem' }}>
+            <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 800, letterSpacing: '0.04em' }}>
+              OUTSTANDING BALANCE
+            </div>
+            <div style={{ fontSize: '1.65rem', fontWeight: 900, color: totalBalanceDue > 0 ? '#b45309' : '#059669', letterSpacing: '-0.02em', marginTop: '0.2rem' }}>
+              {formatCurrency(totalBalanceDue)}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginTop: '0.35rem', fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>
+              <AlertCircle size={13} color="#d97706" />
+              <span>To be collected on delivery</span>
+            </div>
+          </div>
+        </div>
+
+        {/* KPI 4: Admin Commission */}
+        <div className="ent-kpi-card">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <span className="ent-kpi-tag" style={{ color: '#dc2626', background: 'rgba(239, 68, 68, 0.08)' }}>
+              ● ADMIN COMMISSION
+            </span>
+            <div
+              className="ent-3d-pod"
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '12px',
+                background: 'radial-gradient(135% 135% at 20% 20%, #ef4444 0%, #b91c1c 100%)',
+                color: '#ffffff',
+                boxShadow: '0 6px 14px rgba(220, 38, 38, 0.28), inset 0 1px 1px rgba(255, 255, 255, 0.4)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <ShieldAlert size={18} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div style={{ marginTop: '0.75rem' }}>
+            <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 800, letterSpacing: '0.04em' }}>
+              ADMIN COMMISSION
+            </div>
+            <div style={{ fontSize: '1.65rem', fontWeight: 900, color: '#dc2626', letterSpacing: '-0.02em', marginTop: '0.2rem' }}>
+              {formatCurrency(totalAdminCommission)}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginTop: '0.35rem', fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>
+              <span>Platform Facilitation Fee</span>
+            </div>
+          </div>
+        </div>
+
+        {/* KPI 5: Net Realized Earnings */}
+        <div className="ent-kpi-card">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <span className="ent-kpi-tag" style={{ color: '#4f46e5', background: 'rgba(79, 70, 229, 0.08)' }}>
+              ● NET ENTITY EARNINGS
+            </span>
+            <div
+              className="ent-3d-pod ent-3d-pod-indigo"
+              style={{ width: '40px', height: '40px', borderRadius: '12px' }}
+            >
+              <Wallet size={18} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div style={{ marginTop: '0.75rem' }}>
+            <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 800, letterSpacing: '0.04em' }}>
+              NET REALIZED EARNINGS
+            </div>
+            <div style={{ fontSize: '1.65rem', fontWeight: 900, color: '#636B2F', letterSpacing: '-0.02em', marginTop: '0.2rem' }}>
+              {formatCurrency(totalNetEarnings)}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginTop: '0.35rem', fontSize: '0.72rem', color: '#059669', fontWeight: 600 }}>
+              <CheckCircle2 size={13} />
+              <span>Net Realized from Receipts</span>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="content-card" style={{ padding: '1.15rem', background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
-        <div style={{ display: 'flex', gap: '0.5rem', flex: 1, minWidth: '240px' }}>
+      <div className="ent-orders-filter-vault">
+        {/* Search Box */}
+        <div className="ent-orders-search-box">
+          <Search size={16} color="#64748b" />
           <input
             type="text"
+            className="ent-orders-search-input"
             placeholder="Search by Invoice #, Customer, Member ID, or Offering..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ width: '100%', padding: '0.55rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', color: '#0f172a' }}
           />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: 0 }}
+            >
+              <X size={15} />
+            </button>
+          )}
         </div>
 
-        {/* Approval Status Filter Tabs */}
-        <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+        {/* Approval Filter Tabs */}
+        <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginRight: '0.2rem' }}>
+            Approval:
+          </span>
           <button
             type="button"
             onClick={() => setApprovalFilter('all')}
+            className="ent-filter-pill-btn"
             style={{
-              padding: '0.4rem 0.75rem',
-              borderRadius: '6px',
-              border: approvalFilter === 'all' ? '1px solid #636B2F' : '1px solid #cbd5e1',
-              background: approvalFilter === 'all' ? '#636B2F' : '#ffffff',
+              background: approvalFilter === 'all' ? '#636B2F' : '#f8fafc',
+              borderColor: approvalFilter === 'all' ? '#636B2F' : '#e2e8f0',
               color: approvalFilter === 'all' ? '#ffffff' : '#475569',
-              fontSize: '0.78rem',
-              fontWeight: 700,
-              cursor: 'pointer',
+              boxShadow: approvalFilter === 'all' ? '0 2px 8px rgba(99, 107, 47, 0.28)' : 'none',
             }}
           >
             All Active ({activeOrders.length})
@@ -382,15 +623,12 @@ function EntityOrders() {
           <button
             type="button"
             onClick={() => setApprovalFilter('pending')}
+            className="ent-filter-pill-btn"
             style={{
-              padding: '0.4rem 0.75rem',
-              borderRadius: '6px',
-              border: approvalFilter === 'pending' ? '1px solid #d97706' : '1px solid #cbd5e1',
-              background: approvalFilter === 'pending' ? '#d97706' : '#ffffff',
+              background: approvalFilter === 'pending' ? '#d97706' : '#f8fafc',
+              borderColor: approvalFilter === 'pending' ? '#d97706' : '#e2e8f0',
               color: approvalFilter === 'pending' ? '#ffffff' : '#475569',
-              fontSize: '0.78rem',
-              fontWeight: 700,
-              cursor: 'pointer',
+              boxShadow: approvalFilter === 'pending' ? '0 2px 8px rgba(217, 119, 6, 0.28)' : 'none',
             }}
           >
             ⏳ Pending ({pendingCount})
@@ -398,50 +636,43 @@ function EntityOrders() {
           <button
             type="button"
             onClick={() => setApprovalFilter('confirmed')}
+            className="ent-filter-pill-btn"
             style={{
-              padding: '0.4rem 0.75rem',
-              borderRadius: '6px',
-              border: approvalFilter === 'confirmed' ? '1px solid #16a34a' : '1px solid #cbd5e1',
-              background: approvalFilter === 'confirmed' ? '#16a34a' : '#ffffff',
+              background: approvalFilter === 'confirmed' ? '#059669' : '#f8fafc',
+              borderColor: approvalFilter === 'confirmed' ? '#059669' : '#e2e8f0',
               color: approvalFilter === 'confirmed' ? '#ffffff' : '#475569',
-              fontSize: '0.78rem',
-              fontWeight: 700,
-              cursor: 'pointer',
+              boxShadow: approvalFilter === 'confirmed' ? '0 2px 8px rgba(5, 150, 105, 0.28)' : 'none',
             }}
           >
-            ✓ Confirmed
+            ✓ Confirmed ({confirmedCount})
           </button>
         </div>
 
-        <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+        {/* Payment Status Filter */}
+        <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginRight: '0.2rem' }}>
+            Payment:
+          </span>
           <button
             type="button"
             onClick={() => setStatusFilter('all')}
+            className="ent-filter-pill-btn"
             style={{
-              padding: '0.4rem 0.65rem',
-              borderRadius: '6px',
-              border: statusFilter === 'all' ? '1px solid #475569' : '1px solid #cbd5e1',
-              background: statusFilter === 'all' ? '#475569' : '#ffffff',
+              background: statusFilter === 'all' ? '#1e293b' : '#f8fafc',
+              borderColor: statusFilter === 'all' ? '#1e293b' : '#e2e8f0',
               color: statusFilter === 'all' ? '#ffffff' : '#475569',
-              fontSize: '0.75rem',
-              fontWeight: 600,
-              cursor: 'pointer',
             }}
           >
-            All Payments
+            All
           </button>
           <button
             type="button"
             onClick={() => setStatusFilter('partial')}
+            className="ent-filter-pill-btn"
             style={{
-              padding: '0.4rem 0.65rem',
-              borderRadius: '6px',
-              border: statusFilter === 'partial' ? '1px solid #b45309' : '1px solid #cbd5e1',
-              background: statusFilter === 'partial' ? '#fffbeb' : '#ffffff',
-              color: '#b45309',
-              fontSize: '0.75rem',
-              fontWeight: 600,
-              cursor: 'pointer',
+              background: statusFilter === 'partial' ? '#fffbeb' : '#f8fafc',
+              borderColor: statusFilter === 'partial' ? '#f59e0b' : '#e2e8f0',
+              color: statusFilter === 'partial' ? '#b45309' : '#475569',
             }}
           >
             Partial Due
@@ -449,58 +680,97 @@ function EntityOrders() {
           <button
             type="button"
             onClick={() => setStatusFilter('completed')}
+            className="ent-filter-pill-btn"
             style={{
-              padding: '0.4rem 0.65rem',
-              borderRadius: '6px',
-              border: statusFilter === 'completed' ? '1px solid #16a34a' : '1px solid #cbd5e1',
-              background: statusFilter === 'completed' ? '#f0fdf4' : '#ffffff',
-              color: '#166534',
-              fontSize: '0.75rem',
-              fontWeight: 600,
-              cursor: 'pointer',
+              background: statusFilter === 'completed' ? '#ecfdf5' : '#f8fafc',
+              borderColor: statusFilter === 'completed' ? '#10b981' : '#e2e8f0',
+              color: statusFilter === 'completed' ? '#047857' : '#475569',
             }}
           >
             Fully Paid
           </button>
+
+          {/* Date Filter Toggle */}
+          <button
+            type="button"
+            onClick={() => setDateFilter((prev) => (prev === 'all' ? 'today' : 'all'))}
+            className="ent-filter-pill-btn"
+            style={{
+              background: dateFilter === 'today' ? '#eff6ff' : '#f8fafc',
+              borderColor: dateFilter === 'today' ? '#3b82f6' : '#e2e8f0',
+              color: dateFilter === 'today' ? '#1d4ed8' : '#64748b',
+              marginLeft: '0.25rem',
+            }}
+          >
+            <Calendar size={13} />
+            {dateFilter === 'today' ? "Today's Only" : 'All Dates'}
+          </button>
         </div>
       </div>
 
-      {/* Orders Table */}
-      <div className="content-card" style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-        <div className="table-responsive" style={{ overflowX: 'auto' }}>
-          <table className="data-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
-            <thead>
-              <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left', color: '#475569' }}>
-                <th style={{ padding: '0.85rem 1rem', fontSize: '0.75rem', fontWeight: 700 }}>INVOICE / ID</th>
-                <th style={{ padding: '0.85rem 1rem', fontSize: '0.75rem', fontWeight: 700 }}>DATE</th>
-                <th style={{ padding: '0.85rem 1rem', fontSize: '0.75rem', fontWeight: 700 }}>CUSTOMER</th>
-                <th style={{ padding: '0.85rem 1rem', fontSize: '0.75rem', fontWeight: 700 }}>MEMBER ID</th>
-                <th style={{ padding: '0.85rem 1rem', fontSize: '0.75rem', fontWeight: 700 }}>OFFERING</th>
-                <th style={{ padding: '0.85rem 1rem', fontSize: '0.75rem', fontWeight: 700, textAlign: 'right' }}>PROJECT VALUE</th>
-                <th style={{ padding: '0.85rem 1rem', fontSize: '0.75rem', fontWeight: 700, textAlign: 'right' }}>COLLECTED</th>
-                <th style={{ padding: '0.85rem 1rem', fontSize: '0.75rem', fontWeight: 700, textAlign: 'right' }}>BALANCE DUE</th>
-                <th style={{ padding: '0.85rem 1rem', fontSize: '0.75rem', fontWeight: 700, textAlign: 'center' }}>APPROVAL</th>
-                <th style={{ padding: '0.85rem 1rem', fontSize: '0.75rem', fontWeight: 700, textAlign: 'center' }}>PAYMENT STATUS</th>
-                <th style={{ padding: '0.85rem 1rem', fontSize: '0.75rem', fontWeight: 700, textAlign: 'center' }}>ACTIONS</th>
+      {/* Modern 3D Orders Data Table Card */}
+      <div className="ent-orders-table-card">
+        <div className="ent-table-responsive-box">
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
+            <thead className="ent-lux-thead">
+              <tr>
+                <th style={{ textAlign: 'left' }}>INVOICE / ID</th>
+                <th style={{ textAlign: 'left' }}>DATE</th>
+                <th style={{ textAlign: 'left' }}>CUSTOMER / CLIENT</th>
+                <th style={{ textAlign: 'left' }}>MEMBER ID</th>
+                <th style={{ textAlign: 'left' }}>OFFERING</th>
+                <th style={{ textAlign: 'right' }}>PROJECT VALUE</th>
+                <th style={{ textAlign: 'right' }}>COLLECTED</th>
+                <th style={{ textAlign: 'right' }}>BALANCE DUE</th>
+                <th style={{ textAlign: 'center' }}>APPROVAL STATUS</th>
+                <th style={{ textAlign: 'center' }}>PAYMENT STATUS</th>
+                <th style={{ textAlign: 'center' }}>ACTIONS</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="11" style={{ padding: '3.5rem 1rem', textAlign: 'center', color: '#64748b' }}>
-                    <div className="spinner" style={{ margin: '0 auto 0.5rem auto', width: '28px', height: '28px', borderColor: '#636B2F transparent transparent transparent' }} />
-                    Loading your orders...
+                  <td colSpan="11" style={{ padding: '4rem 1rem', textAlign: 'center', color: '#64748b' }}>
+                    <div
+                      style={{
+                        width: '32px',
+                        height: '32px',
+                        border: '3px solid #e2e8f0',
+                        borderTopColor: '#636B2F',
+                        borderRadius: '50%',
+                        animation: 'spin 0.8s linear infinite',
+                        margin: '0 auto 0.75rem auto',
+                      }}
+                    />
+                    <div style={{ fontWeight: 700, color: '#334155' }}>Loading orders database...</div>
                   </td>
                 </tr>
               ) : filteredSales.length === 0 ? (
                 <tr>
-                  <td colSpan="11" style={{ padding: '3.5rem 1rem', textAlign: 'center', color: '#64748b' }}>
-                    <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📦</div>
-                    <div style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>
-                      {searchQuery ? 'No Matching Orders Found' : 'No Orders Found'}
+                  <td colSpan="11" style={{ padding: '4rem 1rem', textAlign: 'center', color: '#64748b' }}>
+                    <div
+                      style={{
+                        width: '56px',
+                        height: '56px',
+                        borderRadius: '16px',
+                        background: '#f1f5f9',
+                        color: '#636B2F',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        margin: '0 auto 0.85rem auto',
+                        boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.04)',
+                      }}
+                    >
+                      <ShoppingBag size={28} />
                     </div>
-                    <p style={{ margin: '0.25rem 0 0', fontSize: '0.85rem' }}>
-                      {searchQuery ? 'Try adjusting your search query or filters.' : 'Click "+ Create New Order" above to record your first order.'}
+                    <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a' }}>
+                      {searchQuery ? 'No Matching Orders Found' : 'No Active Orders Recorded'}
+                    </div>
+                    <p style={{ margin: '0.35rem 0 0', fontSize: '0.84rem', color: '#64748b' }}>
+                      {searchQuery
+                        ? 'Try adjusting your search keywords or clear active filters.'
+                        : 'Click "+ Create New Order" above to record and bill your first customer contract.'}
                     </p>
                   </td>
                 </tr>
@@ -515,187 +785,287 @@ function EntityOrders() {
                   const isPending = approvalStatus === 'pending';
                   const isConfirmed = approvalStatus === 'confirmed';
                   const isCancelled = approvalStatus === 'cancelled';
+                  const custName = sale.customerName || sale.customer_name || sale.customer || 'Unnamed Client';
+                  const custEmail = sale.customerEmail || sale.customer_email || '';
+                  const memberCode = sale.customer_user_code || sale.customerUserCode || sale.sponsor || 'N/A';
+                  const isCopied = copiedInvoiceId === (sale.id || invoiceNo);
 
                   return (
                     <tr
                       key={sale.id || invoiceNo}
-                      style={{ borderBottom: '1px solid #f1f5f9', transition: 'background 0.15s ease' }}
-                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#f8fafc')}
+                      style={{
+                        borderBottom: '1px solid #f1f5f9',
+                        transition: 'background-color 0.15s ease',
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(248, 250, 252, 0.85)')}
                       onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                     >
-                      <td style={{ padding: '0.85rem 1rem', fontWeight: 700, color: '#0f172a' }}>
-                        <div>{invoiceNo}</div>
-                        <div style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 500 }}>ID: #{sale.id}</div>
+                      {/* Invoice / ID */}
+                      <td style={{ padding: '1rem', fontWeight: 700, color: '#0f172a' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                          <span className="ent-code-chip">{invoiceNo}</span>
+                          <button
+                            type="button"
+                            onClick={() => handleCopyCode(invoiceNo, sale.id || invoiceNo)}
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              color: isCopied ? '#059669' : '#94a3b8',
+                              cursor: 'pointer',
+                              padding: 2,
+                            }}
+                            title="Copy invoice number"
+                          >
+                            {isCopied ? <Check size={13} /> : <Copy size={13} />}
+                          </button>
+                        </div>
+                        <div style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 600, marginTop: '2px' }}>
+                          Contract ID: #{sale.id}
+                        </div>
                       </td>
-                      <td style={{ padding: '0.85rem 1rem', color: '#64748b', fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
-                        {formatDate(sale.date || sale.created_at)}
+
+                      {/* Date */}
+                      <td style={{ padding: '1rem', color: '#64748b', fontSize: '0.82rem', whiteSpace: 'nowrap' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                          <Calendar size={13} color="#94a3b8" />
+                          <span>{formatDate(sale.date || sale.created_at)}</span>
+                        </div>
                       </td>
-                      <td style={{ padding: '0.85rem 1rem' }}>
-                        <div style={{ fontWeight: 600, color: '#0f172a' }}>{sale.customerName || sale.customer_name || sale.customer}</div>
-                        {(sale.customerEmail || sale.customer_email) && (
-                          <div style={{ fontSize: '0.72rem', color: '#64748b' }}>{sale.customerEmail || sale.customer_email}</div>
-                        )}
+
+                      {/* Customer / Client */}
+                      <td style={{ padding: '1rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                          <div className="ent-cust-avatar-pod">
+                            {getInitials(custName)}
+                          </div>
+                          <div>
+                            <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.85rem' }}>
+                              {custName}
+                            </div>
+                            {custEmail && (
+                              <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 500 }}>
+                                {custEmail}
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </td>
-                      <td style={{ padding: '0.85rem 1rem', color: '#2563eb', fontWeight: 600, fontFamily: 'monospace' }}>
-                        {sale.customer_user_code || sale.customerUserCode || sale.sponsor || 'N/A'}
+
+                      {/* Member ID */}
+                      <td style={{ padding: '1rem' }}>
+                        <span
+                          style={{
+                            fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+                            fontSize: '0.78rem',
+                            fontWeight: 700,
+                            color: '#2563eb',
+                            background: '#eff6ff',
+                            padding: '3px 8px',
+                            borderRadius: '6px',
+                            border: '1px solid #dbeafe',
+                          }}
+                        >
+                          {memberCode}
+                        </span>
                       </td>
-                      <td style={{ padding: '0.85rem 1rem', color: '#334155' }}>
-                        <div style={{ fontWeight: 600 }}>{sale.item}</div>
-                        <span style={{ fontSize: '0.7rem', color: '#6b7280', textTransform: 'capitalize' }}>
+
+                      {/* Offering */}
+                      <td style={{ padding: '1rem', color: '#334155' }}>
+                        <div style={{ fontWeight: 700, fontSize: '0.84rem' }}>{sale.item}</div>
+                        <span
+                          style={{
+                            fontSize: '0.68rem',
+                            fontWeight: 800,
+                            letterSpacing: '0.04em',
+                            textTransform: 'uppercase',
+                            color: '#636B2F',
+                            background: 'rgba(99, 107, 47, 0.08)',
+                            padding: '1.5px 6px',
+                            borderRadius: '4px',
+                            display: 'inline-block',
+                            marginTop: '2px',
+                          }}
+                        >
                           {sale.item_type || sale.itemType || 'service'}
                         </span>
                       </td>
-                      <td style={{ padding: '0.85rem 1rem', textAlign: 'right', fontWeight: 700, color: '#0f172a' }}>
+
+                      {/* Project Value */}
+                      <td style={{ padding: '1rem', textAlign: 'right', fontWeight: 800, color: '#0f172a', fontSize: '0.88rem' }}>
                         {formatCurrency(gross)}
                       </td>
-                      <td style={{ padding: '0.85rem 1rem', textAlign: 'right', fontWeight: 700, color: '#16a34a' }}>
+
+                      {/* Collected */}
+                      <td style={{ padding: '1rem', textAlign: 'right', fontWeight: 800, color: '#059669', fontSize: '0.88rem' }}>
                         {formatCurrency(collected)}
                       </td>
-                      <td style={{ padding: '0.85rem 1rem', textAlign: 'right', fontWeight: 700, color: isPartial ? '#b45309' : '#16a34a' }}>
-                        {formatCurrency(balance)}
+
+                      {/* Balance Due */}
+                      <td style={{ padding: '1rem', textAlign: 'right' }}>
+                        <div
+                          style={{
+                            fontWeight: 800,
+                            fontSize: '0.88rem',
+                            color: isPartial ? '#b45309' : '#059669',
+                          }}
+                        >
+                          {formatCurrency(balance)}
+                        </div>
+                        {isPartial && (
+                          <div style={{ fontSize: '0.68rem', color: '#b45309', fontWeight: 600 }}>
+                            Receivable
+                          </div>
+                        )}
                       </td>
-                      {/* Approval Status Badge (Prompt Section 5.A) */}
-                      <td style={{ padding: '0.85rem 1rem', textAlign: 'center' }}>
+
+                      {/* Approval Status Badge */}
+                      <td style={{ padding: '1rem', textAlign: 'center' }}>
                         {isPending ? (
                           <span
                             style={{
                               background: '#fef3c7',
                               color: '#92400e',
                               fontSize: '0.72rem',
-                              fontWeight: 700,
-                              padding: '0.2rem 0.55rem',
+                              fontWeight: 800,
+                              padding: '0.25rem 0.65rem',
                               borderRadius: '9999px',
                               border: '1px solid #fde68a',
                               whiteSpace: 'nowrap',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.35rem',
+                              boxShadow: '0 1px 3px rgba(217, 119, 6, 0.12)',
                             }}
                           >
-                            ⏳ Pending Approval
+                            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#d97706' }}></span>
+                            Pending Review
                           </span>
                         ) : isConfirmed ? (
                           <span
                             style={{
-                              background: '#dcfce7',
-                              color: '#15803d',
+                              background: '#ecfdf5',
+                              color: '#065f46',
                               fontSize: '0.72rem',
-                              fontWeight: 700,
-                              padding: '0.2rem 0.55rem',
+                              fontWeight: 800,
+                              padding: '0.25rem 0.65rem',
                               borderRadius: '9999px',
-                              border: '1px solid #bbf7d0',
+                              border: '1px solid #a7f3d0',
                               whiteSpace: 'nowrap',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.35rem',
+                              boxShadow: '0 1px 3px rgba(5, 150, 105, 0.12)',
                             }}
                           >
-                            ✓ Confirmed
+                            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981' }}></span>
+                            Confirmed
                           </span>
                         ) : (
                           <span
                             style={{
-                              background: '#fee2e2',
+                              background: '#fef2f2',
                               color: '#991b1b',
                               fontSize: '0.72rem',
-                              fontWeight: 700,
-                              padding: '0.2rem 0.55rem',
+                              fontWeight: 800,
+                              padding: '0.25rem 0.65rem',
                               borderRadius: '9999px',
                               border: '1px solid #fecaca',
                               whiteSpace: 'nowrap',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.35rem',
                             }}
                           >
                             ✕ Cancelled
                           </span>
                         )}
                       </td>
-                      {/* Payment Settlement Status */}
-                      <td style={{ padding: '0.85rem 1rem', textAlign: 'center' }}>
+
+                      {/* Payment Status */}
+                      <td style={{ padding: '1rem', textAlign: 'center' }}>
                         <span
                           style={{
                             display: 'inline-block',
-                            padding: '0.2rem 0.55rem',
-                            borderRadius: '12px',
+                            padding: '0.25rem 0.65rem',
+                            borderRadius: '9999px',
                             fontSize: '0.72rem',
-                            fontWeight: 700,
-                            textTransform: 'uppercase',
+                            fontWeight: 800,
+                            letterSpacing: '0.02em',
                             background: isPartial ? '#fffbeb' : '#f0fdf4',
-                            color: isPartial ? '#b45309' : '#166534',
-                            border: isPartial ? '1px solid #fef3c7' : '1px solid #dcfce7',
+                            color: isPartial ? '#b45309' : '#15803d',
+                            border: isPartial ? '1px solid #fde68a' : '1px solid #bbf7d0',
                           }}
                         >
-                          {isPartial ? 'Partial Due' : 'Fully Paid'}
+                          {isPartial ? 'Partial Due' : 'Fully Settled'}
                         </span>
                       </td>
-                      {/* Actions Column (Prompt Section 5.C & 5.D) */}
-                      <td style={{ padding: '0.85rem 1rem', textAlign: 'center' }}>
-                        <div style={{ display: 'inline-flex', gap: '0.4rem', alignItems: 'center' }}>
+
+                      {/* Actions Column */}
+                      <td style={{ padding: '1rem', textAlign: 'center' }}>
+                        <div style={{ display: 'inline-flex', gap: '0.45rem', alignItems: 'center' }}>
                           <button
                             type="button"
                             onClick={() => {
                               setSelectedReceiptPaymentId(null);
                               setSelectedInvoice(sale);
                             }}
+                            className="ent-action-pill"
                             style={{
-                              padding: '0.35rem 0.65rem',
                               background: '#f1f5f9',
                               color: '#334155',
                               border: '1px solid #cbd5e1',
-                              borderRadius: '6px',
-                              fontSize: '0.75rem',
-                              fontWeight: 700,
-                              cursor: 'pointer',
-                              whiteSpace: 'nowrap',
                             }}
                           >
-                            📄 Details
+                            <FileText size={13} />
+                            Details
                           </button>
-                          {/* Receive Balance strictly disabled/hidden for pending or cancelled orders */}
+
+                          {/* Collect Balance strictly when confirmed and balance > 0 */}
                           {isConfirmed && isPartial && (
                             <>
                               <button
                                 type="button"
                                 onClick={() => navigate('/entity/payments')}
+                                className="ent-action-pill"
                                 style={{
-                                  padding: '0.35rem 0.65rem',
-                                  background: 'linear-gradient(135deg, #636B2F 0%, #505726 100%)',
+                                  background: 'linear-gradient(135deg, #788434 0%, #505726 100%)',
                                   color: '#ffffff',
-                                  border: 'none',
-                                  borderRadius: '6px',
-                                  fontSize: '0.75rem',
-                                  fontWeight: 700,
-                                  cursor: 'pointer',
-                                  whiteSpace: 'nowrap',
+                                  boxShadow: '0 2px 6px rgba(99, 107, 47, 0.3)',
                                 }}
                               >
-                                💵 Collect
+                                <CreditCard size={13} />
+                                Collect
                               </button>
                               <button
                                 type="button"
                                 onClick={() => handleOpenDumpModal(sale)}
+                                className="ent-action-pill"
                                 style={{
-                                  padding: '0.35rem 0.65rem',
-                                  background: '#FEF2F2',
-                                  color: '#DC2626',
-                                  border: '1px solid #FECACA',
-                                  borderRadius: '6px',
-                                  fontSize: '0.75rem',
-                                  fontWeight: 700,
-                                  cursor: 'pointer',
-                                  whiteSpace: 'nowrap',
+                                  background: '#fef2f2',
+                                  color: '#dc2626',
+                                  border: '1px solid #fecaca',
                                 }}
                                 title="Report uncollectible balance as Dump Payment to Admin"
                               >
-                                ⚠️ Report Dump
+                                <AlertTriangle size={13} />
+                                Dump
                               </button>
                             </>
                           )}
+
                           {isPending && (
                             <span
                               style={{
                                 fontSize: '0.7rem',
                                 color: '#92400e',
                                 background: '#fef3c7',
-                                padding: '0.25rem 0.5rem',
-                                borderRadius: '4px',
-                                fontWeight: 600,
+                                padding: '0.25rem 0.55rem',
+                                borderRadius: '6px',
+                                fontWeight: 700,
                                 whiteSpace: 'nowrap',
+                                border: '1px solid #fde68a',
                               }}
-                              title="Balance collection will become available after Admin confirms this order."
+                              title="Balance collection will unlock as soon as Admin confirms this order."
                             >
                               Locked
                             </span>
@@ -711,20 +1081,28 @@ function EntityOrders() {
         </div>
       </div>
 
-      {/* Dump Payment Toast */}
+      {/* Dump Payment Toast Notification */}
       {dumpSuccessToast && (
-        <div style={{
-          position: 'fixed',
-          top: '20px',
-          right: '20px',
-          zIndex: 9999,
-          padding: '14px 22px',
-          borderRadius: '8px',
-          backgroundColor: '#10B981',
-          color: '#ffffff',
-          fontWeight: '600',
-          boxShadow: '0 4px 14px rgba(0,0,0,0.15)',
-        }}>
+        <div
+          style={{
+            position: 'fixed',
+            top: '24px',
+            right: '24px',
+            zIndex: 9999,
+            padding: '14px 20px',
+            borderRadius: '12px',
+            backgroundColor: '#059669',
+            color: '#ffffff',
+            fontWeight: 700,
+            fontSize: '0.88rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.6rem',
+            boxShadow: '0 10px 25px rgba(5, 150, 105, 0.35)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+          }}
+        >
+          <CheckCircle2 size={18} />
           {dumpSuccessToast}
         </div>
       )}
@@ -736,49 +1114,74 @@ function EntityOrders() {
         const collected = Number(o.advancePayment ?? o.advance_payment ?? 0);
         const balance = Number(o.balanceDue ?? o.balance_due ?? 0);
         return (
-          <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(15, 23, 42, 0.75)',
-            backdropFilter: 'blur(4px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 9999,
-            padding: '16px',
-          }}>
-            <div style={{
-              backgroundColor: '#ffffff',
-              borderRadius: '16px',
-              maxWidth: '540px',
-              width: '100%',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-              overflow: 'hidden',
-            }}>
-              <div style={{
-                padding: '18px 24px',
-                borderBottom: '1px solid #E5E7EB',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                background: '#F9FAFB',
-              }}>
-                <div>
-                  <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#111827' }}>
-                    Report Dump Payment
-                  </h3>
-                  <div style={{ fontSize: '0.8rem', color: '#6B7280', marginTop: '2px' }}>
-                    Invoice #{o.invoiceNumber || o.invoice_number || o.id}
+          <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(15, 23, 42, 0.65)',
+              backdropFilter: 'blur(6px)',
+              WebkitBackdropFilter: 'blur(6px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 9999,
+              padding: '16px',
+            }}
+          >
+            <div
+              style={{
+                backgroundColor: '#ffffff',
+                borderRadius: '18px',
+                maxWidth: '540px',
+                width: '100%',
+                boxShadow: '0 25px 60px rgba(0, 0, 0, 0.25)',
+                overflow: 'hidden',
+                border: '1px solid #e2e8f0',
+              }}
+            >
+              <div
+                style={{
+                  padding: '18px 24px',
+                  borderBottom: '1px solid #e2e8f0',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  background: 'linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                  <div
+                    style={{
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '10px',
+                      background: 'radial-gradient(135% 135% at 20% 20%, #ef4444 0%, #b91c1c 100%)',
+                      color: '#ffffff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: '0 4px 10px rgba(220, 38, 38, 0.3)',
+                    }}
+                  >
+                    <AlertTriangle size={18} />
+                  </div>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '1.08rem', fontWeight: 800, color: '#0f172a' }}>
+                      Report Dump Payment
+                    </h3>
+                    <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '2px' }}>
+                      Invoice #{o.invoiceNumber || o.invoice_number || o.id} • Order ID #{o.id}
+                    </div>
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => setSelectedOrderForDump(null)}
                   disabled={submittingDump}
-                  style={{ background: 'none', border: 'none', fontSize: '1.5rem', color: '#9CA3AF', cursor: 'pointer' }}
+                  style={{ background: 'none', border: 'none', fontSize: '1.4rem', color: '#94a3b8', cursor: 'pointer' }}
                 >
                   &times;
                 </button>
@@ -786,46 +1189,52 @@ function EntityOrders() {
 
               <form onSubmit={handleReportDumpSubmit} style={{ padding: '24px' }}>
                 {dumpError && (
-                  <div style={{
-                    padding: '12px 14px',
-                    backgroundColor: '#FEF2F2',
-                    border: '1px solid #F87171',
-                    borderRadius: '8px',
-                    color: '#B91C1C',
-                    fontSize: '0.85rem',
-                    marginBottom: '16px',
-                  }}>
+                  <div
+                    style={{
+                      padding: '12px 14px',
+                      backgroundColor: '#fef2f2',
+                      border: '1px solid #f87171',
+                      borderRadius: '10px',
+                      color: '#b91c1c',
+                      fontSize: '0.84rem',
+                      fontWeight: 600,
+                      marginBottom: '16px',
+                    }}
+                  >
                     {dumpError}
                   </div>
                 )}
 
-                {/* Financial Overview */}
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr 1fr',
-                  gap: '10px',
-                  backgroundColor: '#F8FAFC',
-                  padding: '12px',
-                  borderRadius: '10px',
-                  marginBottom: '18px',
-                  textAlign: 'center',
-                }}>
+                {/* Financial Overview mini pods */}
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr 1fr',
+                    gap: '10px',
+                    backgroundColor: '#f8fafc',
+                    padding: '12px',
+                    borderRadius: '12px',
+                    border: '1px solid #e2e8f0',
+                    marginBottom: '18px',
+                    textAlign: 'center',
+                  }}
+                >
                   <div>
-                    <div style={{ fontSize: '0.7rem', color: '#64748B', textTransform: 'uppercase', fontWeight: 600 }}>Project Gross</div>
-                    <div style={{ fontWeight: 700, color: '#0F172A', marginTop: '2px' }}>{formatCurrency(gross)}</div>
+                    <div style={{ fontSize: '0.68rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 800 }}>Project Value</div>
+                    <div style={{ fontWeight: 800, color: '#0f172a', marginTop: '2px', fontSize: '0.95rem' }}>{formatCurrency(gross)}</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: '0.7rem', color: '#64748B', textTransform: 'uppercase', fontWeight: 600 }}>Collected</div>
-                    <div style={{ fontWeight: 700, color: '#059669', marginTop: '2px' }}>{formatCurrency(collected)}</div>
+                    <div style={{ fontSize: '0.68rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 800 }}>Collected</div>
+                    <div style={{ fontWeight: 800, color: '#059669', marginTop: '2px', fontSize: '0.95rem' }}>{formatCurrency(collected)}</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: '0.7rem', color: '#64748B', textTransform: 'uppercase', fontWeight: 600 }}>Outstanding</div>
-                    <div style={{ fontWeight: 700, color: '#D97706', marginTop: '2px' }}>{formatCurrency(balance)}</div>
+                    <div style={{ fontSize: '0.68rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 800 }}>Outstanding</div>
+                    <div style={{ fontWeight: 800, color: '#d97706', marginTop: '2px', fontSize: '0.95rem' }}>{formatCurrency(balance)}</div>
                   </div>
                 </div>
 
                 <div style={{ marginBottom: '16px' }}>
-                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#374151', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 800, color: '#334155', marginBottom: '6px' }}>
                     Dump Amount (₹) *
                   </label>
                   <input
@@ -839,69 +1248,78 @@ function EntityOrders() {
                     required
                     style={{
                       width: '100%',
-                      padding: '10px 12px',
-                      border: '1px solid #D1D5DB',
-                      borderRadius: '8px',
-                      fontSize: '0.9rem',
-                      fontWeight: 600,
+                      padding: '10px 14px',
+                      border: '1.5px solid #cbd5e1',
+                      borderRadius: '10px',
+                      fontSize: '0.92rem',
+                      fontWeight: 700,
                       boxSizing: 'border-box',
+                      color: '#0f172a',
                     }}
                   />
-                  <span style={{ fontSize: '0.75rem', color: '#6B7280', marginTop: '4px', display: 'block' }}>
-                    Maximum collectible balance available for dump: {formatCurrency(balance)}
+                  <span style={{ fontSize: '0.74rem', color: '#64748b', marginTop: '4px', display: 'block' }}>
+                    Maximum collectible balance available for dump: <strong>{formatCurrency(balance)}</strong>
                   </span>
                 </div>
 
                 <div style={{ marginBottom: '16px' }}>
-                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#374151', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 800, color: '#334155', marginBottom: '6px' }}>
                     Reason for Uncollectible Payment *
                   </label>
                   <textarea
                     rows={3}
                     value={dumpReason}
                     onChange={(e) => setDumpReason(e.target.value)}
-                    placeholder="Describe why this balance could not be collected (e.g. customer business shut down, legal settlement, project cancellation)..."
+                    placeholder="Explain why this balance could not be collected..."
                     required
                     style={{
                       width: '100%',
-                      padding: '10px 12px',
-                      border: '1px solid #D1D5DB',
-                      borderRadius: '8px',
-                      fontSize: '0.85rem',
+                      padding: '10px 14px',
+                      border: '1.5px solid #cbd5e1',
+                      borderRadius: '10px',
+                      fontSize: '0.86rem',
                       boxSizing: 'border-box',
+                      fontFamily: 'inherit',
+                      color: '#0f172a',
                     }}
                   />
                 </div>
 
-                <div style={{ marginBottom: '20px' }}>
-                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#374151', marginBottom: '6px' }}>
+                <div style={{ marginBottom: '18px' }}>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 800, color: '#334155', marginBottom: '6px' }}>
                     Additional Notes (Optional)
                   </label>
                   <textarea
                     rows={2}
                     value={dumpNotes}
                     onChange={(e) => setDumpNotes(e.target.value)}
-                    placeholder="Internal reference notes or customer conversation summary..."
+                    placeholder="Internal reference notes..."
                     style={{
                       width: '100%',
-                      padding: '10px 12px',
-                      border: '1px solid #D1D5DB',
-                      borderRadius: '8px',
-                      fontSize: '0.85rem',
+                      padding: '10px 14px',
+                      border: '1.5px solid #cbd5e1',
+                      borderRadius: '10px',
+                      fontSize: '0.86rem',
                       boxSizing: 'border-box',
+                      fontFamily: 'inherit',
+                      color: '#0f172a',
                     }}
                   />
                 </div>
 
-                <div style={{
-                  fontSize: '0.75rem',
-                  color: '#6B7280',
-                  backgroundColor: '#F3F4F6',
-                  padding: '10px 12px',
-                  borderRadius: '8px',
-                  marginBottom: '20px',
-                }}>
-                  <strong>Note:</strong> Dump Payment is NOT an actual cash receipt. Once submitted, it will be placed in Admin pending queue. The order balance will only be updated upon Admin approval.
+                <div
+                  style={{
+                    fontSize: '0.75rem',
+                    color: '#64748b',
+                    backgroundColor: '#f8fafc',
+                    border: '1px solid #e2e8f0',
+                    padding: '10px 14px',
+                    borderRadius: '10px',
+                    marginBottom: '20px',
+                    lineHeight: 1.45,
+                  }}
+                >
+                  <strong style={{ color: '#0f172a' }}>Important:</strong> Dump Payment is NOT a cash receipt. It will be submitted to the Admin review queue. The balance will only be updated upon Admin verification.
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
@@ -911,11 +1329,11 @@ function EntityOrders() {
                     disabled={submittingDump}
                     style={{
                       padding: '10px 18px',
-                      backgroundColor: '#F3F4F6',
-                      color: '#4B5563',
-                      border: '1px solid #D1D5DB',
-                      borderRadius: '8px',
-                      fontWeight: 600,
+                      backgroundColor: '#f1f5f9',
+                      color: '#475569',
+                      border: '1px solid #cbd5e1',
+                      borderRadius: '10px',
+                      fontWeight: 700,
                       cursor: submittingDump ? 'not-allowed' : 'pointer',
                     }}
                   >
@@ -926,12 +1344,13 @@ function EntityOrders() {
                     disabled={submittingDump}
                     style={{
                       padding: '10px 22px',
-                      backgroundColor: submittingDump ? '#9CA3AF' : '#DC2626',
+                      backgroundColor: submittingDump ? '#94a3b8' : '#dc2626',
                       color: '#ffffff',
                       border: 'none',
-                      borderRadius: '8px',
-                      fontWeight: 700,
+                      borderRadius: '10px',
+                      fontWeight: 800,
                       cursor: submittingDump ? 'not-allowed' : 'pointer',
+                      boxShadow: '0 4px 12px rgba(220, 38, 38, 0.3)',
                     }}
                   >
                     {submittingDump ? 'Submitting...' : 'Submit Dump Request'}
@@ -960,8 +1379,9 @@ function EntityOrders() {
                 left: 0,
                 right: 0,
                 bottom: 0,
-                backgroundColor: 'rgba(15, 23, 42, 0.75)',
-                backdropFilter: 'blur(5px)',
+                backgroundColor: 'rgba(15, 23, 42, 0.65)',
+                backdropFilter: 'blur(6px)',
+                WebkitBackdropFilter: 'blur(6px)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -977,39 +1397,73 @@ function EntityOrders() {
               <div
                 style={{
                   background: '#ffffff',
-                  borderRadius: '16px',
+                  borderRadius: '20px',
                   width: '100%',
-                  maxWidth: '720px',
+                  maxWidth: '740px',
                   maxHeight: '90vh',
                   overflowY: 'auto',
-                  padding: '1.75rem',
-                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                  padding: '2rem',
+                  boxShadow: '0 25px 60px rgba(0, 0, 0, 0.25)',
+                  border: '1px solid #e2e8f0',
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '2px solid #e2e8f0', paddingBottom: '1rem', marginBottom: '1.25rem', gap: '1rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                {/* Modal Header */}
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                    borderBottom: '2px solid #f1f5f9',
+                    paddingBottom: '1.25rem',
+                    marginBottom: '1.25rem',
+                    gap: '1rem',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.95rem' }}>
                     <img
                       src={logoUrl || '/logo.png'}
                       alt={appName}
-                      style={{ width: '42px', height: '42px', borderRadius: '8px', objectFit: 'contain', border: '1px solid #e2e8f0', background: '#ffffff' }}
+                      style={{
+                        width: '46px',
+                        height: '46px',
+                        borderRadius: '12px',
+                        objectFit: 'contain',
+                        border: '1px solid #e2e8f0',
+                        background: '#ffffff',
+                        padding: '4px',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
+                      }}
                       onError={(e) => { e.currentTarget.style.display = 'none'; }}
                     />
                     <div>
-                      <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#636B2F', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                        {appName}
+                      <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#636B2F', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                        {appName} • AUTHORIZED PARTNER SLIP
                       </div>
-                      <h3 style={{ margin: '0.1rem 0 0.2rem 0', fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>
-                        {isReceiptMode ? `PAYMENT RECEIPT #RCPT-${activeReceipt.id}` : 'ORDER DETAILS & TAX INVOICE'}
+                      <h3 style={{ margin: '0.15rem 0 0.2rem 0', fontSize: '1.25rem', fontWeight: 900, color: '#0f172a' }}>
+                        {isReceiptMode ? `PAYMENT RECEIPT #RCPT-${activeReceipt.id}` : 'TAX INVOICE & ORDER SLIP'}
                       </h3>
                       <span style={{ fontSize: '0.78rem', color: '#64748b' }}>
-                        Invoice: <strong>{selectedInvoice.invoiceNumber || selectedInvoice.invoice_number || `ORD-${selectedInvoice.id}`}</strong> | Order ID: <strong>#{selectedInvoice.id}</strong> | Date: <strong>{formatDate(selectedInvoice.date || selectedInvoice.created_at)}</strong>
+                        Invoice: <strong>{selectedInvoice.invoiceNumber || selectedInvoice.invoice_number || `ORD-${selectedInvoice.id}`}</strong> | Contract ID: <strong>#{selectedInvoice.id}</strong> | Date: <strong>{formatDate(selectedInvoice.date || selectedInvoice.created_at)}</strong>
                       </span>
                     </div>
                   </div>
                   <button
                     type="button"
                     onClick={() => setSelectedInvoice(null)}
-                    style={{ background: 'none', border: 'none', fontSize: '1.25rem', color: '#64748b', cursor: 'pointer', flexShrink: 0 }}
+                    style={{
+                      background: '#f1f5f9',
+                      border: 'none',
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '8px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '1.1rem',
+                      color: '#64748b',
+                      cursor: 'pointer',
+                      flexShrink: 0,
+                    }}
                     aria-label="Close invoice"
                   >
                     ✕
@@ -1022,17 +1476,17 @@ function EntityOrders() {
                     style={{
                       background: '#fef3c7',
                       border: '1px solid #fde68a',
-                      borderRadius: '10px',
-                      padding: '0.85rem 1rem',
+                      borderRadius: '12px',
+                      padding: '0.95rem 1.15rem',
                       marginBottom: '1.25rem',
                       color: '#92400e',
-                      fontSize: '0.825rem',
+                      fontSize: '0.84rem',
                       display: 'flex',
-                      gap: '0.6rem',
+                      gap: '0.75rem',
                       alignItems: 'flex-start',
                     }}
                   >
-                    <span style={{ fontSize: '1.2rem', lineHeight: 1 }}>⏳</span>
+                    <span style={{ fontSize: '1.3rem', lineHeight: 1 }}>⏳</span>
                     <div>
                       <div style={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.03em' }}>PENDING ADMIN APPROVAL</div>
                       <div style={{ marginTop: '0.2rem', lineHeight: 1.45 }}>
@@ -1045,25 +1499,25 @@ function EntityOrders() {
                     style={{
                       background: '#fef2f2',
                       border: '1px solid #fecaca',
-                      borderRadius: '10px',
-                      padding: '0.85rem 1rem',
+                      borderRadius: '12px',
+                      padding: '0.95rem 1.15rem',
                       marginBottom: '1.25rem',
                       color: '#991b1b',
-                      fontSize: '0.825rem',
+                      fontSize: '0.84rem',
                     }}
                   >
                     <div style={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.03em' }}>✕ ORDER CANCELLED BY ADMIN</div>
                     <div style={{ marginTop: '0.25rem', fontWeight: 600 }}>
                       Reason: &quot;{selectedInvoice.cancellation_reason || selectedInvoice.cancellationReason || 'No reason specified'}&quot;
                     </div>
-                    <div style={{ marginTop: '0.35rem', fontSize: '0.75rem', opacity: 0.9 }}>
+                    <div style={{ marginTop: '0.35rem', fontSize: '0.78rem', opacity: 0.9 }}>
                       Balance collection is voided. To view full audit details, visit{' '}
                       <span
                         onClick={() => {
                           setSelectedInvoice(null);
                           navigate('/entity/orders/cancelled');
                         }}
-                        style={{ textDecoration: 'underline', fontWeight: 700, cursor: 'pointer' }}
+                        style={{ textDecoration: 'underline', fontWeight: 800, cursor: 'pointer' }}
                       >
                         Cancelled Orders
                       </span>.
@@ -1072,13 +1526,13 @@ function EntityOrders() {
                 ) : (
                   <div
                     style={{
-                      background: '#f0fdf4',
-                      border: '1px solid #bbf7d0',
-                      borderRadius: '10px',
-                      padding: '0.65rem 1rem',
+                      background: '#ecfdf5',
+                      border: '1px solid #a7f3d0',
+                      borderRadius: '12px',
+                      padding: '0.75rem 1.15rem',
                       marginBottom: '1.25rem',
-                      color: '#166534',
-                      fontSize: '0.825rem',
+                      color: '#065f46',
+                      fontSize: '0.84rem',
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
@@ -1086,24 +1540,25 @@ function EntityOrders() {
                       gap: '0.5rem',
                     }}
                   >
-                    <div>
-                      <span style={{ fontWeight: 800 }}>✓ ORDER CONFIRMED</span>
-                      <span style={{ fontSize: '0.78rem', marginLeft: '0.5rem', color: '#15803d' }}>
-                        (Approved Admin Commission: {invoiceFin.commissionPercent}%)
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                      <CheckCircle2 size={16} color="#059669" />
+                      <span style={{ fontWeight: 800 }}>ORDER CONFIRMED BY ADMIN</span>
+                      <span style={{ fontSize: '0.78rem', color: '#047857', fontWeight: 600 }}>
+                        (Admin Commission: {invoiceFin.commissionPercent}%)
                       </span>
                     </div>
                     {selectedInvoice.admin_confirmed_at && (
-                      <span style={{ fontSize: '0.72rem', color: '#166534' }}>
+                      <span style={{ fontSize: '0.74rem', color: '#047857' }}>
                         Confirmed {formatDate(selectedInvoice.admin_confirmed_at)}
                       </span>
                     )}
                   </div>
                 )}
 
-                {/* Order Summary vs Individual Payment Receipt Selector */}
+                {/* View Mode Selector */}
                 {sortedPayments.length > 0 && (
-                  <div style={{ marginBottom: '1.15rem' }}>
-                    <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', marginBottom: '0.4rem' }}>
+                  <div style={{ marginBottom: '1.25rem' }}>
+                    <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '0.45rem' }}>
                       Invoice View Mode ({sortedPayments.length} Verified {sortedPayments.length === 1 ? 'Payment' : 'Payments'})
                     </div>
                     <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap' }}>
@@ -1111,12 +1566,12 @@ function EntityOrders() {
                         type="button"
                         onClick={() => setSelectedReceiptPaymentId(null)}
                         style={{
-                          padding: '0.38rem 0.75rem',
+                          padding: '0.42rem 0.85rem',
                           borderRadius: '8px',
                           border: selectedReceiptPaymentId === null ? '1.5px solid #0f172a' : '1px solid #cbd5e1',
                           background: selectedReceiptPaymentId === null ? '#0f172a' : '#f8fafc',
                           color: selectedReceiptPaymentId === null ? '#ffffff' : '#334155',
-                          fontSize: '0.76rem',
+                          fontSize: '0.78rem',
                           fontWeight: 700,
                           cursor: 'pointer',
                         }}
@@ -1131,12 +1586,12 @@ function EntityOrders() {
                             type="button"
                             onClick={() => setSelectedReceiptPaymentId(p.id)}
                             style={{
-                              padding: '0.38rem 0.75rem',
+                              padding: '0.42rem 0.85rem',
                               borderRadius: '8px',
                               border: isActive ? '1.5px solid #636B2F' : '1px solid #cbd5e1',
                               background: isActive ? '#636B2F' : '#f8fafc',
                               color: isActive ? '#ffffff' : '#334155',
-                              fontSize: '0.76rem',
+                              fontSize: '0.78rem',
                               fontWeight: 700,
                               cursor: 'pointer',
                               textTransform: 'capitalize',
@@ -1151,24 +1606,55 @@ function EntityOrders() {
                 )}
 
                 {/* Seller & Customer Details */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', fontSize: '0.82rem', marginBottom: '1.25rem' }}>
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: '1rem',
+                    fontSize: '0.84rem',
+                    marginBottom: '1.25rem',
+                    background: '#f8fafc',
+                    padding: '1rem 1.25rem',
+                    borderRadius: '12px',
+                    border: '1px solid #e2e8f0',
+                  }}
+                >
                   <div>
-                    <strong style={{ color: '#475569', display: 'block', marginBottom: '0.2rem' }}>SELLER / ENTITY:</strong>
-                    <div style={{ fontWeight: 700, color: '#0f172a' }}>{selectedInvoice.entityName || selectedInvoice.entity_name || entityName}</div>
-                    <div style={{ color: '#64748b' }}>Authorized Partner Portal</div>
+                    <strong style={{ color: '#64748b', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '0.2rem' }}>
+                      SELLER / ENTITY:
+                    </strong>
+                    <div style={{ fontWeight: 800, color: '#0f172a' }}>{selectedInvoice.entityName || selectedInvoice.entity_name || entityName}</div>
+                    <div style={{ color: '#64748b', fontSize: '0.78rem' }}>Authorized Partner Portal</div>
                   </div>
                   <div>
-                    <strong style={{ color: '#475569', display: 'block', marginBottom: '0.2rem' }}>BILLED TO:</strong>
-                    <div style={{ fontWeight: 700, color: '#0f172a' }}>{selectedInvoice.customerName || selectedInvoice.customer_name || selectedInvoice.customer}</div>
-                    <div style={{ color: '#2563eb', fontFamily: 'monospace' }}>
+                    <strong style={{ color: '#64748b', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '0.2rem' }}>
+                      BILLED TO:
+                    </strong>
+                    <div style={{ fontWeight: 800, color: '#0f172a' }}>{selectedInvoice.customerName || selectedInvoice.customer_name || selectedInvoice.customer}</div>
+                    <div style={{ color: '#2563eb', fontFamily: 'monospace', fontSize: '0.78rem', fontWeight: 700 }}>
                       Member ID: {selectedInvoice.customer_user_code || selectedInvoice.customerUserCode || selectedInvoice.sponsor || 'N/A'}
                     </div>
                   </div>
                 </div>
 
-                {/* Payment-Specific Metadata (Receipt Mode) */}
+                {/* Receipt Mode Badge */}
                 {isReceiptMode && (
-                  <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '8px', padding: '0.75rem 1rem', marginBottom: '1rem', fontSize: '0.78rem', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', color: '#166534' }}>
+                  <div
+                    style={{
+                      background: '#ecfdf5',
+                      border: '1px solid #a7f3d0',
+                      borderRadius: '10px',
+                      padding: '0.75rem 1rem',
+                      marginBottom: '1rem',
+                      fontSize: '0.8rem',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      flexWrap: 'wrap',
+                      gap: '0.5rem',
+                      color: '#065f46',
+                      fontWeight: 600,
+                    }}
+                  >
                     <span><strong>Receipt:</strong> RCPT-{activeReceipt.id} ({activeReceipt.payment_type || activeReceipt.paymentType || 'Payment'})</span>
                     <span><strong>Mode:</strong> {activeReceipt.payment_method || activeReceipt.paymentMethod || 'N/A'}</span>
                     <span><strong>Ref/UTR:</strong> {activeReceipt.reference_no || activeReceipt.referenceNo || 'N/A'}</span>
@@ -1176,14 +1662,24 @@ function EntityOrders() {
                   </div>
                 )}
 
-                {/* Authoritative Payment-Based Financial Breakdown */}
-                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '1rem', marginBottom: '1.25rem', fontSize: '0.82rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', gap: '0.75rem' }}>
-                    <span><strong>Total Order Cost ({selectedInvoice.item}):</strong></span>
-                    <span style={{ fontWeight: 700, color: '#0f172a' }}>{formatCurrency(invoiceFin.totalOrderCost)}</span>
+                {/* Authoritative Financial Breakdown Card */}
+                <div
+                  style={{
+                    background: '#ffffff',
+                    border: '1.5px solid #e2e8f0',
+                    borderRadius: '12px',
+                    padding: '1.15rem',
+                    marginBottom: '1.25rem',
+                    fontSize: '0.85rem',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.6rem', gap: '0.75rem' }}>
+                    <span style={{ color: '#475569' }}><strong>Total Order Cost ({selectedInvoice.item}):</strong></span>
+                    <span style={{ fontWeight: 800, color: '#0f172a' }}>{formatCurrency(invoiceFin.totalOrderCost)}</span>
                   </div>
 
-                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#16a34a', marginBottom: '0.5rem', fontWeight: 700 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#059669', marginBottom: '0.6rem', fontWeight: 700 }}>
                     <span>
                       {isReceiptMode
                         ? `Actual Payment Received (Receipt #RCPT-${activeReceipt.id}):`
@@ -1192,34 +1688,57 @@ function EntityOrders() {
                     <span>{formatCurrency(invoiceFin.actualPaymentAmount)}</span>
                   </div>
 
-                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#dc2626', marginBottom: '0.5rem', fontWeight: 600 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#dc2626', marginBottom: '0.6rem', fontWeight: 600 }}>
                     <span>
                       Admin Commission Cut ({invoiceFin.commissionPercent}% on {isReceiptMode ? 'This Payment' : 'Collected'} {formatCurrency(invoiceFin.actualPaymentAmount)}):
                     </span>
                     <span>-{formatCurrency(invoiceFin.adminCommissionCut)}</span>
                   </div>
 
-                  <div style={{ borderTop: '1px solid #cbd5e1', paddingTop: '0.5rem', marginBottom: !isReceiptMode ? '0.5rem' : 0, display: 'flex', justifyContent: 'space-between', fontWeight: 800, fontSize: '0.9rem', color: '#166534' }}>
+                  <div
+                    style={{
+                      borderTop: '1.5px solid #e2e8f0',
+                      paddingTop: '0.65rem',
+                      marginBottom: !isReceiptMode ? '0.6rem' : 0,
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      fontWeight: 900,
+                      fontSize: '0.95rem',
+                      color: '#636B2F',
+                    }}
+                  >
                     <span>{isReceiptMode ? 'Net Entity Realized (This Payment):' : 'Net Entity Realized (From Collected Payments):'}</span>
                     <span>{formatCurrency(invoiceFin.netEntityRealized)}</span>
                   </div>
 
                   {!isReceiptMode && invoiceFin.approvedDumpAmount > 0 && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', color: '#9a3412', marginBottom: '0.45rem', fontWeight: 600 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', color: '#9a3412', marginBottom: '0.5rem', fontWeight: 600 }}>
                       <span>Approved Dump Write-Off:</span>
                       <span>-{formatCurrency(invoiceFin.approvedDumpAmount)}</span>
                     </div>
                   )}
 
                   {!isReceiptMode && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', color: invoiceFin.remainingOrderBalance > 0 ? '#b45309' : '#16a34a', fontWeight: 700 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', color: invoiceFin.remainingOrderBalance > 0 ? '#b45309' : '#059669', fontWeight: 800 }}>
                       <span>Remaining Order Balance Due:</span>
                       <span>{formatCurrency(invoiceFin.remainingOrderBalance)}</span>
                     </div>
                   )}
 
                   {isReceiptMode && (
-                    <div style={{ marginTop: '0.65rem', paddingTop: '0.55rem', borderTop: '1px dashed #cbd5e1', fontSize: '0.75rem', color: '#475569', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <div
+                      style={{
+                        marginTop: '0.75rem',
+                        paddingTop: '0.65rem',
+                        borderTop: '1px dashed #cbd5e1',
+                        fontSize: '0.76rem',
+                        color: '#64748b',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        flexWrap: 'wrap',
+                        gap: '0.5rem',
+                      }}
+                    >
                       <span>Order Cumulative Collected: <strong>{formatCurrency(invoiceFin.orderCollectedToDate)}</strong></span>
                       <span>Remaining Order Balance: <strong>{formatCurrency(invoiceFin.remainingOrderBalance)}</strong></span>
                     </div>
@@ -1229,18 +1748,18 @@ function EntityOrders() {
                 {/* Payment Installments Table (Order Summary Mode) */}
                 {!isReceiptMode && sortedPayments.length > 0 && (
                   <div style={{ marginBottom: '1.25rem' }}>
-                    <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', marginBottom: '0.45rem' }}>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: '0.45rem' }}>
                       Payment Receipts Breakdown ({sortedPayments.length})
                     </div>
-                    <div style={{ border: '1px solid #e2e8f0', borderRadius: '8px', overflowX: 'auto' }}>
-                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.76rem' }}>
+                    <div style={{ border: '1px solid #e2e8f0', borderRadius: '10px', overflowX: 'auto' }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem' }}>
                         <thead>
-                          <tr style={{ background: '#f1f5f9', color: '#475569', borderBottom: '1px solid #cbd5e1' }}>
-                            <th style={{ padding: '0.5rem 0.65rem', textAlign: 'left' }}>Receipt</th>
-                            <th style={{ padding: '0.5rem 0.65rem', textAlign: 'left' }}>Type &amp; Ref</th>
-                            <th style={{ padding: '0.5rem 0.65rem', textAlign: 'right' }}>Received</th>
-                            <th style={{ padding: '0.5rem 0.65rem', textAlign: 'right' }}>Admin Cut</th>
-                            <th style={{ padding: '0.5rem 0.65rem', textAlign: 'right' }}>Net Realized</th>
+                          <tr style={{ background: '#f8fafc', color: '#475569', borderBottom: '1.5px solid #e2e8f0' }}>
+                            <th style={{ padding: '0.6rem 0.75rem', textAlign: 'left', fontWeight: 800 }}>Receipt</th>
+                            <th style={{ padding: '0.6rem 0.75rem', textAlign: 'left', fontWeight: 800 }}>Type &amp; Ref</th>
+                            <th style={{ padding: '0.6rem 0.75rem', textAlign: 'right', fontWeight: 800 }}>Received</th>
+                            <th style={{ padding: '0.6rem 0.75rem', textAlign: 'right', fontWeight: 800 }}>Admin Cut</th>
+                            <th style={{ padding: '0.6rem 0.75rem', textAlign: 'right', fontWeight: 800 }}>Net Realized</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -1251,23 +1770,23 @@ function EntityOrders() {
                             const net = Number(p.netEntityAmount ?? p.net_entity_amount ?? Math.max(0, amt - cut));
                             return (
                               <tr key={p.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                                <td style={{ padding: '0.45rem 0.65rem', fontWeight: 700 }}>
+                                <td style={{ padding: '0.55rem 0.75rem', fontWeight: 800, color: '#0f172a' }}>
                                   RCPT-{p.id}
-                                  <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 500 }}>
+                                  <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 500 }}>
                                     {formatDate(p.payment_date || p.paymentDate || p.created_at)}
                                   </div>
                                 </td>
-                                <td style={{ padding: '0.45rem 0.65rem', textTransform: 'capitalize' }}>
+                                <td style={{ padding: '0.55rem 0.75rem', textTransform: 'capitalize', color: '#334155' }}>
                                   {p.payment_type || p.paymentType || 'payment'} • {p.payment_method || p.paymentMethod || 'N/A'}
                                   {(p.reference_no || p.referenceNo) && (
-                                    <div style={{ fontSize: '0.68rem', color: '#64748b', fontFamily: 'monospace' }}>
+                                    <div style={{ fontSize: '0.7rem', color: '#64748b', fontFamily: 'monospace' }}>
                                       {p.reference_no || p.referenceNo}
                                     </div>
                                   )}
                                 </td>
-                                <td style={{ padding: '0.45rem 0.65rem', textAlign: 'right', fontWeight: 700 }}>{formatCurrency(amt)}</td>
-                                <td style={{ padding: '0.45rem 0.65rem', textAlign: 'right', color: '#dc2626' }}>-{formatCurrency(cut)} ({pct}%)</td>
-                                <td style={{ padding: '0.45rem 0.65rem', textAlign: 'right', fontWeight: 700, color: '#16a34a' }}>{formatCurrency(net)}</td>
+                                <td style={{ padding: '0.55rem 0.75rem', textAlign: 'right', fontWeight: 800, color: '#0f172a' }}>{formatCurrency(amt)}</td>
+                                <td style={{ padding: '0.55rem 0.75rem', textAlign: 'right', color: '#dc2626', fontWeight: 700 }}>-{formatCurrency(cut)} ({pct}%)</td>
+                                <td style={{ padding: '0.55rem 0.75rem', textAlign: 'right', fontWeight: 800, color: '#059669' }}>{formatCurrency(net)}</td>
                               </tr>
                             );
                           })}
@@ -1277,18 +1796,41 @@ function EntityOrders() {
                   </div>
                 )}
 
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+                {/* Modal Footer */}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1.5rem' }}>
                   <button
                     type="button"
                     onClick={handlePrintInvoice}
-                    style={{ padding: '0.55rem 1rem', background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', borderRadius: '8px', fontWeight: 600, fontSize: '0.82rem', cursor: 'pointer' }}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.45rem',
+                      padding: '0.6rem 1.15rem',
+                      background: '#f1f5f9',
+                      color: '#334155',
+                      border: '1px solid #cbd5e1',
+                      borderRadius: '10px',
+                      fontWeight: 700,
+                      fontSize: '0.84rem',
+                      cursor: 'pointer',
+                    }}
                   >
-                    🖨️ Print Invoice
+                    <Printer size={15} />
+                    Print Slip
                   </button>
                   <button
                     type="button"
                     onClick={() => setSelectedInvoice(null)}
-                    style={{ padding: '0.55rem 1rem', background: '#0f172a', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer' }}
+                    style={{
+                      padding: '0.6rem 1.25rem',
+                      background: '#0f172a',
+                      color: '#ffffff',
+                      border: 'none',
+                      borderRadius: '10px',
+                      fontWeight: 800,
+                      fontSize: '0.84rem',
+                      cursor: 'pointer',
+                    }}
                   >
                     Close
                   </button>
