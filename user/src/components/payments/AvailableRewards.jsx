@@ -1,5 +1,23 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Gift,
+  Gem,
+  Sparkles,
+  RotateCcw,
+  ArrowRight,
+  Search,
+  X,
+  Layers,
+  ShieldCheck,
+  CheckCircle2,
+  Lock,
+  Award,
+  ChevronLeft,
+  ChevronRight,
+  BarChart3,
+  Package,
+} from 'lucide-react';
 import {
   getUserRewards,
   getUserFreshProfile,
@@ -143,6 +161,18 @@ function AvailableRewards({ user, onNavigate }) {
     });
   }, [activeRewards, searchQuery, selectedCategory, selectedStatus, userDiamonds]);
 
+  // 4. Calculate nearest locked milestone (if any)
+  const nearestMilestone = useMemo(() => {
+    const locked = activeRewards
+      .map((r) => {
+        const req = Number(r.required_bp) || 0;
+        return { ...r, req, deficit: req - userDiamonds };
+      })
+      .filter((r) => r.deficit > 0)
+      .sort((a, b) => a.deficit - b.deficit);
+    return locked.length > 0 ? locked[0] : null;
+  }, [activeRewards, userDiamonds]);
+
   // Pagination calculations
   const totalPages = Math.max(1, Math.ceil(filteredRewards.length / pageSize));
   const paginatedRewards = useMemo(() => {
@@ -159,217 +189,382 @@ function AvailableRewards({ user, onNavigate }) {
   ).length;
 
   return (
-    <div className="page-container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '1.5rem 1rem 3rem 1rem' }}>
+    <div className="page-container" style={{ maxWidth: '1360px', margin: '0 auto', padding: '1.5rem 1.25rem 3.5rem 1.25rem' }}>
       {/* Toast Alert */}
       {toastMessage && (
         <div
           style={{
             position: 'fixed',
-            top: '20px',
-            right: '20px',
-            background: '#0f172a',
+            top: '24px',
+            right: '24px',
+            background: 'rgba(15, 23, 42, 0.95)',
+            backdropFilter: 'blur(12px)',
             color: '#ffffff',
-            padding: '0.85rem 1.35rem',
-            borderRadius: '10px',
+            padding: '0.9rem 1.5rem',
+            borderRadius: '12px',
             zIndex: 99999,
-            boxShadow: '0 10px 25px -5px rgba(0,0,0,0.3)',
+            boxShadow: '0 12px 30px -5px rgba(0,0,0,0.3)',
             fontSize: '0.875rem',
             fontWeight: 700,
-            border: '1px solid #334155',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
           }}
         >
-          {toastMessage}
+          <Sparkles size={16} color="#38BDF8" />
+          <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Page Header with Compact Diamond Balance Indicator */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '1rem',
-          marginBottom: '1.5rem',
-          paddingBottom: '1.25rem',
-          borderBottom: '1px solid #e2e8f0',
-        }}
-      >
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
-            <h1 style={{ fontSize: '1.65rem', fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>
-              Available Rewards
+      {/* Signature 2-Color Gradient Hero Header Banner with 3D Depth */}
+      <div className="van-catalog-hero-3d">
+        <div className="van-catalog-hero-content">
+          <div className="van-catalog-hero-icon-orb">
+            <Gift size={32} strokeWidth={2.2} />
+          </div>
+          <div>
+            <div className="van-catalog-hero-badge">
+              <span
+                className="van-live-pulse-dot"
+                style={{ width: '7px', height: '7px', background: '#38BDF8', boxShadow: '0 0 8px #38BDF8' }}
+              />
+              <Sparkles size={13} />
+              <span>Finance • Milestone Rewards Catalog</span>
+            </div>
+            <h1 className="van-catalog-hero-title">
+              Available Milestone Rewards
             </h1>
+            <p className="van-catalog-hero-desc">
+              Explore eligible physical products, gadgets, and luxury milestones unlocked through your accumulated Diamond balance.
+            </p>
+          </div>
+        </div>
 
-            {/* Small Compact Diamond Balance Indicator */}
+        {/* Right Diamond Wallet Pod & Actions */}
+        <div
+          className="van-directs-hero-action-col"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-end',
+            gap: '0.85rem',
+            flexShrink: 0,
+          }}
+        >
+          {/* Diamond Balance Glass Pod */}
+          <div
+            style={{
+              background: 'rgba(255, 255, 255, 0.12)',
+              backdropFilter: 'blur(16px)',
+              border: '1px solid rgba(255, 255, 255, 0.25)',
+              borderRadius: '16px',
+              padding: '0.9rem 1.4rem',
+              textAlign: 'center',
+              minWidth: '220px',
+              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)',
+            }}
+          >
+            <span
+              style={{
+                fontSize: '0.74rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+                color: '#c7d2fe',
+                fontWeight: 800,
+                display: 'block',
+              }}
+            >
+              Your Diamond Balance
+            </span>
             <div
+              style={{
+                fontSize: '1.9rem',
+                fontWeight: 900,
+                color: '#fbbf24',
+                marginTop: '0.2rem',
+                textShadow: '0 2px 10px rgba(251, 191, 36, 0.35)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.4rem',
+              }}
+            >
+              <span>💎</span>
+              <span>{formatDiamonds(userDiamonds)}</span>
+            </div>
+            <span style={{ fontSize: '0.72rem', color: '#93c5fd', marginTop: '0.15rem', display: 'block' }}>
+              Member ID: #{currentUser?.id || '—'}
+            </span>
+          </div>
+
+          {/* Fast Navigation & Sync Action Pills */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={() => loadData(true)}
+              disabled={refreshing}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.45rem',
-                background: '#f8fafc',
-                border: '1px solid #cbd5e1',
-                padding: '0.35rem 0.85rem',
-                borderRadius: '20px',
-                fontSize: '0.875rem',
+                padding: '0.48rem 0.95rem',
+                borderRadius: '9999px',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                background: 'rgba(255, 255, 255, 0.1)',
+                backdropFilter: 'blur(10px)',
+                color: '#ffffff',
+                fontSize: '0.8rem',
                 fontWeight: 700,
-                color: '#1e293b',
+                cursor: refreshing ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s ease',
               }}
             >
-              <span style={{ color: '#64748b', fontWeight: 600 }}>Your Diamond Balance:</span>
-              <span style={{ color: '#0284c7' }}>💎 {formatDiamonds(userDiamonds)}</span>
-            </div>
-          </div>
-          <p style={{ color: '#64748b', fontSize: '0.875rem', margin: '0.4rem 0 0 0' }}>
-            Browse active milestone rewards. Click View Details on any product to see complete specifications and claim options.
-          </p>
-        </div>
+              <RotateCcw size={14} className={refreshing ? 'spin-anim' : ''} />
+              <span>{refreshing ? 'Syncing...' : 'Sync Wallet'}</span>
+            </button>
 
-        {/* Action Controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-          <button
-            type="button"
-            onClick={() => loadData(true)}
-            disabled={refreshing}
-            style={{
-              background: '#ffffff',
-              color: '#334155',
-              border: '1px solid #cbd5e1',
-              padding: '0.5rem 0.85rem',
-              borderRadius: '8px',
-              fontSize: '0.8rem',
-              fontWeight: 600,
-              cursor: refreshing ? 'not-allowed' : 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.35rem',
-            }}
-          >
-            <span>🔄</span> {refreshing ? 'Syncing...' : 'Sync Wallet'}
-          </button>
-          <button
-            type="button"
-            onClick={() => handleNavigate('/payments/rewards')}
-            style={{
-              background: '#f1f5f9',
-              color: '#1e40af',
-              border: '1px solid #bfdbfe',
-              padding: '0.5rem 0.85rem',
-              borderRadius: '8px',
-              fontSize: '0.8rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.35rem',
-            }}
-          >
-            <span>📊</span> Reward Overview
-          </button>
+            <button
+              type="button"
+              onClick={() => handleNavigate('/payments/rewards')}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.45rem',
+                padding: '0.48rem 1rem',
+                borderRadius: '9999px',
+                border: '1px solid rgba(56, 189, 248, 0.4)',
+                background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.25) 0%, rgba(37, 99, 235, 0.35) 100%)',
+                backdropFilter: 'blur(10px)',
+                color: '#ffffff',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(56, 189, 248, 0.2)',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              <BarChart3 size={14} />
+              <span>Reward Overview</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Compact Search & Filter Toolbar */}
+      {/* KPI Summary Pods Grid (4 Columns) */}
       <div
         style={{
-          background: '#ffffff',
-          borderRadius: '10px',
-          border: '1px solid #e2e8f0',
-          padding: '0.85rem 1rem',
-          marginBottom: '1.5rem',
-          display: 'flex',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '0.75rem',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+          gap: '1rem',
+          marginBottom: '1.75rem',
         }}
       >
-        {/* Search by Reward Name */}
-        <div style={{ flex: '1 1 260px', minWidth: '220px', position: 'relative' }}>
-          <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '0.85rem' }}>
-            🔍
-          </span>
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search rewards by name..."
-            style={{
-              width: '100%',
-              padding: '0.55rem 0.75rem 0.55rem 2.1rem',
-              border: '1px solid #cbd5e1',
-              borderRadius: '8px',
-              fontSize: '0.85rem',
-              outline: 'none',
-              color: '#0f172a',
-            }}
-          />
-          {searchQuery && (
-            <button
-              type="button"
-              onClick={() => setSearchQuery('')}
-              style={{
-                position: 'absolute',
-                right: '10px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                background: 'none',
-                border: 'none',
-                color: '#94a3b8',
-                cursor: 'pointer',
-                fontSize: '0.85rem',
-              }}
-            >
-              ✕
-            </button>
-          )}
+        {/* Card 1: Total Catalog Rewards */}
+        <div className="van-stat-card-premium">
+          <div>
+            <div className="van-stat-card-top">
+              <span className="van-stat-card-label" style={{ color: '#2563EB' }}>
+                Catalog Rewards
+              </span>
+              <div className="van-3d-kpi-icon" style={{ background: '#2563EB', color: '#fff' }}>
+                <Gift size={20} />
+              </div>
+            </div>
+            <div className="van-stat-card-value">
+              {activeRewards.length} <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748B' }}>Products</span>
+            </div>
+          </div>
+          <div className="van-stat-card-bottom">
+            <span className="van-stat-desc-text">In active milestone tiers</span>
+            <span className="van-card-badge-pill" style={{ background: '#EFF6FF', color: '#1D4ED8' }}>
+              Active
+            </span>
+          </div>
         </div>
 
-        {/* Filter Dropdowns */}
-        <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap', alignItems: 'center' }}>
-          {/* Category Filter */}
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            style={{
-              padding: '0.55rem 0.85rem',
-              border: '1px solid #cbd5e1',
-              borderRadius: '8px',
-              fontSize: '0.825rem',
-              color: '#334155',
-              background: '#ffffff',
-              cursor: 'pointer',
-              fontWeight: 600,
-            }}
-          >
-            <option value="all">All Categories ({activeRewards.length})</option>
-            {categories.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
+        {/* Card 2: Unlocked & Eligible */}
+        <div className="van-stat-card-premium">
+          <div>
+            <div className="van-stat-card-top">
+              <span className="van-stat-card-label" style={{ color: '#059669' }}>
+                Ready to Claim
+              </span>
+              <div className="van-3d-kpi-icon" style={{ background: '#059669', color: '#fff' }}>
+                <CheckCircle2 size={20} />
+              </div>
+            </div>
+            <div className="van-stat-card-value" style={{ color: '#059669' }}>
+              {eligibleCount} <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748B' }}>Unlocked</span>
+            </div>
+          </div>
+          <div className="van-stat-card-bottom">
+            <span className="van-stat-desc-text">
+              {eligibleCount > 0 ? 'Eligible for instant claim' : 'Accumulate more Diamonds'}
+            </span>
+            <span
+              className="van-card-badge-pill"
+              style={{
+                background: eligibleCount > 0 ? '#ECFDF5' : '#F1F5F9',
+                color: eligibleCount > 0 ? '#047857' : '#64748B',
+              }}
+            >
+              {eligibleCount > 0 ? '✓ Claimable' : 'In Progress'}
+            </span>
+          </div>
+        </div>
 
-          {/* Availability / Eligibility Filter */}
-          <select
-            value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
-            style={{
-              padding: '0.55rem 0.85rem',
-              border: '1px solid #cbd5e1',
-              borderRadius: '8px',
-              fontSize: '0.825rem',
-              color: '#334155',
-              background: '#ffffff',
-              cursor: 'pointer',
-              fontWeight: 600,
-            }}
-          >
-            <option value="all">All Statuses</option>
-            <option value="ready">✓ Eligible to Claim ({eligibleCount})</option>
-            <option value="locked">🔒 Locked ({activeRewards.length - eligibleCount})</option>
-          </select>
+        {/* Card 3: Your Diamond Balance */}
+        <div className="van-stat-card-premium">
+          <div>
+            <div className="van-stat-card-top">
+              <span className="van-stat-card-label" style={{ color: '#0284C7' }}>
+                Diamond Balance
+              </span>
+              <div className="van-3d-kpi-icon" style={{ background: '#0284C7', color: '#fff' }}>
+                <Gem size={20} />
+              </div>
+            </div>
+            <div className="van-stat-card-value" style={{ color: '#0284C7' }}>
+              💎 {formatDiamonds(userDiamonds)}
+            </div>
+          </div>
+          <div className="van-stat-card-bottom">
+            <span className="van-stat-desc-text">Level 1 & 2 Diamond earnings</span>
+            <span className="van-card-badge-pill" style={{ background: '#F0F9FF', color: '#0369A1' }}>
+              Balance
+            </span>
+          </div>
+        </div>
+
+        {/* Card 4: Next Target Milestone */}
+        <div className="van-stat-card-premium">
+          <div>
+            <div className="van-stat-card-top">
+              <span className="van-stat-card-label" style={{ color: '#D97706' }}>
+                Next Target Milestone
+              </span>
+              <div className="van-3d-kpi-icon" style={{ background: '#D97706', color: '#fff' }}>
+                <Award size={20} />
+              </div>
+            </div>
+            <div
+              className="van-stat-card-value"
+              style={{
+                fontSize: '1.25rem',
+                lineHeight: '1.3',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+              title={nearestMilestone ? nearestMilestone.title : 'All Milestones Achieved!'}
+            >
+              {nearestMilestone ? nearestMilestone.title : 'All Unlocked! 🎉'}
+            </div>
+          </div>
+          <div className="van-stat-card-bottom">
+            <span className="van-stat-desc-text">
+              {nearestMilestone
+                ? `Requires ${formatDiamonds(nearestMilestone.deficit)} more 💎`
+                : 'You qualify for all rewards'}
+            </span>
+            <span className="van-card-badge-pill" style={{ background: '#FFFBEB', color: '#B45309' }}>
+              {nearestMilestone ? 'Target' : 'Completed'}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Proven Executive 2-Tier 3D Filter Command Toolbar */}
+      <div className="van-dir-toolbar-3d" style={{ marginBottom: '2rem' }}>
+        {/* Tier 1: Search Bar & Count Action */}
+        <div className="van-dir-toolbar-top">
+          <div className="van-dir-search-wrap" style={{ flex: '1 1 380px' }}>
+            <Search size={18} className="van-dir-search-icon" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search rewards by name, category, or specification..."
+              className="van-dir-search-input"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="van-dir-clear-btn"
+                title="Clear Search"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <span className="van-dir-count-pill">
+              {filteredRewards.length} Product{filteredRewards.length === 1 ? '' : 's'} Found
+            </span>
+
+            <button
+              type="button"
+              onClick={() => loadData(true)}
+              disabled={refreshing}
+              title="Sync rewards catalog with database"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.45rem',
+                padding: '0.52rem 0.95rem',
+                borderRadius: '9999px',
+                border: '1px solid #cbd5e1',
+                background: '#ffffff',
+                color: '#334155',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                cursor: refreshing ? 'not-allowed' : 'pointer',
+                boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <RotateCcw size={14} className={refreshing ? 'spin-anim' : ''} />
+              <span>{refreshing ? 'Syncing...' : 'Sync Catalog'}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="van-dir-toolbar-divider" />
+
+        {/* Tier 2: Filter Capsules */}
+        <div className="van-dir-toolbar-bottom">
+          {/* Category Filter Capsule */}
+          <div className="van-dir-filter-capsule">
+            <Layers size={15} color="#6366f1" />
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+            >
+              <option value="all">All Categories ({activeRewards.length})</option>
+              {categories.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Availability / Eligibility Filter Capsule */}
+          <div className="van-dir-filter-capsule">
+            <ShieldCheck size={15} color="#10b981" />
+            <select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+            >
+              <option value="all">All Eligibility Statuses</option>
+              <option value="ready">✓ Eligible to Claim ({eligibleCount})</option>
+              <option value="locked">🔒 Locked ({activeRewards.length - eligibleCount})</option>
+            </select>
+          </div>
 
           {/* Reset Filters Button */}
           {(searchQuery || selectedCategory !== 'all' || selectedStatus !== 'all') && (
@@ -380,40 +575,79 @@ function AvailableRewards({ user, onNavigate }) {
                 setSelectedCategory('all');
                 setSelectedStatus('all');
               }}
-              style={{
-                background: '#f1f5f9',
-                color: '#475569',
-                border: '1px solid #cbd5e1',
-                borderRadius: '8px',
-                padding: '0.55rem 0.85rem',
-                fontSize: '0.8rem',
-                fontWeight: 700,
-                cursor: 'pointer',
-              }}
+              className="van-dir-reset-btn"
             >
-              Reset
+              <X size={14} />
+              <span>Reset Filters</span>
             </button>
           )}
-
-          <span style={{ fontSize: '0.8rem', color: '#64748b', marginLeft: '0.25rem' }}>
-            {filteredRewards.length} {filteredRewards.length === 1 ? 'product' : 'products'}
-          </span>
         </div>
       </div>
 
       {/* Rewards Catalog Content */}
       {loading ? (
-        <div style={{ padding: '4rem 2rem', textAlign: 'center', color: '#64748b', background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-          <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>💎</div>
-          <h4 style={{ margin: '0 0 0.25rem 0', color: '#0f172a', fontWeight: 800 }}>Loading Rewards Catalog...</h4>
-          <p style={{ margin: 0, fontSize: '0.85rem' }}>Fetching available milestone products from database.</p>
+        <div
+          style={{
+            padding: '5rem 2rem',
+            textAlign: 'center',
+            color: '#64748b',
+            background: '#ffffff',
+            borderRadius: '20px',
+            border: '1.5px solid #e2e8f0',
+            boxShadow: '0 8px 30px rgba(15, 23, 42, 0.04)',
+          }}
+        >
+          <div
+            style={{
+              width: '64px',
+              height: '64px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 1.25rem auto',
+              boxShadow: '0 4px 14px rgba(37, 99, 235, 0.15)',
+            }}
+          >
+            <RotateCcw size={28} color="#2563EB" className="spin-anim" />
+          </div>
+          <h3 style={{ margin: '0 0 0.4rem 0', color: '#0f172a', fontWeight: 800, fontSize: '1.25rem' }}>
+            Loading Milestone Rewards...
+          </h3>
+          <p style={{ margin: 0, fontSize: '0.875rem' }}>Fetching live catalog specifications and diamond calculations from database.</p>
         </div>
       ) : filteredRewards.length === 0 ? (
-        <div style={{ padding: '4rem 2rem', textAlign: 'center', color: '#64748b', background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-          <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>📦</div>
-          <h4 style={{ margin: '0 0 0.25rem 0', color: '#0f172a', fontWeight: 800 }}>No Rewards Found</h4>
-          <p style={{ margin: '0 auto 1.25rem auto', fontSize: '0.85rem', maxWidth: '420px' }}>
-            No milestone rewards match your search criteria. Try adjusting your search query or category filter.
+        <div
+          style={{
+            padding: '4.5rem 2rem',
+            textAlign: 'center',
+            color: '#64748b',
+            background: '#ffffff',
+            borderRadius: '20px',
+            border: '1.5px solid #e2e8f0',
+            boxShadow: '0 8px 30px rgba(15, 23, 42, 0.04)',
+          }}
+        >
+          <div
+            style={{
+              width: '68px',
+              height: '68px',
+              borderRadius: '50%',
+              background: '#F1F5F9',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 1.25rem auto',
+            }}
+          >
+            <Package size={32} color="#64748B" />
+          </div>
+          <h3 style={{ margin: '0 0 0.4rem 0', color: '#0f172a', fontWeight: 800, fontSize: '1.25rem' }}>
+            No Matching Rewards Found
+          </h3>
+          <p style={{ margin: '0 auto 1.5rem auto', fontSize: '0.875rem', maxWidth: '440px', lineHeight: 1.5 }}>
+            No milestone products match your selected search keywords or filters. Try adjusting your query or reset filters.
           </p>
           <button
             type="button"
@@ -423,33 +657,53 @@ function AvailableRewards({ user, onNavigate }) {
               setSelectedStatus('all');
             }}
             style={{
-              background: '#1e40af',
+              background: 'linear-gradient(135deg, #0B192C 0%, #1E40AF 100%)',
               color: '#ffffff',
               border: 'none',
-              padding: '0.6rem 1.25rem',
-              borderRadius: '8px',
+              padding: '0.65rem 1.45rem',
+              borderRadius: '10px',
               fontWeight: 700,
               fontSize: '0.85rem',
               cursor: 'pointer',
+              boxShadow: '0 4px 14px rgba(30, 64, 175, 0.25)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.45rem',
             }}
           >
-            Reset Filters
+            <RotateCcw size={15} />
+            <span>Reset All Filters</span>
           </button>
         </div>
       ) : (
         <>
-          {/* Responsive Product Card Grid */}
+          {/* Responsive 3D Product Card Grid */}
           <div className="available-rewards-grid">
             {paginatedRewards.map((reward) => {
               const requiredDiamonds = Number(reward.required_bp) || 0;
               const isEligible = userDiamonds >= requiredDiamonds;
               const deficit = Math.max(0, requiredDiamonds - userDiamonds);
               const worthFormatted = Number(reward.reward_value_inr || 0).toLocaleString('en-IN');
+              const progressPct = requiredDiamonds > 0
+                ? Math.min(100, Math.round((userDiamonds / requiredDiamonds) * 100))
+                : 100;
 
               return (
                 <div key={reward.id} className={`reward-product-card ${isEligible ? 'eligible' : 'locked'}`}>
-                  {/* Product Image */}
-                  <div style={{ position: 'relative', width: '100%', height: '180px', background: '#f8fafc', overflow: 'hidden' }}>
+                  {/* Product Image Area with Subtle Radial Backdrop */}
+                  <div
+                    style={{
+                      position: 'relative',
+                      width: '100%',
+                      height: '195px',
+                      background: 'radial-gradient(circle at center, #F8FAFC 0%, #EEF2F6 100%)',
+                      overflow: 'hidden',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderBottom: '1px solid #F1F5F9',
+                    }}
+                  >
                     <img
                       src={reward.image || '/logo.png'}
                       alt={reward.title}
@@ -462,149 +716,194 @@ function AvailableRewards({ user, onNavigate }) {
                         height: '100%',
                         objectFit: 'cover',
                         display: 'block',
+                        transition: 'transform 0.35s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'scale(1.05)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'scale(1)';
                       }}
                     />
 
-                    {/* Category Overlay Tag */}
+                    {/* Category Capsule Tag */}
                     <span
                       style={{
                         position: 'absolute',
-                        top: '10px',
-                        left: '10px',
-                        background: 'rgba(15, 23, 42, 0.85)',
-                        backdropFilter: 'blur(4px)',
+                        top: '12px',
+                        left: '12px',
+                        background: 'rgba(15, 23, 42, 0.8)',
+                        backdropFilter: 'blur(8px)',
                         color: '#ffffff',
-                        padding: '0.2rem 0.55rem',
-                        borderRadius: '6px',
+                        padding: '0.24rem 0.65rem',
+                        borderRadius: '8px',
                         fontSize: '0.72rem',
                         fontWeight: 700,
-                        letterSpacing: '0.02em',
+                        letterSpacing: '0.03em',
+                        textTransform: 'uppercase',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
                       }}
                     >
                       {reward.category || 'Milestone'}
                     </span>
 
-                    {/* Eligibility Badge on Image */}
+                    {/* Eligibility Status Pill */}
                     <span
                       style={{
                         position: 'absolute',
-                        top: '10px',
-                        right: '10px',
-                        background: isEligible ? 'rgba(22, 163, 74, 0.95)' : 'rgba(217, 119, 6, 0.95)',
-                        backdropFilter: 'blur(4px)',
+                        top: '12px',
+                        right: '12px',
+                        background: isEligible ? 'rgba(16, 185, 129, 0.95)' : 'rgba(217, 119, 6, 0.95)',
+                        backdropFilter: 'blur(8px)',
                         color: '#ffffff',
-                        padding: '0.2rem 0.6rem',
-                        borderRadius: '6px',
-                        fontSize: '0.72rem',
+                        padding: '0.24rem 0.65rem',
+                        borderRadius: '8px',
+                        fontSize: '0.74rem',
                         fontWeight: 800,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.35rem',
+                        boxShadow: isEligible
+                          ? '0 4px 12px rgba(16, 185, 129, 0.35)'
+                          : '0 4px 12px rgba(217, 119, 6, 0.35)',
                       }}
                     >
-                      {isEligible ? '✓ Unlocked' : '🔒 Locked'}
+                      {isEligible ? (
+                        <>
+                          <CheckCircle2 size={13} strokeWidth={2.5} />
+                          <span>Unlocked</span>
+                        </>
+                      ) : (
+                        <>
+                          <Lock size={13} strokeWidth={2.5} />
+                          <span>Locked</span>
+                        </>
+                      )}
                     </span>
                   </div>
 
-                  {/* Product Info & Specs */}
+                  {/* Product Details & Information */}
                   <div
                     style={{
-                      padding: '1.1rem 1.15rem 0.85rem 1.15rem',
+                      padding: '1.25rem 1.35rem 1.15rem 1.35rem',
                       display: 'flex',
                       flexDirection: 'column',
                       flex: 1,
                       justifyContent: 'space-between',
+                      gap: '1rem',
                     }}
                   >
                     <div>
-                      {/* Reward Name */}
+                      {/* Reward Title */}
                       <h3
                         style={{
-                          fontSize: '1.05rem',
+                          fontSize: '1.08rem',
                           fontWeight: 800,
                           color: '#0f172a',
-                          margin: '0 0 0.35rem 0',
+                          margin: '0 0 0.5rem 0',
                           lineHeight: 1.35,
+                          letterSpacing: '-0.01em',
                         }}
                       >
                         {reward.title}
                       </h3>
 
-                      {/* Category */}
-                      <div style={{ fontSize: '0.78rem', color: '#64748b', marginBottom: '0.85rem' }}>
-                        Category: <span style={{ fontWeight: 600, color: '#334155' }}>{reward.category || 'General'}</span>
+                      {/* Retail Worth Pill */}
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          marginBottom: '0.9rem',
+                        }}
+                      >
+                        <span style={{ fontSize: '0.78rem', color: '#64748b' }}>
+                          Category: <strong style={{ color: '#334155' }}>{reward.category || 'General'}</strong>
+                        </span>
+                        <span
+                          style={{
+                            fontSize: '0.8rem',
+                            fontWeight: 800,
+                            color: '#0f172a',
+                            background: '#f1f5f9',
+                            padding: '0.2rem 0.55rem',
+                            borderRadius: '6px',
+                            border: '1px solid #e2e8f0',
+                          }}
+                        >
+                          ₹{worthFormatted} Value
+                        </span>
                       </div>
 
-                      {/* Specs Box */}
+                      {/* Requirements & Balance Box */}
                       <div
                         style={{
                           background: '#f8fafc',
                           border: '1px solid #e2e8f0',
-                          borderRadius: '8px',
-                          padding: '0.75rem 0.85rem',
-                          marginBottom: '0.85rem',
+                          borderRadius: '12px',
+                          padding: '0.85rem 0.95rem',
+                          marginBottom: '0.9rem',
                           display: 'flex',
                           flexDirection: 'column',
-                          gap: '0.45rem',
+                          gap: '0.5rem',
                         }}
                       >
-                        {/* Market Worth */}
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.825rem' }}>
-                          <span style={{ color: '#64748b' }}>Market Worth:</span>
-                          <span style={{ fontWeight: 700, color: '#0f172a' }}>₹{worthFormatted}</span>
-                        </div>
-
-                        {/* Diamonds Required */}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.825rem' }}>
-                          <span style={{ color: '#64748b' }}>Required:</span>
-                          <span style={{ fontWeight: 800, color: '#7c3aed', display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}>
-                            <span>💎</span> {requiredDiamonds.toLocaleString('en-IN')} Diamonds
+                          <span style={{ color: '#64748b' }}>Required Diamonds:</span>
+                          <span style={{ fontWeight: 800, color: '#7c3aed', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                            <span>💎</span> {requiredDiamonds.toLocaleString('en-IN')}
                           </span>
                         </div>
 
-                        {/* Member Balance */}
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.825rem' }}>
-                          <span style={{ color: '#64748b' }}>Member Balance:</span>
-                          <span style={{ fontWeight: 700, color: '#0284c7', display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}>
+                          <span style={{ color: '#64748b' }}>Your Balance:</span>
+                          <span style={{ fontWeight: 800, color: '#0284c7', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
                             <span>💎</span> {formatDiamonds(userDiamonds)}
                           </span>
                         </div>
                       </div>
 
-                      {/* Status Indicator */}
-                      <div style={{ marginBottom: '0.85rem' }}>
-                        {isEligible ? (
+                      {/* Milestone Progress Bar */}
+                      <div>
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            fontSize: '0.74rem',
+                            fontWeight: 700,
+                            marginBottom: '0.35rem',
+                          }}
+                        >
+                          <span style={{ color: isEligible ? '#059669' : '#d97706' }}>
+                            {isEligible ? 'Milestone Complete' : `${progressPct}% Milestone Progress`}
+                          </span>
+                          <span style={{ color: '#64748b' }}>
+                            {isEligible ? 'Ready to Claim' : `${formatDiamonds(deficit)} 💎 to go`}
+                          </span>
+                        </div>
+                        <div
+                          style={{
+                            width: '100%',
+                            height: '6px',
+                            background: '#e2e8f0',
+                            borderRadius: '9999px',
+                            overflow: 'hidden',
+                          }}
+                        >
                           <div
                             style={{
-                              background: '#f0fdf4',
-                              border: '1px solid #bbf7d0',
-                              color: '#15803d',
-                              padding: '0.45rem 0.65rem',
-                              borderRadius: '6px',
-                              fontSize: '0.78rem',
-                              fontWeight: 700,
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '0.35rem',
+                              width: `${progressPct}%`,
+                              height: '100%',
+                              background: isEligible
+                                ? 'linear-gradient(90deg, #10b981, #059669)'
+                                : 'linear-gradient(90deg, #f59e0b, #d97706)',
+                              borderRadius: '9999px',
+                              transition: 'width 0.4s ease',
                             }}
-                          >
-                            <span>✓</span> Status: Eligible to Claim
-                          </div>
-                        ) : (
-                          <div
-                            style={{
-                              background: '#fef3c7',
-                              border: '1px solid #fde68a',
-                              color: '#b45309',
-                              padding: '0.45rem 0.65rem',
-                              borderRadius: '6px',
-                              fontSize: '0.78rem',
-                              fontWeight: 700,
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '0.35rem',
-                            }}
-                          >
-                            <span>🔒</span> Status: Locked — {formatDiamonds(deficit)} more Diamonds required
-                          </div>
-                        )}
+                          />
+                        </div>
                       </div>
                     </div>
 
@@ -614,29 +913,34 @@ function AvailableRewards({ user, onNavigate }) {
                       onClick={() => handleNavigate(`/payments/rewards/${reward.id}`)}
                       style={{
                         width: '100%',
-                        padding: '0.65rem 1rem',
-                        background: 'linear-gradient(105deg, #0B192C 0%, #1E40AF 100%)',
+                        padding: '0.72rem 1rem',
+                        background: isEligible
+                          ? 'linear-gradient(135deg, #059669 0%, #10B981 100%)'
+                          : 'linear-gradient(135deg, #0B192C 0%, #1E40AF 100%)',
                         color: '#ffffff',
                         border: 'none',
-                        borderRadius: '8px',
+                        borderRadius: '10px',
                         fontSize: '0.85rem',
                         fontWeight: 700,
                         cursor: 'pointer',
                         display: 'inline-flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        gap: '0.4rem',
-                        boxShadow: '0 2px 4px rgba(30, 64, 175, 0.15)',
-                        transition: 'opacity 0.2s ease',
+                        gap: '0.45rem',
+                        boxShadow: isEligible
+                          ? '0 4px 14px rgba(16, 185, 129, 0.3)'
+                          : '0 4px 14px rgba(30, 64, 175, 0.2)',
+                        transition: 'all 0.2s ease',
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.opacity = '0.92';
+                        e.currentTarget.style.transform = 'translateY(-1px)';
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.opacity = '1';
+                        e.currentTarget.style.transform = 'translateY(0)';
                       }}
                     >
-                      View Details →
+                      <span>{isEligible ? 'Claim Reward Now' : 'View Details & Specs'}</span>
+                      <ArrowRight size={15} />
                     </button>
                   </div>
                 </div>
@@ -644,78 +948,99 @@ function AvailableRewards({ user, onNavigate }) {
             })}
           </div>
 
-          {/* Pagination Controls */}
+          {/* Modern Pagination Bar */}
           {filteredRewards.length > pageSize && (
             <div
               style={{
-                padding: '1rem 1.25rem',
-                border: '1px solid #e2e8f0',
-                borderRadius: '10px',
+                padding: '1.15rem 1.5rem',
+                border: '1.5px solid #e2e8f0',
+                borderRadius: '16px',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 flexWrap: 'wrap',
-                gap: '0.75rem',
+                gap: '1rem',
                 background: '#ffffff',
+                boxShadow: '0 4px 16px rgba(15, 23, 42, 0.03)',
               }}
             >
-              <span style={{ fontSize: '0.82rem', color: '#64748b' }}>
-                Page <strong>{currentPage}</strong> of <strong>{totalPages}</strong>
+              <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                Showing Page <strong style={{ color: '#0f172a' }}>{currentPage}</strong> of{' '}
+                <strong style={{ color: '#0f172a' }}>{totalPages}</strong> ({filteredRewards.length} total rewards)
               </span>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
                 <button
                   type="button"
                   disabled={currentPage <= 1}
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   style={{
-                    padding: '0.45rem 0.9rem',
-                    borderRadius: '6px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                    padding: '0.5rem 0.95rem',
+                    borderRadius: '8px',
                     border: '1px solid #cbd5e1',
-                    background: currentPage <= 1 ? '#f1f5f9' : '#ffffff',
+                    background: currentPage <= 1 ? '#f8fafc' : '#ffffff',
                     color: currentPage <= 1 ? '#94a3b8' : '#334155',
                     cursor: currentPage <= 1 ? 'not-allowed' : 'pointer',
                     fontWeight: 700,
                     fontSize: '0.8rem',
+                    transition: 'all 0.15s ease',
                   }}
                 >
-                  ← Previous
+                  <ChevronLeft size={15} />
+                  <span>Previous</span>
                 </button>
+
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                   <button
                     key={page}
                     type="button"
                     onClick={() => setCurrentPage(page)}
                     style={{
-                      padding: '0.45rem 0.8rem',
-                      borderRadius: '6px',
+                      minWidth: '36px',
+                      height: '36px',
+                      padding: '0 0.5rem',
+                      borderRadius: '8px',
                       border: '1px solid',
                       borderColor: currentPage === page ? '#1e40af' : '#cbd5e1',
                       background: currentPage === page ? '#1e40af' : '#ffffff',
                       color: currentPage === page ? '#ffffff' : '#334155',
                       cursor: 'pointer',
                       fontWeight: 700,
-                      fontSize: '0.8rem',
+                      fontSize: '0.825rem',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: currentPage === page ? '0 2px 8px rgba(30, 64, 175, 0.25)' : 'none',
                     }}
                   >
                     {page}
                   </button>
                 ))}
+
                 <button
                   type="button"
                   disabled={currentPage >= totalPages}
                   onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                   style={{
-                    padding: '0.45rem 0.9rem',
-                    borderRadius: '6px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                    padding: '0.5rem 0.95rem',
+                    borderRadius: '8px',
                     border: '1px solid #cbd5e1',
-                    background: currentPage >= totalPages ? '#f1f5f9' : '#ffffff',
+                    background: currentPage >= totalPages ? '#f8fafc' : '#ffffff',
                     color: currentPage >= totalPages ? '#94a3b8' : '#334155',
                     cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer',
                     fontWeight: 700,
                     fontSize: '0.8rem',
+                    transition: 'all 0.15s ease',
                   }}
                 >
-                  Next →
+                  <span>Next</span>
+                  <ChevronRight size={15} />
                 </button>
               </div>
             </div>
