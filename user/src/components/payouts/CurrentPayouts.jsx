@@ -385,25 +385,91 @@ function CurrentPayouts({ user, onNavigate }) {
             <Coins size={32} strokeWidth={2.2} />
           </div>
           <div>
-            <div className="van-catalog-hero-badge">
-              <span
-                className="van-live-pulse-dot"
-                style={{ width: '7px', height: '7px', background: '#38BDF8', boxShadow: '0 0 8px #38BDF8' }}
-              />
-              <Sparkles size={13} />
-              <span>Finance • Commission Settlements & Payouts</span>
+            {/* Top Badges Row: Category Chip & KYC Status Pill */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.65rem',
+                marginBottom: '0.65rem',
+                flexWrap: 'wrap',
+              }}
+            >
+              <div className="van-catalog-hero-badge" style={{ marginBottom: 0 }}>
+                <span
+                  className="van-live-pulse-dot"
+                  style={{ width: '8px', height: '8px', background: '#38BDF8', boxShadow: '0 0 10px #38BDF8', flexShrink: 0 }}
+                />
+                <span>Finance • Commission Settlements</span>
+              </div>
+
               {isKycVerified ? (
-                <span style={{ background: '#22c55e', color: '#ffffff', padding: '0.12rem 0.55rem', borderRadius: '12px', fontSize: '0.7rem', fontWeight: 800 }}>
-                  ✓ KYC Verified
-                </span>
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    background: 'rgba(34, 197, 94, 0.2)',
+                    border: '1px solid rgba(74, 222, 128, 0.45)',
+                    color: '#86efac',
+                    padding: '0.32rem 0.85rem',
+                    borderRadius: '9999px',
+                    fontSize: '0.74rem',
+                    fontWeight: 800,
+                    whiteSpace: 'nowrap',
+                    letterSpacing: '0.025em',
+                    backdropFilter: 'blur(10px)',
+                    boxShadow: '0 2px 10px rgba(34, 197, 94, 0.2)',
+                  }}
+                >
+                  <CheckCircle2 size={13} color="#4ade80" />
+                  <span>KYC Verified</span>
+                </div>
               ) : (
-                <span style={{ background: '#f59e0b', color: '#ffffff', padding: '0.12rem 0.55rem', borderRadius: '12px', fontSize: '0.7rem', fontWeight: 800 }}>
-                  ⚠️ KYC Pending
-                </span>
+                <button
+                  type="button"
+                  onClick={() => handleNav('bank-accounts')}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.45rem',
+                    background: 'rgba(245, 158, 11, 0.22)',
+                    border: '1px solid rgba(251, 191, 36, 0.55)',
+                    color: '#fef08a',
+                    padding: '0.32rem 0.85rem',
+                    borderRadius: '9999px',
+                    fontSize: '0.74rem',
+                    fontWeight: 800,
+                    whiteSpace: 'nowrap',
+                    letterSpacing: '0.025em',
+                    backdropFilter: 'blur(10px)',
+                    boxShadow: '0 2px 12px rgba(245, 158, 11, 0.22)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                  }}
+                  title="Click to complete KYC verification"
+                >
+                  <AlertTriangle size={13} color="#fbbf24" />
+                  <span>KYC Pending</span>
+                  <span
+                    style={{
+                      background: 'rgba(245, 158, 11, 0.45)',
+                      padding: '0.1rem 0.45rem',
+                      borderRadius: '6px',
+                      fontSize: '0.68rem',
+                      fontWeight: 800,
+                      color: '#ffffff',
+                      marginLeft: '0.15rem',
+                    }}
+                  >
+                    Action Required →
+                  </span>
+                </button>
               )}
             </div>
+
             <h1 className="van-catalog-hero-title">
-              Current Payouts & Settlements
+              Current Payouts & Commission Settlements
             </h1>
             <p className="van-catalog-hero-desc">
               Real-time ledger of your available commission balance, withdrawal requests, expected bank disbursements, and statutory 5% TDS records.
