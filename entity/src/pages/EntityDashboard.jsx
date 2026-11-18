@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Chart from 'react-apexcharts';
+import ApexCharts from 'apexcharts';
 import {
   Building2,
   Receipt,
@@ -43,6 +44,11 @@ function EntityDashboard() {
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [settlementCountdown, setSettlementCountdown] = useState({ hours: 14, minutes: 42, seconds: 19 });
   const [copiedCode, setCopiedCode] = useState(false);
+  const [hiddenSeries, setHiddenSeries] = useState({
+    gross: false,
+    net: false,
+    balance: false,
+  });
 
   const navigate = useNavigate();
 
@@ -51,6 +57,15 @@ function EntityDashboard() {
     navigator.clipboard.writeText(code);
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 2000);
+  };
+
+  const toggleSeries = (seriesName, key) => {
+    try {
+      ApexCharts.exec('dual-axis-velocity-chart', 'toggleSeries', seriesName);
+    } catch (e) {
+      console.error('Error toggling series:', e);
+    }
+    setHiddenSeries((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   // Next bank settlement countdown
@@ -127,6 +142,7 @@ function EntityDashboard() {
 
     return {
       chart: {
+        id: 'dual-axis-velocity-chart',
         height: 330,
         type: 'line',
         toolbar: { show: false },
@@ -181,28 +197,7 @@ function EntityDashboard() {
         strokeDashArray: 3,
       },
       legend: {
-        show: true,
-        position: 'top',
-        horizontalAlign: 'left',
-        fontSize: '12px',
-        fontFamily: 'Plus Jakarta Sans, sans-serif',
-        fontWeight: 700,
-        offsetY: 0,
-        itemMargin: {
-          horizontal: 6,
-          vertical: 4,
-        },
-        markers: {
-          width: 9,
-          height: 9,
-          radius: 3,
-        },
-        onItemClick: {
-          toggleDataSeries: true,
-        },
-        onItemHover: {
-          highlightDataSeries: true,
-        },
+        show: false,
       },
       tooltip: {
         theme: 'dark',
@@ -789,6 +784,133 @@ function EntityDashboard() {
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* Custom 3D Interactive Clickable Legend Bar */}
+            <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap', alignItems: 'center', marginTop: '0.65rem', marginBottom: '0.65rem', padding: '0 0.15rem' }}>
+              <button
+                type="button"
+                onClick={() => toggleSeries('Gross Billed (Column)', 'gross')}
+                style={{
+                  background: hiddenSeries.gross ? '#f8fafc' : '#f4f6ec',
+                  color: hiddenSeries.gross ? '#94a3b8' : '#636B2F',
+                  border: hiddenSeries.gross ? '1.5px solid #cbd5e1' : '1.5px solid #d4dcbe',
+                  borderRadius: '8px',
+                  padding: '5px 12px',
+                  fontSize: '0.74rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  opacity: hiddenSeries.gross ? 0.45 : 1,
+                  textDecoration: hiddenSeries.gross ? 'line-through' : 'none',
+                  boxShadow: hiddenSeries.gross ? 'none' : '0 2px 6px rgba(99, 107, 47, 0.15)',
+                  transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 6px 14px rgba(99, 107, 47, 0.25)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = hiddenSeries.gross ? 'none' : '0 2px 6px rgba(99, 107, 47, 0.15)';
+                }}
+                title="Click to show / hide Gross Billed"
+              >
+                <span
+                  style={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: 3,
+                    background: hiddenSeries.gross ? '#94a3b8' : '#636B2F',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                  }}
+                />
+                <span>Gross Billed (Column)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => toggleSeries('Net Bank Disbursed (Line)', 'net')}
+                style={{
+                  background: hiddenSeries.net ? '#f8fafc' : '#ecfdf5',
+                  color: hiddenSeries.net ? '#94a3b8' : '#059669',
+                  border: hiddenSeries.net ? '1.5px solid #cbd5e1' : '1.5px solid #a7f3d0',
+                  borderRadius: '8px',
+                  padding: '5px 12px',
+                  fontSize: '0.74rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  opacity: hiddenSeries.net ? 0.45 : 1,
+                  textDecoration: hiddenSeries.net ? 'line-through' : 'none',
+                  boxShadow: hiddenSeries.net ? 'none' : '0 2px 6px rgba(5, 150, 105, 0.15)',
+                  transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 6px 14px rgba(5, 150, 105, 0.25)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = hiddenSeries.net ? 'none' : '0 2px 6px rgba(5, 150, 105, 0.15)';
+                }}
+                title="Click to show / hide Net Bank Disbursed"
+              >
+                <span
+                  style={{
+                    width: 12,
+                    height: 4,
+                    borderRadius: 2,
+                    background: hiddenSeries.net ? '#94a3b8' : '#059669',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                  }}
+                />
+                <span>Net Bank Disbursed (Line)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => toggleSeries('Balance Receivables (Dashed)', 'balance')}
+                style={{
+                  background: hiddenSeries.balance ? '#f8fafc' : '#fffbeb',
+                  color: hiddenSeries.balance ? '#94a3b8' : '#d97706',
+                  border: hiddenSeries.balance ? '1.5px solid #cbd5e1' : '1.5px solid #fde68a',
+                  borderRadius: '8px',
+                  padding: '5px 12px',
+                  fontSize: '0.74rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  opacity: hiddenSeries.balance ? 0.45 : 1,
+                  textDecoration: hiddenSeries.balance ? 'line-through' : 'none',
+                  boxShadow: hiddenSeries.balance ? 'none' : '0 2px 6px rgba(217, 119, 6, 0.15)',
+                  transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 6px 14px rgba(217, 119, 6, 0.25)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = hiddenSeries.balance ? 'none' : '0 2px 6px rgba(217, 119, 6, 0.15)';
+                }}
+                title="Click to show / hide Balance Receivables"
+              >
+                <span
+                  style={{
+                    width: 12,
+                    height: 2,
+                    borderTop: hiddenSeries.balance ? '2.5px dashed #94a3b8' : '2.5px dashed #d97706',
+                  }}
+                />
+                <span>Balance Receivables (Dashed)</span>
+              </button>
             </div>
           </div>
 
