@@ -331,7 +331,7 @@ function AdminOrdersPage() {
   }, [filteredSales]);
 
   return (
-    <div className="admin-page-container">
+    <div className="admin-page-container pro-orders-container">
       {/* Toast */}
       {toastMessage && (
         <div
@@ -354,16 +354,16 @@ function AdminOrdersPage() {
       )}
 
       {/* Header */}
-      <div className="page-header" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+      <div className="page-header pro-orders-header">
         <div>
-          <h1 className="page-title" style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800 }}>
+          <h1 className="page-title pro-orders-header-title" style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800 }}>
             Order Management
           </h1>
           <p className="page-subtitle" style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>
             Live database records of all customer orders, receipts, and incremental payment income allocations across the platform.
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+        <div className="pro-orders-header-actions">
           <button
             type="button"
             onClick={loadSales}
@@ -384,7 +384,7 @@ function AdminOrdersPage() {
       </div>
 
       {/* KPI Stats Cards — Order & Payment Accounting Reconciliation */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem', marginBottom: '1.5rem' }}>
+      <div className="pro-orders-kpi-grid">
         <div className="stat-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem' }}>
           <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>TOTAL PROJECT VALUE</div>
           <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', marginTop: '0.25rem' }}>
@@ -457,8 +457,8 @@ function AdminOrdersPage() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', padding: '1.25rem', marginBottom: '1.5rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ flex: 1, minWidth: '240px' }}>
+      <div className="pro-orders-filter-bar">
+        <div className="pro-orders-search-wrap">
           <input
             type="text"
             placeholder="Search by Entity Name, Invoice #, Customer, or Item..."
@@ -468,7 +468,7 @@ function AdminOrdersPage() {
           />
         </div>
 
-        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+        <div className="pro-orders-filter-controls">
           <select
             value={entityTypeFilter}
             onChange={(e) => setEntityTypeFilter(e.target.value)}
@@ -520,9 +520,9 @@ function AdminOrdersPage() {
       </div>
 
       {/* Centralized Orders Table */}
-      <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+      <div className="pro-orders-table-wrapper table-responsive">
+        <div className="table-responsive-inner" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', width: '100%' }}>
+          <table className="pro-orders-table" style={{ width: '100%', minWidth: '950px', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
             <thead>
               <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left', color: '#475569' }}>
                 <th style={{ padding: '0.85rem 0.9rem' }}>Invoice # & Entity</th>
@@ -771,6 +771,7 @@ function AdminOrdersPage() {
       {/* Invoice Details Modal */}
       {selectedInvoiceForView && (
         <div
+          className="pro-orders-modal-backdrop"
           style={{
             position: 'fixed',
             top: 0,
@@ -787,6 +788,7 @@ function AdminOrdersPage() {
           }}
         >
           <div
+            className="pro-orders-modal-dialog pro-orders-modal-dialog-sm"
             style={{
               background: '#ffffff',
               borderRadius: '16px',
@@ -879,6 +881,7 @@ function AdminOrdersPage() {
       {/* Order Details & Payment History Modal (Section A & Section B) */}
       {selectedOrderForDetails && (
         <div
+          className="pro-orders-modal-backdrop"
           style={{
             position: 'fixed',
             top: 0,
@@ -895,6 +898,7 @@ function AdminOrdersPage() {
           }}
         >
           <div
+            className="pro-orders-modal-dialog"
             style={{
               background: '#ffffff',
               borderRadius: '16px',
@@ -1969,6 +1973,7 @@ function AdminOrdersPage() {
       {/* Payment-Specific Allocation Modal */}
       {selectedPaymentForAllocation && (
         <div
+          className="pro-orders-modal-backdrop"
           style={{
             position: 'fixed',
             top: 0,
@@ -1985,6 +1990,7 @@ function AdminOrdersPage() {
           }}
         >
           <div
+            className="pro-orders-modal-dialog pro-orders-modal-dialog-sm"
             style={{
               background: '#ffffff',
               borderRadius: '16px',
@@ -2195,6 +2201,7 @@ function AdminOrdersPage() {
       {/* Legacy Order-Level Income Allocation Modal */}
       {selectedOrderForAllocation && (
         <div
+          className="pro-orders-modal-backdrop"
           style={{
             position: 'fixed',
             top: 0,
@@ -2211,6 +2218,7 @@ function AdminOrdersPage() {
           }}
         >
           <div
+            className="pro-orders-modal-dialog pro-orders-modal-dialog-sm"
             style={{
               background: '#ffffff',
               borderRadius: '16px',
