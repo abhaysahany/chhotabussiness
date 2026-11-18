@@ -202,7 +202,7 @@ function App() {
         }
       />
 
-      {/* Public Auth Route */}
+      {/* Public Auth Routes */}
       <Route
         path="/login"
         element={
@@ -215,6 +215,36 @@ function App() {
             <Navigate to="/dashboard" replace />
           ) : (
             <AdminLoginForm onLoginSuccess={(admin) => setCurrentAdmin(admin)} />
+          )
+        }
+      />
+      <Route
+        path="/forgot-password"
+        element={
+          checkingAuth ? (
+            <div className="auth-page-container">
+              <div className="spinner" style={{ width: '32px', height: '32px', borderColor: '#3b82f6 transparent transparent transparent' }}></div>
+              <p style={{ marginTop: '1rem', color: '#64748b', fontSize: '0.875rem' }}>Loading Admin Session...</p>
+            </div>
+          ) : currentAdmin ? (
+            <Navigate to="/dashboard" replace />
+          ) : (
+            <AdminLoginForm initialShowForgot={true} onLoginSuccess={(admin) => setCurrentAdmin(admin)} />
+          )
+        }
+      />
+      <Route
+        path="/reset-password"
+        element={
+          checkingAuth ? (
+            <div className="auth-page-container">
+              <div className="spinner" style={{ width: '32px', height: '32px', borderColor: '#3b82f6 transparent transparent transparent' }}></div>
+              <p style={{ marginTop: '1rem', color: '#64748b', fontSize: '0.875rem' }}>Loading Admin Session...</p>
+            </div>
+          ) : currentAdmin ? (
+            <Navigate to="/dashboard" replace />
+          ) : (
+            <AdminLoginForm initialShowForgot={true} onLoginSuccess={(admin) => setCurrentAdmin(admin)} />
           )
         }
       />
