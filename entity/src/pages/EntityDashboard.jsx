@@ -181,7 +181,28 @@ function EntityDashboard() {
         strokeDashArray: 3,
       },
       legend: {
-        show: false,
+        show: true,
+        position: 'top',
+        horizontalAlign: 'left',
+        fontSize: '12px',
+        fontFamily: 'Plus Jakarta Sans, sans-serif',
+        fontWeight: 700,
+        offsetY: 0,
+        itemMargin: {
+          horizontal: 6,
+          vertical: 4,
+        },
+        markers: {
+          width: 9,
+          height: 9,
+          radius: 3,
+        },
+        onItemClick: {
+          toggleDataSeries: true,
+        },
+        onItemHover: {
+          highlightDataSeries: true,
+        },
       },
       tooltip: {
         theme: 'dark',
@@ -769,22 +790,9 @@ function EntityDashboard() {
                 ))}
               </div>
             </div>
-
-            {/* Custom 3D Legend Bar */}
-            <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap', marginBottom: '0.5rem', padding: '0 0.25rem' }}>
-              <span style={{ fontSize: '0.72rem', fontWeight: 700, background: '#f4f6ec', color: '#636B2F', border: '1px solid #d4dcbe', padding: '3px 9px', borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-                <span style={{ width: 9, height: 9, borderRadius: 2, background: '#636B2F' }} /> Gross Billed (Column)
-              </span>
-              <span style={{ fontSize: '0.72rem', fontWeight: 700, background: '#ecfdf5', color: '#059669', border: '1px solid #a7f3d0', padding: '3px 9px', borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-                <span style={{ width: 10, height: 3, borderRadius: 2, background: '#059669' }} /> Net Bank Disbursed (Line)
-              </span>
-              <span style={{ fontSize: '0.72rem', fontWeight: 700, background: '#fffbeb', color: '#d97706', border: '1px solid #fde68a', padding: '3px 9px', borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-                <span style={{ width: 10, height: 2, borderTop: '2px dashed #d97706' }} /> Balance Receivables
-              </span>
-            </div>
           </div>
 
-          <div style={{ minHeight: '330px', marginTop: '0.5rem' }}>
+          <div style={{ minHeight: '330px', marginTop: '0.25rem' }}>
             <Chart
               options={mixedComboOptions}
               series={mixedComboSeries}

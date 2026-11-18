@@ -2417,6 +2417,110 @@ body {
   box-shadow: 0 2px 6px rgba(5, 150, 105, 0.12), inset 0 1px 1px #ffffff;
 }
 
+/* ApexCharts 3D Interactive Clickable Legend Pills */
+.ent-3d-chart-card .apexcharts-legend {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 0.65rem !important;
+  padding: 0 !important;
+  margin: 0.35rem 0 0.85rem 0 !important;
+  justify-content: flex-start !important;
+}
+
+.ent-3d-chart-card .apexcharts-legend-series {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  padding: 5px 12px !important;
+  border-radius: 8px !important;
+  background: #ffffff !important;
+  border: 1.5px solid #e2e8f0 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03) !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  margin: 0 !important;
+  user-select: none !important;
+}
+
+.ent-3d-chart-card .apexcharts-legend-series:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Series 1: Gross Billed (Olive) */
+.ent-3d-chart-card .apexcharts-legend-series:nth-child(1),
+.ent-3d-chart-card .apexcharts-legend-series[rel="1"] {
+  background: #f4f6ec !important;
+  border-color: #d4dcbe !important;
+}
+.ent-3d-chart-card .apexcharts-legend-series:nth-child(1) .apexcharts-legend-text,
+.ent-3d-chart-card .apexcharts-legend-series[rel="1"] .apexcharts-legend-text {
+  color: #636B2F !important;
+}
+.ent-3d-chart-card .apexcharts-legend-series:nth-child(1):hover,
+.ent-3d-chart-card .apexcharts-legend-series[rel="1"]:hover {
+  border-color: #636B2F !important;
+  box-shadow: 0 6px 14px rgba(99, 107, 47, 0.25) !important;
+}
+
+/* Series 2: Net Bank Disbursed (Emerald) */
+.ent-3d-chart-card .apexcharts-legend-series:nth-child(2),
+.ent-3d-chart-card .apexcharts-legend-series[rel="2"] {
+  background: #ecfdf5 !important;
+  border-color: #a7f3d0 !important;
+}
+.ent-3d-chart-card .apexcharts-legend-series:nth-child(2) .apexcharts-legend-text,
+.ent-3d-chart-card .apexcharts-legend-series[rel="2"] .apexcharts-legend-text {
+  color: #059669 !important;
+}
+.ent-3d-chart-card .apexcharts-legend-series:nth-child(2):hover,
+.ent-3d-chart-card .apexcharts-legend-series[rel="2"]:hover {
+  border-color: #059669 !important;
+  box-shadow: 0 6px 14px rgba(5, 150, 105, 0.25) !important;
+}
+
+/* Series 3: Balance Receivables (Amber) */
+.ent-3d-chart-card .apexcharts-legend-series:nth-child(3),
+.ent-3d-chart-card .apexcharts-legend-series[rel="3"] {
+  background: #fffbeb !important;
+  border-color: #fde68a !important;
+}
+.ent-3d-chart-card .apexcharts-legend-series:nth-child(3) .apexcharts-legend-text,
+.ent-3d-chart-card .apexcharts-legend-series[rel="3"] .apexcharts-legend-text {
+  color: #d97706 !important;
+}
+.ent-3d-chart-card .apexcharts-legend-series:nth-child(3):hover,
+.ent-3d-chart-card .apexcharts-legend-series[rel="3"]:hover {
+  border-color: #d97706 !important;
+  box-shadow: 0 6px 14px rgba(217, 119, 6, 0.25) !important;
+}
+
+/* Inactive / Toggled off state */
+.ent-3d-chart-card .apexcharts-legend-series.apexcharts-inactive-legend {
+  opacity: 0.45 !important;
+  filter: grayscale(0.7) !important;
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+.ent-3d-chart-card .apexcharts-legend-series.apexcharts-inactive-legend .apexcharts-legend-text {
+  text-decoration: line-through !important;
+  color: #94a3b8 !important;
+}
+
+.ent-3d-chart-card .apexcharts-legend-text {
+  font-family: var(--font-sans) !important;
+  font-size: 0.76rem !important;
+  font-weight: 800 !important;
+  padding-left: 2px !important;
+}
+
+.ent-3d-chart-card .apexcharts-legend-marker {
+  border-radius: 3px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+}
+
 /* 3D Gauge Twin-Vault and Progress Bar */
 .ent-gauge-twin-vault {
   display: grid;
