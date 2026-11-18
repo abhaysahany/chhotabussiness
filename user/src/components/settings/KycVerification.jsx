@@ -1,12 +1,47 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  ShieldCheck,
+  ShieldAlert,
+  FileText,
+  CreditCard,
+  CheckCircle2,
+  AlertTriangle,
+  Clock,
+  Sparkles,
+  RotateCcw,
+  Upload,
+  Eye,
+  Trash2,
+  ExternalLink,
+  ChevronRight,
+  X,
+  Lock,
+  Building2,
+  Zap,
+  Check,
+  Info,
+  FileCheck,
+  Landmark,
+  UserCheck,
+} from 'lucide-react';
 import { submitPanAadhaarKyc } from '../../api/userPayoutService';
 import { getUserFreshProfile } from '../../api/userRewardService';
 import { compressImageFile } from '../../utils/imageCompressor';
 import { formatDateTime } from '../../utils/timezone';
 
 function KycVerification({ user, onNavigate }) {
+  const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState(user || null);
   const userCode = currentUser?.user_code || user?.user_code || user?.sponsor_id || '';
+
+  const handleNav = (target) => {
+    if (typeof onNavigate === 'function') {
+      onNavigate(target);
+    } else {
+      navigate(target.startsWith('/') ? target : `/${target}`);
+    }
+  };
 
   const [panNumber, setPanNumber] = useState(user?.pan_number || '');
   const [aadhaarNumber, setAadhaarNumber] = useState(user?.aadhaar_number || '');
@@ -390,85 +425,287 @@ function KycVerification({ user, onNavigate }) {
   };
 
   return (
-    <div className="page-container">
+    <div className="page-container" style={{ maxWidth: '1360px', margin: '0 auto', padding: '1.5rem 1.25rem 3.5rem 1.25rem' }}>
       {/* Toast Alert */}
       {toastMessage && (
         <div
           style={{
             position: 'fixed',
-            top: '20px',
-            right: '20px',
-            background: '#0f172a',
+            top: '24px',
+            right: '24px',
+            background: 'rgba(15, 23, 42, 0.95)',
+            backdropFilter: 'blur(12px)',
             color: '#ffffff',
-            padding: '0.85rem 1.35rem',
-            borderRadius: '10px',
+            padding: '0.9rem 1.5rem',
+            borderRadius: '12px',
             zIndex: 999999,
-            boxShadow: '0 10px 25px -5px rgba(0,0,0,0.3)',
+            boxShadow: '0 12px 30px -5px rgba(0,0,0,0.3)',
             fontSize: '0.875rem',
             fontWeight: 700,
-            border: '1px solid #334155',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
           }}
         >
-          {toastMessage}
+          <Sparkles size={16} color="#38BDF8" />
+          <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Page Header */}
-      <div style={{ marginBottom: '1.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#e0f2fe', color: '#0369a1', padding: '0.2rem 0.65rem', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700, marginBottom: '0.35rem', border: '1px solid #bae6fd' }}>
-            <span>🪪 Identity & TDS Compliance</span>
-            <span>• PAN & Aadhaar Only</span>
+      {/* Signature 2-Color Gradient Hero Header Banner with 3D Depth */}
+      <div className="van-catalog-hero-3d">
+        <div className="van-catalog-hero-content">
+          <div className="van-catalog-hero-icon-orb">
+            <ShieldCheck size={32} strokeWidth={2.2} />
           </div>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0f172a', margin: '0 0 0.3rem 0' }}>
-            KYC Verification Desk
-          </h1>
-          <p style={{ color: '#64748b', fontSize: '0.9rem', margin: 0 }}>
-            Submit PAN & Aadhaar proofs for statutory verification. Once Admin approves your KYC, Bank & UPI payout accounts will be unlocked.
-          </p>
-        </div>
-
-        <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
-          <button
-            type="button"
-            onClick={fetchKycDetails}
-            disabled={loading}
-            style={{
-              background: '#ffffff',
-              color: '#334155',
-              border: '1px solid #cbd5e1',
-              padding: '0.55rem 0.95rem',
-              borderRadius: '8px',
-              fontWeight: 700,
-              fontSize: '0.82rem',
-              cursor: loading ? 'not-allowed' : 'pointer',
-            }}
-          >
-            🔄 {loading ? 'Syncing...' : 'Sync Status'}
-          </button>
-
-          {isVerified && (
-            <button
-              type="button"
-              onClick={() => onNavigate && onNavigate('bank-accounts')}
+          <div>
+            {/* Top Badges Row: Category Chip, Statutory Chip & Live Status Pill */}
+            <div
               style={{
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                color: '#ffffff',
-                border: 'none',
-                padding: '0.55rem 1.25rem',
-                borderRadius: '8px',
-                fontWeight: 800,
-                fontSize: '0.85rem',
-                cursor: 'pointer',
-                boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)',
-                display: 'inline-flex',
+                display: 'flex',
                 alignItems: 'center',
-                gap: '0.4rem',
+                gap: '0.65rem',
+                marginBottom: '0.65rem',
+                flexWrap: 'wrap',
               }}
             >
-              <span>🏦</span> Go to Bank & UPI Accounts →
+              <div className="van-catalog-hero-badge" style={{ marginBottom: 0 }}>
+                <span
+                  className="van-live-pulse-dot"
+                  style={{ width: '8px', height: '8px', background: '#38BDF8', boxShadow: '0 0 10px #38BDF8', flexShrink: 0 }}
+                />
+                <span>Identity & Compliance Desk</span>
+              </div>
+
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  background: 'rgba(56, 189, 248, 0.16)',
+                  border: '1px solid rgba(56, 189, 248, 0.35)',
+                  color: '#bae6fd',
+                  padding: '0.32rem 0.85rem',
+                  borderRadius: '9999px',
+                  fontSize: '0.74rem',
+                  fontWeight: 800,
+                  whiteSpace: 'nowrap',
+                  letterSpacing: '0.02em',
+                  backdropFilter: 'blur(10px)',
+                }}
+              >
+                <FileCheck size={13} color="#38bdf8" />
+                <span>Section 194H TDS • UIDAI</span>
+              </div>
+
+              {isVerified ? (
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    background: 'rgba(34, 197, 94, 0.2)',
+                    border: '1px solid rgba(74, 222, 128, 0.45)',
+                    color: '#86efac',
+                    padding: '0.32rem 0.85rem',
+                    borderRadius: '9999px',
+                    fontSize: '0.74rem',
+                    fontWeight: 800,
+                    whiteSpace: 'nowrap',
+                    letterSpacing: '0.025em',
+                    backdropFilter: 'blur(10px)',
+                    boxShadow: '0 2px 10px rgba(34, 197, 94, 0.2)',
+                  }}
+                >
+                  <CheckCircle2 size={13} color="#4ade80" />
+                  <span>KYC Verified & Approved</span>
+                </div>
+              ) : isPending ? (
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    background: 'rgba(245, 158, 11, 0.22)',
+                    border: '1px solid rgba(251, 191, 36, 0.55)',
+                    color: '#fef08a',
+                    padding: '0.32rem 0.85rem',
+                    borderRadius: '9999px',
+                    fontSize: '0.74rem',
+                    fontWeight: 800,
+                    whiteSpace: 'nowrap',
+                    letterSpacing: '0.025em',
+                    backdropFilter: 'blur(10px)',
+                    boxShadow: '0 2px 12px rgba(245, 158, 11, 0.22)',
+                  }}
+                >
+                  <Clock size={13} color="#fbbf24" />
+                  <span>Under Review • In Process</span>
+                </div>
+              ) : isRejected ? (
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    background: 'rgba(225, 29, 72, 0.22)',
+                    border: '1px solid rgba(244, 63, 94, 0.55)',
+                    color: '#fecdd3',
+                    padding: '0.32rem 0.85rem',
+                    borderRadius: '9999px',
+                    fontSize: '0.74rem',
+                    fontWeight: 800,
+                    whiteSpace: 'nowrap',
+                    letterSpacing: '0.025em',
+                    backdropFilter: 'blur(10px)',
+                    boxShadow: '0 2px 12px rgba(225, 29, 72, 0.25)',
+                  }}
+                >
+                  <AlertTriangle size={13} color="#f43f5e" />
+                  <span>Rejected • Action Required</span>
+                </div>
+              ) : (
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    background: 'rgba(245, 158, 11, 0.22)',
+                    border: '1px solid rgba(251, 191, 36, 0.55)',
+                    color: '#fef08a',
+                    padding: '0.32rem 0.85rem',
+                    borderRadius: '9999px',
+                    fontSize: '0.74rem',
+                    fontWeight: 800,
+                    whiteSpace: 'nowrap',
+                    letterSpacing: '0.025em',
+                    backdropFilter: 'blur(10px)',
+                  }}
+                >
+                  <AlertTriangle size={13} color="#fbbf24" />
+                  <span>Submission Required</span>
+                </div>
+              )}
+            </div>
+
+            <h1 className="van-catalog-hero-title">
+              KYC Verification Desk
+            </h1>
+            <p className="van-catalog-hero-desc">
+              Statutory PAN & Aadhaar identification ledger for Income Tax TDS Section 194H compliance. Unlocks receiving bank accounts and instant UPI commission payouts upon verification.
+            </p>
+          </div>
+        </div>
+
+        {/* Right Member Pod & Action Controls */}
+        <div
+          className="van-directs-hero-action-col"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-end',
+            gap: '0.85rem',
+            flexShrink: 0,
+          }}
+        >
+          {/* Glass Member Identity Pod */}
+          <div
+            style={{
+              background: 'rgba(255, 255, 255, 0.12)',
+              backdropFilter: 'blur(16px)',
+              border: '1px solid rgba(255, 255, 255, 0.25)',
+              borderRadius: '16px',
+              padding: '0.85rem 1.4rem',
+              textAlign: 'center',
+              minWidth: '220px',
+              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)',
+            }}
+          >
+            <span
+              style={{
+                fontSize: '0.72rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+                color: '#c7d2fe',
+                fontWeight: 800,
+                display: 'block',
+              }}
+            >
+              Registered Member
+            </span>
+            <div
+              style={{
+                fontSize: '1.45rem',
+                fontWeight: 900,
+                color: '#ffffff',
+                marginTop: '0.15rem',
+                textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                maxWidth: '220px',
+              }}
+              title={currentUser?.name || user?.name || 'Member'}
+            >
+              {currentUser?.name || user?.name || 'Member'}
+            </div>
+            <span style={{ fontSize: '0.72rem', color: '#93c5fd', marginTop: '0.15rem', display: 'block' }}>
+              Code: {userCode || 'CB9741655'}
+            </span>
+          </div>
+
+          {/* Action Buttons */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+            <button
+              type="button"
+              onClick={fetchKycDetails}
+              disabled={loading}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.45rem',
+                padding: '0.5rem 1.05rem',
+                borderRadius: '9999px',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                background: 'rgba(255, 255, 255, 0.1)',
+                backdropFilter: 'blur(10px)',
+                color: '#ffffff',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                cursor: loading ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              <RotateCcw size={14} className={loading ? 'spin-anim' : ''} />
+              <span>{loading ? 'Syncing...' : 'Sync Status'}</span>
             </button>
-          )}
+
+            {isVerified && (
+              <button
+                type="button"
+                onClick={() => handleNav('bank-accounts')}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.45rem',
+                  padding: '0.5rem 1.25rem',
+                  borderRadius: '9999px',
+                  border: 'none',
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  color: '#ffffff',
+                  fontSize: '0.8rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 14px rgba(16, 185, 129, 0.35)',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                <Building2 size={14} />
+                <span>Go to Bank & UPI Accounts →</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -477,31 +714,47 @@ function KycVerification({ user, onNavigate }) {
         <div
           style={{
             background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)',
-            border: '1px solid #fde68a',
-            borderRadius: '16px',
-            padding: '1.5rem 1.75rem',
+            border: '1.5px solid #fde68a',
+            borderRadius: '18px',
+            padding: '1.4rem 1.75rem',
+            marginTop: '1.5rem',
             marginBottom: '1.75rem',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
             flexWrap: 'wrap',
             gap: '1rem',
-            boxShadow: '0 4px 12px rgba(245, 158, 11, 0.08)',
+            boxShadow: '0 8px 24px -4px rgba(245, 158, 11, 0.15)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
-            <span style={{ fontSize: '2.2rem' }}>⏳</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div
+              style={{
+                width: '48px',
+                height: '48px',
+                borderRadius: '14px',
+                background: '#fef3c7',
+                border: '1px solid #fde68a',
+                color: '#d97706',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
+              <Clock size={26} strokeWidth={2.4} />
+            </div>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.2rem' }}>
-                <strong style={{ color: '#92400e', fontSize: '1.15rem' }}>
-                  KYC Status: Under Process (In Review)
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', marginBottom: '0.2rem' }}>
+                <strong style={{ color: '#92400e', fontSize: '1.1rem', fontWeight: 800 }}>
+                  KYC Verification Under Review
                 </strong>
                 <span style={{ background: '#f59e0b', color: '#ffffff', fontSize: '0.7rem', fontWeight: 800, padding: '0.15rem 0.55rem', borderRadius: '12px', textTransform: 'uppercase' }}>
-                  Under Review
+                  Under Process ⏳
                 </span>
               </div>
-              <p style={{ color: '#b45309', fontSize: '0.875rem', margin: 0, maxWidth: '680px', lineHeight: 1.5 }}>
-                Your PAN and Aadhaar identity documents have been submitted to Admin. Once Admin completes compliance verification, your status will change to <strong>Verified ✓</strong> and Bank/UPI payout accounts will be enabled.
+              <p style={{ color: '#b45309', fontSize: '0.865rem', margin: 0, maxWidth: '720px', lineHeight: 1.5 }}>
+                Your PAN and Aadhaar identity documents are undergoing admin compliance verification. Once approved, your status will become <strong style={{ color: '#92400e' }}>Verified ✓</strong> and Bank/UPI payout accounts will be unlocked automatically.
               </p>
             </div>
           </div>
@@ -513,14 +766,18 @@ function KycVerification({ user, onNavigate }) {
               background: '#ffffff',
               color: '#92400e',
               border: '1px solid #fcd34d',
-              padding: '0.6rem 1.15rem',
-              borderRadius: '8px',
-              fontWeight: 700,
-              fontSize: '0.82rem',
+              padding: '0.6rem 1.25rem',
+              borderRadius: '10px',
+              fontWeight: 800,
+              fontSize: '0.825rem',
               cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(245, 158, 11, 0.15)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.4rem',
             }}
           >
-            ✏️ Edit / Resubmit Documents
+            <span>✏️ Edit / Resubmit Proofs</span>
           </button>
         </div>
       )}
@@ -530,51 +787,71 @@ function KycVerification({ user, onNavigate }) {
         <div
           style={{
             background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
-            border: '1px solid #bbf7d0',
-            borderRadius: '16px',
-            padding: '1.5rem 1.75rem',
+            border: '1.5px solid #bbf7d0',
+            borderRadius: '18px',
+            padding: '1.4rem 1.75rem',
+            marginTop: '1.5rem',
             marginBottom: '1.75rem',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
             flexWrap: 'wrap',
             gap: '1rem',
-            boxShadow: '0 4px 12px rgba(22, 163, 74, 0.08)',
+            boxShadow: '0 8px 24px -4px rgba(22, 163, 74, 0.15)',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <span style={{ fontSize: '2.2rem' }}>✅</span>
+            <div
+              style={{
+                width: '48px',
+                height: '48px',
+                borderRadius: '14px',
+                background: '#dcfce7',
+                border: '1px solid #bbf7d0',
+                color: '#16a34a',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
+              <CheckCircle2 size={26} strokeWidth={2.4} />
+            </div>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.2rem' }}>
-                <strong style={{ color: '#15803d', fontSize: '1.15rem' }}>
-                  KYC Status: Verified & Approved
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', marginBottom: '0.2rem' }}>
+                <strong style={{ color: '#15803d', fontSize: '1.1rem', fontWeight: 800 }}>
+                  KYC Verification Approved & Active
                 </strong>
                 <span style={{ background: '#16a34a', color: '#ffffff', fontSize: '0.7rem', fontWeight: 800, padding: '0.15rem 0.55rem', borderRadius: '12px', textTransform: 'uppercase' }}>
                   Verified ✓
                 </span>
               </div>
-              <p style={{ color: '#166534', fontSize: '0.875rem', margin: 0 }}>
-                Your PAN and Aadhaar identity documents are approved in the database. You can now add multiple Bank Accounts, UPI IDs with QR codes, and withdraw commission earnings.
+              <p style={{ color: '#166534', fontSize: '0.865rem', margin: 0, maxWidth: '720px' }}>
+                Your PAN and Aadhaar records are fully compliant. You can now add multiple bank accounts, link dynamic UPI QR codes, and withdraw commission earnings seamlessly.
               </p>
             </div>
           </div>
 
           <button
             type="button"
-            onClick={() => onNavigate && onNavigate('bank-accounts')}
+            onClick={() => handleNav('bank-accounts')}
             style={{
-              background: '#15803d',
+              background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
               color: '#ffffff',
               border: 'none',
-              padding: '0.65rem 1.35rem',
-              borderRadius: '8px',
+              padding: '0.65rem 1.45rem',
+              borderRadius: '10px',
               fontWeight: 800,
               fontSize: '0.85rem',
               cursor: 'pointer',
-              boxShadow: '0 4px 12px rgba(21, 128, 61, 0.25)',
+              boxShadow: '0 4px 14px rgba(22, 163, 74, 0.3)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.45rem',
             }}
           >
-            Manage Bank & UPI Accounts →
+            <span>Manage Bank & UPI Accounts</span>
+            <ChevronRight size={16} />
           </button>
         </div>
       )}
@@ -584,31 +861,47 @@ function KycVerification({ user, onNavigate }) {
         <div
           style={{
             background: 'linear-gradient(135deg, #fff1f2 0%, #fee2e2 100%)',
-            border: '1px solid #fecdd3',
-            borderRadius: '16px',
-            padding: '1.5rem 1.75rem',
+            border: '1.5px solid #fecdd3',
+            borderRadius: '18px',
+            padding: '1.4rem 1.75rem',
+            marginTop: '1.5rem',
             marginBottom: '1.75rem',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
             flexWrap: 'wrap',
             gap: '1rem',
-            boxShadow: '0 4px 12px rgba(225, 29, 72, 0.08)',
+            boxShadow: '0 8px 24px -4px rgba(225, 29, 72, 0.15)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
-            <span style={{ fontSize: '2.2rem' }}>❌</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div
+              style={{
+                width: '48px',
+                height: '48px',
+                borderRadius: '14px',
+                background: '#fee2e2',
+                border: '1px solid #fecdd3',
+                color: '#e11d48',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
+              <AlertTriangle size={26} strokeWidth={2.4} />
+            </div>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.2rem' }}>
-                <strong style={{ color: '#9f1239', fontSize: '1.15rem' }}>
-                  KYC Status: Rejected
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', marginBottom: '0.2rem' }}>
+                <strong style={{ color: '#9f1239', fontSize: '1.1rem', fontWeight: 800 }}>
+                  KYC Verification Rejected
                 </strong>
                 <span style={{ background: '#e11d48', color: '#ffffff', fontSize: '0.7rem', fontWeight: 800, padding: '0.15rem 0.55rem', borderRadius: '12px', textTransform: 'uppercase' }}>
                   Action Required
                 </span>
               </div>
-              <p style={{ color: '#be123c', fontSize: '0.875rem', margin: 0, maxWidth: '650px' }}>
-                Your submitted documents could not be approved by Admin. Please ensure your name matches registered profile details, check photo clarity, and resubmit below.
+              <p style={{ color: '#be123c', fontSize: '0.865rem', margin: 0, maxWidth: '720px' }}>
+                Your submitted documents could not be approved by Admin. Please ensure legal name matches your registered profile, check document image clarity, and resubmit below.
               </p>
             </div>
           </div>
@@ -617,233 +910,503 @@ function KycVerification({ user, onNavigate }) {
             type="button"
             onClick={() => setIsEditing(true)}
             style={{
-              background: '#e11d48',
+              background: 'linear-gradient(135deg, #e11d48 0%, #be123c 100%)',
               color: '#ffffff',
               border: 'none',
-              padding: '0.65rem 1.25rem',
-              borderRadius: '8px',
+              padding: '0.65rem 1.45rem',
+              borderRadius: '10px',
               fontWeight: 800,
               fontSize: '0.85rem',
               cursor: 'pointer',
+              boxShadow: '0 4px 14px rgba(225, 29, 72, 0.3)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.45rem',
             }}
           >
-            Resubmit KYC Details →
+            <span>Resubmit KYC Details</span>
+            <ChevronRight size={16} />
           </button>
+        </div>
+      )}
+
+      {/* 4 CORE KYC SUMMARY STAT CARDS IN 1 ROW (Active when documents exist & not editing) */}
+      {(isPending || isVerified || isRejected) && !isEditing && (
+        <div className="van-rewards-kpi-row" style={{ marginTop: '1.5rem', marginBottom: '2rem' }}>
+          {/* Card 1: KYC Status */}
+          <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '3.5px',
+                background: isVerified
+                  ? 'linear-gradient(90deg, #10B981, #059669)'
+                  : isPending
+                  ? 'linear-gradient(90deg, #F59E0B, #D97706)'
+                  : 'linear-gradient(90deg, #E11D48, #BE123C)',
+              }}
+            />
+            <div>
+              <div className="van-stat-card-top">
+                <span className="van-stat-card-title" style={{ color: isVerified ? '#059669' : isPending ? '#D97706' : '#E11D48' }}>
+                  KYC Verification
+                </span>
+                <div
+                  className={`van-3d-kpi-icon ${isVerified ? 'van-3d-icon-emerald' : isPending ? 'van-3d-icon-amber' : 'van-3d-icon-red'}`}
+                  title="Compliance Status"
+                >
+                  {isVerified ? <CheckCircle2 size={20} strokeWidth={2.4} /> : isPending ? <Clock size={20} strokeWidth={2.4} /> : <AlertTriangle size={20} strokeWidth={2.4} />}
+                </div>
+              </div>
+              <div className="van-stat-card-value" style={{ color: isVerified ? '#059669' : isPending ? '#B45309' : '#BE123C', fontSize: '1.45rem' }}>
+                <span>{isVerified ? 'Approved' : isPending ? 'In Review' : 'Rejected'}</span>
+              </div>
+            </div>
+            <div className="van-stat-card-bottom">
+              <span style={{ fontSize: '0.76rem', color: '#64748b', fontWeight: 600 }}>
+                {isVerified ? 'Statutory Active' : isPending ? 'Under Admin Review' : 'Correction Needed'}
+              </span>
+              <span
+                className="van-card-badge-pill"
+                style={{
+                  background: isVerified ? '#ECFDF5' : isPending ? '#FEF3C7' : '#FEE2E2',
+                  color: isVerified ? '#047857' : isPending ? '#B45309' : '#B91C1C',
+                  border: isVerified ? '1px solid #A7F3D0' : isPending ? '1px solid #FDE68A' : '1px solid #FECDD3',
+                }}
+              >
+                {isVerified ? 'Verified ✓' : isPending ? 'Pending ⏳' : 'Action ⚠️'}
+              </span>
+            </div>
+          </div>
+
+          {/* Card 2: PAN Card */}
+          <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #3B82F6, #1D4ED8)' }} />
+            <div>
+              <div className="van-stat-card-top">
+                <span className="van-stat-card-title" style={{ color: '#2563EB' }}>
+                  PAN Card (194H)
+                </span>
+                <div className="van-3d-kpi-icon van-3d-icon-blue" title="PAN Number">
+                  <FileText size={20} strokeWidth={2.4} />
+                </div>
+              </div>
+              <div className="van-stat-card-value" style={{ color: '#1D4ED8', fontFamily: 'monospace', fontSize: '1.25rem' }}>
+                <span>{currentUser?.pan_number || 'N/A'}</span>
+              </div>
+            </div>
+            <div className="van-stat-card-bottom">
+              <span style={{ fontSize: '0.76rem', color: '#64748b', fontWeight: 600 }}>
+                {panPreview ? 'Document Proof Attached' : 'Number on Record'}
+              </span>
+              <span className="van-card-badge-pill" style={{ background: '#EFF6FF', color: '#1E40AF', border: '1px solid #BFDBFE' }}>
+                TDS 5%
+              </span>
+            </div>
+          </div>
+
+          {/* Card 3: Aadhaar UID */}
+          <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #06B6D4, #0284C7)' }} />
+            <div>
+              <div className="van-stat-card-top">
+                <span className="van-stat-card-title" style={{ color: '#0284C7' }}>
+                  Aadhaar UID
+                </span>
+                <div className="van-3d-kpi-icon van-3d-icon-cyan" title="Aadhaar UIDAI">
+                  <CreditCard size={20} strokeWidth={2.4} />
+                </div>
+              </div>
+              <div className="van-stat-card-value" style={{ color: '#0369A1', fontFamily: 'monospace', fontSize: '1.2rem' }}>
+                <span>{formatAadhaarDisplay(currentUser?.aadhaar_number)}</span>
+              </div>
+            </div>
+            <div className="van-stat-card-bottom">
+              <span style={{ fontSize: '0.76rem', color: '#64748b', fontWeight: 600 }}>
+                {aadhaarFrontPreview && aadhaarBackPreview ? 'Front & Back Scans' : '12-Digit UID'}
+              </span>
+              <span className="van-card-badge-pill" style={{ background: '#F0F9FF', color: '#0369A1', border: '1px solid #BAE6FD' }}>
+                UIDAI
+              </span>
+            </div>
+          </div>
+
+          {/* Card 4: Payout Vault Status */}
+          <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #A855F7, #7C3AED)' }} />
+            <div>
+              <div className="van-stat-card-top">
+                <span className="van-stat-card-title" style={{ color: '#7C3AED' }}>
+                  Payout Vault
+                </span>
+                <div className="van-3d-kpi-icon van-3d-icon-purple" title="Payout Access">
+                  {isVerified ? <Unlock size={20} strokeWidth={2.4} /> : <Lock size={20} strokeWidth={2.4} />}
+                </div>
+              </div>
+              <div className="van-stat-card-value" style={{ color: isVerified ? '#059669' : '#6D28D9', fontSize: '1.35rem' }}>
+                <span>{isVerified ? 'Unlocked' : 'Locked'}</span>
+              </div>
+            </div>
+            <div className="van-stat-card-bottom">
+              <span style={{ fontSize: '0.76rem', color: isVerified ? '#059669' : '#64748b', fontWeight: 600 }}>
+                {isVerified ? 'Bank & UPI Active' : 'Unlocks upon approval'}
+              </span>
+              <span className="van-card-badge-pill" style={{ background: '#FAF5FF', color: '#6B21A8', border: '1px solid #E9D5FF' }}>
+                {isVerified ? 'Enabled' : 'Restricted'}
+              </span>
+            </div>
+          </div>
         </div>
       )}
 
       {/* UPLOADED DATA VIEW (Active when documents exist & not in edit mode) */}
       {(isPending || isVerified || isRejected) && !isEditing ? (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.75rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.75rem' }}>
           {/* Card 1: Identification Summary */}
-          <div style={{ background: '#ffffff', borderRadius: '16px', padding: '2rem', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.85rem' }}>
-              <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-                Submitted KYC Identification Record
-              </h2>
-              <span
-                style={{
-                  fontSize: '0.75rem',
-                  fontWeight: 800,
-                  padding: '0.25rem 0.65rem',
-                  borderRadius: '12px',
-                  textTransform: 'uppercase',
-                  background: isVerified ? '#dcfce7' : isPending ? '#fef3c7' : '#fee2e2',
-                  color: isVerified ? '#15803d' : isPending ? '#b45309' : '#b91c1c',
-                }}
-              >
-                ● {isVerified ? 'Verified' : isPending ? 'Under Process' : 'Rejected'}
-              </span>
-            </div>
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '20px',
+              padding: '2rem 2.25rem',
+              border: '1px solid #e2e8f0',
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.03)',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+            }}
+          >
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.35rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: '#eff6ff', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <UserCheck size={20} />
+                  </div>
+                  <div>
+                    <h2 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                      Submitted Identification Record
+                    </h2>
+                    <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Statutory government compliance profile</span>
+                  </div>
+                </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.875rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px dashed #e2e8f0' }}>
-                <span style={{ color: '#64748b' }}>Registered Full Name:</span>
-                <strong style={{ color: '#0f172a' }}>{currentUser?.name || user?.name || 'Member'}</strong>
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px dashed #e2e8f0' }}>
-                <span style={{ color: '#64748b' }}>PAN Card Number:</span>
-                <strong style={{ color: '#0f172a', fontFamily: 'monospace', fontSize: '0.95rem' }}>{currentUser?.pan_number || 'N/A'}</strong>
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px dashed #e2e8f0' }}>
-                <span style={{ color: '#64748b' }}>12-Digit Aadhaar UID:</span>
-                <strong style={{ color: '#0f172a', fontFamily: 'monospace', fontSize: '0.95rem' }}>
-                  {formatAadhaarDisplay(currentUser?.aadhaar_number)}
-                </strong>
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px dashed #e2e8f0' }}>
-                <span style={{ color: '#64748b' }}>Submission Date:</span>
-                <span style={{ color: '#334155', fontWeight: 600 }}>
-                  {currentUser?.kyc_submitted_at ? formatDateTime(currentUser.kyc_submitted_at) : 'Saved in Database'}
+                <span
+                  style={{
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                    padding: '0.28rem 0.75rem',
+                    borderRadius: '9999px',
+                    textTransform: 'uppercase',
+                    background: isVerified ? '#dcfce7' : isPending ? '#fef3c7' : '#fee2e2',
+                    color: isVerified ? '#15803d' : isPending ? '#b45309' : '#b91c1c',
+                    border: isVerified ? '1px solid #bbf7d0' : isPending ? '1px solid #fde68a' : '1px solid #fecdd3',
+                  }}
+                >
+                  ● {isVerified ? 'Verified' : isPending ? 'Under Review' : 'Rejected'}
                 </span>
               </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.88rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.6rem 0', borderBottom: '1px dashed #e2e8f0' }}>
+                  <span style={{ color: '#64748b' }}>Registered Full Name:</span>
+                  <strong style={{ color: '#0f172a', fontSize: '0.95rem' }}>{currentUser?.name || user?.name || 'Member'}</strong>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.6rem 0', borderBottom: '1px dashed #e2e8f0' }}>
+                  <span style={{ color: '#64748b' }}>PAN Card Number:</span>
+                  <span style={{ color: '#1d4ed8', fontFamily: 'monospace', fontWeight: 800, fontSize: '1rem', background: '#eff6ff', padding: '0.2rem 0.6rem', borderRadius: '6px', border: '1px solid #bfdbfe' }}>
+                    {currentUser?.pan_number || 'N/A'}
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.6rem 0', borderBottom: '1px dashed #e2e8f0' }}>
+                  <span style={{ color: '#64748b' }}>12-Digit Aadhaar UID:</span>
+                  <span style={{ color: '#0369a1', fontFamily: 'monospace', fontWeight: 800, fontSize: '0.95rem', background: '#f0f9ff', padding: '0.2rem 0.6rem', borderRadius: '6px', border: '1px solid #bae6fd' }}>
+                    {formatAadhaarDisplay(currentUser?.aadhaar_number)}
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.6rem 0', borderBottom: '1px dashed #e2e8f0' }}>
+                  <span style={{ color: '#64748b' }}>Submission Date:</span>
+                  <span style={{ color: '#334155', fontWeight: 600 }}>
+                    {currentUser?.kyc_submitted_at ? formatDateTime(currentUser.kyc_submitted_at) : 'Saved in Database'}
+                  </span>
+                </div>
+              </div>
             </div>
 
-            <div style={{ marginTop: '1.5rem' }}>
+            <div style={{ marginTop: '2rem' }}>
               <button
                 type="button"
                 onClick={() => setIsEditing(true)}
                 style={{
                   background: '#f8fafc',
                   color: '#334155',
-                  border: '1px solid #cbd5e1',
-                  padding: '0.65rem 1rem',
-                  borderRadius: '8px',
-                  fontWeight: 700,
-                  fontSize: '0.82rem',
+                  border: '1.5px solid #cbd5e1',
+                  padding: '0.75rem 1.25rem',
+                  borderRadius: '12px',
+                  fontWeight: 800,
+                  fontSize: '0.85rem',
                   cursor: 'pointer',
                   width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem',
+                  transition: 'all 0.2s ease',
                 }}
               >
-                ✏️ Edit / Resubmit PAN & Aadhaar Proofs
+                <span>✏️ Edit / Resubmit PAN & Aadhaar Proofs</span>
               </button>
             </div>
           </div>
 
           {/* Card 2: Attached Document Scans Preview */}
-          <div style={{ background: '#ffffff', borderRadius: '16px', padding: '2rem', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a', margin: '0 0 1.25rem 0' }}>
-              Attached Document Proofs
-            </h3>
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '20px',
+              padding: '2rem 2.25rem',
+              border: '1px solid #e2e8f0',
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.03)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1.35rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '1rem' }}>
+              <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: '#ecfdf5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <FileCheck size={20} />
+              </div>
+              <div>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                  Attached Document Proofs
+                </h3>
+                <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Verified scans stored securely</span>
+              </div>
+            </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
               {/* PAN Photo */}
-              <div style={{ border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', background: '#f8fafc' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <strong style={{ fontSize: '0.85rem', color: '#0f172a' }}>📄 PAN Card Document</strong>
-                  <span style={{ fontSize: '0.7rem', color: panPreview ? '#16a34a' : '#94a3b8', fontWeight: 700 }}>
-                    {panPreview ? '✓ Attached' : 'Not Attached'}
+              <div style={{ border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.15rem', background: '#f8fafc' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                    <FileText size={16} color="#2563eb" />
+                    <strong style={{ fontSize: '0.88rem', color: '#0f172a' }}>PAN Card Document</strong>
+                  </div>
+                  <span style={{ fontSize: '0.72rem', color: panPreview ? '#16a34a' : '#94a3b8', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                    {panPreview ? <><Check size={13} /> Attached</> : 'Not Attached'}
                   </span>
                 </div>
                 {panPreview ? (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <img
-                      src={panPreview}
-                      alt="PAN Proof"
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '0.65rem 0.85rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                      <img
+                        src={panPreview}
+                        alt="PAN Proof"
+                        onClick={() => setModalImage({ title: 'PAN Card Document Proof', src: panPreview })}
+                        style={{ width: '70px', height: '45px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #cbd5e1', cursor: 'pointer' }}
+                      />
+                      <div>
+                        <strong style={{ fontSize: '0.825rem', color: '#0f172a', display: 'block' }}>PAN Scan File</strong>
+                        <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Format: Valid Image</span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
                       onClick={() => setModalImage({ title: 'PAN Card Document Proof', src: panPreview })}
-                      style={{ width: '80px', height: '55px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #cbd5e1', cursor: 'pointer' }}
-                    />
-                    <span
-                      onClick={() => setModalImage({ title: 'PAN Card Document Proof', src: panPreview })}
-                      style={{ fontSize: '0.75rem', color: '#2563eb', cursor: 'pointer', fontWeight: 600 }}
+                      style={{ background: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe', padding: '0.35rem 0.75rem', borderRadius: '8px', fontSize: '0.74rem', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
                     >
-                      🔍 Click to Inspect Full Scan
-                    </span>
+                      <Eye size={13} />
+                      <span>Inspect</span>
+                    </button>
                   </div>
                 ) : (
-                  <span style={{ fontSize: '0.78rem', color: '#64748b' }}>PAN Number saved ({currentUser?.pan_number})</span>
+                  <span style={{ fontSize: '0.8rem', color: '#64748b' }}>PAN Number saved on file: {currentUser?.pan_number}</span>
                 )}
               </div>
 
               {/* Aadhaar Front Photo */}
-              <div style={{ border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', background: '#f8fafc' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <strong style={{ fontSize: '0.85rem', color: '#0f172a' }}>🪪 Aadhaar Front Side</strong>
-                  <span style={{ fontSize: '0.7rem', color: aadhaarFrontPreview ? '#16a34a' : '#94a3b8', fontWeight: 700 }}>
-                    {aadhaarFrontPreview ? '✓ Attached' : 'Not Attached'}
+              <div style={{ border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.15rem', background: '#f8fafc' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                    <CreditCard size={16} color="#0284c7" />
+                    <strong style={{ fontSize: '0.88rem', color: '#0f172a' }}>Aadhaar Front Side</strong>
+                  </div>
+                  <span style={{ fontSize: '0.72rem', color: aadhaarFrontPreview ? '#16a34a' : '#94a3b8', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                    {aadhaarFrontPreview ? <><Check size={13} /> Attached</> : 'Not Attached'}
                   </span>
                 </div>
                 {aadhaarFrontPreview ? (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <img
-                      src={aadhaarFrontPreview}
-                      alt="Aadhaar Front"
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '0.65rem 0.85rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                      <img
+                        src={aadhaarFrontPreview}
+                        alt="Aadhaar Front"
+                        onClick={() => setModalImage({ title: 'Aadhaar Card Front Side', src: aadhaarFrontPreview })}
+                        style={{ width: '70px', height: '45px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #cbd5e1', cursor: 'pointer' }}
+                      />
+                      <div>
+                        <strong style={{ fontSize: '0.825rem', color: '#0f172a', display: 'block' }}>Aadhaar Front Scan</strong>
+                        <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Name & Photo Side</span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
                       onClick={() => setModalImage({ title: 'Aadhaar Card Front Side', src: aadhaarFrontPreview })}
-                      style={{ width: '80px', height: '55px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #cbd5e1', cursor: 'pointer' }}
-                    />
-                    <span
-                      onClick={() => setModalImage({ title: 'Aadhaar Card Front Side', src: aadhaarFrontPreview })}
-                      style={{ fontSize: '0.75rem', color: '#2563eb', cursor: 'pointer', fontWeight: 600 }}
+                      style={{ background: '#f0f9ff', color: '#0284c7', border: '1px solid #bae6fd', padding: '0.35rem 0.75rem', borderRadius: '8px', fontSize: '0.74rem', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
                     >
-                      🔍 Click to Inspect Full Scan
-                    </span>
+                      <Eye size={13} />
+                      <span>Inspect</span>
+                    </button>
                   </div>
                 ) : (
-                  <span style={{ fontSize: '0.78rem', color: '#64748b' }}>Aadhaar UID saved ({formatAadhaarDisplay(currentUser?.aadhaar_number)})</span>
+                  <span style={{ fontSize: '0.8rem', color: '#64748b' }}>UID saved: {formatAadhaarDisplay(currentUser?.aadhaar_number)}</span>
                 )}
               </div>
 
               {/* Aadhaar Back Photo */}
-              <div style={{ border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', background: '#f8fafc' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <strong style={{ fontSize: '0.85rem', color: '#0f172a' }}>🪪 Aadhaar Back Side</strong>
-                  <span style={{ fontSize: '0.7rem', color: aadhaarBackPreview ? '#16a34a' : '#94a3b8', fontWeight: 700 }}>
-                    {aadhaarBackPreview ? '✓ Attached' : 'Not Attached'}
+              <div style={{ border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.15rem', background: '#f8fafc' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                    <CreditCard size={16} color="#0284c7" />
+                    <strong style={{ fontSize: '0.88rem', color: '#0f172a' }}>Aadhaar Back Side</strong>
+                  </div>
+                  <span style={{ fontSize: '0.72rem', color: aadhaarBackPreview ? '#16a34a' : '#94a3b8', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                    {aadhaarBackPreview ? <><Check size={13} /> Attached</> : 'Not Attached'}
                   </span>
                 </div>
                 {aadhaarBackPreview ? (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <img
-                      src={aadhaarBackPreview}
-                      alt="Aadhaar Back"
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '0.65rem 0.85rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                      <img
+                        src={aadhaarBackPreview}
+                        alt="Aadhaar Back"
+                        onClick={() => setModalImage({ title: 'Aadhaar Card Back Side', src: aadhaarBackPreview })}
+                        style={{ width: '70px', height: '45px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #cbd5e1', cursor: 'pointer' }}
+                      />
+                      <div>
+                        <strong style={{ fontSize: '0.825rem', color: '#0f172a', display: 'block' }}>Aadhaar Back Scan</strong>
+                        <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Address & QR Side</span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
                       onClick={() => setModalImage({ title: 'Aadhaar Card Back Side', src: aadhaarBackPreview })}
-                      style={{ width: '80px', height: '55px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #cbd5e1', cursor: 'pointer' }}
-                    />
-                    <span
-                      onClick={() => setModalImage({ title: 'Aadhaar Card Back Side', src: aadhaarBackPreview })}
-                      style={{ fontSize: '0.75rem', color: '#2563eb', cursor: 'pointer', fontWeight: 600 }}
+                      style={{ background: '#f0f9ff', color: '#0284c7', border: '1px solid #bae6fd', padding: '0.35rem 0.75rem', borderRadius: '8px', fontSize: '0.74rem', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
                     >
-                      🔍 Click to Inspect Full Scan
-                    </span>
+                      <Eye size={13} />
+                      <span>Inspect</span>
+                    </button>
                   </div>
                 ) : (
-                  <span style={{ fontSize: '0.78rem', color: '#64748b' }}>Back side scan attached</span>
+                  <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Address scan on record</span>
                 )}
               </div>
             </div>
           </div>
         </div>
       ) : (
-        /* KYC SUBMISSION / EDIT FORM */
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.75rem' }}>
-          {/* Form Box */}
-          <div style={{ background: '#ffffff', borderRadius: '16px', padding: '2rem', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-                {isEditing ? 'Resubmit / Edit KYC Identification' : 'Submit KYC Identification'}
-              </h2>
+        /* KYC SUBMISSION / EDIT FORM (Active for Unverified or In Editing Mode) */
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.75rem', marginTop: '1.5rem' }}>
+          {/* Left Column: Form Box */}
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '20px',
+              padding: '2.25rem 2.25rem',
+              border: '1px solid #e2e8f0',
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.03)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '1rem' }}>
+              <div>
+                <h2 style={{ fontSize: '1.35rem', fontWeight: 900, color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>
+                  {isEditing ? 'Resubmit / Edit KYC Identification' : 'Submit KYC Identification'}
+                </h2>
+                <span style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.2rem', display: 'block' }}>
+                  Government proof for statutory tax and commission withdrawals
+                </span>
+              </div>
               {isEditing && (
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}
-                  style={{ background: 'none', border: 'none', color: '#64748b', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}
+                  style={{
+                    background: '#f1f5f9',
+                    border: '1px solid #cbd5e1',
+                    color: '#475569',
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    padding: '0.4rem 0.85rem',
+                    borderRadius: '8px',
+                  }}
                 >
                   Cancel
                 </button>
               )}
             </div>
 
-            <form onSubmit={handleKycSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '1.35rem' }}>
+            <form onSubmit={handleKycSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               {/* Registered Full Name Banner */}
-              <div style={{ background: '#f8fafc', padding: '0.85rem 1.15rem', borderRadius: '10px', border: '1px solid #e2e8f0', fontSize: '0.825rem' }}>
-                <span style={{ color: '#64748b' }}>Registered Full Name:</span>{' '}
-                <strong style={{ color: '#0f172a' }}>{currentUser?.name || user?.name || 'Member'}</strong>
-                <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '0.15rem' }}>
-                  * Name must match exactly on PAN and Aadhaar records.
+              <div
+                style={{
+                  background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+                  padding: '1rem 1.25rem',
+                  borderRadius: '12px',
+                  border: '1px solid #e2e8f0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.85rem',
+                }}
+              >
+                <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#eff6ff', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <UserCheck size={18} />
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>
+                    Registered Profile Name
+                  </div>
+                  <strong style={{ color: '#0f172a', fontSize: '1rem' }}>
+                    {currentUser?.name || user?.name || 'Member'}
+                  </strong>
+                  <div style={{ fontSize: '0.72rem', color: '#b45309', marginTop: '0.15rem', fontWeight: 600 }}>
+                    * Important: Name on PAN and Aadhaar must match this record exactly.
+                  </div>
                 </div>
               </div>
 
-              {/* Requirement 1: PAN Card */}
+              {/* Requirement 1: PAN Card Box */}
               <div
                 style={{
-                  border: errors.pan_number || errors.pan_card_image ? '1px solid #fca5a5' : '1px solid #e2e8f0',
-                  borderRadius: '12px',
-                  padding: '1.25rem',
-                  background: errors.pan_number || errors.pan_card_image ? '#fff5f5' : '#fafafa',
+                  border: errors.pan_number || errors.pan_card_image ? '1.5px solid #fca5a5' : '1px solid #e2e8f0',
+                  borderRadius: '16px',
+                  padding: '1.4rem 1.45rem',
+                  background: errors.pan_number || errors.pan_card_image ? '#fff5f5' : '#ffffff',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.02)',
                   transition: 'all 0.2s ease',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-                  <span style={{ fontSize: '1.3rem' }}>📄</span>
-                  <strong style={{ fontSize: '0.95rem', color: '#0f172a' }}>1. PAN Card (Section 194H TDS) *</strong>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#eff6ff', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <FileText size={18} />
+                    </div>
+                    <div>
+                      <strong style={{ fontSize: '0.98rem', color: '#0f172a', display: 'block' }}>
+                        1. PAN Card (Section 194H TDS)
+                      </strong>
+                      <span style={{ fontSize: '0.72rem', color: '#64748b' }}>For statutory tax deduction</span>
+                    </div>
+                  </div>
+                  <span style={{ background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe', padding: '0.2rem 0.55rem', borderRadius: '6px', fontSize: '0.7rem', fontWeight: 800 }}>
+                    Required *
+                  </span>
                 </div>
 
-                {/* PAN Number Field */}
-                <div style={{ marginBottom: '0.85rem' }}>
-                  <label htmlFor="pan_number_input" style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+                {/* PAN Number Input */}
+                <div style={{ marginBottom: '1rem' }}>
+                  <label htmlFor="pan_number_input" style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.35rem' }}>
                     10-Character PAN Card Number *
                   </label>
                   <input
@@ -857,87 +1420,146 @@ function KycVerification({ user, onNavigate }) {
                     placeholder="e.g. ABCDE1234F"
                     style={{
                       width: '100%',
-                      padding: '0.65rem 0.85rem',
-                      borderRadius: '8px',
-                      border: errors.pan_number ? '1px solid #ef4444' : '1px solid #cbd5e1',
-                      background: errors.pan_number ? '#fef2f2' : '#ffffff',
-                      fontSize: '1rem',
-                      fontWeight: 700,
+                      padding: '0.75rem 1rem',
+                      borderRadius: '10px',
+                      border: errors.pan_number ? '2px solid #ef4444' : '1.5px solid #cbd5e1',
+                      background: errors.pan_number ? '#fef2f2' : '#f8fafc',
+                      fontSize: '1.05rem',
+                      fontWeight: 800,
                       fontFamily: 'monospace',
+                      letterSpacing: '2px',
                       textTransform: 'uppercase',
                       outline: 'none',
+                      color: '#0f172a',
                     }}
                   />
                   {errors.pan_number && (
-                    <p style={{ color: '#dc2626', fontSize: '0.75rem', fontWeight: 600, marginTop: '0.35rem', marginBottom: 0, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                      <span>⚠️</span> {errors.pan_number}
+                    <p style={{ color: '#dc2626', fontSize: '0.75rem', fontWeight: 700, marginTop: '0.35rem', marginBottom: 0, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                      <AlertTriangle size={13} /> {errors.pan_number}
                     </p>
                   )}
-                  <span style={{ fontSize: '0.7rem', color: '#94a3b8', display: 'block', marginTop: '0.25rem' }}>
-                    Rule: 5 letters, 4 numbers, 1 letter (e.g. ABCDE1234F)
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', display: 'block', marginTop: '0.3rem' }}>
+                    Format: 5 letters, 4 digits, 1 letter (e.g. <code>ABCDE1234F</code>)
                   </span>
                 </div>
 
-                {/* PAN Document Upload */}
+                {/* Modern PAN File Upload */}
                 <div ref={panDocRef}>
-                  <label htmlFor="pan_file_input" style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#475569', marginBottom: '0.25rem' }}>
-                    Upload PAN Card Photo / Scan * (JPG, PNG, WEBP - Max 5MB)
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.35rem' }}>
+                    Upload PAN Card Photo / Scan *
                   </label>
-                  <input
-                    id="pan_file_input"
-                    type="file"
-                    accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
-                    onChange={(e) => handleFileChange(e, 'pan')}
-                    style={{ fontSize: '0.78rem', color: '#64748b', width: '100%' }}
-                  />
-                  {panFileName && (
-                    <div style={{ fontSize: '0.72rem', color: '#475569', marginTop: '0.25rem', fontWeight: 600 }}>
-                      Selected: {panFileName}
-                    </div>
-                  )}
-                  {errors.pan_card_image && (
-                    <p style={{ color: '#dc2626', fontSize: '0.75rem', fontWeight: 600, marginTop: '0.35rem', marginBottom: 0, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                      <span>⚠️</span> {errors.pan_card_image}
-                    </p>
-                  )}
-                  {panPreview && (
-                    <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#ffffff', padding: '0.4rem 0.65rem', borderRadius: '6px', border: '1px solid #cbd5e1' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <img src={panPreview} alt="PAN Scan" style={{ width: '60px', height: '40px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #cbd5e1' }} />
-                        <span style={{ fontSize: '0.72rem', color: '#16a34a', fontWeight: 700 }}>✓ Attached</span>
+
+                  {!panPreview ? (
+                    <label
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '1.5rem',
+                        border: errors.pan_card_image ? '2px dashed #f87171' : '2px dashed #93c5fd',
+                        borderRadius: '12px',
+                        background: '#f8fafc',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        textAlign: 'center',
+                      }}
+                    >
+                      <input
+                        id="pan_file_input"
+                        type="file"
+                        accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                        onChange={(e) => handleFileChange(e, 'pan')}
+                        style={{ display: 'none' }}
+                      />
+                      <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#eff6ff', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.5rem' }}>
+                        <Upload size={18} />
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveDoc('pan')}
-                        style={{ background: 'none', border: 'none', color: '#dc2626', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
-                      >
-                        ✕ Remove
-                      </button>
+                      <strong style={{ fontSize: '0.85rem', color: '#1e40af' }}>Click to Browse or Upload PAN Photo</strong>
+                      <span style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '0.2rem' }}>Supports JPG, PNG, WEBP • Max 5MB (Auto-compressed)</span>
+                    </label>
+                  ) : (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: '12px', padding: '0.75rem 1rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                        <img
+                          src={panPreview}
+                          alt="PAN Scan"
+                          onClick={() => setModalImage({ title: 'PAN Card Scan Proof', src: panPreview })}
+                          style={{ width: '65px', height: '42px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #cbd5e1', cursor: 'pointer' }}
+                        />
+                        <div>
+                          <strong style={{ fontSize: '0.825rem', color: '#0f172a', display: 'block' }}>PAN Scan Attached</strong>
+                          <span style={{ fontSize: '0.72rem', color: '#16a34a', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                            <Check size={12} /> {panFileName || 'Verified Image File'}
+                          </span>
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <button
+                          type="button"
+                          onClick={() => setModalImage({ title: 'PAN Card Scan Proof', src: panPreview })}
+                          style={{ background: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe', padding: '0.35rem 0.65rem', borderRadius: '6px', fontSize: '0.74rem', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
+                        >
+                          <Eye size={12} />
+                          <span>Inspect</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveDoc('pan')}
+                          style={{ background: '#fee2e2', color: '#b91c1c', border: '1px solid #fecdd3', padding: '0.35rem 0.65rem', borderRadius: '6px', fontSize: '0.74rem', fontWeight: 700, cursor: 'pointer' }}
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      </div>
                     </div>
+                  )}
+
+                  {errors.pan_card_image && (
+                    <p style={{ color: '#dc2626', fontSize: '0.75rem', fontWeight: 700, marginTop: '0.35rem', marginBottom: 0, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                      <AlertTriangle size={13} /> {errors.pan_card_image}
+                    </p>
                   )}
                 </div>
               </div>
 
-              {/* Requirement 2: Aadhaar Card */}
+              {/* Requirement 2: Aadhaar Card Box */}
               <div
                 style={{
-                  border: errors.aadhaar_number || errors.aadhaar_front_image || errors.aadhaar_back_image ? '1px solid #fca5a5' : '1px solid #e2e8f0',
-                  borderRadius: '12px',
-                  padding: '1.25rem',
-                  background: errors.aadhaar_number || errors.aadhaar_front_image || errors.aadhaar_back_image ? '#fff5f5' : '#fafafa',
+                  border: errors.aadhaar_number || errors.aadhaar_front_image || errors.aadhaar_back_image ? '1.5px solid #fca5a5' : '1px solid #e2e8f0',
+                  borderRadius: '16px',
+                  padding: '1.4rem 1.45rem',
+                  background: errors.aadhaar_number || errors.aadhaar_front_image || errors.aadhaar_back_image ? '#fff5f5' : '#ffffff',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.02)',
                   transition: 'all 0.2s ease',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-                  <span style={{ fontSize: '1.3rem' }}>🪪</span>
-                  <strong style={{ fontSize: '0.95rem', color: '#0f172a' }}>2. Aadhaar Card (Identity Proof) *</strong>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#f0f9ff', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <CreditCard size={18} />
+                    </div>
+                    <div>
+                      <strong style={{ fontSize: '0.98rem', color: '#0f172a', display: 'block' }}>
+                        2. Aadhaar Card (UIDAI Identity Proof)
+                      </strong>
+                      <span style={{ fontSize: '0.72rem', color: '#64748b' }}>For residential & identity verification</span>
+                    </div>
+                  </div>
+                  <span style={{ background: '#f0f9ff', color: '#0369a1', border: '1px solid #bae6fd', padding: '0.2rem 0.55rem', borderRadius: '6px', fontSize: '0.7rem', fontWeight: 800 }}>
+                    Required *
+                  </span>
                 </div>
 
-                {/* Aadhaar Number Field */}
-                <div style={{ marginBottom: '0.85rem' }}>
-                  <label htmlFor="aadhaar_number_input" style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
-                    12-Digit Aadhaar Card Number *
-                  </label>
+                {/* Aadhaar Number Input */}
+                <div style={{ marginBottom: '1rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                    <label htmlFor="aadhaar_number_input" style={{ fontSize: '0.75rem', fontWeight: 800, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      12-Digit Aadhaar Card Number *
+                    </label>
+                    <span style={{ fontSize: '0.72rem', color: aadhaarNumber.length === 12 ? '#16a34a' : '#64748b', fontWeight: 700 }}>
+                      {aadhaarNumber.length} / 12 Digits
+                    </span>
+                  </div>
                   <input
                     id="aadhaar_number_input"
                     ref={aadhaarInputRef}
@@ -951,190 +1573,326 @@ function KycVerification({ user, onNavigate }) {
                     placeholder="e.g. 123456789012"
                     style={{
                       width: '100%',
-                      padding: '0.65rem 0.85rem',
-                      borderRadius: '8px',
-                      border: errors.aadhaar_number ? '1px solid #ef4444' : '1px solid #cbd5e1',
-                      background: errors.aadhaar_number ? '#fef2f2' : '#ffffff',
-                      fontSize: '1rem',
-                      fontWeight: 700,
+                      padding: '0.75rem 1rem',
+                      borderRadius: '10px',
+                      border: errors.aadhaar_number ? '2px solid #ef4444' : '1.5px solid #cbd5e1',
+                      background: errors.aadhaar_number ? '#fef2f2' : '#f8fafc',
+                      fontSize: '1.05rem',
+                      fontWeight: 800,
                       fontFamily: 'monospace',
+                      letterSpacing: '2px',
                       outline: 'none',
+                      color: '#0f172a',
                     }}
                   />
                   {errors.aadhaar_number && (
-                    <p style={{ color: '#dc2626', fontSize: '0.75rem', fontWeight: 600, marginTop: '0.35rem', marginBottom: 0, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                      <span>⚠️</span> {errors.aadhaar_number}
+                    <p style={{ color: '#dc2626', fontSize: '0.75rem', fontWeight: 700, marginTop: '0.35rem', marginBottom: 0, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                      <AlertTriangle size={13} /> {errors.aadhaar_number}
                     </p>
                   )}
-                  <span style={{ fontSize: '0.7rem', color: '#94a3b8', display: 'block', marginTop: '0.25rem' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', display: 'block', marginTop: '0.3rem' }}>
                     Rule: Exactly 12 numeric digits (0-9 only, leading zeros preserved)
                   </span>
                 </div>
 
-                {/* Aadhaar Front & Back Uploads */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.85rem' }}>
+                {/* Aadhaar Front & Back Upload Zones */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
                   {/* Front Side */}
                   <div ref={aadhaarFrontDocRef}>
-                    <label htmlFor="aadhaar_front_file" style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: '#475569', marginBottom: '0.25rem' }}>
+                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#334155', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
                       Front Side Photo *
                     </label>
-                    <input
-                      id="aadhaar_front_file"
-                      type="file"
-                      accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
-                      onChange={(e) => handleFileChange(e, 'aadhaar_front')}
-                      style={{ fontSize: '0.75rem', color: '#64748b', width: '100%' }}
-                    />
-                    {aadhaarFrontFileName && (
-                      <div style={{ fontSize: '0.7rem', color: '#475569', marginTop: '0.2rem', fontWeight: 600 }}>
-                        {aadhaarFrontFileName}
-                      </div>
-                    )}
-                    {errors.aadhaar_front_image && (
-                      <p style={{ color: '#dc2626', fontSize: '0.72rem', fontWeight: 600, marginTop: '0.3rem', marginBottom: 0 }}>
-                        ⚠️ {errors.aadhaar_front_image}
-                      </p>
-                    )}
-                    {aadhaarFrontPreview && (
-                      <div style={{ marginTop: '0.4rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#ffffff', padding: '0.35rem 0.5rem', borderRadius: '6px', border: '1px solid #cbd5e1' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                          <img src={aadhaarFrontPreview} alt="Aadhaar Front" style={{ width: '50px', height: '35px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #cbd5e1' }} />
-                          <span style={{ fontSize: '0.68rem', color: '#16a34a', fontWeight: 700 }}>✓ Attached</span>
+
+                    {!aadhaarFrontPreview ? (
+                      <label
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          padding: '1.25rem 0.85rem',
+                          border: errors.aadhaar_front_image ? '2px dashed #f87171' : '2px dashed #bae6fd',
+                          borderRadius: '10px',
+                          background: '#f8fafc',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                          textAlign: 'center',
+                          minHeight: '110px',
+                        }}
+                      >
+                        <input
+                          id="aadhaar_front_file"
+                          type="file"
+                          accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                          onChange={(e) => handleFileChange(e, 'aadhaar_front')}
+                          style={{ display: 'none' }}
+                        />
+                        <Upload size={16} color="#0284c7" style={{ marginBottom: '0.3rem' }} />
+                        <strong style={{ fontSize: '0.8rem', color: '#0369a1' }}>Upload Front</strong>
+                        <span style={{ fontSize: '0.68rem', color: '#64748b' }}>Photo & Name</span>
+                      </label>
+                    ) : (
+                      <div style={{ background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: '10px', padding: '0.6rem 0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                          <img
+                            src={aadhaarFrontPreview}
+                            alt="Aadhaar Front"
+                            onClick={() => setModalImage({ title: 'Aadhaar Card Front Side', src: aadhaarFrontPreview })}
+                            style={{ width: '50px', height: '35px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #cbd5e1', cursor: 'pointer' }}
+                          />
+                          <div>
+                            <strong style={{ fontSize: '0.78rem', color: '#0f172a', display: 'block' }}>Front Scan</strong>
+                            <span style={{ fontSize: '0.68rem', color: '#16a34a', fontWeight: 700 }}>✓ Attached</span>
+                          </div>
                         </div>
                         <button
                           type="button"
                           onClick={() => handleRemoveDoc('aadhaar_front')}
-                          style={{ background: 'none', border: 'none', color: '#dc2626', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}
+                          style={{ background: '#fee2e2', color: '#b91c1c', border: 'none', width: '26px', height: '26px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                         >
-                          ✕
+                          <Trash2 size={12} />
                         </button>
                       </div>
+                    )}
+
+                    {errors.aadhaar_front_image && (
+                      <p style={{ color: '#dc2626', fontSize: '0.72rem', fontWeight: 700, marginTop: '0.3rem', marginBottom: 0 }}>
+                        ⚠️ {errors.aadhaar_front_image}
+                      </p>
                     )}
                   </div>
 
                   {/* Back Side */}
                   <div ref={aadhaarBackDocRef}>
-                    <label htmlFor="aadhaar_back_file" style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: '#475569', marginBottom: '0.25rem' }}>
+                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#334155', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
                       Back Side Photo *
                     </label>
-                    <input
-                      id="aadhaar_back_file"
-                      type="file"
-                      accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
-                      onChange={(e) => handleFileChange(e, 'aadhaar_back')}
-                      style={{ fontSize: '0.75rem', color: '#64748b', width: '100%' }}
-                    />
-                    {aadhaarBackFileName && (
-                      <div style={{ fontSize: '0.7rem', color: '#475569', marginTop: '0.2rem', fontWeight: 600 }}>
-                        {aadhaarBackFileName}
-                      </div>
-                    )}
-                    {errors.aadhaar_back_image && (
-                      <p style={{ color: '#dc2626', fontSize: '0.72rem', fontWeight: 600, marginTop: '0.3rem', marginBottom: 0 }}>
-                        ⚠️ {errors.aadhaar_back_image}
-                      </p>
-                    )}
-                    {aadhaarBackPreview && (
-                      <div style={{ marginTop: '0.4rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#ffffff', padding: '0.35rem 0.5rem', borderRadius: '6px', border: '1px solid #cbd5e1' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                          <img src={aadhaarBackPreview} alt="Aadhaar Back" style={{ width: '50px', height: '35px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #cbd5e1' }} />
-                          <span style={{ fontSize: '0.68rem', color: '#16a34a', fontWeight: 700 }}>✓ Attached</span>
+
+                    {!aadhaarBackPreview ? (
+                      <label
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          padding: '1.25rem 0.85rem',
+                          border: errors.aadhaar_back_image ? '2px dashed #f87171' : '2px dashed #bae6fd',
+                          borderRadius: '10px',
+                          background: '#f8fafc',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                          textAlign: 'center',
+                          minHeight: '110px',
+                        }}
+                      >
+                        <input
+                          id="aadhaar_back_file"
+                          type="file"
+                          accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                          onChange={(e) => handleFileChange(e, 'aadhaar_back')}
+                          style={{ display: 'none' }}
+                        />
+                        <Upload size={16} color="#0284c7" style={{ marginBottom: '0.3rem' }} />
+                        <strong style={{ fontSize: '0.8rem', color: '#0369a1' }}>Upload Back</strong>
+                        <span style={{ fontSize: '0.68rem', color: '#64748b' }}>Address Side</span>
+                      </label>
+                    ) : (
+                      <div style={{ background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: '10px', padding: '0.6rem 0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                          <img
+                            src={aadhaarBackPreview}
+                            alt="Aadhaar Back"
+                            onClick={() => setModalImage({ title: 'Aadhaar Card Back Side', src: aadhaarBackPreview })}
+                            style={{ width: '50px', height: '35px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #cbd5e1', cursor: 'pointer' }}
+                          />
+                          <div>
+                            <strong style={{ fontSize: '0.78rem', color: '#0f172a', display: 'block' }}>Back Scan</strong>
+                            <span style={{ fontSize: '0.68rem', color: '#16a34a', fontWeight: 700 }}>✓ Attached</span>
+                          </div>
                         </div>
                         <button
                           type="button"
                           onClick={() => handleRemoveDoc('aadhaar_back')}
-                          style={{ background: 'none', border: 'none', color: '#dc2626', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}
+                          style={{ background: '#fee2e2', color: '#b91c1c', border: 'none', width: '26px', height: '26px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                         >
-                          ✕
+                          <Trash2 size={12} />
                         </button>
                       </div>
+                    )}
+
+                    {errors.aadhaar_back_image && (
+                      <p style={{ color: '#dc2626', fontSize: '0.72rem', fontWeight: 700, marginTop: '0.3rem', marginBottom: 0 }}>
+                        ⚠️ {errors.aadhaar_back_image}
+                      </p>
                     )}
                   </div>
                 </div>
               </div>
 
-              {/* Submit Button */}
+              {/* Submit CTA Button */}
               <button
                 type="submit"
                 disabled={submitting}
                 style={{
                   width: '100%',
-                  padding: '0.9rem',
-                  borderRadius: '10px',
+                  padding: '0.95rem 1.5rem',
+                  borderRadius: '12px',
                   border: 'none',
                   background: submitting ? '#94a3b8' : 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
                   color: '#ffffff',
-                  fontWeight: 800,
-                  fontSize: '0.95rem',
+                  fontWeight: 900,
+                  fontSize: '0.98rem',
                   cursor: submitting ? 'not-allowed' : 'pointer',
-                  boxShadow: submitting ? 'none' : '0 4px 12px rgba(37, 99, 235, 0.25)',
+                  boxShadow: submitting ? 'none' : '0 6px 20px rgba(37, 99, 235, 0.35)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: '0.5rem',
-                  transition: 'all 0.2s ease',
+                  gap: '0.55rem',
+                  transition: 'all 0.25s ease',
                 }}
               >
                 {submitting ? (
                   <>
-                    <span style={{ display: 'inline-block', width: '16px', height: '16px', border: '2px solid #ffffff', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-                    Submitting to Database...
+                    <span style={{ display: 'inline-block', width: '18px', height: '18px', border: '2.5px solid #ffffff', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                    Submitting Verification to Admin...
                   </>
                 ) : (
-                  '✓ Submit KYC for Admin Verification'
+                  <>
+                    <CheckCircle2 size={18} />
+                    <span>Submit KYC for Admin Verification</span>
+                  </>
                 )}
               </button>
+
+              <div style={{ textAlign: 'center', fontSize: '0.74rem', color: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem' }}>
+                <Lock size={12} color="#16a34a" />
+                <span>256-Bit Encrypted & Compliant with Digital Personal Data Protection Act</span>
+              </div>
             </form>
           </div>
 
-          {/* Guidelines Box */}
+          {/* Right Column: Guidelines & Stepper */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <div style={{ background: '#ffffff', borderRadius: '16px', padding: '1.75rem', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', margin: '0 0 1rem 0' }}>
-                KYC Verification Lifecycle
-              </h3>
+            {/* Visual Lifecycle Stepper */}
+            <div
+              style={{
+                background: '#ffffff',
+                borderRadius: '20px',
+                padding: '2rem',
+                border: '1px solid #e2e8f0',
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.03)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1.25rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.85rem' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#eff6ff', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Zap size={18} />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                    KYC Verification Lifecycle
+                  </h3>
+                  <span style={{ fontSize: '0.74rem', color: '#64748b' }}>Step-by-step statutory verification</span>
+                </div>
+              </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', fontSize: '0.85rem' }}>
-                <div style={{ padding: '0.75rem', background: '#eff6ff', borderRadius: '8px', borderLeft: '4px solid #2563eb' }}>
-                  <strong style={{ color: '#1d4ed8', display: 'block', fontSize: '0.85rem' }}>1. Submit PAN & Aadhaar Only</strong>
-                  <span style={{ color: '#3b82f6', fontSize: '0.78rem' }}>
-                    Provide valid 10-character PAN and 12-digit Aadhaar UID along with document scans.
-                  </span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
+                {/* Step 1 */}
+                <div style={{ display: 'flex', gap: '0.85rem', alignItems: 'flex-start' }}>
+                  <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: '#eff6ff', border: '1.5px solid #bfdbfe', color: '#1d4ed8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.8rem', flexShrink: 0 }}>
+                    1
+                  </div>
+                  <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid #e2e8f0', flex: 1 }}>
+                    <strong style={{ color: '#1d4ed8', fontSize: '0.865rem', display: 'block', marginBottom: '0.15rem' }}>
+                      Submit PAN & Aadhaar Only
+                    </strong>
+                    <span style={{ color: '#64748b', fontSize: '0.76rem', lineHeight: 1.45, display: 'block' }}>
+                      Provide your valid 10-character PAN and 12-digit Aadhaar UID along with legible photo scans.
+                    </span>
+                  </div>
                 </div>
 
-                <div style={{ padding: '0.75rem', background: '#fef3c7', borderRadius: '8px', borderLeft: '4px solid #f59e0b' }}>
-                  <strong style={{ color: '#b45309', display: 'block', fontSize: '0.85rem' }}>2. Status: Under Process ⏳</strong>
-                  <span style={{ color: '#92400e', fontSize: '0.78rem' }}>
-                    Your submission goes to Admin for compliance verification.
-                  </span>
+                {/* Step 2 */}
+                <div style={{ display: 'flex', gap: '0.85rem', alignItems: 'flex-start' }}>
+                  <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: '#fffbeb', border: '1.5px solid #fde68a', color: '#b45309', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.8rem', flexShrink: 0 }}>
+                    2
+                  </div>
+                  <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid #e2e8f0', flex: 1 }}>
+                    <strong style={{ color: '#b45309', fontSize: '0.865rem', display: 'block', marginBottom: '0.15rem' }}>
+                      Status: Under Process ⏳
+                    </strong>
+                    <span style={{ color: '#64748b', fontSize: '0.76rem', lineHeight: 1.45, display: 'block' }}>
+                      Admin compliance desk verifies document authenticity and matches name against records.
+                    </span>
+                  </div>
                 </div>
 
-                <div style={{ padding: '0.75rem', background: '#f0fdf4', borderRadius: '8px', borderLeft: '4px solid #16a34a' }}>
-                  <strong style={{ color: '#15803d', display: 'block', fontSize: '0.85rem' }}>3. Admin Verifies & Unlocks Bank/UPI</strong>
-                  <span style={{ color: '#166534', fontSize: '0.78rem' }}>
-                    Upon Admin verification, you can add any number of Bank Accounts & UPI IDs with QR codes.
-                  </span>
+                {/* Step 3 */}
+                <div style={{ display: 'flex', gap: '0.85rem', alignItems: 'flex-start' }}>
+                  <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: '#f0fdf4', border: '1.5px solid #bbf7d0', color: '#15803d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.8rem', flexShrink: 0 }}>
+                    3
+                  </div>
+                  <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid #e2e8f0', flex: 1 }}>
+                    <strong style={{ color: '#15803d', fontSize: '0.865rem', display: 'block', marginBottom: '0.15rem' }}>
+                      Admin Verifies & Unlocks Vault
+                    </strong>
+                    <span style={{ color: '#64748b', fontSize: '0.76rem', lineHeight: 1.45, display: 'block' }}>
+                      Upon verification, link multiple bank accounts & UPI IDs with QR codes to withdraw earnings.
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div style={{ background: '#ffffff', borderRadius: '16px', padding: '1.5rem', border: '1px solid #e2e8f0', fontSize: '0.82rem', color: '#64748b', lineHeight: 1.6 }}>
-              <strong style={{ color: '#0f172a', display: 'block', marginBottom: '0.4rem', fontSize: '0.88rem' }}>
-                📌 Verification Checklist
-              </strong>
-              <ul style={{ margin: 0, paddingLeft: '1.2rem' }}>
-                <li>Name must match your registered account name.</li>
-                <li>PAN must follow standard format: <code>ABCDE1234F</code>.</li>
-                <li>Aadhaar number must contain exactly 12 numeric digits.</li>
-                <li>Upload clear photos of PAN card, Aadhaar Front & Back.</li>
-                <li>Supported document formats: JPG, PNG, WEBP (Max 5MB).</li>
-              </ul>
+            {/* Checklist Card */}
+            <div
+              style={{
+                background: '#ffffff',
+                borderRadius: '20px',
+                padding: '1.75rem',
+                border: '1px solid #e2e8f0',
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.03)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1rem' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#f0fdf4', color: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <ShieldCheck size={18} />
+                </div>
+                <div>
+                  <h4 style={{ fontSize: '0.98rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                    Verification Checklist
+                  </h4>
+                  <span style={{ fontSize: '0.74rem', color: '#64748b' }}>Ensure instant one-pass approval</span>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', fontSize: '0.8rem', color: '#334155' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <CheckCircle2 size={15} color="#16a34a" style={{ flexShrink: 0 }} />
+                  <span>Name must strictly match your registered profile: <strong>{currentUser?.name || user?.name || 'Member'}</strong>.</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <CheckCircle2 size={15} color="#16a34a" style={{ flexShrink: 0 }} />
+                  <span>PAN follows alphanumeric standard: <code>ABCDE1234F</code>.</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <CheckCircle2 size={15} color="#16a34a" style={{ flexShrink: 0 }} />
+                  <span>Aadhaar number must contain exactly 12 numeric digits.</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <CheckCircle2 size={15} color="#16a34a" style={{ flexShrink: 0 }} />
+                  <span>Upload clear, legible photos of PAN, Aadhaar Front & Back.</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <CheckCircle2 size={15} color="#16a34a" style={{ flexShrink: 0 }} />
+                  <span>Supported formats: JPG, PNG, WEBP (Max 5MB each).</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* IMAGE ZOOM INSPECTION MODAL */}
+      {/* IMAGE ZOOM INSPECTION LIGHTBOX MODAL */}
       {modalImage && (
         <div
           onClick={() => setModalImage(null)}
@@ -1145,6 +1903,7 @@ function KycVerification({ user, onNavigate }) {
             right: 0,
             bottom: 0,
             backgroundColor: 'rgba(15, 23, 42, 0.85)',
+            backdropFilter: 'blur(6px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -1152,15 +1911,54 @@ function KycVerification({ user, onNavigate }) {
             padding: '1rem',
           }}
         >
-          <div style={{ background: '#ffffff', borderRadius: '16px', padding: '1.5rem', maxWidth: '560px', width: '100%', textAlign: 'center' }}>
-            <h4 style={{ margin: '0 0 1rem 0', fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>{modalImage.title}</h4>
-            <img src={modalImage.src} alt="Document Proof" style={{ width: '100%', maxHeight: '380px', objectFit: 'contain', borderRadius: '8px', border: '1px solid #e2e8f0' }} />
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: '#ffffff',
+              borderRadius: '20px',
+              padding: '1.75rem',
+              maxWidth: '560px',
+              width: '100%',
+              textAlign: 'center',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.35)',
+              border: '1px solid #e2e8f0',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <div style={{ textAlign: 'left' }}>
+                <h4 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0f172a' }}>{modalImage.title}</h4>
+                <span style={{ fontSize: '0.74rem', color: '#64748b' }}>High-Resolution Document Proof Scan</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setModalImage(null)}
+                style={{ background: '#f1f5f9', border: 'none', width: '32px', height: '32px', borderRadius: '50%', fontSize: '1.1rem', color: '#64748b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div style={{ background: '#f8fafc', padding: '0.75rem', borderRadius: '14px', border: '1px solid #e2e8f0', margin: '0.5rem 0' }}>
+              <img src={modalImage.src} alt="Document Proof" style={{ width: '100%', maxHeight: '420px', objectFit: 'contain', borderRadius: '8px', display: 'block' }} />
+            </div>
+
             <button
               type="button"
               onClick={() => setModalImage(null)}
-              style={{ marginTop: '1rem', width: '100%', padding: '0.65rem', background: '#0f172a', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer' }}
+              style={{
+                marginTop: '1rem',
+                width: '100%',
+                padding: '0.75rem',
+                background: '#0f172a',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '10px',
+                fontWeight: 800,
+                fontSize: '0.85rem',
+                cursor: 'pointer',
+              }}
             >
-              Close Preview
+              Close Document Preview
             </button>
           </div>
         </div>
