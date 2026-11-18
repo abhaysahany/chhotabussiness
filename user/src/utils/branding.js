@@ -80,6 +80,18 @@ export function useBranding() {
     }
   }, []);
 
+  const ensureFavicon = useCallback(() => {
+    if (typeof document === 'undefined') return;
+    let icon = document.querySelector("link[rel='icon']") || document.querySelector("link[rel*='icon']");
+    if (!icon) {
+      icon = document.createElement('link');
+      icon.rel = 'icon';
+      document.head.appendChild(icon);
+    }
+    icon.type = 'image/x-icon';
+    icon.href = '/favicon.ico';
+  }, []);
+
   const refreshBranding = useCallback(async () => {
     try {
       const res = await api.get('/branding', { params: { _t: Date.now() } });
@@ -109,6 +121,7 @@ export function useBranding() {
   useEffect(() => {
     let mounted = true;
     updateTitle(appName);
+    ensureFavicon();
     refreshBranding();
 
     const handleStorage = (e) => {

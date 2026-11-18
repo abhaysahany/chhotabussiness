@@ -29,30 +29,49 @@ export const EmailHeader: React.FC<EmailHeaderProps> = ({
         >
           <tbody>
             <tr>
-              <td align="center" valign="middle" style={{ paddingBottom: '12px' }}>
+              <td align="center" valign="middle" style={{ paddingBottom: '14px' }}>
                 <a
                   href="https://vyaparadnet.com"
                   target="_blank"
                   rel="noreferrer"
                   style={{ textDecoration: 'none', display: 'inline-block' }}
                 >
-                  <Img
-                    src={logoUrl}
-                    width="84"
-                    height="84"
-                    alt="Vyapar AdNET Logo"
+                  <table
+                    role="presentation"
+                    border={0}
+                    cellPadding={0}
+                    cellSpacing={0}
                     style={{
-                      display: 'block',
-                      width: '84px',
-                      height: '84px',
-                      maxWidth: '84px',
-                      maxHeight: '84px',
-                      border: 0,
-                      outline: 'none',
-                      textDecoration: 'none',
+                      backgroundColor: '#FFFFFF',
+                      borderRadius: '10px',
+                      padding: '8px 20px',
                       margin: '0 auto',
                     }}
-                  />
+                  >
+                    <tbody>
+                      <tr>
+                        <td align="center" valign="middle">
+                          <Img
+                            src={logoUrl}
+                            width="190"
+                            height="63"
+                            alt="Vyapar AdNET Logo"
+                            style={{
+                              display: 'block',
+                              width: '190px',
+                              height: 'auto',
+                              maxWidth: '220px',
+                              maxHeight: '68px',
+                              border: 0,
+                              outline: 'none',
+                              textDecoration: 'none',
+                              margin: '0 auto',
+                            }}
+                          />
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </a>
               </td>
             </tr>

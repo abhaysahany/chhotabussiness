@@ -287,7 +287,7 @@ function EntityLogin({ onLoginSuccess }) {
             <img
               src={logoUrl}
               alt={appName}
-              style={{ width: '36px', height: '36px', borderRadius: '10px', objectFit: 'contain' }}
+              style={{ maxHeight: '48px', height: '48px', width: 'auto', maxWidth: '200px', objectFit: 'contain' }}
               onError={(e) => { e.target.style.display = 'none'; }}
             />
           ) : (

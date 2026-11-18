@@ -17,8 +17,10 @@ import { useBranding } from '../../utils/branding';
 function BrandLogo({
   logoUrl: propLogoUrl,
   appName: propAppName,
-  size = 56,
+  size = 48,
   mobileSize = null,
+  width = 'auto',
+  maxWidth = '100%',
   className = '',
   style = {},
   imageStyle = {},
@@ -54,7 +56,7 @@ function BrandLogo({
         style={{
           fontFamily: "'Poppins', sans-serif",
           fontWeight: 800,
-          fontSize: typeof size === 'number' ? `${Math.max(16, Math.min(22, Math.round(size * 0.35)))}px` : '1.15rem',
+          fontSize: typeof size === 'number' ? `${Math.max(16, Math.min(22, Math.round(size * 0.4)))}px` : '1.15rem',
           color: '#0F4C81',
           letterSpacing: '-0.02em',
           cursor: onClick ? 'pointer' : 'default',
@@ -80,17 +82,16 @@ function BrandLogo({
       alt={alt || `${brandName} Logo`}
       className={`brand-logo-img ${className}`}
       style={{
-        '--brand-logo-size': sizePx,
-        '--brand-logo-mobile-size': mobileSizePx,
-        width: 'var(--brand-logo-size, 56px)',
-        height: 'var(--brand-logo-size, 56px)',
-        maxWidth: '100%',
+        '--brand-logo-height': sizePx,
+        '--brand-logo-mobile-height': mobileSizePx,
+        height: 'var(--brand-logo-height, 48px)',
+        width: width || 'auto',
+        maxWidth: maxWidth || '100%',
         objectFit: 'contain',
-        aspectRatio: '1 / 1',
         display: 'inline-block',
         flexShrink: 0,
         cursor: onClick ? 'pointer' : 'default',
-        transition: 'transform 0.2s ease',
+        transition: 'transform 0.2s ease, opacity 0.2s ease',
         ...imageStyle,
         ...style,
       }}

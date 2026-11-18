@@ -36,7 +36,7 @@ function AdminSidebar({ collapsed, setCollapsed, onLogout, currentAdmin }) {
             <img
               src={logoUrl}
               alt={appName}
-              style={{ width: '28px', height: '28px', borderRadius: '8px', objectFit: 'contain' }}
+              style={{ maxHeight: '36px', height: '36px', width: 'auto', maxWidth: collapsed ? '44px' : '150px', objectFit: 'contain' }}
               onError={(e) => { e.target.style.display = 'none'; }}
             />
           ) : (
