@@ -359,7 +359,8 @@ function PersonalProfile({ user, onNavigate, onUpdateUser }) {
 
         {/* Profile Hero Body */}
         <div className="van-profile-hero-body">
-          <div className="van-profile-hero-row">
+          {/* Top Row: Avatar + Name & Subtitle on Left, Action Button on Right */}
+          <div className="van-profile-top-row">
             <div className="van-profile-identity-group">
               {/* 3D Floating Avatar Pod */}
               <div className="van-profile-avatar-pod" title="Click camera icon to change photo">
@@ -421,27 +422,6 @@ function PersonalProfile({ user, onNavigate, onUpdateUser }) {
                     </>
                   )}
                 </div>
-
-                {/* Essential Clean Credentials Chips (Only Essential Info) */}
-                <div className="van-profile-chips-deck-clean">
-                  <div className="van-clean-code-chip">
-                    <span className="van-clean-chip-lbl">My Member Code:</span>
-                    <strong className="van-clean-chip-val">{savedData.user_code || 'CB9741655'}</strong>
-                    <button
-                      type="button"
-                      className="van-clean-copy-btn"
-                      onClick={handleCopyUserCode}
-                      title="Copy Member Code"
-                    >
-                      {copiedCode ? '✓ Copied' : '📋 Copy'}
-                    </button>
-                  </div>
-
-                  <div className="van-clean-code-chip sponsor">
-                    <span className="van-clean-chip-lbl">Sponsor ID:</span>
-                    <strong className="van-clean-chip-val">{savedData.sponsor_id || 'CB100001'}</strong>
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -472,6 +452,76 @@ function PersonalProfile({ user, onNavigate, onUpdateUser }) {
                   <span>View Overview</span>
                 </button>
               )}
+            </div>
+          </div>
+
+          {/* Elegant Divider */}
+          <div className="van-profile-divider-line"></div>
+
+          {/* 3 Balanced Credential Mini-Cards (Well Designed, No Crowd) */}
+          <div className="van-profile-credentials-grid">
+            {/* Card 1: Member Code */}
+            <div className="van-profile-cred-card">
+              <div className="van-cred-card-icon purple">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
+                  <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+                  <line x1="7" y1="8" x2="17" y2="8"></line>
+                  <line x1="7" y1="12" x2="13" y2="12"></line>
+                  <line x1="7" y1="16" x2="11" y2="16"></line>
+                </svg>
+              </div>
+              <div className="van-cred-card-content">
+                <span className="van-cred-card-lbl">My Member Code</span>
+                <div className="van-cred-card-val-row">
+                  <strong className="van-cred-card-val">{savedData.user_code || 'CB9741655'}</strong>
+                  <button
+                    type="button"
+                    className="van-clean-copy-btn"
+                    onClick={handleCopyUserCode}
+                    title="Copy Member Code"
+                  >
+                    {copiedCode ? '✓ Copied' : '📋 Copy'}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 2: Sponsor ID */}
+            <div className="van-profile-cred-card">
+              <div className="van-cred-card-icon blue">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="8.5" cy="7" r="4"></circle>
+                  <line x1="20" y1="8" x2="20" y2="14"></line>
+                  <line x1="23" y1="11" x2="17" y2="11"></line>
+                </svg>
+              </div>
+              <div className="van-cred-card-content">
+                <span className="van-cred-card-lbl">Sponsor ID</span>
+                <div className="van-cred-card-val-row">
+                  <strong className="van-cred-card-val" style={{ color: '#1D4ED8' }}>{savedData.sponsor_id || 'CB100001'}</strong>
+                  <span className="van-cred-card-sub">(Root Admin)</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 3: Placement Team */}
+            <div className="van-profile-cred-card">
+              <div className="van-cred-card-icon cyan">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
+                  <line x1="6" y1="3" x2="6" y2="15"></line>
+                  <circle cx="18" cy="6" r="3"></circle>
+                  <circle cx="6" cy="18" r="3"></circle>
+                  <path d="M18 9a9 9 0 0 1-9 9"></path>
+                </svg>
+              </div>
+              <div className="van-cred-card-content">
+                <span className="van-cred-card-lbl">Network Placement</span>
+                <div className="van-cred-card-val-row">
+                  <strong className="van-cred-card-val" style={{ color: '#0284C7' }}>Left Leg</strong>
+                  <span className="van-cred-card-sub">Auto-Balancing</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -3775,8 +3775,8 @@
 
 /* Luxury Cover Banner - Clean, Open & Calming */
 .van-profile-cover-banner {
-  height: 125px;
-  background: linear-gradient(135deg, #0b1528 0%, #172554 45%, #1e3a8a 80%, #0369a1 100%);
+  height: 120px;
+  background: linear-gradient(135deg, #091325 0%, #0f2449 40%, #1e3a8a 75%, #0369a1 100%);
   position: relative;
   overflow: hidden;
   display: flex;
@@ -3790,8 +3790,8 @@
   position: absolute;
   inset: 0;
   background-image: 
-    radial-gradient(circle at 80% 20%, rgba(56, 189, 248, 0.25) 0%, transparent 50%),
-    radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.18) 0%, transparent 45%),
+    radial-gradient(circle at 80% 20%, rgba(56, 189, 248, 0.28) 0%, transparent 50%),
+    radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.2) 0%, transparent 45%),
     radial-gradient(rgba(255, 255, 255, 0.08) 1.5px, transparent 1.5px);
   background-size: 100% 100%, 100% 100%, 20px 20px;
   pointer-events: none;
@@ -3830,17 +3830,18 @@
   animation: van-pulse-dot 2s infinite ease-in-out;
 }
 
-/* Profile Showcase Header Body - Spacious & Breathable */
+/* Profile Showcase Header Body - Structured Card Architecture */
 .van-profile-hero-body {
   padding: 0 2rem 1.65rem 2rem;
   position: relative;
 }
 
-.van-profile-hero-row {
+/* Top Identity & Action Row */
+.van-profile-top-row {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 2rem;
+  gap: 1.5rem;
   flex-wrap: wrap;
 }
 
@@ -3855,8 +3856,8 @@
 /* 3D Floating Avatar Pod */
 .van-profile-avatar-pod {
   position: relative;
-  width: 110px;
-  height: 110px;
+  width: 108px;
+  height: 108px;
   border-radius: 50%;
   border: 4px solid #FFFFFF;
   background: linear-gradient(135deg, #1E3A8A 0%, #0F172A 100%);
@@ -3866,7 +3867,7 @@
     inset 0 2px 4px rgba(255, 255, 255, 0.4),
     inset 0 -3px 5px rgba(0, 0, 0, 0.3);
   flex-shrink: 0;
-  margin-top: -3.5rem;
+  margin-top: -3.4rem;
   z-index: 5;
   animation: van-avatar-smooth-float 4.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
   transform: translateZ(0);
@@ -3933,11 +3934,11 @@
   box-shadow: 0 6px 14px rgba(37, 99, 235, 0.55);
 }
 
-/* User Info Section - Clean & Spacious */
+/* User Info Section */
 .van-profile-meta-block {
   flex: 1;
   min-width: 260px;
-  padding-bottom: 0.2rem;
+  padding-bottom: 0.15rem;
 }
 
 .van-profile-name-bar {
@@ -3945,7 +3946,7 @@
   align-items: center;
   gap: 0.85rem;
   flex-wrap: wrap;
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.3rem;
 }
 
 .van-profile-fullname {
@@ -3979,54 +3980,115 @@
   align-items: center;
   gap: 0.5rem;
   flex-wrap: wrap;
-  margin-top: 0.2rem;
+  margin-top: 0.15rem;
 }
 
-/* Clean Essential Micro-Chips (No Clutter) */
-.van-profile-chips-deck-clean {
+/* Soft Divider Line */
+.van-profile-divider-line {
+  height: 1px;
+  background: #F1F5F9;
+  margin: 1.15rem 0;
+  width: 100%;
+}
+
+/* 3-Column Credential Mini-Cards Row */
+.van-profile-credentials-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  width: 100%;
+}
+
+@media (max-width: 860px) {
+  .van-profile-credentials-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.van-profile-cred-card {
+  background: #F8FAFC;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 0.75rem 1rem;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-top: 0.85rem;
-  flex-wrap: wrap;
+  gap: 0.85rem;
+  box-shadow: 0 2px 5px rgba(15, 23, 42, 0.02);
+  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.van-clean-code-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: #F8FAFC;
-  border: 1px solid #E2E8F0;
-  padding: 0.4rem 0.85rem;
-  border-radius: 10px;
-  font-size: 0.84rem;
-  transition: all 0.2s ease;
-}
-
-.van-clean-code-chip:hover {
-  background: #F1F5F9;
+.van-profile-cred-card:hover {
+  background: #FFFFFF;
   border-color: #CBD5E1;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px -3px rgba(15, 23, 42, 0.08);
 }
 
-.van-clean-code-chip.sponsor {
-  background: #FAF5FF;
-  border-color: #E9D5FF;
+.van-cred-card-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF !important;
+  flex-shrink: 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
-.van-clean-chip-lbl {
+.van-cred-card-icon.purple {
+  background: linear-gradient(135deg, #A855F7 0%, #7C3AED 100%);
+  border: 1px solid #C084FC;
+}
+
+.van-cred-card-icon.blue {
+  background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+  border: 1px solid #93C5FD;
+}
+
+.van-cred-card-icon.cyan {
+  background: linear-gradient(135deg, #38BDF8 0%, #0284C7 100%);
+  border: 1px solid #BAE6FD;
+}
+
+.van-cred-card-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.van-cred-card-lbl {
+  font-size: 0.7rem;
+  font-weight: 750;
+  text-transform: uppercase;
   color: #64748B;
-  font-size: 0.78rem;
-  font-weight: 600;
+  letter-spacing: 0.04em;
+  margin: 0;
 }
 
-.van-clean-chip-val {
+.van-cred-card-val-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.van-cred-card-val {
+  font-size: 0.95rem;
+  font-weight: 850;
   color: #0F172A;
-  font-weight: 800;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.van-clean-code-chip.sponsor .van-clean-chip-val {
-  color: #7C3AED;
+.van-cred-card-sub {
+  font-size: 0.75rem;
+  color: #64748B;
+  font-weight: 600;
 }
 
 .van-clean-copy-btn {
@@ -4035,13 +4097,14 @@
   border: 1px solid #BFDBFE;
   font-size: 0.72rem;
   font-weight: 750;
-  padding: 0.2rem 0.5rem;
+  padding: 0.2rem 0.55rem;
   border-radius: 6px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .van-clean-copy-btn:hover {
@@ -4056,6 +4119,90 @@
   gap: 0.75rem;
   padding-bottom: 0.25rem;
   flex-shrink: 0;
+}
+
+.van-btn-profile-primary {
+  background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+  color: #FFFFFF;
+  border: none;
+  padding: 0.65rem 1.4rem;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 750;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.van-btn-profile-primary:hover {
+  background: linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+}
+
+.van-btn-profile-secondary {
+  background: #FFFFFF;
+  color: #334155;
+  border: 1.5px solid #CBD5E1;
+  padding: 0.65rem 1.35rem;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 750;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+  transition: all 0.2s ease;
+}
+
+.van-btn-profile-secondary:hover {
+  background: #F8FAFC;
+  border-color: #94A3B8;
+  color: #0F172A;
+  transform: translateY(-1px);
+}
+
+/* Luxury Segmented Pill Navigation Tabs */
+.van-profile-nav-pills-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #F8FAFC;
+  border-top: 1px solid #E2E8F0;
+  padding: 0.65rem 1.75rem;
+  overflow-x: auto;
+}
+
+.van-profile-tab-pill {
+  background: transparent;
+  border: 1.5px solid transparent;
+  padding: 0.55rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 750;
+  color: #64748B;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.van-profile-tab-pill:hover {
+  color: #0F172A;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.van-profile-tab-pill.active {
+  background: #FFFFFF;
+  color: #1D4ED8;
+  border-color: #BFDBFE;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12), 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .van-btn-profile-primary {
