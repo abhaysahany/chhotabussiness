@@ -17,7 +17,7 @@ class SystemSettingController extends Controller
     {
         $appName = config('app.name', 'Vyapar AdNET') ?: 'Vyapar AdNET';
         $companyLogo = null;
-        $companyLogoUrl = url('logo.png');
+        $companyLogoUrl = url('logo.png') . (File::exists(public_path('logo.png')) ? '?v=' . filemtime(public_path('logo.png')) : '');
 
         try {
             $dbAppName = SystemSetting::get('app_name');
@@ -31,7 +31,7 @@ class SystemSettingController extends Controller
                 if (str_starts_with($companyLogo, 'http://') || str_starts_with($companyLogo, 'https://')) {
                     $companyLogoUrl = $companyLogo;
                 } else {
-                    $companyLogoUrl = url($companyLogo);
+                    $companyLogoUrl = url($companyLogo) . (File::exists(public_path($companyLogo)) ? '?v=' . filemtime(public_path($companyLogo)) : '');
                 }
             }
         } catch (\Throwable $e) {
@@ -155,14 +155,38 @@ class SystemSettingController extends Controller
                 if (File::exists($oldPath)) {
                     @File::delete($oldPath);
                 }
+                $rootOldPath = base_path('../' . $oldLogo);
+                if (File::exists($rootOldPath)) {
+                    @File::delete($rootOldPath);
+                }
             }
             SystemSetting::where('key', 'company_logo')->delete();
+
+            // Restore master default logo across standard static fallback locations
+            $defaultLogoPath = public_path('logo/logo.png');
+            if (File::exists($defaultLogoPath)) {
+                @File::copy($defaultLogoPath, public_path('logo.png'));
+                @File::copy($defaultLogoPath, base_path('../logo.png'));
+                @File::copy($defaultLogoPath, public_path('images/logo-email.png'));
+                @File::copy($defaultLogoPath, base_path('../images/logo-email.png'));
+
+                foreach (['../user/dist', '../admin/dist', '../entity/dist'] as $distRel) {
+                    $distPath = base_path($distRel);
+                    if (File::isDirectory($distPath)) {
+                        @File::copy($defaultLogoPath, $distPath . '/logo.png');
+                    }
+                }
+            }
         } elseif ($logoKey) {
             $file = $request->file($logoKey);
             $uploadDir = public_path('uploads/branding');
+            $rootUploadDir = base_path('../uploads/branding');
 
             if (!File::isDirectory($uploadDir)) {
                 File::makeDirectory($uploadDir, 0755, true, true);
+            }
+            if (!File::isDirectory($rootUploadDir)) {
+                @File::makeDirectory($rootUploadDir, 0755, true, true);
             }
 
             // Remove previous custom logo file
@@ -172,11 +196,34 @@ class SystemSettingController extends Controller
                 if (File::exists($oldPath)) {
                     @File::delete($oldPath);
                 }
+                $rootOldPath = base_path('../' . $oldLogo);
+                if (File::exists($rootOldPath)) {
+                    @File::delete($rootOldPath);
+                }
             }
 
             $ext = strtolower($file->getClientOriginalExtension()) ?: 'png';
             $fileName = 'company_logo_' . time() . '_' . substr(uniqid(), 0, 6) . '.' . $ext;
             $file->move($uploadDir, $fileName);
+            $newUploadedPath = $uploadDir . '/' . $fileName;
+
+            // Mirror uploaded file to root uploads/branding/
+            if (File::exists($newUploadedPath)) {
+                @File::copy($newUploadedPath, $rootUploadDir . '/' . $fileName);
+
+                // Synchronize to standard fallback paths for immediate cross-panel & email visibility
+                @File::copy($newUploadedPath, public_path('logo.png'));
+                @File::copy($newUploadedPath, base_path('../logo.png'));
+                @File::copy($newUploadedPath, public_path('images/logo-email.png'));
+                @File::copy($newUploadedPath, base_path('../images/logo-email.png'));
+
+                foreach (['../user/dist', '../admin/dist', '../entity/dist'] as $distRel) {
+                    $distPath = base_path($distRel);
+                    if (File::isDirectory($distPath)) {
+                        @File::copy($newUploadedPath, $distPath . '/logo.png');
+                    }
+                }
+            }
 
             SystemSetting::set('company_logo', 'uploads/branding/' . $fileName, 'branding');
         }
@@ -197,7 +244,7 @@ class SystemSettingController extends Controller
                 ? $currentLogo
                 : url($currentLogo) . '?t=' . time();
         } else {
-            $currentLogoUrl = url('logo.png');
+            $currentLogoUrl = url('logo.png') . '?t=' . time();
         }
 
         return response()->json([
