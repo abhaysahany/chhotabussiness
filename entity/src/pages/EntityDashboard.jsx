@@ -477,6 +477,15 @@ function EntityDashboard() {
     }));
   }, [data]);
 
+  const visibleRecentGross = useMemo(
+    () => recentInvoices.reduce((a, b) => a + (Number(b.gross) || 0), 0),
+    [recentInvoices]
+  );
+  const visibleRecentNet = useMemo(
+    () => recentInvoices.reduce((a, b) => a + (Number(b.netPayout) || 0), 0),
+    [recentInvoices]
+  );
+
   const activityFeed = data?.activityFeed || [];
 
   return (
@@ -1409,198 +1418,262 @@ function EntityDashboard() {
       </div>
 
       {/* 5. Recent Customer Invoices Table & Live Activity Feed */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.25rem' }}>
-        {/* Recent Invoices Table */}
-        <div className="ent-table-card" style={{ flex: '2 1 540px' }}>
-          <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid #e2e8f0', background: '#fcfdfa', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <h3 style={{ margin: 0, fontSize: '1.02rem', fontWeight: 800, color: '#0f172a' }}>
-                Recent Customer Invoices & Cash Receipts
-              </h3>
-              <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.76rem', color: '#64748b' }}>
-                Live database records of client orders, platform fee deductions, and net payouts
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => navigate('/entity/orders')}
-              style={{
-                background: '#ffffff',
-                border: '1px solid #d4dcbe',
-                padding: '0.4rem 0.85rem',
-                borderRadius: '8px',
-                color: '#636B2F',
-                fontSize: '0.76rem',
-                fontWeight: 800,
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-              }}
-            >
-              All Invoices →
-            </button>
-          </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.35rem', alignItems: 'stretch' }}>
+        {/* Recent Invoices Table (62% on desktop, stacked on mobile) */}
+        <div className="ent-3d-table-card" style={{ flex: '2 1 600px', minWidth: '320px' }}>
+          <div>
+            <div className="ent-table-header-bar">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                <div className="ent-3d-pod ent-3d-pod-md ent-pod-olive">
+                  <Receipt size={24} />
+                </div>
+                <div>
+                  <span className="ent-kpi-category-tag" style={{ background: '#f4f6ec', color: '#636B2F' }}>
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#636B2F' }} /> LIVE ORDER LEDGER
+                  </span>
+                  <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>
+                    Recent Customer Invoices & Cash Receipts
+                  </h3>
+                  <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.78rem', color: '#64748b' }}>
+                    Live database records of client orders, platform fee deductions, and net payouts
+                  </p>
+                </div>
+              </div>
 
-          <div style={{ overflowX: 'auto' }}>
-            <table>
-              <thead>
-                <tr>
-                  <th>Invoice / Client</th>
-                  <th>Deliverable Item</th>
-                  <th style={{ textAlign: 'right' }}>Gross GMV</th>
-                  <th style={{ textAlign: 'right' }}>Net Disbursed</th>
-                  <th>Status</th>
-                  <th style={{ textAlign: 'center' }}>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentInvoices.length === 0 ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                <span className="ent-3d-target-pill" style={{ background: '#f8faf0', color: '#555c27', border: '1px solid #d4dcbe' }}>
+                  <FileText size={13} /> {recentInvoices.length} Invoices
+                </span>
+                <button
+                  type="button"
+                  onClick={() => navigate('/entity/orders')}
+                  className="ent-slip-btn"
+                  style={{ padding: '6px 14px', fontSize: '0.78rem' }}
+                >
+                  <span>All Invoices</span>
+                  <ArrowUpRight size={14} />
+                </button>
+              </div>
+            </div>
+
+            <div style={{ overflowX: 'auto', width: '100%' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                <thead className="ent-modern-thead">
                   <tr>
-                    <td colSpan="6" style={{ padding: '2.5rem 1rem', textAlign: 'center', color: '#64748b' }}>
-                      No recent customer invoices found.
-                    </td>
+                    <th>Invoice / Client</th>
+                    <th>Deliverable Item</th>
+                    <th style={{ textAlign: 'right' }}>Gross GMV</th>
+                    <th style={{ textAlign: 'right' }}>Net Disbursed</th>
+                    <th>Status</th>
+                    <th style={{ textAlign: 'center' }}>Action</th>
                   </tr>
-                ) : (
-                  recentInvoices.map((txn, idx) => (
-                    <tr key={txn.id || idx}>
-                      <td>
-                        <div style={{ fontWeight: 800, color: '#0f172a' }}>{txn.customer}</div>
-                        <div style={{ fontSize: '0.72rem', color: '#64748b', fontFamily: 'monospace' }}>
-                          {txn.id} • {txn.date}
+                </thead>
+                <tbody>
+                  {recentInvoices.length === 0 ? (
+                    <tr>
+                      <td colSpan="6" style={{ padding: '3rem 1.5rem', textAlign: 'center', color: '#64748b' }}>
+                        <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+                          <Receipt size={32} color="#cbd5e1" />
+                          <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>No customer invoices found in database</span>
+                          <span style={{ fontSize: '0.78rem', color: '#94a3b8' }}>Create an invoice or wait for incoming orders</span>
                         </div>
                       </td>
-                      <td>
-                        <span style={{ fontWeight: 600, color: '#334155' }}>
-                          {txn.item}
-                        </span>
-                      </td>
-                      <td style={{ textAlign: 'right', color: '#0f172a', fontWeight: 700 }}>
-                        ₹{txn.gross.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                      </td>
-                      <td style={{ textAlign: 'right', color: '#059669', fontWeight: 800 }}>
-                        ₹{txn.netPayout.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                      </td>
-                      <td>
-                        <span
-                          style={{
-                            background: txn.status === 'completed' ? '#ecfdf5' : '#fef3c7',
-                            color: txn.status === 'completed' ? '#059669' : '#d97706',
-                            border: txn.status === 'completed' ? '1px solid #a7f3d0' : '1px solid #fde68a',
-                            padding: '3px 9px',
-                            borderRadius: '9999px',
-                            fontSize: '0.72rem',
-                            fontWeight: 800,
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '0.35rem',
-                          }}
-                        >
+                    </tr>
+                  ) : (
+                    recentInvoices.map((txn, idx) => (
+                      <tr key={txn.id || idx} className="ent-3d-table-row">
+                        <td style={{ padding: '0.95rem 1.25rem' }}>
+                          <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.9rem' }}>{txn.customer}</div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '3px' }}>
+                            <span className="ent-code-chip">{txn.id}</span>
+                            <span style={{ fontSize: '0.72rem', color: '#64748b', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                              <Clock size={11} /> {txn.date}
+                            </span>
+                          </div>
+                        </td>
+                        <td style={{ padding: '0.95rem 1.25rem' }}>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', background: '#f8fafc', border: '1px solid #e2e8f0', padding: '3px 9px', borderRadius: '7px', fontSize: '0.78rem', fontWeight: 700, color: '#334155' }}>
+                            <Package size={12} color="#636B2F" /> {txn.item}
+                          </span>
+                        </td>
+                        <td style={{ padding: '0.95rem 1.25rem', textAlign: 'right' }}>
+                          <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.92rem' }}>
+                            ₹{txn.gross.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                          </div>
+                        </td>
+                        <td style={{ padding: '0.95rem 1.25rem', textAlign: 'right' }}>
+                          <div style={{ fontWeight: 800, color: '#059669', fontSize: '0.92rem' }}>
+                            ₹{txn.netPayout.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                          </div>
+                          {txn.adminCut > 0 && (
+                            <span style={{ fontSize: '0.68rem', color: '#d97706', fontWeight: 700 }}>
+                              -₹{txn.adminCut.toFixed(0)} fee
+                            </span>
+                          )}
+                        </td>
+                        <td style={{ padding: '0.95rem 1.25rem' }}>
                           <span
                             style={{
-                              width: '6px',
-                              height: '6px',
-                              borderRadius: '50%',
-                              background: txn.status === 'completed' ? '#059669' : '#d97706',
+                              background: txn.status === 'completed' || txn.status === 'paid' ? '#ecfdf5' : '#fffbeb',
+                              color: txn.status === 'completed' || txn.status === 'paid' ? '#065f46' : '#b45309',
+                              border: txn.status === 'completed' || txn.status === 'paid' ? '1px solid #a7f3d0' : '1px solid #fde68a',
+                              padding: '3px 10px',
+                              borderRadius: '9999px',
+                              fontSize: '0.72rem',
+                              fontWeight: 800,
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '5px',
+                              boxShadow: txn.status === 'completed' || txn.status === 'paid' ? '0 1px 4px rgba(5, 150, 105, 0.15)' : '0 1px 4px rgba(217, 119, 6, 0.15)',
+                              textTransform: 'capitalize',
                             }}
-                          />
-                          {txn.status}
-                        </span>
-                      </td>
-                      <td style={{ textAlign: 'center' }}>
-                        <button
-                          type="button"
-                          onClick={() => setSelectedInvoice(txn)}
-                          style={{
-                            background: '#f4f6ec',
-                            border: '1px solid #d4dcbe',
-                            borderRadius: '6px',
-                            padding: '4px 10px',
-                            fontSize: '0.74rem',
-                            fontWeight: 800,
-                            color: '#636B2F',
-                            cursor: 'pointer',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '3px',
-                          }}
-                        >
-                          <FileText size={12} /> Slip
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                          >
+                            <span
+                              style={{
+                                width: 6,
+                                height: 6,
+                                borderRadius: '50%',
+                                background: txn.status === 'completed' || txn.status === 'paid' ? '#059669' : '#d97706',
+                              }}
+                            />
+                            {txn.status}
+                          </span>
+                        </td>
+                        <td style={{ padding: '0.95rem 1.25rem', textAlign: 'center' }}>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedInvoice(txn)}
+                            className="ent-slip-btn"
+                            title="View / Print Tax Invoice Slip"
+                          >
+                            <FileText size={12} />
+                            <span>Slip</span>
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* 3D Twin Vault Footer */}
+          <div style={{ padding: '1rem 1.5rem', background: '#fcfdfa', borderTop: '1px solid #e2e8f0' }}>
+            <div className="ent-gauge-twin-vault" style={{ marginTop: 0 }}>
+              <div>
+                <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                  VISIBLE INVOICE GMV
+                </div>
+                <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', marginTop: '2px' }}>
+                  ₹{visibleRecentGross.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                </div>
+                <span style={{ fontSize: '0.68rem', color: '#636B2F', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '3px', marginTop: '2px' }}>
+                  <CheckCircle2 size={11} /> {recentInvoices.length} Client Orders Audited
+                </span>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                  NET EARNINGS DISBURSED
+                </div>
+                <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#059669', marginTop: '2px' }}>
+                  ₹{visibleRecentNet.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                </div>
+                <span style={{ fontSize: '0.68rem', color: '#059669', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '3px', marginTop: '2px', justifyContent: 'flex-end' }}>
+                  <Sparkles size={11} /> Net Merchant Settlement
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Live Activity Feed */}
-        <div className="ent-chart-card" style={{ flex: '1 1 320px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        {/* Live Activity Feed (38% on desktop, stacked on mobile) */}
+        <div className="ent-3d-activity-card" style={{ flex: '1 1 340px', minWidth: '300px' }}>
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <div className="ent-3d-pod ent-3d-pod-xs ent-pod-olive">
-                  <Activity size={18} />
+            <div className="ent-chart-header" style={{ marginBottom: '0.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                <div className="ent-3d-pod ent-3d-pod-md ent-pod-emerald">
+                  <Activity size={24} />
                 </div>
-                <h3 style={{ margin: 0, fontSize: '1.02rem', fontWeight: 800, color: '#0f172a' }}>
-                  Merchant Activity Feed
-                </h3>
+                <div>
+                  <span className="ent-kpi-category-tag" style={{ background: '#ecfdf5', color: '#059669' }}>
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#059669' }} /> LIVE STREAM
+                  </span>
+                  <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>
+                    Merchant Activity Feed
+                  </h3>
+                </div>
               </div>
-              <span className="ent-glass-badge ent-badge-emerald" style={{ fontSize: '0.7rem' }}>
+              <span className="ent-glass-badge ent-badge-emerald" style={{ padding: '4px 10px', fontSize: '0.72rem', fontWeight: 800 }}>
                 <span className="ent-pulse-dot" /> Live
               </span>
             </div>
+            <p style={{ margin: '0 0 1.15rem 0', fontSize: '0.78rem', color: '#64748b' }}>
+              Real-time transactional audit log & settlement updates
+            </p>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+            {/* Connected Timeline Feed */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.95rem' }}>
               {activityFeed.length === 0 ? (
-                <div style={{ padding: '2rem 1rem', textAlign: 'center', color: '#64748b', fontSize: '0.84rem' }}>
-                  No recent activity recorded for this entity.
+                <div style={{ padding: '2.5rem 1rem', textAlign: 'center', color: '#64748b', fontSize: '0.84rem' }}>
+                  <Activity size={28} color="#cbd5e1" style={{ margin: '0 auto 0.5rem auto' }} />
+                  <div>No recent merchant activity recorded.</div>
                 </div>
               ) : (
-                activityFeed.map((act) => (
-                  <div key={act.id} className="ent-activity-node">
-                    <div
-                      style={{
-                        width: '14px',
-                        height: '14px',
-                        borderRadius: '50%',
-                        background: 'linear-gradient(135deg, #848f3e 0%, #636B2F 100%)',
-                        boxShadow: '0 0 8px rgba(99, 107, 47, 0.4)',
-                        marginTop: '3px',
-                        flexShrink: 0,
-                      }}
-                    />
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 700, fontSize: '0.84rem', color: '#0f172a' }}>{act.title}</div>
-                      <div style={{ fontSize: '0.76rem', color: '#64748b', marginTop: '0.15rem' }}>{act.desc}</div>
-                      <div style={{ fontSize: '0.7rem', color: '#94a3b8', marginTop: '0.25rem', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                        <Clock size={11} /> {act.time}
+                activityFeed.map((act) => {
+                  const isSettled = act.title?.toLowerCase().includes('settled') || act.type === 'settlement';
+                  return (
+                    <div key={act.id} style={{ display: 'flex', gap: '0.85rem', alignItems: 'flex-start' }}>
+                      {/* 3D Timeline Node Icon */}
+                      <div
+                        style={{
+                          width: 32,
+                          height: 32,
+                          borderRadius: '10px',
+                          background: isSettled
+                            ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                            : 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                          boxShadow: isSettled
+                            ? '0 4px 10px rgba(5, 150, 105, 0.35)'
+                            : '0 4px 10px rgba(217, 119, 6, 0.35)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#ffffff',
+                          flexShrink: 0,
+                          marginTop: '2px',
+                        }}
+                      >
+                        {isSettled ? <CheckCircle2 size={16} /> : <Clock size={16} />}
+                      </div>
+
+                      {/* Cardlet */}
+                      <div className="ent-timeline-node-cardlet" style={{ flex: 1 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem' }}>
+                          <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#0f172a' }}>{act.title}</div>
+                          <span style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '3px', flexShrink: 0 }}>
+                            <Clock size={10} /> {act.time}
+                          </span>
+                        </div>
+                        <div style={{ fontSize: '0.76rem', color: '#475569', marginTop: '0.2rem', lineHeight: '1.35' }}>
+                          {act.desc}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
           </div>
 
-          <div style={{ marginTop: '1.5rem', borderTop: '1px solid #f1f5f9', paddingTop: '0.85rem' }}>
+          <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #f1f5f9' }}>
             <button
               type="button"
               onClick={() => navigate('/entity/payments/receipts-ledger')}
-              style={{
-                width: '100%',
-                padding: '0.65rem',
-                background: '#f4f6ec',
-                border: '1px solid #d4dcbe',
-                borderRadius: '8px',
-                color: '#636B2F',
-                fontWeight: 800,
-                fontSize: '0.8rem',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-              }}
+              className="ent-audit-btn"
             >
-              View Full Receipts Ledger →
+              <Receipt size={15} />
+              <span>Audit Full Payment Ledger →</span>
             </button>
           </div>
         </div>

@@ -2531,3 +2531,153 @@ body {
   display: none;
 }
 
+/* 6. Modern 3D Table & Activity Feed Luxury Styles */
+.ent-3d-table-card {
+  background: #ffffff;
+  border-radius: 22px;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-top: 4px solid #636B2F;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05), 0 3px 8px -1px rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ent-3d-table-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 42px -8px rgba(99, 107, 47, 0.12);
+}
+
+.ent-table-header-bar {
+  padding: 1.4rem 1.65rem;
+  background: radial-gradient(circle at 94% 8%, rgba(99, 107, 47, 0.06) 0%, #ffffff 65%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.ent-modern-thead {
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.ent-modern-thead th {
+  padding: 0.85rem 1.25rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #475569;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.ent-3d-table-row {
+  border-bottom: 1px solid #f1f5f9;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ent-3d-table-row:hover {
+  background: linear-gradient(90deg, rgba(244, 246, 236, 0.6) 0%, #ffffff 100%);
+}
+
+.ent-code-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #555c27;
+  background: #f4f6ec;
+  border: 1px solid #d4dcbe;
+  padding: 2.5px 7px;
+  border-radius: 6px;
+}
+
+.ent-slip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: linear-gradient(135deg, #ffffff 0%, #f4f6ec 100%);
+  border: 1.5px solid #d4dcbe;
+  color: #555c27;
+  font-weight: 800;
+  font-size: 0.74rem;
+  padding: 5px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(99, 107, 47, 0.08);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ent-slip-btn:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #7c8838 0%, #636B2F 100%);
+  color: #ffffff;
+  border-color: #636B2F;
+  box-shadow: 0 6px 14px rgba(99, 107, 47, 0.3);
+}
+
+.ent-3d-activity-card {
+  background: #ffffff;
+  border-radius: 22px;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-top: 4px solid #059669;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05), 0 3px 8px -1px rgba(0, 0, 0, 0.02);
+  padding: 1.6rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ent-3d-activity-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 42px -8px rgba(5, 150, 105, 0.12);
+}
+
+.ent-timeline-node-cardlet {
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+  padding: 0.75rem 0.95rem;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ent-timeline-node-cardlet:hover {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  transform: translateX(3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.ent-audit-btn {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #f4f6ec 0%, #e9eed5 100%);
+  border: 1.5px solid #d4dcbe;
+  border-radius: 10px;
+  color: #555c27;
+  font-weight: 800;
+  font-size: 0.82rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(99, 107, 47, 0.1);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ent-audit-btn:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #7c8838 0%, #636B2F 100%);
+  color: #ffffff;
+  border-color: #636B2F;
+  box-shadow: 0 6px 16px rgba(99, 107, 47, 0.25);
+}
+
