@@ -4,7 +4,12 @@ import { useBranding } from '../../utils/branding';
 
 function EntitySidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogout }) {
   const { appName, logoUrl } = useBranding();
+  const [logoFailed, setLogoFailed] = useState(false);
   const [salesOpen, setSalesOpen] = useState(true);
+
+  React.useEffect(() => {
+    setLogoFailed(false);
+  }, [logoUrl]);
   const [paymentsOpen, setPaymentsOpen] = useState(true);
   const [payoutsOpen, setPayoutsOpen] = useState(true);
   const navigate = useNavigate();
@@ -26,30 +31,32 @@ function EntitySidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLog
       {/* Brand & Toggle Header */}
       <div className="sidebar-header">
         <div className="sidebar-brand" onClick={() => handleNav('dashboard', '/entity/dashboard')} style={{ cursor: 'pointer' }}>
-          {logoUrl ? (
+          {logoUrl && !logoFailed ? (
             <img
               src={logoUrl}
               alt={appName}
-              style={{ maxHeight: '36px', height: '36px', width: 'auto', maxWidth: collapsed ? '44px' : '150px', objectFit: 'contain', flexShrink: 0 }}
-              onError={(e) => { e.target.style.display = 'none'; }}
+              style={{ maxHeight: '36px', height: '36px', width: 'auto', maxWidth: collapsed ? '44px' : '170px', objectFit: 'contain', flexShrink: 0 }}
+              onError={() => setLogoFailed(true)}
             />
           ) : (
-            <div className="entity-brand-icon-box">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2L2 7l10 5 10-5-10-5z" />
-                <path d="M2 17l10 5 10-5" />
-                <path d="M2 12l10 5 10-5" />
-              </svg>
-            </div>
-          )}
-          {!collapsed && (
-            <div className="entity-brand-text-col">
-              <div className="entity-brand-title-row">
-                <span className="sidebar-brand-name">{appName}</span>
-                <span className="entity-portal-badge">ENTITY</span>
+            <>
+              <div className="entity-brand-icon-box">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                  <path d="M2 17l10 5 10-5" />
+                  <path d="M2 12l10 5 10-5" />
+                </svg>
               </div>
-              <span className="entity-portal-sub">Partner Workspace</span>
-            </div>
+              {!collapsed && (
+                <div className="entity-brand-text-col">
+                  <div className="entity-brand-title-row">
+                    <span className="sidebar-brand-name">{appName}</span>
+                    <span className="entity-portal-badge">ENTITY</span>
+                  </div>
+                  <span className="entity-portal-sub">Partner Workspace</span>
+                </div>
+              )}
+            </>
           )}
         </div>
 

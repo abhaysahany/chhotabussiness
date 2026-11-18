@@ -11,6 +11,7 @@ import {
 
 function EntityLogin({ onLoginSuccess }) {
   const { appName, logoUrl } = useBranding();
+  const [logoFailed, setLogoFailed] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -21,6 +22,10 @@ function EntityLogin({ onLoginSuccess }) {
   const [successMsg, setSuccessMsg] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [sessionExpiredNotice, setSessionExpiredNotice] = useState(null);
+
+  useEffect(() => {
+    setLogoFailed(false);
+  }, [logoUrl]);
 
   useEffect(() => {
     const notice = getExpiredNotice();
@@ -44,6 +49,10 @@ function EntityLogin({ onLoginSuccess }) {
   const [demoOtpHint, setDemoOtpHint] = useState(null);
   const [maskedEmail, setMaskedEmail] = useState('');
   const [resendCooldown, setResendCooldown] = useState(0);
+
+  useEffect(() => {
+    setLogoFailed(false);
+  }, [logoUrl]);
 
   useEffect(() => {
     let timer;
@@ -282,49 +291,51 @@ function EntityLogin({ onLoginSuccess }) {
     <div className="auth-page-container">
       {/* Brand Header */}
       <div className="auth-header">
-        <div className="brand-logo">
-          {logoUrl ? (
+        <div className="brand-logo" style={{ justifyContent: 'center' }}>
+          {logoUrl && !logoFailed ? (
             <img
               src={logoUrl}
               alt={appName}
-              style={{ maxHeight: '48px', height: '48px', width: 'auto', maxWidth: '200px', objectFit: 'contain' }}
-              onError={(e) => { e.target.style.display = 'none'; }}
+              style={{ maxHeight: '52px', height: '52px', width: 'auto', maxWidth: '240px', objectFit: 'contain' }}
+              onError={() => setLogoFailed(true)}
             />
           ) : (
-            <svg
-              width="36"
-              height="36"
-              viewBox="0 0 36 36"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <rect width="36" height="36" rx="10" fill="url(#entity-grad)" />
-              <path
-                d="M11 11H18C20.7614 11 23 13.2386 23 16V16C23 18.7614 20.7614 21 18 21H11V11Z"
-                fill="white"
-              />
-              <path
-                d="M18 21H25V25H18C15.2386 25 13 22.7614 13 20V20"
-                stroke="white"
-                strokeWidth="3.5"
-              />
-              <defs>
-                <linearGradient
-                  id="entity-grad"
-                  x1="0"
-                  y1="0"
-                  x2="36"
-                  y2="36"
-                  gradientUnits="userSpaceOnUse"
-                >
-                  <stop stopColor="#7a8439" />
-                  <stop offset="1" stopColor="#505726" />
-                </linearGradient>
-              </defs>
-            </svg>
+            <>
+              <svg
+                width="36"
+                height="36"
+                viewBox="0 0 36 36"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect width="36" height="36" rx="10" fill="url(#entity-grad)" />
+                <path
+                  d="M11 11H18C20.7614 11 23 13.2386 23 16V16C23 18.7614 20.7614 21 18 21H11V11Z"
+                  fill="white"
+                />
+                <path
+                  d="M18 21H25V25H18C15.2386 25 13 22.7614 13 20V20"
+                  stroke="white"
+                  strokeWidth="3.5"
+                />
+                <defs>
+                  <linearGradient
+                    id="entity-grad"
+                    x1="0"
+                    y1="0"
+                    x2="36"
+                    y2="36"
+                    gradientUnits="userSpaceOnUse"
+                  >
+                    <stop stopColor="#7a8439" />
+                    <stop offset="1" stopColor="#505726" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <span className="brand-name">{appName}</span>
+              <span className="brand-badge entity-badge">ENTITY PANEL</span>
+            </>
           )}
-          <span className="brand-name">{appName}</span>
-          <span className="brand-badge entity-badge">ENTITY PANEL</span>
         </div>
         <h1 className="auth-title">Entity Portal Sign In</h1>
         <p className="auth-subtitle">
