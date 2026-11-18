@@ -1,6 +1,15 @@
 import React, { useState } from 'react';
 
-function AdminHeader({ currentAdmin, onLogout, darkMode, setDarkMode }) {
+function AdminHeader({
+  currentAdmin,
+  onLogout,
+  darkMode,
+  setDarkMode,
+  collapsed,
+  setCollapsed,
+  mobileSidebarOpen,
+  setMobileSidebarOpen,
+}) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -16,8 +25,42 @@ function AdminHeader({ currentAdmin, onLogout, darkMode, setDarkMode }) {
 
   return (
     <header className="topbar-header">
-      {/* Left Section: Search Bar (Quick Actions & Mega Menu Removed) */}
+      {/* Left Section: Mobile Toggle / Collapse Button + Search Bar */}
       <div className="topbar-left">
+        {/* Mobile Hamburger Menu Toggle (Tablets & Phones < 1024px) */}
+        <button
+          type="button"
+          className="mobile-hamburger-btn"
+          onClick={() => setMobileSidebarOpen && setMobileSidebarOpen(!mobileSidebarOpen)}
+          title="Toggle Navigation Menu"
+          aria-label="Toggle Navigation Menu"
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
+
+        {/* Laptop & Desktop Sidebar Collapse Toggle (>= 1024px) */}
+        <button
+          type="button"
+          className="desktop-sidebar-toggle-btn"
+          onClick={() => setCollapsed && setCollapsed(!collapsed)}
+          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+            <line x1="9" y1="3" x2="9" y2="21" />
+            {collapsed ? (
+              <polyline points="13 10 15 12 13 14" />
+            ) : (
+              <polyline points="15 10 13 12 15 14" />
+            )}
+          </svg>
+        </button>
+
         <div className="search-box">
           <input
             type="text"
@@ -63,7 +106,7 @@ function AdminHeader({ currentAdmin, onLogout, darkMode, setDarkMode }) {
         </button>
 
         {/* Fullscreen Toggle */}
-        <button className="topbar-icon-btn" onClick={toggleFullscreen} title="Fullscreen Toggle">
+        <button className="topbar-icon-btn desktop-only-btn" onClick={toggleFullscreen} title="Fullscreen Toggle">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
           </svg>

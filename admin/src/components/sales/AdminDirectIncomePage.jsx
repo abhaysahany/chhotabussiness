@@ -251,21 +251,12 @@ function AdminDirectIncomePage() {
     (reconciliationData.reconciliation_difference ?? reconciliationData.overall_difference) === 0;
 
   return (
-    <div style={{ padding: '1.5rem', maxWidth: '1600px', margin: '0 auto', fontFamily: 'inherit' }}>
+    <div className="admin-page-container pro-orders-container">
       {/* 1. PAGE HEADER */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
-          flexWrap: 'wrap',
-          gap: '1rem',
-          marginBottom: '1.5rem',
-        }}
-      >
+      <div className="page-header pro-orders-header">
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-            <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800, color: '#0f172a' }}>
+            <h1 className="page-title pro-orders-header-title">
               Direct Income – Order-wise Overview
             </h1>
             <span
@@ -284,12 +275,12 @@ function AdminDirectIncomePage() {
               READ-ONLY REPORTING
             </span>
           </div>
-          <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>
+          <p className="page-subtitle" style={{ margin: '0.35rem 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>
             Monitor company-wide Direct Income distributions across orders, beneficiaries and installment payments.
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+        <div className="pro-orders-header-actions">
           <button
             type="button"
             onClick={() => {
@@ -386,15 +377,9 @@ function AdminDirectIncomePage() {
             </button>
           </div>
         ) : (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(175px, 1fr))',
-              gap: '1rem',
-            }}
-          >
+          <div className="pro-orders-kpi-grid">
             {/* Card 1: Total Eligible Orders */}
-            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', borderLeft: '4px solid #3b82f6' }}>
+            <div className="stat-card pro-orders-kpi-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', borderLeft: '4px solid #3b82f6' }}>
               <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>
                 Total Eligible Orders
               </div>
@@ -407,7 +392,7 @@ function AdminDirectIncomePage() {
             </div>
 
             {/* Card 2: Total Expected Direct Income */}
-            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', borderLeft: '4px solid #1e40af' }}>
+            <div className="stat-card pro-orders-kpi-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', borderLeft: '4px solid #1e40af' }}>
               <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>
                 Expected Direct Income
               </div>
@@ -422,7 +407,7 @@ function AdminDirectIncomePage() {
             </div>
 
             {/* Card 3: Total Distributed Direct Income */}
-            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', borderLeft: '4px solid #059669' }}>
+            <div className="stat-card pro-orders-kpi-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', borderLeft: '4px solid #059669' }}>
               <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>
                 Distributed Direct Income
               </div>
@@ -437,7 +422,7 @@ function AdminDirectIncomePage() {
             </div>
 
             {/* Card 4: Total Pending Direct Income */}
-            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', borderLeft: '4px solid #d97706' }}>
+            <div className="stat-card pro-orders-kpi-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', borderLeft: '4px solid #d97706' }}>
               <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>
                 Pending Direct Income
               </div>
@@ -452,7 +437,7 @@ function AdminDirectIncomePage() {
             </div>
 
             {/* Card 5: Total Approved Dump Direct Income */}
-            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', borderLeft: '4px solid #64748b' }}>
+            <div className="stat-card pro-orders-kpi-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', borderLeft: '4px solid #64748b' }}>
               <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>
                 Approved Dump Write-Off
               </div>
@@ -467,7 +452,7 @@ function AdminDirectIncomePage() {
             </div>
 
             {/* Card 6: Total Successful Distributions */}
-            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', borderLeft: '4px solid #7c3aed' }}>
+            <div className="stat-card pro-orders-kpi-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', borderLeft: '4px solid #7c3aed' }}>
               <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>
                 Installment Distributions
               </div>
@@ -480,7 +465,7 @@ function AdminDirectIncomePage() {
             </div>
 
             {/* Card 7: Total Beneficiary Members */}
-            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', borderLeft: '4px solid #0891b2' }}>
+            <div className="stat-card pro-orders-kpi-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', borderLeft: '4px solid #0891b2' }}>
               <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>
                 Beneficiary Sponsors
               </div>
@@ -493,7 +478,7 @@ function AdminDirectIncomePage() {
             </div>
 
             {/* Card 8: Overall Completion Percentage */}
-            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', borderLeft: '4px solid #10b981' }}>
+            <div className="stat-card pro-orders-kpi-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', borderLeft: '4px solid #10b981' }}>
               <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>
                 Completion Rate
               </div>
@@ -551,14 +536,7 @@ function AdminDirectIncomePage() {
           </span>
         </div>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))',
-            gap: '0.75rem',
-            marginBottom: '0.75rem',
-          }}
-        >
+        <div className="pro-income-reconciliation-grid">
           <div style={{ background: '#ffffff', padding: '0.75rem 1rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
             <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 600 }}>1. Summary Distributed Total</div>
             <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', marginTop: '0.2rem' }}>
@@ -612,7 +590,7 @@ function AdminDirectIncomePage() {
           boxShadow: '0 1px 3px 0 rgba(0,0,0,0.05)',
         }}
       >
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem', marginBottom: '0.85rem' }}>
+        <div className="pro-income-filter-grid-row1">
           {/* Search Box */}
           <div style={{ gridColumn: 'span 2' }}>
             <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
@@ -691,7 +669,7 @@ function AdminDirectIncomePage() {
         </div>
 
         {/* Second Row of Filters */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem', alignItems: 'flex-end' }}>
+        <div className="pro-income-filter-grid-row2">
           <div>
             <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
               From Date
@@ -797,16 +775,7 @@ function AdminDirectIncomePage() {
       </div>
 
       {/* 5. GLOBAL ORDER-WISE TABLE */}
-      <div
-        style={{
-          background: '#ffffff',
-          borderRadius: '12px',
-          border: '1px solid #e2e8f0',
-          overflow: 'hidden',
-          boxShadow: '0 1px 3px 0 rgba(0,0,0,0.05)',
-          marginBottom: '1.5rem',
-        }}
-      >
+      <div className="pro-orders-table-wrapper table-responsive" style={{ marginBottom: '1.5rem' }}>
         <div
           style={{
             padding: '1rem 1.25rem',
@@ -864,8 +833,8 @@ function AdminDirectIncomePage() {
         )}
 
         {!loadingOrders && !ordersError && (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', minWidth: '1500px' }}>
+          <div className="table-responsive-inner" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+            <table className="pro-orders-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', minWidth: '1500px' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left', color: '#475569', whiteSpace: 'nowrap' }}>
                   <th style={{ padding: '0.75rem 0.85rem' }}>Order ID</th>
@@ -1076,6 +1045,7 @@ function AdminDirectIncomePage() {
         {/* 6. PAGINATION BAR */}
         {!loadingOrders && pagination.total > 0 && (
           <div
+            className="pro-orders-pagination-bar"
             style={{
               padding: '0.85rem 1.25rem',
               background: '#f8fafc',

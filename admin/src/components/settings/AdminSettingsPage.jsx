@@ -302,7 +302,7 @@ function AdminSettingsPage() {
   const simAdminRetained = Math.max(0, 100 - simTotalAllocated);
 
   return (
-    <div style={{ padding: '1.5rem 2rem', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <div className="admin-settings-container" style={{ padding: '1.5rem 2rem', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
       {/* Toast Alert */}
       {toastMessage && (
         <div
@@ -326,7 +326,7 @@ function AdminSettingsPage() {
       )}
 
       {/* Header Banner */}
-      <div style={{ background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #3569a7 100%)', borderRadius: '16px', padding: '2rem 2.25rem', color: '#ffffff', marginBottom: '1.75rem', boxShadow: '0 10px 30px -5px rgba(49, 46, 129, 0.3)' }}>
+      <div className="admin-settings-hero" style={{ background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #3569a7 100%)', borderRadius: '16px', padding: '2rem 2.25rem', color: '#ffffff', marginBottom: '1.75rem', boxShadow: '0 10px 30px -5px rgba(49, 46, 129, 0.3)' }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.12)', padding: '0.25rem 0.85rem', borderRadius: '20px', fontSize: '0.78rem', fontWeight: '700', color: '#c7d2fe', marginBottom: '0.75rem' }}>
           <span>⚙️ Platform Settings & Master Configurations</span>
         </div>
@@ -339,7 +339,7 @@ function AdminSettingsPage() {
       </div>
 
       {/* Tab Navigation */}
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.75rem', background: '#ffffff', padding: '0.4rem', borderRadius: '12px', border: '1px solid #e2e8f0', width: 'fit-content', flexWrap: 'wrap' }}>
+      <div className="admin-settings-tabs" style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.75rem', background: '#ffffff', padding: '0.4rem', borderRadius: '12px', border: '1px solid #e2e8f0', width: 'fit-content', flexWrap: 'wrap' }}>
         <button
           type="button"
           onClick={() => setActiveTab('branding')}
@@ -402,7 +402,7 @@ function AdminSettingsPage() {
       {/* TAB 0: APPLICATION BRANDING / APP NAME & LOGO */}
       {activeTab === 'branding' && (
         <form onSubmit={handleSaveBranding}>
-          <div style={{ maxWidth: '820px', background: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', padding: '2rem', boxShadow: '0 4px 16px rgba(0,0,0,0.03)', marginBottom: '2rem' }}>
+          <div className="admin-settings-card" style={{ maxWidth: '820px', background: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', padding: '2rem', boxShadow: '0 4px 16px rgba(0,0,0,0.03)', marginBottom: '2rem' }}>
             
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.5rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '1.25rem' }}>
@@ -597,7 +597,7 @@ function AdminSettingsPage() {
             </div>
 
             {/* Save Button */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+            <div className="admin-settings-actions" style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
               <button
                 type="submit"
                 disabled={brandingSaving}
@@ -644,7 +644,7 @@ function AdminSettingsPage() {
       {/* TAB 1: SOCIAL MEDIA PLATFORMS & LINKS */}
       {activeTab === 'social' && (
         <form onSubmit={handleSaveSocialLinks}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
+          <div className="admin-settings-social-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
             
             {/* 1. YouTube */}
             <div style={{ background: '#ffffff', borderRadius: '14px', padding: '1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
@@ -666,7 +666,7 @@ function AdminSettingsPage() {
                     style={{ width: '100%', padding: '0.55rem 0.8rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.82rem' }}
                   />
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div className="admin-settings-two-col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#334155', marginBottom: '0.3rem' }}>Handle</label>
                     <input
@@ -718,7 +718,7 @@ function AdminSettingsPage() {
                     style={{ width: '100%', padding: '0.55rem 0.8rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.82rem' }}
                   />
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div className="admin-settings-two-col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#334155', marginBottom: '0.3rem' }}>Handle</label>
                     <input
@@ -761,7 +761,7 @@ function AdminSettingsPage() {
                     style={{ width: '100%', padding: '0.55rem 0.8rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.82rem' }}
                   />
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div className="admin-settings-two-col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#334155', marginBottom: '0.3rem' }}>Channel Name</label>
                     <input
@@ -804,7 +804,7 @@ function AdminSettingsPage() {
                     style={{ width: '100%', padding: '0.55rem 0.8rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.82rem' }}
                   />
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div className="admin-settings-two-col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#334155', marginBottom: '0.3rem' }}>Handle</label>
                     <input
@@ -847,7 +847,7 @@ function AdminSettingsPage() {
                     style={{ width: '100%', padding: '0.55rem 0.8rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.82rem' }}
                   />
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div className="admin-settings-two-col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#334155', marginBottom: '0.3rem' }}>Company Name</label>
                     <input
@@ -890,7 +890,7 @@ function AdminSettingsPage() {
                     style={{ width: '100%', padding: '0.55rem 0.8rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.82rem' }}
                   />
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div className="admin-settings-two-col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#334155', marginBottom: '0.3rem' }}>Community Name</label>
                     <input
@@ -938,7 +938,7 @@ function AdminSettingsPage() {
       {/* TAB 2: COMPENSATION & 40/20/20 SETTINGS */}
       {activeTab === 'compensation' && (
         <form onSubmit={handleSaveCompensation}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.4fr) minmax(0, 1fr)', gap: '1.5rem', alignItems: 'start' }}>
+          <div className="admin-settings-comp-layout" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.4fr) minmax(0, 1fr)', gap: '1.5rem', alignItems: 'start' }}>
             {/* Left Column: Form Controls */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               {/* 1. Business Points (BP) Valuation */}

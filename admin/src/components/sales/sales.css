@@ -20,6 +20,24 @@
   align-items: center;
   position: relative;
   overflow: hidden;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+@media (max-width: 640px) {
+  .pro-sales-banner {
+    padding: 1.25rem 1rem;
+    border-radius: 14px;
+  }
+
+  .pro-sales-title-group h2 {
+    font-size: 1.35rem !important;
+  }
+
+  .pro-sales-card {
+    padding: 1rem !important;
+    border-radius: 14px !important;
+  }
 }
 
 .pro-sales-banner::before {
@@ -138,3 +156,450 @@
 .analytics-bar-fill.emerald { background: linear-gradient(90deg, #10b981 0%, #059669 100%); }
 .analytics-bar-fill.purple { background: linear-gradient(90deg, #8b5cf6 0%, #7c3aed 100%); }
 .analytics-bar-fill.amber { background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%); }
+
+/* ==========================================================================
+   ORDER MANAGEMENT RESPONSIVE SUITE (Pending, Orders, Dump Requests)
+   ========================================================================== */
+
+/* Outer Page Container */
+.pro-orders-container {
+  padding: 1.5rem !important;
+  max-width: 1400px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* Page Header */
+.pro-orders-header {
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.pro-orders-header-title {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.pro-orders-header-actions {
+  display: flex;
+  gap: 0.65rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* KPI Summary Cards Grid */
+.pro-orders-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.pro-orders-kpi-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.15rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Filter and Search Bar */
+.pro-orders-filter-bar {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.pro-orders-search-wrap {
+  flex: 1;
+  min-width: 240px;
+}
+
+.pro-orders-search-wrap input {
+  width: 100%;
+  padding: 0.6rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.85rem;
+  color: #0f172a;
+  box-sizing: border-box;
+}
+
+.pro-orders-filter-controls {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.pro-orders-filter-controls select {
+  padding: 0.6rem 0.85rem;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.84rem;
+  color: #334155;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.pro-orders-tabs-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+  padding-bottom: 2px;
+}
+
+/* Tables and Responsive Wrappers */
+.pro-orders-table-wrapper {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  width: 100%;
+}
+
+.pro-orders-table-wrapper .table-responsive-inner,
+.pro-orders-table-wrapper.table-responsive,
+.pro-orders-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.pro-orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.pro-orders-table th {
+  padding: 0.85rem 1rem;
+  white-space: nowrap;
+}
+
+.pro-orders-table td {
+  padding: 0.85rem 1rem;
+  vertical-align: middle;
+}
+
+/* Modals */
+.pro-orders-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99990;
+  padding: 1rem;
+}
+
+.pro-orders-modal-dialog {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 920px;
+  max-height: 94vh;
+  overflow-y: auto;
+  padding: 1.75rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  box-sizing: border-box;
+}
+
+.pro-orders-modal-dialog-sm {
+  max-width: 620px;
+}
+
+/* Mobile & Tablet Media Queries */
+@media (max-width: 1024px) {
+  .pro-orders-container {
+    padding: 1.25rem 1rem !important;
+  }
+
+  .pro-orders-kpi-grid {
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .pro-orders-container {
+    padding: 0.85rem 0.65rem !important;
+  }
+
+  .pro-orders-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.85rem !important;
+    margin-bottom: 1.25rem !important;
+  }
+
+  .pro-orders-header-title {
+    font-size: 1.3rem !important;
+  }
+
+  .pro-orders-header-actions {
+    width: 100% !important;
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+
+  .pro-orders-header-actions button {
+    width: 100% !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  /* KPI Grid on Tablets */
+  .pro-orders-kpi-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+    margin-bottom: 1.25rem !important;
+  }
+
+  .pro-orders-kpi-card {
+    padding: 0.9rem !important;
+  }
+
+  /* Filters */
+  .pro-orders-filter-bar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    padding: 1rem 0.85rem !important;
+    gap: 0.75rem !important;
+    margin-bottom: 1.25rem !important;
+  }
+
+  .pro-orders-search-wrap {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .pro-orders-search-wrap input {
+    width: 100% !important;
+  }
+
+  .pro-orders-filter-controls {
+    width: 100% !important;
+    flex-direction: column !important;
+    gap: 0.65rem !important;
+  }
+
+  .pro-orders-filter-controls select,
+  .pro-orders-filter-controls button {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    text-align: left;
+  }
+
+  /* Tabs */
+  .pro-orders-tabs-scroll {
+    width: 100% !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    gap: 6px !important;
+    padding-bottom: 4px !important;
+  }
+
+  .pro-orders-tabs-scroll button {
+    flex-shrink: 0;
+  }
+
+  /* Tables */
+  .pro-orders-table-wrapper {
+    border-radius: 10px !important;
+  }
+
+  .pro-orders-table-wrapper .table-responsive-inner,
+  .pro-orders-table-wrapper.table-responsive,
+  .pro-orders-table-wrap {
+    width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .pro-orders-table {
+    min-width: 850px !important;
+  }
+
+  /* Modals */
+  .pro-orders-modal-backdrop {
+    padding: 0.5rem !important;
+  }
+
+  .pro-orders-modal-dialog {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 94vh !important;
+    padding: 1.15rem 1rem !important;
+    border-radius: 14px !important;
+  }
+
+  .pro-orders-modal-grid-2col,
+  .pro-orders-modal-grid-3col,
+  .pro-orders-modal-financials-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  .pro-orders-modal-actions {
+    flex-direction: column-reverse !important;
+    gap: 0.65rem !important;
+    width: 100% !important;
+  }
+
+  .pro-orders-modal-actions button {
+    width: 100% !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .pro-orders-container {
+    padding: 0.65rem 0.45rem !important;
+  }
+
+  .pro-orders-header-title {
+    font-size: 1.2rem !important;
+  }
+
+  /* KPI Grid on Phones -> 1 Column */
+  .pro-orders-kpi-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.65rem !important;
+  }
+
+  .pro-orders-kpi-card {
+    padding: 0.85rem !important;
+  }
+
+  .pro-orders-filter-bar {
+    padding: 0.85rem 0.75rem !important;
+  }
+
+  .pro-orders-modal-dialog {
+    padding: 1rem 0.75rem !important;
+  }
+
+  /* Pagination Bar */
+  .pro-orders-pagination-bar {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0.65rem !important;
+    text-align: center !important;
+  }
+
+  .pro-orders-pagination-bar > div {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+
+/* ==========================================================================
+   DIRECT INCOME & ENTITY PAYMENTS SUITE RESPONSIVE EXTENSIONS
+   ========================================================================== */
+.pro-income-reconciliation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.pro-income-filter-grid-row1 {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+}
+
+.pro-income-filter-grid-row2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
+  align-items: flex-end;
+}
+
+.pro-income-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.pro-income-audit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+@media (max-width: 1024px) {
+  .pro-income-filter-grid-row1 {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .pro-income-filter-grid-row1 > div:first-child {
+    grid-column: span 2 !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .pro-income-reconciliation-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.5rem !important;
+  }
+
+  .pro-income-filter-grid-row1 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .pro-income-filter-grid-row1 > div:first-child {
+    grid-column: span 1 !important;
+  }
+
+  .pro-income-filter-grid-row2 {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .pro-income-details-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+  .pro-income-audit-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .pro-income-table-row-grid {
+    min-width: 650px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .pro-income-reconciliation-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .pro-income-filter-grid-row2 {
+    grid-template-columns: 1fr !important;
+  }
+}

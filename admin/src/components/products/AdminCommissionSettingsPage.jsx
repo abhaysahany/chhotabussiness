@@ -385,6 +385,7 @@ function AdminCommissionSettingsPage() {
           {/* SECTION A: Commission Percentage Configuration Form */}
           <section
             aria-label="Commission Percentage Configuration Form"
+            className="pro-commission-section"
             style={{
               background: '#ffffff',
               border: '1px solid #e2e8f0',
@@ -436,7 +437,7 @@ function AdminCommissionSettingsPage() {
             )}
 
             <form onSubmit={handleSubmit} noValidate>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.25rem' }}>
+              <div className="pro-commission-grid-top" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.25rem' }}>
                 {/* Card 1: Direct Income */}
                 <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.15rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
@@ -504,7 +505,7 @@ function AdminCommissionSettingsPage() {
                     💎 Diamond Conversion Rate: ₹{conversionRateInr.toFixed(2).replace(/\.00$/, '')} = 1 Diamond
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '0.85rem' }}>
+                  <div className="pro-commission-grid-rewards" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '0.85rem' }}>
                     <div>
                       <label
                         htmlFor="reward_level_1_percent"
@@ -599,7 +600,7 @@ function AdminCommissionSettingsPage() {
                     No level columns were returned by the schema.
                   </div>
                 ) : (
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(185px, 1fr))', gap: '0.9rem' }}>
+                  <div className="pro-commission-grid-levels" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(185px, 1fr))', gap: '0.9rem' }}>
                     {levelsMeta.map((lvl) => (
                       <div key={lvl.key} style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '0.85rem' }}>
                         <label
@@ -650,6 +651,7 @@ function AdminCommissionSettingsPage() {
 
               {/* Live Total & Remaining Validation Bar */}
               <div
+                className="pro-commission-footer-bar"
                 style={{
                   marginTop: '1.25rem',
                   padding: '1rem 1.25rem',
@@ -684,7 +686,7 @@ function AdminCommissionSettingsPage() {
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                <div className="pro-commission-actions" style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
                   {exists && (
                     <button
                       type="button"
@@ -729,6 +731,7 @@ function AdminCommissionSettingsPage() {
           {/* SECTION B: Current Saved Global Commission Settings Table */}
           <section
             aria-label="Current Commission Settings Table"
+            className="pro-commission-section"
             style={{
               background: '#ffffff',
               border: '1px solid #e2e8f0',
@@ -761,7 +764,7 @@ function AdminCommissionSettingsPage() {
                 No saved global Commission Settings record exists yet. Enter valid percentages totaling 100% above and click Save.
               </div>
             ) : (
-              <div style={{ overflowX: 'auto' }}>
+              <div className="pro-commission-table-wrap table-responsive" style={{ overflowX: 'auto' }}>
                 <table
                   style={{
                     width: '100%',
