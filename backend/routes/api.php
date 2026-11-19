@@ -20,6 +20,7 @@ Route::get('/status', function () {
     $dbName = null;
     $connected = false;
     $dbStatus = "Database connection unavailable. Please check system logs.";
+    $dbError = null;
 
     try {
         $pdo = DB::connection()->getPdo();
@@ -27,6 +28,7 @@ Route::get('/status', function () {
         $dbStatus = "Connected to database [{$dbName}] successfully!";
         $connected = true;
     } catch (\Throwable $e) {
+        $dbError = $e->getMessage();
         \Illuminate\Support\Facades\Log::error("Database connection check failed: " . $e->getMessage());
     }
 
@@ -39,15 +41,23 @@ Route::get('/status', function () {
         }
     }
 
-    return response()->json([
+    $data = [
         'status' => $connected ? 'success' : 'degraded',
         'app_name' => $appName ?: 'Vyapar AdNET',
         'environment' => config('app.env'),
         'database_status' => $dbStatus,
         'database_connected' => $connected,
-        'database_name' => $dbName ?? 'N/A',
+        'database_name' => $dbName ?? config('database.connections.mysql.database'),
+        'database_host' => config('database.connections.mysql.host'),
+        'database_user' => config('database.connections.mysql.username'),
         'timestamp' => now()->toIso8601String(),
-    ], $connected ? 200 : 503);
+    ];
+
+    if (!$connected && $dbError) {
+        $data['db_error'] = $dbError;
+    }
+
+    return response()->json($data, $connected ? 200 : 503);
 });
 
 // Admin Panel API Endpoint
