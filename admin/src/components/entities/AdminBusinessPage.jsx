@@ -1,4 +1,37 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import {
+  Building2,
+  ShieldCheck,
+  CheckCircle2,
+  Clock,
+  Megaphone,
+  Plus,
+  Search,
+  Filter,
+  LayoutGrid,
+  Table as TableIcon,
+  Edit3,
+  Trash2,
+  Sparkles,
+  ArrowUpRight,
+  Check,
+  X,
+  AlertTriangle,
+  Briefcase,
+  Layers,
+  FileText,
+  Globe,
+  Mail,
+  Phone,
+  Eye,
+  EyeOff,
+  ExternalLink,
+  Lock,
+  RefreshCw,
+  FolderTree,
+  Paperclip,
+  User,
+} from 'lucide-react';
 import {
   getEntityCategories,
   getBusinessEntities,
@@ -16,10 +49,13 @@ import {
   getInputErrorStyle,
   extractBackendErrors,
 } from '../../utils/validation';
+import StatusBadge from '../common/StatusBadge';
 
 function AdminBusinessPage({ onNavigate }) {
-  // View mode: 'history' by default (Business Entities History/Table first)
+  // View mode: 'history' by default (Businesses Directory first)
   const [viewMode, setViewMode] = useState('history');
+  // Listing view: 'table' or 'grid'
+  const [listingMode, setListingMode] = useState('table');
 
   const [businesses, setBusinesses] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -30,7 +66,7 @@ function AdminBusinessPage({ onNavigate }) {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
 
-  // Search & Filter (for History Table)
+  // Search & Filters
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -230,7 +266,7 @@ function AdminBusinessPage({ onNavigate }) {
   };
 
   const handleDelete = async (id, name) => {
-    if (!window.confirm(`Delete registered business entity "${name}"?`)) return;
+    if (!window.confirm(`Delete registered business entity "${name}"? All associated portal access will be revoked.`)) return;
     try {
       await deleteBusinessEntity(id);
       showSuccess(`Business "${name}" deleted.`);
@@ -257,100 +293,133 @@ function AdminBusinessPage({ onNavigate }) {
     });
   };
 
-  const filteredBusinesses = businesses.filter((b) => {
-    const matchesCat = !selectedCategoryFilter || String(b.entity_category_id) === String(selectedCategoryFilter);
-    const matchesStatus = !statusFilter || b.verification_status === statusFilter;
-    const matchesSearch = !searchTerm ||
-      b.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      b.owner_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      b.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (b.registration_no && b.registration_no.toLowerCase().includes(searchTerm.toLowerCase()));
-    return matchesCat && matchesStatus && matchesSearch;
-  });
+  const filteredBusinesses = useMemo(() => {
+    return businesses.filter((b) => {
+      const matchesCat = !selectedCategoryFilter || String(b.entity_category_id) === String(selectedCategoryFilter);
+      const matchesStatus = !statusFilter || b.verification_status === statusFilter;
+      const matchesSearch = !searchTerm ||
+        b.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        b.owner_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        b.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (b.registration_no && b.registration_no.toLowerCase().includes(searchTerm.toLowerCase()));
+      return matchesCat && matchesStatus && matchesSearch;
+    });
+  }, [businesses, selectedCategoryFilter, statusFilter, searchTerm]);
+
+  // Derived KPI Counts
+  const verifiedCount = useMemo(() => {
+    return businesses.filter((b) => b.verification_status === 'verified').length;
+  }, [businesses]);
+
+  const pendingCount = useMemo(() => {
+    return businesses.filter((b) => b.verification_status === 'pending').length;
+  }, [businesses]);
+
+  const featuredCount = useMemo(() => {
+    return businesses.filter((b) => b.featured).length;
+  }, [businesses]);
 
   return (
-    <div className="page-content-wrapper pro-entity-page-container">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.4rem', width: '100%', boxSizing: 'border-box' }}>
       {/* Success Notification Alert */}
       {successMessage && (
-        <div className="alert-success" style={{ backgroundColor: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0', padding: '0.875rem 1.25rem', borderRadius: '12px', marginBottom: '1.5rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"/></svg>
+        <div style={{ backgroundColor: '#ecfdf5', color: '#047857', border: '1.5px solid #a7f3d0', padding: '0.9rem 1.35rem', borderRadius: '14px', fontWeight: 700, fontSize: '0.86rem', display: 'flex', alignItems: 'center', gap: '0.65rem', boxShadow: '0 4px 14px rgba(5, 150, 105, 0.08)' }}>
+          <CheckCircle2 size={18} color="#059669" />
           <span>{successMessage}</span>
         </div>
       )}
 
+      {/* Error Notification Alert */}
       {error && (
-        <div className="alert-error" style={{ backgroundColor: '#fef2f2', color: '#b91c1c', border: '1px solid #fecaca', padding: '0.875rem 1.25rem', borderRadius: '12px', marginBottom: '1.5rem' }}>
+        <div style={{ backgroundColor: '#fef2f2', color: '#b91c1c', border: '1.5px solid #fecaca', padding: '0.9rem 1.35rem', borderRadius: '14px', fontWeight: 700, fontSize: '0.86rem', display: 'flex', alignItems: 'center', gap: '0.65rem', boxShadow: '0 4px 14px rgba(220, 38, 38, 0.08)' }}>
+          <AlertTriangle size={18} color="#dc2626" />
           <span>{error}</span>
         </div>
       )}
 
       {/* =========================================================================
-          VIEW 1: REGISTRATION FORM (DEFAULT VIEW)
+          VIEW 1: REGISTRATION / EDIT FORM VIEW
           ========================================================================= */}
       {viewMode === 'form' && (
-        <div>
-          {/* Pro Hero Banner with View History Action */}
-          <div className="pro-entity-hero" style={{ background: 'linear-gradient(135deg, #0369a1 0%, #0284c7 50%, #0f172a 100%)', marginBottom: '2rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem', position: 'relative', zIndex: 1 }}>
-              <div>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.12)', padding: '0.25rem 0.75rem', borderRadius: '20px', fontSize: '0.78rem', fontWeight: '700', color: '#bae6fd', marginBottom: '0.75rem', backdropFilter: 'blur(4px)' }}>
-                  <span>Business Registration</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.4rem' }}>
+          {/* Executive 3D Form Hero Banner */}
+          <div className="adm-hero-banner">
+            <div className="adm-hero-top-row">
+              <div className="adm-hero-pod-3d">
+                <Building2 size={32} strokeWidth={2.3} />
+              </div>
+
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#3569a7', background: 'rgba(53, 105, 167, 0.08)', padding: '3px 10px', borderRadius: '9999px', border: '1px solid rgba(53, 105, 167, 0.2)' }}>
+                    ● CORPORATE REGISTRY ONBOARDING
+                  </span>
+                  <span style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#0d9488', background: 'rgba(13, 148, 136, 0.08)', padding: '3px 10px', borderRadius: '9999px', border: '1px solid rgba(13, 148, 136, 0.2)' }}>
+                    ● {editingBusiness ? 'Profile Update' : 'New Enrollment'}
+                  </span>
                 </div>
-                <h1 className="pro-hero-title">
+
+                <h1 style={{ margin: 0, fontSize: '1.65rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.025em' }}>
                   {editingBusiness ? `Edit Business: ${editingBusiness.name}` : 'Register Business Entity'}
                 </h1>
-                <p className="pro-hero-subtitle">
+                <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#64748b', maxWidth: '680px', lineHeight: 1.5 }}>
                   {editingBusiness
-                    ? 'Update company profile, credentials, and verification documents.'
-                    : 'Enter company details, assign category, and create portal credentials to register a new business entity.'}
+                    ? 'Update corporate profile, portal credentials, and compliance verification documents.'
+                    : 'Enroll a new merchant company, assign 1:1 taxonomy domain, and provision secure Entity Panel portal access.'}
                 </p>
               </div>
 
-              {/* Back to History Button */}
-              <button
-                type="button"
-                className="pro-btn-secondary"
-                onClick={() => setViewMode('history')}
-                style={{
-                  background: '#ffffff',
-                  color: '#0369a1',
-                  border: '1.5px solid #0284c7',
-                  borderRadius: '10px',
-                  padding: '0.75rem 1.5rem',
-                  fontSize: '0.95rem',
-                  fontWeight: '700',
-                  boxShadow: '0 4px 14px rgba(2, 132, 199, 0.25)',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  cursor: 'pointer',
-                }}
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                  <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>Back to History</span>
-              </button>
+              <div style={{ flexShrink: 0 }}>
+                <button
+                  type="button"
+                  onClick={() => setViewMode('history')}
+                  style={{
+                    background: '#ffffff',
+                    color: '#3569a7',
+                    border: '1.5px solid #cbd5e1',
+                    borderRadius: '12px',
+                    padding: '0.75rem 1.35rem',
+                    fontSize: '0.86rem',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
+                    transition: 'all 0.15s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = '#3569a7';
+                    e.currentTarget.style.background = '#f0f6ff';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = '#cbd5e1';
+                    e.currentTarget.style.background = '#ffffff';
+                  }}
+                >
+                  <ArrowUpRight size={16} style={{ transform: 'rotate(-135deg)' }} />
+                  <span>Back to Business Directory</span>
+                </button>
+              </div>
             </div>
           </div>
 
-          {/* Business Registration Form Card */}
-          <div className="pro-table-wrapper" style={{ maxWidth: '850px', margin: '0 auto', padding: '2rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
+          {/* Form Container Card */}
+          <div className="adm-chart-card" style={{ maxWidth: '900px', margin: '0 auto', width: '100%', padding: '2rem 2.25rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '1.15rem', marginBottom: '1.5rem' }}>
               <div>
-                <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-                  {editingBusiness ? 'Edit Business Entity Details' : 'New Business Entity Registration'}
-                </h2>
-                <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.825rem', color: '#64748b' }}>
-                  Fill in the required fields marked with * to register the entity.
+                <h3 style={{ fontSize: '1.18rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                  {editingBusiness ? 'Modify Business Entity Credentials' : 'Corporate Entity Enrollment'}
+                </h3>
+                <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.8rem', color: '#64748b' }}>
+                  Fields with asterisk (*) are required for registry database persistence.
                 </p>
               </div>
               {editingBusiness && (
                 <button
                   type="button"
-                  className="pro-btn-secondary"
                   onClick={() => handleOpenForm(null)}
-                  style={{ padding: '0.4rem 0.85rem', fontSize: '0.8rem' }}
+                  style={{ background: '#f8fafc', border: '1.5px solid #cbd5e1', borderRadius: '8px', padding: '0.4rem 0.85rem', fontSize: '0.78rem', fontWeight: 700, color: '#334155', cursor: 'pointer' }}
                 >
                   Cancel Edit / New Form
                 </button>
@@ -359,18 +428,18 @@ function AdminBusinessPage({ onNavigate }) {
 
             <form onSubmit={handleSave}>
               {formErrorBanner && (
-                <div style={{ backgroundColor: '#fef2f2', color: '#991b1b', border: '1px solid #fecaca', padding: '0.85rem 1rem', borderRadius: '10px', marginBottom: '1.25rem', fontSize: '0.875rem', fontWeight: 600 }}>
-                  ⚠️ {formErrorBanner}
+                <div style={{ backgroundColor: '#fef2f2', color: '#991b1b', border: '1.5px solid #fecaca', padding: '0.85rem 1.15rem', borderRadius: '12px', marginBottom: '1.4rem', fontSize: '0.84rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <AlertTriangle size={17} color="#dc2626" />
+                  <span>{formErrorBanner}</span>
                 </div>
               )}
 
-              {/* Category Assignment */}
-              <div style={{ marginBottom: '1rem', background: '#f8fafc', padding: '1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
-                <label className="form-label">
-                  Assign Business Category (One Business &rarr; One Category) *
+              {/* Category Assignment Section */}
+              <div style={{ marginBottom: '1.25rem', background: '#f8fafc', padding: '1.15rem', borderRadius: '14px', border: '1.5px solid #e2e8f0' }}>
+                <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: 800, textTransform: 'uppercase', color: '#475569', letterSpacing: '0.04em', marginBottom: '0.4rem' }}>
+                  Assign Business Category (1:1 Taxonomy Domain) *
                 </label>
                 <select
-                  className="form-input"
                   required
                   value={form.entity_category_id}
                   onChange={(e) => {
@@ -378,9 +447,20 @@ function AdminBusinessPage({ onNavigate }) {
                     setFormErrors((prev) => ({ ...prev, entity_category_id: undefined }));
                     setFormErrorBanner('');
                   }}
-                  style={getInputErrorStyle(formErrors.entity_category_id)}
+                  style={{
+                    width: '100%',
+                    padding: '0.65rem 0.95rem',
+                    borderRadius: '10px',
+                    border: '1.5px solid #cbd5e1',
+                    fontSize: '0.86rem',
+                    fontWeight: 700,
+                    color: '#0f172a',
+                    background: '#ffffff',
+                    outline: 'none',
+                    ...getInputErrorStyle(formErrors.entity_category_id),
+                  }}
                 >
-                  <option value="">-- Select Category --</option>
+                  <option value="">-- Select Category Domain --</option>
                   {categories.map((cat) => (
                     <option key={cat.id} value={cat.id}>
                       {cat.name}
@@ -390,31 +470,42 @@ function AdminBusinessPage({ onNavigate }) {
                 <FieldError error={formErrors.entity_category_id} />
               </div>
 
-              {/* Basic Details */}
-              <div className="pro-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem', marginBottom: '0.85rem' }}>
+              {/* Company & Owner Details */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
                 <div>
-                  <label className="form-label">Business Name *</label>
+                  <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: 800, textTransform: 'uppercase', color: '#475569', letterSpacing: '0.04em', marginBottom: '0.35rem' }}>
+                    Business Entity Name *
+                  </label>
                   <input
                     type="text"
-                    className="form-input"
                     required
-                    placeholder="e.g. Apex Financial Advisory Pvt Ltd"
+                    placeholder="e.g. Apex Financial Solutions Pvt Ltd"
                     value={form.name}
                     onChange={(e) => {
                       setForm({ ...form, name: e.target.value });
                       setFormErrors((prev) => ({ ...prev, name: undefined }));
                       setFormErrorBanner('');
                     }}
-                    style={getInputErrorStyle(formErrors.name)}
+                    style={{
+                      width: '100%',
+                      padding: '0.65rem 0.95rem',
+                      borderRadius: '10px',
+                      border: '1.5px solid #cbd5e1',
+                      fontSize: '0.86rem',
+                      fontWeight: 600,
+                      outline: 'none',
+                      ...getInputErrorStyle(formErrors.name),
+                    }}
                   />
                   <FieldError error={formErrors.name} />
                 </div>
 
                 <div>
-                  <label className="form-label">Owner / Director Name *</label>
+                  <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: 800, textTransform: 'uppercase', color: '#475569', letterSpacing: '0.04em', marginBottom: '0.35rem' }}>
+                    Owner / Director Name *
+                  </label>
                   <input
                     type="text"
-                    className="form-input"
                     required
                     placeholder="e.g. Rajesh Sharma"
                     value={form.owner_name}
@@ -423,18 +514,29 @@ function AdminBusinessPage({ onNavigate }) {
                       setFormErrors((prev) => ({ ...prev, owner_name: undefined }));
                       setFormErrorBanner('');
                     }}
-                    style={getInputErrorStyle(formErrors.owner_name)}
+                    style={{
+                      width: '100%',
+                      padding: '0.65rem 0.95rem',
+                      borderRadius: '10px',
+                      border: '1.5px solid #cbd5e1',
+                      fontSize: '0.86rem',
+                      fontWeight: 600,
+                      outline: 'none',
+                      ...getInputErrorStyle(formErrors.owner_name),
+                    }}
                   />
                   <FieldError error={formErrors.owner_name} />
                 </div>
               </div>
 
-              <div className="pro-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem', marginBottom: '0.85rem' }}>
+              {/* Email & Phone */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
                 <div>
-                  <label className="form-label">Email Address *</label>
+                  <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: 800, textTransform: 'uppercase', color: '#475569', letterSpacing: '0.04em', marginBottom: '0.35rem' }}>
+                    Corporate Email Address *
+                  </label>
                   <input
                     type="email"
-                    className="form-input"
                     required
                     placeholder="contact@apexfinance.in"
                     value={form.email}
@@ -443,16 +545,26 @@ function AdminBusinessPage({ onNavigate }) {
                       setFormErrors((prev) => ({ ...prev, email: undefined }));
                       setFormErrorBanner('');
                     }}
-                    style={getInputErrorStyle(formErrors.email)}
+                    style={{
+                      width: '100%',
+                      padding: '0.65rem 0.95rem',
+                      borderRadius: '10px',
+                      border: '1.5px solid #cbd5e1',
+                      fontSize: '0.86rem',
+                      fontWeight: 600,
+                      outline: 'none',
+                      ...getInputErrorStyle(formErrors.email),
+                    }}
                   />
                   <FieldError error={formErrors.email} />
                 </div>
 
                 <div>
-                  <label className="form-label">Phone Number *</label>
+                  <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: 800, textTransform: 'uppercase', color: '#475569', letterSpacing: '0.04em', marginBottom: '0.35rem' }}>
+                    Contact Phone Number *
+                  </label>
                   <input
                     type="text"
-                    className="form-input"
                     required
                     placeholder="+91 98765 43210"
                     value={form.phone}
@@ -461,157 +573,187 @@ function AdminBusinessPage({ onNavigate }) {
                       setFormErrors((prev) => ({ ...prev, phone: undefined }));
                       setFormErrorBanner('');
                     }}
-                    style={getInputErrorStyle(formErrors.phone)}
+                    style={{
+                      width: '100%',
+                      padding: '0.65rem 0.95rem',
+                      borderRadius: '10px',
+                      border: '1.5px solid #cbd5e1',
+                      fontSize: '0.86rem',
+                      fontWeight: 600,
+                      outline: 'none',
+                      ...getInputErrorStyle(formErrors.phone),
+                    }}
                   />
                   <FieldError error={formErrors.phone} />
                 </div>
               </div>
 
-              {/* Entity Portal Login Password Field */}
-              <div style={{ marginBottom: '0.85rem', background: '#f0f9ff', padding: '0.75rem 0.85rem', borderRadius: '8px', border: '1px solid #bae6fd' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                  <label className="form-label" style={{ marginBottom: 0, color: '#0369a1', fontWeight: '700' }}>
-                    Entity Portal Login Password {editingBusiness ? '(Leave blank to keep unchanged)' : '*'}
+              {/* Entity Portal Login Credentials */}
+              <div style={{ marginBottom: '1.15rem', background: '#f0f9ff', padding: '1rem 1.15rem', borderRadius: '12px', border: '1.5px solid #bae6fd' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: 800, textTransform: 'uppercase', color: '#0369a1', letterSpacing: '0.04em' }}>
+                    Entity Portal Login Password {editingBusiness ? '(Leave blank to retain current)' : '*'}
                   </label>
                   <button
                     type="button"
                     onClick={() => setForm({ ...form, password: generateRandomPassword() })}
-                    style={{ background: '#e0f2fe', color: '#0284c7', border: '1px solid #7dd3fc', borderRadius: '4px', padding: '0.2rem 0.5rem', fontSize: '0.72rem', cursor: 'pointer', fontWeight: '600' }}
+                    style={{ background: '#e0f2fe', color: '#0284c7', border: '1px solid #7dd3fc', borderRadius: '6px', padding: '0.25rem 0.65rem', fontSize: '0.72rem', cursor: 'pointer', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
                   >
-                    Auto Generate
+                    <RefreshCw size={12} /> Auto Generate
                   </button>
                 </div>
                 <div style={{ position: 'relative' }}>
                   <input
                     type={showPassword ? 'text' : 'password'}
-                    className="form-input"
                     required={!editingBusiness && !form.password}
-                    placeholder={editingBusiness ? 'Enter new password to update...' : 'Set password for Entity Panel login (min 6 chars)'}
+                    placeholder={editingBusiness ? 'Enter new password to update...' : 'Secure password for business portal login'}
                     value={form.password}
                     onChange={(e) => {
                       setForm({ ...form, password: e.target.value });
                       setFormErrors((prev) => ({ ...prev, password: undefined }));
                       setFormErrorBanner('');
                     }}
-                    style={{ paddingRight: '4.5rem', background: '#ffffff', ...getInputErrorStyle(formErrors.password) }}
+                    style={{
+                      width: '100%',
+                      padding: '0.65rem 4.5rem 0.65rem 0.95rem',
+                      borderRadius: '10px',
+                      border: '1.5px solid #cbd5e1',
+                      fontSize: '0.86rem',
+                      fontWeight: 600,
+                      background: '#ffffff',
+                      outline: 'none',
+                      ...getInputErrorStyle(formErrors.password),
+                    }}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#64748b', fontSize: '0.75rem', cursor: 'pointer', fontWeight: '600' }}
+                    style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#64748b', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.25rem' }}
                   >
-                    {showPassword ? 'Hide' : 'Show'}
+                    {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                    <span>{showPassword ? 'Hide' : 'Show'}</span>
                   </button>
                 </div>
                 <FieldError error={formErrors.password} />
-                <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.72rem', color: '#0284c7' }}>
-                  This password allows the business owner to log in to the <strong>Entity Panel</strong> using their registered email.
+                <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.72rem', color: '#0369a1', fontWeight: 600 }}>
+                  This credential allows the merchant entity to authenticate to the <strong>Entity Portal</strong> using their email.
                 </p>
               </div>
 
-              <div className="pro-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem', marginBottom: '0.85rem' }}>
+              {/* GST No. & Website */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
                 <div>
-                  <label className="form-label">GST / Registration No. <span style={{ color: '#64748b', fontWeight: 'normal', fontSize: '0.75rem' }}>(Optional)</span></label>
+                  <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: 800, textTransform: 'uppercase', color: '#475569', letterSpacing: '0.04em', marginBottom: '0.35rem' }}>
+                    GST / ROC Registration No. <span style={{ color: '#94a3b8', fontWeight: 600 }}>(Optional)</span>
+                  </label>
                   <input
                     type="text"
-                    className="form-input"
-                    placeholder="GSTIN07AAACA1234F1Z5 (Optional)"
+                    placeholder="e.g. GSTIN07AAACA1234F1Z5"
                     value={form.registration_no}
                     onChange={(e) => setForm({ ...form, registration_no: e.target.value })}
+                    style={{ width: '100%', padding: '0.65rem 0.95rem', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.86rem', fontWeight: 600, outline: 'none' }}
                   />
                 </div>
 
                 <div>
-                  <label className="form-label">Website URL <span style={{ color: '#64748b', fontWeight: 'normal', fontSize: '0.75rem' }}>(Optional)</span></label>
+                  <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: 800, textTransform: 'uppercase', color: '#475569', letterSpacing: '0.04em', marginBottom: '0.35rem' }}>
+                    Official Website URL <span style={{ color: '#94a3b8', fontWeight: 600 }}>(Optional)</span>
+                  </label>
                   <input
                     type="text"
-                    className="form-input"
-                    placeholder="https://apexfinance.com (Optional)"
+                    placeholder="https://apexfinance.in"
                     value={form.website}
                     onChange={(e) => {
                       setForm({ ...form, website: e.target.value });
                       setFormErrors((prev) => ({ ...prev, website: undefined }));
                       setFormErrorBanner('');
                     }}
-                    style={getInputErrorStyle(formErrors.website)}
+                    style={{ width: '100%', padding: '0.65rem 0.95rem', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.86rem', fontWeight: 600, outline: 'none', ...getInputErrorStyle(formErrors.website) }}
                   />
                   <FieldError error={formErrors.website} />
                 </div>
               </div>
 
+              {/* Description */}
               <div style={{ marginBottom: '1rem' }}>
-                <label className="form-label">Business Overview</label>
+                <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: 800, textTransform: 'uppercase', color: '#475569', letterSpacing: '0.04em', marginBottom: '0.35rem' }}>
+                  Business Specialization &amp; Overview
+                </label>
                 <textarea
-                  className="form-input"
                   rows="2"
-                  placeholder="Describe company products, services, and specializations..."
+                  placeholder="Summary of services, client verticals, and corporate solutions..."
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
-                ></textarea>
+                  style={{ width: '100%', padding: '0.65rem 0.95rem', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.84rem', lineHeight: 1.5, outline: 'none' }}
+                />
               </div>
 
               {/* Status and Advertisement Toggle */}
-              <div className="pro-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem', marginBottom: '1rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', marginBottom: '1.25rem', alignItems: 'center' }}>
                 <div>
-                  <label className="form-label">Verification Status</label>
+                  <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: 800, textTransform: 'uppercase', color: '#475569', letterSpacing: '0.04em', marginBottom: '0.35rem' }}>
+                    Verification Status
+                  </label>
                   <select
-                    className="form-input"
                     value={form.verification_status}
                     onChange={(e) => setForm({ ...form, verification_status: e.target.value })}
+                    style={{ width: '100%', padding: '0.65rem 0.95rem', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.86rem', fontWeight: 700, color: '#0f172a', background: '#ffffff', outline: 'none' }}
                   >
-                    <option value="verified">Verified</option>
-                    <option value="pending">Pending</option>
-                    <option value="rejected">Rejected</option>
+                    <option value="verified">Verified (Compliant &amp; Active)</option>
+                    <option value="pending">Pending Document Audit</option>
+                    <option value="rejected">Rejected / Inactive</option>
                   </select>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', marginTop: '1.25rem' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', fontWeight: '700', color: '#0f172a', fontSize: '0.8125rem' }}>
+                <div style={{ paddingTop: '1.2rem' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', cursor: 'pointer', fontWeight: 700, color: '#0f172a', fontSize: '0.84rem' }}>
                     <input
                       type="checkbox"
                       checked={form.featured}
                       onChange={(e) => setForm({ ...form, featured: e.target.checked })}
+                      style={{ width: '17px', height: '17px', cursor: 'pointer' }}
                     />
-                    <span>Show in User Advertisements (Featured)</span>
+                    <span>Publish in User Advertisements (Featured Portal Ad)</span>
                   </label>
                 </div>
               </div>
 
-              {/* Document Attachments Manager (Optional) */}
-              <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+              {/* Document Attachments Manager */}
+              <div style={{ background: '#f8fafc', padding: '1.15rem', borderRadius: '14px', border: '1.5px solid #e2e8f0', marginBottom: '1.5rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                   <div>
-                    <h4 style={{ fontWeight: '800', color: '#0f172a', fontSize: '0.875rem', margin: 0 }}>Business Verification Documents</h4>
-                    <span style={{ fontSize: '0.72rem', color: '#64748b' }}>GST Certificate & Incorporation Proof are completely optional</span>
+                    <h4 style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.88rem', margin: 0 }}>
+                      Compliance Verification Documents
+                    </h4>
+                    <span style={{ fontSize: '0.73rem', color: '#64748b' }}>
+                      GST certificate, incorporation proof, or PAN cards (optional)
+                    </span>
                   </div>
-                  <div style={{ display: 'flex', gap: '0.4rem' }}>
+                  <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap' }}>
                     <button
                       type="button"
-                      className="pro-btn-secondary"
                       onClick={() => setForm({
                         ...form,
                         documents: [...form.documents, { title: 'GST Registration Certificate', file_name: 'gst_certificate.pdf', url: 'https://via.placeholder.com/400x300?text=GST+Certificate', status: 'verified' }]
                       })}
-                      style={{ padding: '0.25rem 0.55rem', fontSize: '0.72rem' }}
+                      style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '6px', padding: '0.3rem 0.65rem', fontSize: '0.73rem', fontWeight: 700, color: '#3569a7', cursor: 'pointer' }}
                     >
                       + GST Certificate
                     </button>
                     <button
                       type="button"
-                      className="pro-btn-secondary"
                       onClick={() => setForm({
                         ...form,
                         documents: [...form.documents, { title: 'Incorporation Document Proof', file_name: 'incorporation_doc.pdf', url: 'https://via.placeholder.com/400x300?text=Incorporation+Doc', status: 'verified' }]
                       })}
-                      style={{ padding: '0.25rem 0.55rem', fontSize: '0.72rem' }}
+                      style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '6px', padding: '0.3rem 0.65rem', fontSize: '0.73rem', fontWeight: 700, color: '#0d9488', cursor: 'pointer' }}
                     >
                       + Incorporation Doc
                     </button>
                     <button
                       type="button"
-                      className="pro-btn-secondary"
                       onClick={handleAddDoc}
-                      style={{ padding: '0.25rem 0.55rem', fontSize: '0.72rem' }}
+                      style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '6px', padding: '0.3rem 0.65rem', fontSize: '0.73rem', fontWeight: 700, color: '#4f46e5', cursor: 'pointer' }}
                     >
                       + Custom Doc
                     </button>
@@ -619,16 +761,15 @@ function AdminBusinessPage({ onNavigate }) {
                 </div>
 
                 {form.documents.length === 0 ? (
-                  <div style={{ textAlign: 'center', padding: '1rem', color: '#94a3b8', fontSize: '0.8rem', background: '#ffffff', borderRadius: '6px', border: '1px dashed #cbd5e1' }}>
-                    <span>No documents attached. Documents are optional. Click buttons above to add if needed.</span>
+                  <div style={{ textAlign: 'center', padding: '1.25rem', color: '#94a3b8', fontSize: '0.8rem', background: '#ffffff', borderRadius: '8px', border: '1.5px dashed #cbd5e1' }}>
+                    <span>No verification documents attached yet. Click the buttons above to link documents.</span>
                   </div>
                 ) : (
                   form.documents.map((doc, idx) => (
-                    <div key={idx} className="pro-doc-row" style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', marginBottom: '0.4rem', background: '#fff', padding: '0.5rem', borderRadius: '6px', border: '1px solid #cbd5e1' }}>
+                    <div key={idx} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.5rem', background: '#ffffff', padding: '0.55rem 0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1', flexWrap: 'wrap' }}>
                       <input
                         type="text"
-                        className="form-input"
-                        style={{ flex: 2, fontSize: '0.8rem' }}
+                        style={{ flex: '2 1 180px', padding: '0.45rem 0.65rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.8rem' }}
                         placeholder="Document Title (e.g. GST Certificate)"
                         value={doc.title}
                         onChange={(e) => {
@@ -639,8 +780,7 @@ function AdminBusinessPage({ onNavigate }) {
                       />
                       <input
                         type="text"
-                        className="form-input"
-                        style={{ flex: 2, fontSize: '0.8rem' }}
+                        style={{ flex: '2 1 160px', padding: '0.45rem 0.65rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.8rem' }}
                         placeholder="File Name"
                         value={doc.file_name}
                         onChange={(e) => {
@@ -650,8 +790,7 @@ function AdminBusinessPage({ onNavigate }) {
                         }}
                       />
                       <select
-                        className="form-input"
-                        style={{ flex: 1, fontSize: '0.8rem' }}
+                        style={{ flex: '1 1 120px', padding: '0.45rem 0.65rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.8rem', fontWeight: 700 }}
                         value={doc.status}
                         onChange={(e) => {
                           const updated = [...form.documents];
@@ -662,8 +801,13 @@ function AdminBusinessPage({ onNavigate }) {
                         <option value="verified">Verified</option>
                         <option value="pending">Pending</option>
                       </select>
-                      <button type="button" onClick={() => handleRemoveDoc(idx)} title="Remove document" style={{ background: '#fee2e2', color: '#b91c1c', border: 'none', width: '26px', height: '26px', borderRadius: '6px', cursor: 'pointer', fontWeight: '700' }}>
-                        &times;
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveDoc(idx)}
+                        title="Remove document"
+                        style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', width: '30px', height: '30px', borderRadius: '6px', cursor: 'pointer', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      >
+                        <X size={14} />
                       </button>
                     </div>
                   ))
@@ -671,20 +815,20 @@ function AdminBusinessPage({ onNavigate }) {
               </div>
 
               {/* Form Action Buttons */}
-              <div className="pro-form-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid #f1f5f9' }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.85rem', paddingTop: '1.25rem', borderTop: '1px solid #f1f5f9' }}>
                 <button
                   type="button"
-                  className="pro-btn-secondary"
                   onClick={() => setViewMode('history')}
                   disabled={saving}
+                  style={{ background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: '10px', padding: '0.65rem 1.35rem', fontWeight: 800, fontSize: '0.84rem', color: '#64748b', cursor: 'pointer' }}
                 >
-                  Back to History
+                  Cancel &amp; Return
                 </button>
                 <button
                   type="submit"
-                  className="pro-btn-primary"
                   disabled={saving}
-                  style={{ background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)', opacity: saving ? 0.7 : 1 }}
+                  className="adm-hero-btn-primary"
+                  style={{ padding: '0.65rem 1.65rem', fontSize: '0.84rem' }}
                 >
                   {saving ? 'Saving...' : editingBusiness ? 'Update Business Entity' : 'Complete Business Registration'}
                 </button>
@@ -695,281 +839,922 @@ function AdminBusinessPage({ onNavigate }) {
       )}
 
       {/* =========================================================================
-          VIEW 2: HISTORY TABLE (SHOWN ON CLICKING 'VIEW HISTORY')
+          VIEW 2: HISTORY DIRECTORY (MAIN VIEW)
           ========================================================================= */}
       {viewMode === 'history' && (
-        <div>
-          {/* Pro Hero Banner with Back to Form Action */}
-          <div className="pro-entity-hero" style={{ background: 'linear-gradient(135deg, #0369a1 0%, #0284c7 50%, #0f172a 100%)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem', position: 'relative', zIndex: 1 }}>
-              <div>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.12)', padding: '0.25rem 0.75rem', borderRadius: '20px', fontSize: '0.78rem', fontWeight: '700', color: '#bae6fd', marginBottom: '0.75rem', backdropFilter: 'blur(4px)' }}>
-                  <span>Registered Entities</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.4rem' }}>
+          {/* 1. Executive 3D Luxury Hero Banner */}
+          <div className="adm-hero-banner">
+            <div className="adm-hero-top-row">
+              <div className="adm-hero-pod-3d">
+                <Building2 size={32} strokeWidth={2.3} />
+              </div>
+
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#3569a7', background: 'rgba(53, 105, 167, 0.08)', padding: '3px 10px', borderRadius: '9999px', border: '1px solid rgba(53, 105, 167, 0.2)' }}>
+                    ● MASTER CORPORATE SUITE
+                  </span>
+                  <span style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#0d9488', background: 'rgba(13, 148, 136, 0.08)', padding: '3px 10px', borderRadius: '9999px', border: '1px solid rgba(13, 148, 136, 0.2)' }}>
+                    ● {businesses.length} Businesses Registered
+                  </span>
                 </div>
-                <h1 className="pro-hero-title">Registered Business Entities</h1>
-                <p className="pro-hero-subtitle">
-                  Manage enterprise registrations, verify GST/ROC certificates, and publish advertisements.
+
+                <h1 style={{ margin: 0, fontSize: '1.65rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.025em' }}>
+                  Registered Business Entities
+                </h1>
+                <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#64748b', maxWidth: '680px', lineHeight: 1.5 }}>
+                  Manage enterprise registrations, verify GST/ROC certificates, and publish advertisements across the platform.
                 </p>
               </div>
 
-              {/* Register New Business Button */}
+              <div style={{ flexShrink: 0 }}>
+                <button
+                  type="button"
+                  className="adm-hero-btn-primary"
+                  onClick={() => handleOpenForm(null)}
+                  style={{ padding: '0.75rem 1.5rem', fontSize: '0.88rem' }}
+                >
+                  <Plus size={18} strokeWidth={2.4} />
+                  <span>Register New Business</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* 2. 4 Executive 3D KPI Vault Cards (Single Horizontal Row: 4 Cards) */}
+          <div className="adm-kpi-grid-4">
+            {/* Card 1: Registered Base */}
+            <div className="adm-kpi-card adm-kpi-card-steel">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <span
+                    style={{
+                      fontSize: '0.66rem',
+                      fontWeight: 800,
+                      color: '#3569a7',
+                      background: 'rgba(53, 105, 167, 0.1)',
+                      padding: '2.5px 8px',
+                      borderRadius: '5px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.04em',
+                      display: 'inline-block',
+                      marginBottom: '0.35rem',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    ● REGISTRY BASE
+                  </span>
+                  <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    REGISTERED
+                  </div>
+                </div>
+                <div className="adm-3d-pod adm-pod-steel" style={{ width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0 }}>
+                  <Building2 size={19} strokeWidth={2.4} />
+                </div>
+              </div>
+              <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
+                <div className="adm-kpi-val" style={{ fontSize: '1.6rem' }}>
+                  {businesses.length}
+                </div>
+              </div>
+              <div className="adm-kpi-footer">
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.73rem', color: '#64748b' }}>
+                  <Layers size={13} color="#3569a7" />
+                  <span>Total business records</span>
+                </span>
+                <span style={{ color: '#3569a7', fontWeight: 800, fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+                  ● Corporate
+                </span>
+              </div>
+            </div>
+
+            {/* Card 2: Verified Compliance */}
+            <div className="adm-kpi-card adm-kpi-card-emerald">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <span
+                    style={{
+                      fontSize: '0.66rem',
+                      fontWeight: 800,
+                      color: '#0d9488',
+                      background: 'rgba(13, 148, 136, 0.1)',
+                      padding: '2.5px 8px',
+                      borderRadius: '5px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.04em',
+                      display: 'inline-block',
+                      marginBottom: '0.35rem',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    ● COMPLIANCE
+                  </span>
+                  <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    VERIFIED
+                  </div>
+                </div>
+                <div className="adm-3d-pod adm-pod-emerald" style={{ width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0 }}>
+                  <ShieldCheck size={19} strokeWidth={2.4} />
+                </div>
+              </div>
+              <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
+                <div className="adm-kpi-val" style={{ fontSize: '1.6rem', color: '#0d9488' }}>
+                  {verifiedCount}
+                </div>
+              </div>
+              <div className="adm-kpi-footer">
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.73rem', color: '#64748b' }}>
+                  <CheckCircle2 size={13} color="#0d9488" />
+                  <span>Active &amp; compliant</span>
+                </span>
+                <span style={{ color: '#0d9488', fontWeight: 800, fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+                  ● Verified
+                </span>
+              </div>
+            </div>
+
+            {/* Card 3: Pending Document Audit */}
+            <div className="adm-kpi-card adm-kpi-card-amber">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <span
+                    style={{
+                      fontSize: '0.66rem',
+                      fontWeight: 800,
+                      color: '#d97706',
+                      background: 'rgba(217, 119, 6, 0.1)',
+                      padding: '2.5px 8px',
+                      borderRadius: '5px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.04em',
+                      display: 'inline-block',
+                      marginBottom: '0.35rem',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    ● AUDIT QUEUE
+                  </span>
+                  <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    PENDING
+                  </div>
+                </div>
+                <div className="adm-3d-pod adm-pod-amber" style={{ width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0 }}>
+                  <Clock size={19} strokeWidth={2.4} />
+                </div>
+              </div>
+              <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
+                <div className="adm-kpi-val" style={{ fontSize: '1.6rem', color: '#d97706' }}>
+                  {pendingCount}
+                </div>
+              </div>
+              <div className="adm-kpi-footer">
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.73rem', color: '#64748b' }}>
+                  <Clock size={13} color="#d97706" />
+                  <span>Document review needed</span>
+                </span>
+                <span style={{ color: '#d97706', fontWeight: 800, fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+                  ● Action
+                </span>
+              </div>
+            </div>
+
+            {/* Card 4: Portal Live Advertisements */}
+            <div className="adm-kpi-card adm-kpi-card-purple">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <span
+                    style={{
+                      fontSize: '0.66rem',
+                      fontWeight: 800,
+                      color: '#9333ea',
+                      background: 'rgba(147, 51, 234, 0.1)',
+                      padding: '2.5px 8px',
+                      borderRadius: '5px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.04em',
+                      display: 'inline-block',
+                      marginBottom: '0.35rem',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    ● ADVERTISEMENTS
+                  </span>
+                  <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    LIVE ADS
+                  </div>
+                </div>
+                <div className="adm-3d-pod adm-pod-purple" style={{ width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0 }}>
+                  <Megaphone size={19} strokeWidth={2.4} />
+                </div>
+              </div>
+              <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
+                <div className="adm-kpi-val" style={{ fontSize: '1.6rem', color: '#9333ea' }}>
+                  {featuredCount}
+                </div>
+              </div>
+              <div className="adm-kpi-footer">
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.73rem', color: '#64748b' }}>
+                  <Megaphone size={13} color="#9333ea" />
+                  <span>Portal advertisements</span>
+                </span>
+                <span style={{ color: '#9333ea', fontWeight: 800, fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+                  ● Active
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* 3. Executive Filter & View Switcher Bar */}
+          <div className="adm-toolbar-card">
+            <div className="adm-toolbar-filters">
+              {/* Search Box */}
+              <div style={{ position: 'relative', flex: '1 1 200px', minWidth: '160px' }}>
+                <input
+                  type="text"
+                  className="adm-toolbar-input"
+                  placeholder="Search by name, owner, email, GST..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <Search size={15} color="#94a3b8" style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+              </div>
+
+              {/* Category Dropdown */}
+              <div style={{ position: 'relative', flexShrink: 0, width: '150px' }}>
+                <select
+                  className="adm-toolbar-select"
+                  style={{ width: '100%' }}
+                  value={selectedCategoryFilter}
+                  onChange={(e) => setSelectedCategoryFilter(e.target.value)}
+                >
+                  <option value="">All Categories</option>
+                  {categories.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Status Dropdown */}
+              <div style={{ position: 'relative', flexShrink: 0, width: '130px' }}>
+                <select
+                  className="adm-toolbar-select"
+                  style={{ width: '100%' }}
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                  <option value="">All Statuses</option>
+                  <option value="verified">Verified</option>
+                  <option value="pending">Pending</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+              </div>
+
+              {(searchTerm || selectedCategoryFilter || statusFilter) && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchTerm('');
+                    setSelectedCategoryFilter('');
+                    setStatusFilter('');
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#dc2626',
+                    fontSize: '0.78rem',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    padding: '0.35rem 0.5rem',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.2rem',
+                    flexShrink: 0,
+                  }}
+                >
+                  <X size={14} /> Clear
+                </button>
+              )}
+            </div>
+
+            {/* View Switcher & Action */}
+            <div className="adm-toolbar-actions">
+              <div style={{ display: 'flex', background: '#f8fafc', padding: '3px', borderRadius: '10px', gap: '3px', border: '1.5px solid #e2e8f0', height: '38px', boxSizing: 'border-box' }}>
+                <button
+                  type="button"
+                  onClick={() => setListingMode('table')}
+                  style={{
+                    padding: '0 0.85rem',
+                    borderRadius: '7px',
+                    border: 'none',
+                    fontWeight: 800,
+                    fontSize: '0.76rem',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                    background: listingMode === 'table' ? '#3569a7' : 'transparent',
+                    color: listingMode === 'table' ? '#ffffff' : '#64748b',
+                    boxShadow: listingMode === 'table' ? '0 2px 8px rgba(53, 105, 167, 0.35)' : 'none',
+                    transition: 'all 0.18s cubic-bezier(0.16, 1, 0.3, 1)',
+                  }}
+                >
+                  <TableIcon size={14} />
+                  <span>Data Table</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setListingMode('grid')}
+                  style={{
+                    padding: '0 0.85rem',
+                    borderRadius: '7px',
+                    border: 'none',
+                    fontWeight: 800,
+                    fontSize: '0.76rem',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                    background: listingMode === 'grid' ? '#3569a7' : 'transparent',
+                    color: listingMode === 'grid' ? '#ffffff' : '#64748b',
+                    boxShadow: listingMode === 'grid' ? '0 2px 8px rgba(53, 105, 167, 0.35)' : 'none',
+                    transition: 'all 0.18s cubic-bezier(0.16, 1, 0.3, 1)',
+                  }}
+                >
+                  <LayoutGrid size={14} />
+                  <span>Grid Cards</span>
+                </button>
+              </div>
+
               <button
                 type="button"
-                className="pro-btn-primary"
+                className="adm-hero-btn-primary"
                 onClick={() => handleOpenForm(null)}
-                style={{
-                  background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
-                  boxShadow: '0 4px 14px rgba(2, 132, 199, 0.4)',
-                  padding: '0.75rem 1.5rem',
-                  fontSize: '0.95rem',
-                  fontWeight: '700',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  cursor: 'pointer',
-                }}
+                style={{ height: '38px', padding: '0 1.15rem', fontSize: '0.8rem', whiteSpace: 'nowrap' }}
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <path d="M12 5v14M5 12h14" />
-                </svg>
-                <span>Register New Business</span>
+                <Plus size={15} /> <span>Register Business</span>
               </button>
             </div>
           </div>
 
-          {/* Pro KPI Metrics Grid */}
-          <div className="pro-kpi-grid">
-            <div className="pro-kpi-card blue">
-              <div className="pro-kpi-header">
-                <span className="pro-kpi-label">Registered</span>
-                <div className="pro-kpi-icon blue">🏢</div>
-              </div>
-              <div className="pro-kpi-val">{businesses.length}</div>
-              <div className="pro-kpi-sub">Total business records</div>
+          {/* 4. Main Body: Data Table or Grid Cards View */}
+          {loading ? (
+            <div className="adm-chart-card" style={{ textAlign: 'center', padding: '4rem 1rem' }}>
+              <div className="spinner" style={{ margin: '0 auto 1rem auto' }} />
+              <p style={{ color: '#64748b', fontWeight: 700, fontSize: '0.9rem' }}>
+                Loading registered business entities from database...
+              </p>
             </div>
-
-            <div className="pro-kpi-card emerald">
-              <div className="pro-kpi-header">
-                <span className="pro-kpi-label">Verified</span>
-                <div className="pro-kpi-icon emerald">✓</div>
-              </div>
-              <div className="pro-kpi-val">{businesses.filter(b => b.verification_status === 'verified').length}</div>
-              <div className="pro-kpi-sub">Active & compliant</div>
-            </div>
-
-            <div className="pro-kpi-card amber">
-              <div className="pro-kpi-header">
-                <span className="pro-kpi-label">Pending</span>
-                <div className="pro-kpi-icon amber">⏳</div>
-              </div>
-              <div className="pro-kpi-val">{businesses.filter(b => b.verification_status === 'pending').length}</div>
-              <div className="pro-kpi-sub">Document review needed</div>
-            </div>
-
-            <div className="pro-kpi-card purple">
-              <div className="pro-kpi-header">
-                <span className="pro-kpi-label">Live Ads</span>
-                <div className="pro-kpi-icon purple">📢</div>
-              </div>
-              <div className="pro-kpi-val">{businesses.filter(b => b.featured).length}</div>
-              <div className="pro-kpi-sub">Portal advertisements</div>
-            </div>
-          </div>
-
-          {/* Floating Filter Bar */}
-          <div className="pro-search-bar">
-            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', flex: 1, alignItems: 'center' }}>
-              <div style={{ position: 'relative', flex: 1, minWidth: '280px' }}>
-                <input
-                  type="text"
-                  className="form-input"
-                  placeholder="Search by Business Name, Owner, Email or GST..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  style={{ paddingLeft: '2.5rem', borderRadius: '10px' }}
-                />
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)' }}>
-                  <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                </svg>
-              </div>
-
-              <select
-                className="form-input"
-                value={selectedCategoryFilter}
-                onChange={(e) => setSelectedCategoryFilter(e.target.value)}
-                style={{ maxWidth: '220px', borderRadius: '10px' }}
-              >
-                <option value="">All Categories</option>
-                {categories.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                className="form-input"
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                style={{ maxWidth: '160px', borderRadius: '10px' }}
-              >
-                <option value="">All Statuses</option>
-                <option value="verified">Verified</option>
-                <option value="pending">Pending</option>
-                <option value="rejected">Rejected</option>
-              </select>
-            </div>
-
-            <button className="pro-btn-primary" onClick={() => handleOpenForm(null)} style={{ background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)' }}>
-              + Register New Business
-            </button>
-          </div>
-
-          {/* Main Enterprise Data Table */}
-          <div className="pro-table-wrapper">
-            {loading ? (
-              <div style={{ textAlign: 'center', padding: '4rem 1rem' }}>
-                <div className="spinner" style={{ margin: '0 auto 1rem auto' }}></div>
-                <p style={{ color: '#64748b', fontWeight: '500' }}>Loading business entities...</p>
-              </div>
-            ) : (
-              <div className="table-responsive">
-                <table className="pro-table">
+          ) : listingMode === 'table' ? (
+            /* DATA TABLE VIEW */
+            <div className="adm-chart-card" style={{ padding: 0, overflow: 'hidden' }}>
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.82rem' }}>
                   <thead>
-                    <tr>
-                      <th>Business Entity</th>
-                      <th>Category (1:1)</th>
-                      <th>Contact Details</th>
-                      <th>GST / Reg No.</th>
-                      <th>Attached Documents</th>
-                      <th>Advertisement</th>
-                      <th>Status</th>
-                      <th style={{ textAlign: 'right' }}>Actions</th>
+                    <tr style={{ background: 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)', color: '#cbd5e1', fontWeight: 800, fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                      <th style={{ padding: '0.9rem 1.15rem' }}>Business Entity</th>
+                      <th style={{ padding: '0.9rem 1.15rem' }}>Category Domain</th>
+                      <th style={{ padding: '0.9rem 1.15rem' }}>Contact Details</th>
+                      <th style={{ padding: '0.9rem 1.15rem' }}>GST / Reg No.</th>
+                      <th style={{ padding: '0.9rem 1.15rem', textAlign: 'center' }}>Documents</th>
+                      <th style={{ padding: '0.9rem 1.15rem', textAlign: 'center' }}>Portal Ad</th>
+                      <th style={{ padding: '0.9rem 1.15rem', textAlign: 'center' }}>Status</th>
+                      <th style={{ padding: '0.9rem 1.15rem', textAlign: 'center' }}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredBusinesses.length === 0 ? (
                       <tr>
-                        <td colSpan="8" style={{ textAlign: 'center', padding: '3rem', color: '#94a3b8' }}>
+                        <td colSpan="8" style={{ textAlign: 'center', padding: '3.5rem 1rem', color: '#94a3b8', fontWeight: 600 }}>
                           No businesses found matching criteria. Click "+ Register New Business" to add one.
                         </td>
                       </tr>
                     ) : (
-                      filteredBusinesses.map((biz) => (
-                        <tr key={biz.id}>
-                          <td>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                              <img
-                                src={biz.logo_url || 'https://via.placeholder.com/60'}
-                                alt={biz.name}
-                                style={{ width: '46px', height: '46px', borderRadius: '10px', objectFit: 'cover', border: '1px solid #e2e8f0', boxShadow: '0 2px 6px rgba(0,0,0,0.04)' }}
-                              />
-                              <div>
-                                <div style={{ fontWeight: '800', color: '#0f172a' }}>{biz.name}</div>
-                                <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Owner: {biz.owner_name}</div>
+                      filteredBusinesses.map((biz) => {
+                        const initial = biz.name.charAt(0).toUpperCase();
+
+                        return (
+                          <tr key={biz.id} className="adm-table-row">
+                            <td style={{ padding: '0.9rem 1.15rem' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                                <div
+                                  style={{
+                                    width: '42px',
+                                    height: '42px',
+                                    borderRadius: '11px',
+                                    background: 'radial-gradient(135% 135% at 20% 20%, #3569a7dd 0%, #1e3a8a 100%)',
+                                    color: '#ffffff',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontWeight: 800,
+                                    fontSize: '1.05rem',
+                                    flexShrink: 0,
+                                    boxShadow: '0 4px 10px rgba(53, 105, 167, 0.28)',
+                                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                                  }}
+                                >
+                                  {initial}
+                                </div>
+                                <div>
+                                  <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.88rem' }}>
+                                    {biz.name}
+                                  </div>
+                                  <div style={{ fontSize: '0.76rem', color: '#64748b', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                                    <User size={12} color="#94a3b8" />
+                                    <span>Owner: {biz.owner_name}</span>
+                                  </div>
+                                </div>
                               </div>
-                            </div>
-                          </td>
-                          <td>
-                            <span
-                              style={{
-                                display: 'inline-block',
-                                padding: '0.25rem 0.75rem',
-                                borderRadius: '20px',
-                                fontSize: '0.75rem',
-                                fontWeight: '700',
-                                background: '#e0f2fe',
-                                color: '#0369a1',
-                                border: '1px solid #bae6fd',
-                              }}
-                            >
-                              {biz.category ? biz.category.name : 'Unassigned'}
-                            </span>
-                          </td>
-                          <td>
-                            <div style={{ fontWeight: '600', color: '#1e293b' }}>{biz.email}</div>
-                            <div style={{ fontSize: '0.78rem', color: '#64748b' }}>{biz.phone}</div>
-                          </td>
-                          <td>
-                            <code style={{ fontSize: '0.8rem', background: '#f8fafc', padding: '0.25rem 0.55rem', borderRadius: '6px', border: '1px solid #e2e8f0', color: '#334155', fontWeight: '600' }}>
-                              {biz.registration_no || 'N/A'}
-                            </code>
-                          </td>
-                          <td>
-                            <button
-                              type="button"
-                              className="pro-doc-chip"
-                              onClick={() => setViewingDocs(biz)}
-                            >
-                              📎 {biz.documents ? biz.documents.length : 0} Documents
-                            </button>
-                          </td>
-                          <td>
-                            <button
-                              type="button"
-                              className={`pro-ad-toggle ${biz.featured ? 'on' : 'off'}`}
-                              onClick={() => handleToggleFeatured(biz)}
-                            >
-                              {biz.featured ? '📢 Active Ad' : 'Off'}
-                            </button>
-                          </td>
-                          <td>
-                            <span className={`pro-pill-badge ${biz.verification_status === 'verified' ? 'active' : biz.verification_status === 'pending' ? 'pending' : 'rejected'}`}>
-                              {biz.verification_status}
-                            </span>
-                          </td>
-                          <td style={{ textAlign: 'right' }}>
-                            <button className="pro-btn-edit" onClick={() => handleOpenForm(biz)} style={{ marginRight: '0.4rem' }}>
-                              ✎ Edit
-                            </button>
-                            <button className="pro-btn-delete" onClick={() => handleDelete(biz.id, biz.name)}>
-                              🗑 Delete
-                            </button>
-                          </td>
-                        </tr>
-                      ))
+                            </td>
+
+                            <td style={{ padding: '0.9rem 1.15rem' }}>
+                              <span
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '0.35rem',
+                                  padding: '0.28rem 0.7rem',
+                                  borderRadius: '8px',
+                                  fontSize: '0.74rem',
+                                  fontWeight: 800,
+                                  background: '#f0f9ff',
+                                  color: '#0369a1',
+                                  border: '1px solid #bae6fd',
+                                }}
+                              >
+                                <FolderTree size={12} />
+                                <span>{biz.category ? biz.category.name : 'Unassigned'}</span>
+                              </span>
+                            </td>
+
+                            <td style={{ padding: '0.9rem 1.15rem' }}>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                <div style={{ fontWeight: 700, color: '#1e293b', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                                  <Mail size={12} color="#64748b" />
+                                  <span>{biz.email}</span>
+                                </div>
+                                <div style={{ fontSize: '0.76rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                                  <Phone size={12} color="#94a3b8" />
+                                  <span>{biz.phone}</span>
+                                </div>
+                              </div>
+                            </td>
+
+                            <td style={{ padding: '0.9rem 1.15rem' }}>
+                              <span className="adm-code-chip">
+                                {biz.registration_no || 'NOT REGISTERED'}
+                              </span>
+                            </td>
+
+                            <td style={{ padding: '0.9rem 1.15rem', textAlign: 'center' }}>
+                              <button
+                                type="button"
+                                onClick={() => setViewingDocs(biz)}
+                                style={{
+                                  background: '#ffffff',
+                                  border: '1.5px solid #cbd5e1',
+                                  borderRadius: '8px',
+                                  padding: '0.3rem 0.65rem',
+                                  color: '#475569',
+                                  fontWeight: 800,
+                                  fontSize: '0.74rem',
+                                  cursor: 'pointer',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '0.3rem',
+                                  transition: 'all 0.15s ease',
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.borderColor = '#3569a7';
+                                  e.currentTarget.style.color = '#3569a7';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.borderColor = '#cbd5e1';
+                                  e.currentTarget.style.color = '#475569';
+                                }}
+                              >
+                                <Paperclip size={12} />
+                                <span>{biz.documents ? biz.documents.length : 0} Docs</span>
+                              </button>
+                            </td>
+
+                            <td style={{ padding: '0.9rem 1.15rem', textAlign: 'center' }}>
+                              <button
+                                type="button"
+                                onClick={() => handleToggleFeatured(biz)}
+                                style={{
+                                  padding: '0.3rem 0.75rem',
+                                  borderRadius: '9999px',
+                                  border: biz.featured ? '1px solid #c084fc' : '1px solid #e2e8f0',
+                                  background: biz.featured ? 'rgba(147, 51, 234, 0.1)' : '#f8fafc',
+                                  color: biz.featured ? '#9333ea' : '#94a3b8',
+                                  fontWeight: 800,
+                                  fontSize: '0.72rem',
+                                  cursor: 'pointer',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '0.3rem',
+                                  transition: 'all 0.15s ease',
+                                }}
+                              >
+                                <Megaphone size={12} />
+                                <span>{biz.featured ? 'Active Ad' : 'Inactive'}</span>
+                              </button>
+                            </td>
+
+                            <td style={{ padding: '0.9rem 1.15rem', textAlign: 'center' }}>
+                              <StatusBadge status={biz.verification_status} fallback="verified" />
+                            </td>
+
+                            <td style={{ padding: '0.9rem 1.15rem', textAlign: 'center' }}>
+                              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                                <button
+                                  type="button"
+                                  onClick={() => handleOpenForm(biz)}
+                                  style={{
+                                    background: '#ffffff',
+                                    border: '1.5px solid #cbd5e1',
+                                    borderRadius: '7px',
+                                    padding: '0.3rem 0.65rem',
+                                    color: '#3569a7',
+                                    fontWeight: 800,
+                                    fontSize: '0.74rem',
+                                    cursor: 'pointer',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '0.25rem',
+                                  }}
+                                >
+                                  <Edit3 size={12} />
+                                  <span>Edit</span>
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => handleDelete(biz.id, biz.name)}
+                                  style={{
+                                    background: '#ffffff',
+                                    border: '1.5px solid #fecaca',
+                                    borderRadius: '7px',
+                                    padding: '0.3rem 0.65rem',
+                                    color: '#dc2626',
+                                    fontWeight: 800,
+                                    fontSize: '0.74rem',
+                                    cursor: 'pointer',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '0.25rem',
+                                  }}
+                                >
+                                  <Trash2 size={12} />
+                                  <span>Del</span>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })
                     )}
                   </tbody>
                 </table>
               </div>
-            )}
-          </div>
+
+              {/* Table Footer Bar */}
+              <div style={{ padding: '0.85rem 1.4rem', background: '#f8fafc', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', color: '#64748b' }}>
+                <span style={{ fontWeight: 700, color: '#334155' }}>
+                  ● Registered corporate entities synchronized with MySQL 8.0 schema
+                </span>
+                <span style={{ fontWeight: 800, color: '#3569a7' }}>
+                  Showing {filteredBusinesses.length} of {businesses.length} Business Entities
+                </span>
+              </div>
+            </div>
+          ) : (
+            /* GRID CARDS VIEW */
+            filteredBusinesses.length === 0 ? (
+              <div className="adm-chart-card" style={{ textAlign: 'center', padding: '3.5rem 1.5rem' }}>
+                <Building2 size={44} color="#94a3b8" style={{ margin: '0 auto 0.75rem auto' }} />
+                <h3 style={{ margin: '0 0 0.35rem 0', color: '#0f172a', fontWeight: 800 }}>No businesses found</h3>
+                <p style={{ color: '#64748b', fontSize: '0.85rem', margin: '0 0 1.25rem 0' }}>
+                  {searchTerm || selectedCategoryFilter || statusFilter ? 'Try adjusting your search criteria.' : 'Register your first enterprise entity to begin.'}
+                </p>
+                <button
+                  type="button"
+                  className="adm-hero-btn-primary"
+                  onClick={() => handleOpenForm(null)}
+                  style={{ display: 'inline-flex', margin: '0 auto' }}
+                >
+                  <Plus size={16} /> Register Business
+                </button>
+              </div>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '1.4rem' }}>
+                {filteredBusinesses.map((biz) => {
+                  const initial = biz.name.charAt(0).toUpperCase();
+
+                  return (
+                    <div
+                      key={biz.id}
+                      className="adm-chart-card adm-chart-card-glow"
+                      style={{
+                        borderTop: '4px solid #3569a7',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                      }}
+                    >
+                      <div>
+                        {/* Card Header */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.85rem' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                            <div
+                              style={{
+                                width: '48px',
+                                height: '48px',
+                                borderRadius: '13px',
+                                background: 'radial-gradient(135% 135% at 20% 20%, #3569a7dd 0%, #1e3a8a 100%)',
+                                color: '#ffffff',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontWeight: 800,
+                                fontSize: '1.25rem',
+                                flexShrink: 0,
+                                boxShadow: '0 8px 18px -3px rgba(53, 105, 167, 0.35)',
+                                border: '1px solid rgba(255, 255, 255, 0.35)',
+                              }}
+                            >
+                              {initial}
+                            </div>
+                            <div>
+                              <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', margin: 0, lineHeight: 1.3 }}>
+                                {biz.name}
+                              </h4>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginTop: '3px' }}>
+                                <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 600 }}>
+                                  Owner: {biz.owner_name}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <StatusBadge status={biz.verification_status} fallback="verified" />
+                        </div>
+
+                        {/* Category & Registration */}
+                        <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap', marginBottom: '0.85rem' }}>
+                          <span
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.3rem',
+                              padding: '0.25rem 0.65rem',
+                              borderRadius: '7px',
+                              fontSize: '0.72rem',
+                              fontWeight: 800,
+                              background: '#f0f9ff',
+                              color: '#0369a1',
+                              border: '1px solid #bae6fd',
+                            }}
+                          >
+                            <FolderTree size={12} />
+                            <span>{biz.category ? biz.category.name : 'Unassigned'}</span>
+                          </span>
+
+                          <span className="adm-code-chip">
+                            {biz.registration_no || 'NO GST'}
+                          </span>
+                        </div>
+
+                        {/* Description */}
+                        <p style={{ fontSize: '0.84rem', color: '#475569', lineHeight: 1.55, margin: '0.5rem 0 1rem 0', minHeight: '40px' }}>
+                          {biz.description || 'No detailed company overview provided.'}
+                        </p>
+
+                        {/* Contact info vault */}
+                        <div style={{ background: '#f8fafc', padding: '0.75rem 0.85rem', borderRadius: '10px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '0.3rem', marginBottom: '1rem' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.78rem', color: '#334155', fontWeight: 700 }}>
+                            <Mail size={13} color="#3569a7" />
+                            <span>{biz.email}</span>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.76rem', color: '#64748b' }}>
+                            <Phone size={13} color="#0d9488" />
+                            <span>{biz.phone}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Footer Actions */}
+                      <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #f1f5f9', paddingTop: '0.85rem' }}>
+                          <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                            <button
+                              type="button"
+                              onClick={() => setViewingDocs(biz)}
+                              style={{
+                                background: '#ffffff',
+                                border: '1.5px solid #cbd5e1',
+                                borderRadius: '8px',
+                                padding: '0.35rem 0.65rem',
+                                color: '#475569',
+                                fontWeight: 800,
+                                fontSize: '0.74rem',
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.3rem',
+                              }}
+                            >
+                              <Paperclip size={12} />
+                              <span>{biz.documents ? biz.documents.length : 0} Docs</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => handleToggleFeatured(biz)}
+                              style={{
+                                padding: '0.35rem 0.65rem',
+                                borderRadius: '8px',
+                                border: biz.featured ? '1px solid #c084fc' : '1px solid #e2e8f0',
+                                background: biz.featured ? 'rgba(147, 51, 234, 0.1)' : '#f8fafc',
+                                color: biz.featured ? '#9333ea' : '#94a3b8',
+                                fontWeight: 800,
+                                fontSize: '0.72rem',
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.3rem',
+                              }}
+                            >
+                              <Megaphone size={12} />
+                              <span>{biz.featured ? 'Ad On' : 'Ad Off'}</span>
+                            </button>
+                          </div>
+
+                          <div style={{ display: 'flex', gap: '0.4rem' }}>
+                            <button
+                              type="button"
+                              onClick={() => handleOpenForm(biz)}
+                              style={{
+                                background: '#ffffff',
+                                border: '1.5px solid #cbd5e1',
+                                borderRadius: '8px',
+                                padding: '0.35rem 0.75rem',
+                                color: '#3569a7',
+                                fontWeight: 800,
+                                fontSize: '0.76rem',
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.3rem',
+                              }}
+                            >
+                              <Edit3 size={13} />
+                              <span>Edit</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => handleDelete(biz.id, biz.name)}
+                              style={{
+                                background: '#ffffff',
+                                border: '1.5px solid #fecaca',
+                                borderRadius: '8px',
+                                padding: '0.35rem 0.75rem',
+                                color: '#dc2626',
+                                fontWeight: 800,
+                                fontSize: '0.76rem',
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.3rem',
+                              }}
+                            >
+                              <Trash2 size={13} />
+                              <span>Del</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )
+          )}
         </div>
       )}
 
-      {/* DOCUMENT PREVIEWER MODAL */}
+      {/* =========================================================================
+          DOCUMENT PREVIEWER MODAL
+          ========================================================================= */}
       {viewingDocs && (
-        <div className="modal-backdrop" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '1rem' }}>
-          <div className="pro-modal-box" style={{ width: '100%', maxWidth: '520px' }}>
-            <div className="pro-modal-header">
-              <h3 className="pro-modal-title">
-                Attached Documents: {viewingDocs.name}
-              </h3>
-              <button className="pro-modal-close-btn" onClick={() => setViewingDocs(null)}>&times;</button>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(15, 23, 42, 0.68)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 99999, padding: '1rem' }}>
+          <div style={{ width: '100%', maxWidth: '520px', background: '#ffffff', borderRadius: '22px', border: '1.5px solid #cbd5e1', boxShadow: '0 25px 60px -15px rgba(15, 23, 42, 0.3)', overflow: 'hidden' }}>
+            {/* Modal Header */}
+            <div style={{ padding: '1.35rem 1.6rem', borderBottom: '1px solid #e2e8f0', background: 'radial-gradient(circle at 95% 8%, rgba(53, 105, 167, 0.06) 0%, #ffffff 70%)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div className="adm-3d-pod adm-pod-steel" style={{ width: '42px', height: '42px', borderRadius: '12px' }}>
+                  <FileText size={20} strokeWidth={2.4} />
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.12rem', fontWeight: 800, color: '#0f172a' }}>
+                    Compliance Documents
+                  </h3>
+                  <p style={{ margin: '0.15rem 0 0 0', fontSize: '0.76rem', color: '#64748b' }}>
+                    {viewingDocs.name}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setViewingDocs(null)}
+                style={{ background: '#f1f5f9', border: 'none', borderRadius: '8px', padding: '0.4rem', cursor: 'pointer', color: '#64748b', display: 'flex' }}
+              >
+                <X size={18} />
+              </button>
             </div>
 
-            <div className="pro-modal-body">
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+            {/* Modal Body */}
+            <div style={{ padding: '1.4rem 1.6rem', maxHeight: '420px', overflowY: 'auto' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 {viewingDocs.documents && viewingDocs.documents.length > 0 ? (
                   viewingDocs.documents.map((doc, idx) => (
-                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.85rem 1rem', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                      <div>
-                        <div style={{ fontWeight: '700', color: '#0f172a', fontSize: '0.875rem' }}>📄 {doc.title}</div>
-                        <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '0.15rem' }}>File: {doc.file_name}</div>
+                    <div
+                      key={idx}
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        padding: '0.85rem 1rem',
+                        background: '#f8fafc',
+                        borderRadius: '12px',
+                        border: '1.5px solid #e2e8f0',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                        <div style={{ width: '34px', height: '34px', borderRadius: '8px', background: '#e0f2fe', color: '#0369a1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <FileText size={16} />
+                        </div>
+                        <div>
+                          <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.86rem' }}>
+                            {doc.title}
+                          </div>
+                          <div style={{ fontSize: '0.74rem', color: '#64748b', marginTop: '2px' }}>
+                            {doc.file_name}
+                          </div>
+                        </div>
                       </div>
-                      <span className="pro-pill-badge active" style={{ fontSize: '0.725rem' }}>
-                        {doc.status || 'Verified'}
+
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.3rem',
+                          padding: '0.25rem 0.65rem',
+                          borderRadius: '9999px',
+                          fontSize: '0.72rem',
+                          fontWeight: 800,
+                          background: '#ecfdf5',
+                          color: '#059669',
+                          border: '1px solid #a7f3d0',
+                        }}
+                      >
+                        <Check size={12} strokeWidth={3} />
+                        <span>{doc.status || 'Verified'}</span>
                       </span>
                     </div>
                   ))
                 ) : (
-                  <p style={{ textAlign: 'center', color: '#64748b' }}>No documents uploaded.</p>
+                  <div style={{ textAlign: 'center', padding: '2.5rem 1rem', color: '#94a3b8' }}>
+                    <FileText size={36} color="#cbd5e1" style={{ margin: '0 auto 0.5rem auto' }} />
+                    <p style={{ fontWeight: 600, fontSize: '0.85rem', margin: 0 }}>No verification documents attached.</p>
+                  </div>
                 )}
               </div>
             </div>
 
-            <div className="pro-modal-footer">
-              <button className="pro-btn-secondary" onClick={() => setViewingDocs(null)}>
+            {/* Modal Footer */}
+            <div style={{ padding: '0.95rem 1.6rem', borderTop: '1px solid #e2e8f0', background: '#f8fafc', display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                type="button"
+                onClick={() => setViewingDocs(null)}
+                style={{
+                  background: '#ffffff',
+                  border: '1.5px solid #cbd5e1',
+                  borderRadius: '10px',
+                  padding: '0.55rem 1.25rem',
+                  fontWeight: 800,
+                  fontSize: '0.82rem',
+                  color: '#475569',
+                  cursor: 'pointer',
+                }}
+              >
                 Close Viewer
               </button>
             </div>

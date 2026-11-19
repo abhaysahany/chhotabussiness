@@ -1,4 +1,24 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import {
+  Briefcase,
+  CheckCircle2,
+  CreditCard,
+  Zap,
+  Search,
+  RefreshCw,
+  Eye,
+  FileText,
+  Building2,
+  Layers,
+  X,
+  Clock,
+  ShieldCheck,
+  Percent,
+  Check,
+  TrendingUp,
+  Receipt,
+  DollarSign,
+} from 'lucide-react';
 import { getTodayIndianDateString, formatDate, formatDateTime } from '../../utils/timezone';
 import {
   getAdminOrders,
@@ -331,224 +351,455 @@ function AdminOrdersPage() {
   }, [filteredSales]);
 
   return (
-    <div className="admin-page-container pro-orders-container">
-      {/* Toast */}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.4rem', width: '100%', boxSizing: 'border-box' }}>
+      {/* Toast Alert Notification */}
       {toastMessage && (
         <div
           style={{
+            backgroundColor: '#0f172a',
+            color: '#ffffff',
+            padding: '0.9rem 1.35rem',
+            borderRadius: '14px',
+            fontWeight: 700,
+            fontSize: '0.86rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '0.65rem',
+            boxShadow: '0 10px 25px rgba(0,0,0,0.25)',
+            border: '1.5px solid #334155',
+            zIndex: 999999,
             position: 'fixed',
             top: '20px',
             right: '20px',
-            background: '#0f172a',
-            color: '#ffffff',
-            padding: '0.85rem 1.25rem',
-            borderRadius: '8px',
-            zIndex: 999999,
-            boxShadow: '0 10px 15px -3px rgba(0,0,0,0.2)',
-            fontSize: '0.85rem',
-            border: '1px solid #334155',
           }}
         >
-          {toastMessage}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            <CheckCircle2 size={18} color="#10b981" />
+            <span>{toastMessage}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setToastMessage('')}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', padding: '0.2rem' }}
+          >
+            ×
+          </button>
         </div>
       )}
 
-      {/* Header */}
-      <div className="page-header pro-orders-header">
-        <div>
-          <h1 className="page-title pro-orders-header-title" style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800 }}>
-            Order Management
-          </h1>
-          <p className="page-subtitle" style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>
-            Live database records of all customer orders, receipts, and incremental payment income allocations across the platform.
-          </p>
-        </div>
-        <div className="pro-orders-header-actions">
-          <button
-            type="button"
-            onClick={loadSales}
-            style={{
-              padding: '0.45rem 0.85rem',
-              background: '#f1f5f9',
-              color: '#334155',
-              border: '1px solid #cbd5e1',
-              borderRadius: '6px',
-              fontSize: '0.8rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-            }}
-          >
-            🔄 Refresh Orders
-          </button>
-        </div>
-      </div>
+      {/* 1. Executive 3D Luxury Hero Banner */}
+      <div className="adm-hero-banner">
+        <div className="adm-hero-top-row">
+          <div className="adm-hero-pod-3d adm-pod-steel">
+            <Briefcase size={32} strokeWidth={2.4} />
+          </div>
 
-      {/* KPI Stats Cards — Order & Payment Accounting Reconciliation */}
-      <div className="pro-orders-kpi-grid">
-        <div className="stat-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem' }}>
-          <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>TOTAL PROJECT VALUE</div>
-          <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', marginTop: '0.25rem' }}>
-            ₹{totalGross.toLocaleString()}
-          </div>
-          <div style={{ fontSize: '0.68rem', color: '#64748b', marginTop: '0.15rem' }}>
-            {filteredSales.length} Total Orders
-          </div>
-        </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#3569a7', background: 'rgba(53, 105, 167, 0.08)', padding: '3px 10px', borderRadius: '9999px', border: '1px solid rgba(53, 105, 167, 0.2)' }}>
+                ● MASTER TRANSACTION LEDGER
+              </span>
+              <span style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#0d9488', background: 'rgba(13, 148, 136, 0.08)', padding: '3px 10px', borderRadius: '9999px', border: '1px solid rgba(13, 148, 136, 0.2)' }}>
+                ● {filteredSales.length} Orders Audited
+              </span>
+            </div>
 
-        <div className="stat-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem' }}>
-          <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>EXPECTED ADMIN CUT (15%)</div>
-          <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#475569', marginTop: '0.25rem' }}>
-            ₹{totalExpectedAdminCommission.toLocaleString()}
+            <h1 style={{ margin: 0, fontSize: '1.65rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.025em' }}>
+              Order Management &amp; Settlements
+            </h1>
+            <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#64748b', maxWidth: '680px', lineHeight: 1.5 }}>
+              Live database records of all customer orders, receipts, dump payments, and incremental income distribution across the network.
+            </p>
           </div>
-          <div style={{ fontSize: '0.68rem', color: '#475569', marginTop: '0.15rem' }}>
-            Expected on Full Orders
-          </div>
-        </div>
 
-        <div className="stat-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem' }}>
-          <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>TOTAL FUNDS RECEIVED</div>
-          <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#2563eb', marginTop: '0.25rem' }}>
-            ₹{totalCollected.toLocaleString()}
-          </div>
-          <div style={{ fontSize: '0.68rem', color: '#2563eb', marginTop: '0.15rem' }}>
-            All Advance & Balance Receipts
-          </div>
-        </div>
-
-        <div className="stat-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem' }}>
-          <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>REMAINING PROJECT BALANCE</div>
-          <div style={{ fontSize: '1.25rem', fontWeight: 800, color: totalBalanceDue > 0 ? '#d97706' : '#16a34a', marginTop: '0.25rem' }}>
-            ₹{totalBalanceDue.toLocaleString()}
-          </div>
-          <div style={{ fontSize: '0.68rem', color: '#64748b', marginTop: '0.15rem' }}>
-            Pending Client Balances
-          </div>
-        </div>
-
-        <div className="stat-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem' }}>
-          <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>ADMIN CUT COLLECTED</div>
-          <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#16a34a', marginTop: '0.25rem' }}>
-            ₹{totalAdminCommissionCollected.toLocaleString()}
-          </div>
-          <div style={{ fontSize: '0.68rem', color: '#16a34a', marginTop: '0.15rem' }}>
-            From Received Payments
-          </div>
-        </div>
-
-        <div className="stat-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem' }}>
-          <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>REMAINING ADMIN CUT</div>
-          <div style={{ fontSize: '1.25rem', fontWeight: 800, color: totalRemainingAdminCommission > 0 ? '#d97706' : '#64748b', marginTop: '0.25rem' }}>
-            ₹{totalRemainingAdminCommission.toLocaleString()}
-          </div>
-          <div style={{ fontSize: '0.68rem', color: '#64748b', marginTop: '0.15rem' }}>
-            Expected Minus Collected
-          </div>
-        </div>
-
-        <div className="stat-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem' }}>
-          <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>DISTRIBUTED ADMIN CUT</div>
-          <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#7c3aed', marginTop: '0.25rem' }}>
-            ₹{totalDistributedAdminCut.toLocaleString()}
-          </div>
-          <div style={{ fontSize: '0.68rem', color: '#7c3aed', marginTop: '0.15rem' }}>
-            40/40/20 Allocated
+          <div style={{ flexShrink: 0 }}>
+            <button
+              type="button"
+              className="adm-hero-btn-primary"
+              onClick={loadSales}
+              disabled={loading}
+              style={{ padding: '0.75rem 1.4rem', fontSize: '0.86rem' }}
+            >
+              <RefreshCw size={16} strokeWidth={2.4} className={loading ? 'animate-spin' : ''} />
+              <span>Refresh Orders</span>
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Filter and Search Bar */}
-      <div className="pro-orders-filter-bar">
-        <div className="pro-orders-search-wrap">
-          <input
-            type="text"
-            placeholder="Search by Entity Name, Invoice #, Customer, or Item..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ width: '100%', padding: '0.55rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
-          />
+      {/* 2. 4 Executive 3D KPI Vault Cards (Single Horizontal Row: 4 Cards) */}
+      <div className="adm-kpi-grid-4">
+        {/* Card 1: Total Project GMV */}
+        <div className="adm-kpi-card adm-kpi-card-steel">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <span
+                style={{
+                  fontSize: '0.66rem',
+                  fontWeight: 800,
+                  color: '#3569a7',
+                  background: 'rgba(53, 105, 167, 0.1)',
+                  padding: '2.5px 8px',
+                  borderRadius: '5px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                  display: 'inline-block',
+                  marginBottom: '0.35rem',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                ● TOTAL GMV
+              </span>
+              <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                PROJECT VALUE
+              </div>
+            </div>
+            <div className="adm-3d-pod adm-pod-steel" style={{ width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0 }}>
+              <Briefcase size={19} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
+            <div className="adm-kpi-val" style={{ fontSize: '1.55rem', color: '#0f172a' }}>
+              ₹{totalGross.toLocaleString('en-IN')}
+            </div>
+          </div>
+          <div className="adm-kpi-footer">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.73rem', color: '#64748b' }}>
+              <Briefcase size={13} color="#3569a7" />
+              <span>{filteredSales.length} Total orders</span>
+            </span>
+            <span style={{ color: '#3569a7', fontWeight: 800, fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+              ● Base GMV
+            </span>
+          </div>
         </div>
 
-        <div className="pro-orders-filter-controls">
-          <select
-            value={entityTypeFilter}
-            onChange={(e) => setEntityTypeFilter(e.target.value)}
-            style={{ padding: '0.55rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem', background: '#ffffff' }}
-          >
-            <option value="all">All Entity Types</option>
-            <option value="business">Commercial Businesses</option>
-            <option value="freelance">Freelance Partners</option>
-          </select>
+        {/* Card 2: Total Funds Received */}
+        <div className="adm-kpi-card adm-kpi-card-emerald">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <span
+                style={{
+                  fontSize: '0.66rem',
+                  fontWeight: 800,
+                  color: '#0d9488',
+                  background: 'rgba(13, 148, 136, 0.1)',
+                  padding: '2.5px 8px',
+                  borderRadius: '5px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                  display: 'inline-block',
+                  marginBottom: '0.35rem',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                ● RECORDED CASH
+              </span>
+              <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                FUNDS RECEIVED
+              </div>
+            </div>
+            <div className="adm-3d-pod adm-pod-emerald" style={{ width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0 }}>
+              <CheckCircle2 size={19} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
+            <div className="adm-kpi-val" style={{ fontSize: '1.55rem', color: '#0d9488' }}>
+              ₹{totalCollected.toLocaleString('en-IN')}
+            </div>
+          </div>
+          <div className="adm-kpi-footer">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.73rem', color: '#64748b' }}>
+              <CheckCircle2 size={13} color="#0d9488" />
+              <span>Advance &amp; receipts</span>
+            </span>
+            <span style={{ color: '#0d9488', fontWeight: 800, fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+              ● Collected
+            </span>
+          </div>
+        </div>
 
-          <select
-            value={itemTypeFilter}
-            onChange={(e) => setItemTypeFilter(e.target.value)}
-            style={{ padding: '0.55rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem', background: '#ffffff' }}
-          >
-            <option value="all">All Offering Types</option>
-            <option value="service">Services</option>
-            <option value="product">Products</option>
-            <option value="package">Packages</option>
-          </select>
+        {/* Card 3: Admin Cut Collected */}
+        <div className="adm-kpi-card adm-kpi-card-purple">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <span
+                style={{
+                  fontSize: '0.66rem',
+                  fontWeight: 800,
+                  color: '#9333ea',
+                  background: 'rgba(147, 51, 234, 0.1)',
+                  padding: '2.5px 8px',
+                  borderRadius: '5px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                  display: 'inline-block',
+                  marginBottom: '0.35rem',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                ● ADMIN REVENUE
+              </span>
+              <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                RETAINED CUT
+              </div>
+            </div>
+            <div className="adm-3d-pod adm-pod-purple" style={{ width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0 }}>
+              <Zap size={19} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
+            <div className="adm-kpi-val" style={{ fontSize: '1.55rem', color: '#9333ea' }}>
+              ₹{totalAdminCommissionCollected.toLocaleString('en-IN')}
+            </div>
+          </div>
+          <div className="adm-kpi-footer">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.73rem', color: '#64748b' }}>
+              <Zap size={13} color="#9333ea" />
+              <span>Exp: ₹{totalExpectedAdminCommission.toLocaleString('en-IN')}</span>
+            </span>
+            <span style={{ color: '#9333ea', fontWeight: 800, fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+              ● Retained
+            </span>
+          </div>
+        </div>
 
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            style={{ padding: '0.55rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem', background: '#ffffff' }}
-          >
-            <option value="all">All Payment Statuses</option>
-            <option value="partial">Partial (Balance Due)</option>
-            <option value="completed">Fully Completed</option>
-          </select>
+        {/* Card 4: Remaining Client Balance */}
+        <div className="adm-kpi-card adm-kpi-card-amber">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <span
+                style={{
+                  fontSize: '0.66rem',
+                  fontWeight: 800,
+                  color: '#d97706',
+                  background: 'rgba(217, 119, 6, 0.1)',
+                  padding: '2.5px 8px',
+                  borderRadius: '5px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                  display: 'inline-block',
+                  marginBottom: '0.35rem',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                ● DUE RECEIVABLES
+              </span>
+              <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                CLIENT BALANCE
+              </div>
+            </div>
+            <div className="adm-3d-pod adm-pod-amber" style={{ width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0 }}>
+              <CreditCard size={19} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
+            <div className="adm-kpi-val" style={{ fontSize: '1.55rem', color: '#d97706' }}>
+              ₹{totalBalanceDue.toLocaleString('en-IN')}
+            </div>
+          </div>
+          <div className="adm-kpi-footer">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.73rem', color: '#64748b' }}>
+              <CreditCard size={13} color="#d97706" />
+              <span>Due Cut: ₹{totalRemainingAdminCommission.toLocaleString('en-IN')}</span>
+            </span>
+            <span style={{ color: '#d97706', fontWeight: 800, fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+              ● Due Receivables
+            </span>
+          </div>
+        </div>
+      </div>
 
+      {/* 2b. Secondary Live Ledger Audit Ticker Strip */}
+      <div
+        style={{
+          background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+          border: '1.5px solid #e2e8f0',
+          borderRadius: '14px',
+          padding: '0.65rem 1.15rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '0.75rem',
+          fontSize: '0.76rem',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 700, color: '#334155' }}>
+            <ShieldCheck size={14} color="#059669" />
+            <span>Accounting Ledger:</span>
+            <strong style={{ color: '#0f172a' }}>100% Reconciled</strong>
+          </span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, color: '#64748b' }}>
+            <span>Distributed MLM Share:</span>
+            <strong style={{ color: '#7c3aed' }}>₹{totalDistributedAdminCut.toLocaleString('en-IN')}</strong>
+            <span style={{ fontSize: '0.68rem', color: '#94a3b8' }}>(40/40/20 Rule Active)</span>
+          </span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, color: '#64748b' }}>
+            <span>Uncollected Commission:</span>
+            <strong style={{ color: '#d97706' }}>₹{totalRemainingAdminCommission.toLocaleString('en-IN')}</strong>
+          </span>
+        </div>
+        <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#3569a7' }}>
+          ● MySQL 8.0 Realtime Accounting Database
+        </div>
+      </div>
+
+      {/* 3. Executive Filter Toolbar (Single Unified Row) */}
+      <div className="adm-toolbar-card">
+        <div className="adm-toolbar-filters">
+          {/* Search Box */}
+          <div style={{ position: 'relative', flex: '1 1 200px', minWidth: '160px' }}>
+            <input
+              type="text"
+              className="adm-toolbar-input"
+              placeholder="Search Entity Name, Invoice #, Customer, Item..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <Search size={15} color="#94a3b8" style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+          </div>
+
+          {/* Entity Type Dropdown */}
+          <div style={{ position: 'relative', flexShrink: 0, width: '155px' }}>
+            <select
+              className="adm-toolbar-select"
+              style={{ width: '100%' }}
+              value={entityTypeFilter}
+              onChange={(e) => setEntityTypeFilter(e.target.value)}
+            >
+              <option value="all">All Entity Types</option>
+              <option value="business">Commercial Businesses</option>
+              <option value="freelance">Freelance Partners</option>
+            </select>
+          </div>
+
+          {/* Offering Type Dropdown */}
+          <div style={{ position: 'relative', flexShrink: 0, width: '150px' }}>
+            <select
+              className="adm-toolbar-select"
+              style={{ width: '100%' }}
+              value={itemTypeFilter}
+              onChange={(e) => setItemTypeFilter(e.target.value)}
+            >
+              <option value="all">All Offering Types</option>
+              <option value="service">Services Only</option>
+              <option value="product">Products Only</option>
+              <option value="package">Packages Only</option>
+            </select>
+          </div>
+
+          {/* Payment Status Dropdown */}
+          <div style={{ position: 'relative', flexShrink: 0, width: '155px' }}>
+            <select
+              className="adm-toolbar-select"
+              style={{ width: '100%' }}
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="all">All Payment Statuses</option>
+              <option value="partial">Partial (Balance Due)</option>
+              <option value="completed">Fully Completed</option>
+            </select>
+          </div>
+
+          {/* Date Range Toggle Pill */}
           <button
             type="button"
             onClick={() => setDateRange(dateRange === 'all' ? 'today' : 'all')}
             style={{
-              padding: '0.55rem 0.85rem',
-              borderRadius: '8px',
-              border: '1px solid #3569a7',
+              padding: '0.45rem 0.85rem',
+              borderRadius: '9px',
+              border: dateRange === 'today' ? '1.5px solid #3569a7' : '1.5px solid #cbd5e1',
               background: dateRange === 'today' ? '#3569a7' : '#ffffff',
-              color: dateRange === 'today' ? '#ffffff' : '#3569a7',
-              fontSize: '0.82rem',
-              fontWeight: 700,
+              color: dateRange === 'today' ? '#ffffff' : '#334155',
+              fontSize: '0.78rem',
+              fontWeight: 800,
               cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              transition: 'all 0.15s ease',
             }}
           >
             {dateRange === 'today' ? 'Showing Today' : 'Filter: Today'}
           </button>
+
+          {(searchQuery || entityTypeFilter !== 'all' || itemTypeFilter !== 'all' || statusFilter !== 'all' || dateRange !== 'all') && (
+            <button
+              type="button"
+              onClick={() => {
+                setSearchQuery('');
+                setEntityTypeFilter('all');
+                setItemTypeFilter('all');
+                setStatusFilter('all');
+                setDateRange('all');
+              }}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#dc2626',
+                fontSize: '0.78rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                padding: '0.35rem 0.5rem',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.25rem',
+              }}
+            >
+              <X size={14} />
+              <span>Reset</span>
+            </button>
+          )}
+        </div>
+
+        <div className="adm-toolbar-actions">
+          <span style={{ fontSize: '0.76rem', fontWeight: 800, color: '#3569a7', background: 'rgba(53, 105, 167, 0.08)', padding: '4px 10px', borderRadius: '8px', border: '1px solid rgba(53, 105, 167, 0.2)' }}>
+            Showing {filteredSales.length} of {salesRecords.length} Orders
+          </span>
         </div>
       </div>
 
-      {/* Centralized Orders Table */}
-      <div className="pro-orders-table-wrapper table-responsive">
-        <div className="table-responsive-inner" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', width: '100%' }}>
-          <table className="pro-orders-table" style={{ width: '100%', minWidth: '950px', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+      {/* 4. Luxury Data Table View */}
+      <div className="adm-table-card" style={{ overflow: 'hidden' }}>
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '1080px' }}>
             <thead>
-              <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left', color: '#475569' }}>
-                <th style={{ padding: '0.85rem 0.9rem' }}>Invoice # & Entity</th>
-                <th style={{ padding: '0.85rem 0.9rem' }}>Customer / Buyer</th>
-                <th style={{ padding: '0.85rem 0.9rem' }}>Project Amount</th>
-                <th style={{ padding: '0.85rem 0.9rem' }}>Expected Admin Cut</th>
-                <th style={{ padding: '0.85rem 0.9rem' }}>Payment Received</th>
-                <th style={{ padding: '0.85rem 0.9rem' }}>Remaining Balance</th>
-                <th style={{ padding: '0.85rem 0.9rem' }}>Admin Cut Collected</th>
-                <th style={{ padding: '0.85rem 0.9rem' }}>Remaining Admin Cut</th>
-                <th style={{ padding: '0.85rem 0.9rem' }}>Status</th>
-                <th style={{ padding: '0.85rem 0.9rem', textAlign: 'right' }}>Actions</th>
+              <tr style={{ background: 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)', color: '#ffffff', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                <th style={{ padding: '1rem 1rem', fontWeight: 800 }}>Invoice # &amp; Entity</th>
+                <th style={{ padding: '1rem 1rem', fontWeight: 800 }}>Customer / Buyer</th>
+                <th style={{ padding: '1rem 1rem', fontWeight: 800, textAlign: 'right' }}>Project Amount</th>
+                <th style={{ padding: '1rem 1rem', fontWeight: 800, textAlign: 'right' }}>Expected Cut</th>
+                <th style={{ padding: '1rem 1rem', fontWeight: 800, textAlign: 'right' }}>Payment Received</th>
+                <th style={{ padding: '1rem 1rem', fontWeight: 800, textAlign: 'right' }}>Remaining Balance</th>
+                <th style={{ padding: '1rem 1rem', fontWeight: 800, textAlign: 'right' }}>Cut Collected</th>
+                <th style={{ padding: '1rem 1rem', fontWeight: 800, textAlign: 'center' }}>Status</th>
+                <th style={{ padding: '1rem 1rem', fontWeight: 800, textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="10" style={{ padding: '3rem 1rem', textAlign: 'center', color: '#64748b' }}>
-                    <div className="spinner" style={{ margin: '0 auto 0.5rem auto', width: '24px', height: '24px' }}></div>
-                    Loading centralized database orders...
+                  <td colSpan="9" style={{ padding: '3.5rem', textAlign: 'center', color: '#64748b' }}>
+                    <div className="adm-3d-pod adm-pod-steel admFloatPodSlow" style={{ width: '48px', height: '48px', margin: '0 auto 1rem auto' }}>
+                      <Briefcase size={24} />
+                    </div>
+                    <div style={{ fontWeight: 800, fontSize: '0.98rem', color: '#0f172a' }}>Loading Centralized Orders...</div>
+                    <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.82rem', color: '#94a3b8' }}>Synchronizing accounting ledger from database</p>
                   </td>
                 </tr>
               ) : filteredSales.length === 0 ? (
                 <tr>
-                  <td colSpan="10" style={{ padding: '3rem 1rem', textAlign: 'center', color: '#64748b' }}>
-                    No order records found matching your filter criteria.
+                  <td colSpan="9" style={{ padding: '3.5rem', textAlign: 'center', color: '#64748b' }}>
+                    <div className="adm-3d-pod adm-pod-steel" style={{ width: '56px', height: '56px', margin: '0 auto 1rem auto' }}>
+                      <Briefcase size={28} />
+                    </div>
+                    <div style={{ fontWeight: 800, fontSize: '1.05rem', color: '#0f172a' }}>No Orders Found</div>
+                    <p style={{ margin: '0.35rem auto 0', color: '#64748b', fontSize: '0.84rem', maxWidth: '440px', lineHeight: 1.5 }}>
+                      No order records match your selected search and filter criteria. Try resetting filters.
+                    </p>
                   </td>
                 </tr>
               ) : (
@@ -567,168 +818,174 @@ function AdminOrdersPage() {
                   const remainingAdminCut = Math.max(0, Math.round((expectedAdminCut - adminCutCollected) * 100) / 100);
                   const distributedCut = Number(sale.distributed_admin_cut_amount ?? sale.distributedAdminCutAmount ?? 0);
                   const dumpAmount = Number(sale.dump_amount ?? sale.dumpAmount ?? 0);
-                  const entityType = sale.entityType || sale.entity_type;
                   const isCompleted = balanceDue <= 0;
                   const distributionStatus = sale.income_distribution_status || sale.incomeDistributionStatus || 'pending';
                   const hasPendingPayments = payments.some((p) => (p.income_distribution_status || p.incomeDistributionStatus) === 'pending' && Number(p.admin_commission_cut ?? p.adminCommissionCut ?? 0) > 0);
 
                   return (
-                    <tr key={sale.id || invoiceNo} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                    <tr key={sale.id || invoiceNo} className="adm-table-row">
                       {/* 1. Invoice Number & Entity */}
-                      <td style={{ padding: '0.85rem 0.9rem', fontWeight: 700, color: '#0f172a' }}>
-                        <div>{invoiceNo}</div>
-                        <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 500, marginTop: '0.1rem' }}>
+                      <td style={{ padding: '0.9rem 1rem' }}>
+                        <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.88rem' }}>
+                          {invoiceNo}
+                        </div>
+                        <div style={{ fontSize: '0.74rem', color: '#475569', fontWeight: 700, marginTop: '2px' }}>
                           {sale.entityName || sale.entity_name}
                         </div>
-                        <div style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 400 }}>
-                          {sale.date}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '3px' }}>
+                          <span className="adm-code-chip" style={{ fontSize: '0.66rem', padding: '1px 6px' }}>
+                            {sale.date}
+                          </span>
+                          {payments.length > 0 && (
+                            <span style={{ fontSize: '0.66rem', background: '#eff6ff', color: '#2563eb', padding: '1px 6px', borderRadius: '4px', fontWeight: 800 }}>
+                              {payments.length} Receipt{payments.length > 1 ? 's' : ''}
+                            </span>
+                          )}
                         </div>
-                        {payments.length > 0 && (
-                          <div style={{ fontSize: '0.68rem', color: '#2563eb', fontWeight: 600, marginTop: '0.15rem' }}>
-                            {payments.length} Receipt{payments.length > 1 ? 's' : ''}
-                          </div>
-                        )}
                       </td>
 
                       {/* 2. Customer / Buyer */}
-                      <td style={{ padding: '0.85rem 0.9rem' }}>
-                        <div style={{ fontWeight: 600, color: '#0f172a' }}>
+                      <td style={{ padding: '0.9rem 1rem' }}>
+                        <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.86rem' }}>
                           {sale.customerName || sale.customer_name || sale.customer}
                         </div>
-                        <div style={{ display: 'flex', gap: '0.25rem', alignItems: 'center', marginTop: '0.15rem', flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', gap: '0.3rem', alignItems: 'center', marginTop: '2px', flexWrap: 'wrap' }}>
                           {sale.customer_user_code && (
-                            <span style={{ fontSize: '0.68rem', background: '#eff6ff', color: '#2563eb', padding: '0.08rem 0.35rem', borderRadius: '4px', fontWeight: 600 }}>
+                            <span style={{ fontSize: '0.68rem', background: '#eff6ff', color: '#2563eb', padding: '1px 6px', borderRadius: '4px', fontWeight: 800, fontFamily: 'monospace' }}>
                               {sale.customer_user_code}
                             </span>
                           )}
                           {sale.sponsor && (
-                            <span style={{ fontSize: '0.68rem', color: '#64748b' }}>
+                            <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 600 }}>
                               Ref: {sale.sponsor}
                             </span>
                           )}
                         </div>
-                        <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: '0.15rem', textTransform: 'capitalize' }}>
+                        <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: '2px', textTransform: 'capitalize', fontWeight: 600 }}>
                           {sale.item} ({sale.itemType || sale.item_type || 'service'})
                         </div>
                       </td>
 
                       {/* 3. Project Amount */}
-                      <td style={{ padding: '0.85rem 0.9rem', fontWeight: 800, color: '#0f172a' }}>
-                        ₹{gross.toLocaleString()}
+                      <td style={{ padding: '0.9rem 1rem', textAlign: 'right', fontWeight: 800, color: '#0f172a', fontSize: '0.94rem' }}>
+                        ₹{gross.toLocaleString('en-IN')}
                       </td>
 
-                      {/* 4. Expected Admin Commission (15%) */}
-                      <td style={{ padding: '0.85rem 0.9rem', fontWeight: 700, color: '#475569' }}>
-                        <div>₹{expectedAdminCut.toLocaleString()}</div>
-                        <div style={{ fontSize: '0.68rem', color: '#64748b' }}>({rate}%)</div>
+                      {/* 4. Expected Admin Commission */}
+                      <td style={{ padding: '0.9rem 1rem', textAlign: 'right' }}>
+                        <div style={{ fontWeight: 800, color: '#475569', fontSize: '0.88rem' }}>
+                          ₹{expectedAdminCut.toLocaleString('en-IN')}
+                        </div>
+                        <span style={{ fontSize: '0.68rem', color: '#3569a7', fontWeight: 800, background: 'rgba(53, 105, 167, 0.08)', padding: '1px 5px', borderRadius: '4px' }}>
+                          {rate}% Cut
+                        </span>
                       </td>
 
-                      {/* 5. Total Payment Received */}
-                      <td style={{ padding: '0.85rem 0.9rem', fontWeight: 800, color: '#2563eb' }}>
-                        ₹{totalPaymentReceived.toLocaleString()}
+                      {/* 5. Payment Received */}
+                      <td style={{ padding: '0.9rem 1rem', textAlign: 'right', fontWeight: 800, color: '#059669', fontSize: '0.94rem' }}>
+                        ₹{totalPaymentReceived.toLocaleString('en-IN')}
                       </td>
 
-                      {/* 6. Remaining Project Balance */}
-                      <td style={{ padding: '0.85rem 0.9rem', fontWeight: 800, color: balanceDue > 0 ? '#d97706' : '#16a34a' }}>
-                        ₹{balanceDue.toLocaleString()}
+                      {/* 6. Remaining Balance */}
+                      <td style={{ padding: '0.9rem 1rem', textAlign: 'right', fontWeight: 800, color: balanceDue > 0 ? '#d97706' : '#16a34a', fontSize: '0.94rem' }}>
+                        ₹{balanceDue.toLocaleString('en-IN')}
                       </td>
 
-                      {/* 7. Admin Commission Collected */}
-                      <td style={{ padding: '0.85rem 0.9rem', fontWeight: 800, color: '#16a34a' }}>
-                        ₹{adminCutCollected.toLocaleString()}
+                      {/* 7. Admin Cut Collected */}
+                      <td style={{ padding: '0.9rem 1rem', textAlign: 'right' }}>
+                        <div style={{ fontWeight: 800, color: '#7c3aed', fontSize: '0.88rem' }}>
+                          ₹{adminCutCollected.toLocaleString('en-IN')}
+                        </div>
+                        {remainingAdminCut > 0 && (
+                          <div style={{ fontSize: '0.68rem', color: '#d97706', fontWeight: 700 }}>
+                            Due: ₹{remainingAdminCut.toLocaleString('en-IN')}
+                          </div>
+                        )}
                       </td>
 
-                      {/* 8. Remaining Admin Commission */}
-                      <td style={{ padding: '0.85rem 0.9rem', fontWeight: 800, color: remainingAdminCut > 0 ? '#d97706' : '#64748b' }}>
-                        ₹{remainingAdminCut.toLocaleString()}
-                      </td>
-
-                      {/* 9. Income Distribution Status */}
-                      <td style={{ padding: '0.85rem 0.9rem' }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                      {/* 8. Status & Allocation */}
+                      <td style={{ padding: '0.9rem 1rem', textAlign: 'center' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', alignItems: 'center' }}>
                           {isCompleted ? (
-                            <span style={{ background: '#f0fdf4', color: '#15803d', border: '1px solid #bbf7d0', padding: '0.12rem 0.4rem', borderRadius: '4px', fontSize: '0.68rem', fontWeight: 700, whiteSpace: 'nowrap' }}>
-                              ✓ Settled
+                            <span style={{ background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0', padding: '2px 8px', borderRadius: '9999px', fontSize: '0.68rem', fontWeight: 800, whiteSpace: 'nowrap' }}>
+                              ● Settled
                             </span>
                           ) : (
-                            <span style={{ background: '#fffbeb', color: '#b45309', border: '1px solid #fde68a', padding: '0.12rem 0.4rem', borderRadius: '4px', fontSize: '0.68rem', fontWeight: 700, whiteSpace: 'nowrap' }}>
-                              ⏳ Partial
+                            <span style={{ background: '#fef3c7', color: '#b45309', border: '1px solid #fde68a', padding: '2px 8px', borderRadius: '9999px', fontSize: '0.68rem', fontWeight: 800, whiteSpace: 'nowrap' }}>
+                              ⏳ Partial Due
                             </span>
                           )}
 
-                          {/* Order Income Distribution Status */}
                           <span
                             style={{
-                              padding: '0.12rem 0.4rem',
-                              borderRadius: '4px',
-                              fontSize: '0.68rem',
-                              fontWeight: 700,
+                              padding: '2px 7px',
+                              borderRadius: '6px',
+                              fontSize: '0.66rem',
+                              fontWeight: 800,
                               whiteSpace: 'nowrap',
-                              background: distributionStatus === 'completed' ? '#f0fdf4' : (distributionStatus === 'partial' ? '#eff6ff' : '#fffbeb'),
-                              color: distributionStatus === 'completed' ? '#15803d' : (distributionStatus === 'partial' ? '#1d4ed8' : '#b45309'),
-                              border: distributionStatus === 'completed' ? '1px solid #bbf7d0' : (distributionStatus === 'partial' ? '1px solid #bfdbfe' : '1px solid #fde68a'),
+                              background: distributionStatus === 'completed' ? '#ecfdf5' : (distributionStatus === 'partial' ? '#eff6ff' : '#fffbeb'),
+                              color: distributionStatus === 'completed' ? '#047857' : (distributionStatus === 'partial' ? '#1d4ed8' : '#b45309'),
+                              border: distributionStatus === 'completed' ? '1px solid #a7f3d0' : (distributionStatus === 'partial' ? '1px solid #bfdbfe' : '1px solid #fde68a'),
                             }}
                           >
-                            {distributionStatus === 'completed' ? '✓ Income Allocated' : (distributionStatus === 'partial' ? '⚡ Partial Income' : '⏳ Income Pending')}
+                            {distributionStatus === 'completed' ? '✓ Allocated' : (distributionStatus === 'partial' ? '⚡ Partial MLM' : '⏳ Pending MLM')}
                           </span>
 
                           {distributedCut > 0 && (
-                            <div style={{ fontSize: '0.68rem', color: '#16a34a', fontWeight: 700 }}>
-                              Allocated: ₹{distributedCut.toLocaleString()}
+                            <div style={{ fontSize: '0.66rem', color: '#16a34a', fontWeight: 800 }}>
+                              Split: ₹{distributedCut.toLocaleString('en-IN')}
                             </div>
                           )}
 
                           {dumpAmount > 0 && (
-                            <div style={{ fontSize: '0.68rem', color: '#7c3aed', fontWeight: 600 }}>
-                              Dump: ₹{dumpAmount.toLocaleString()}
+                            <div style={{ fontSize: '0.66rem', color: '#7c3aed', fontWeight: 800 }}>
+                              Dump: ₹{dumpAmount.toLocaleString('en-IN')}
                             </div>
                           )}
                         </div>
                       </td>
 
-                      {/* 10. Actions */}
-                      <td style={{ padding: '0.85rem 0.9rem', textAlign: 'right' }}>
-                        <div style={{ display: 'flex', gap: '0.35rem', justifyContent: 'flex-end', alignItems: 'center', flexWrap: 'wrap' }}>
+                      {/* 9. Actions */}
+                      <td style={{ padding: '0.9rem 1rem', textAlign: 'right' }}>
+                        <div style={{ display: 'inline-flex', gap: '0.35rem', justifyContent: 'flex-end', alignItems: 'center' }}>
                           <button
                             type="button"
                             onClick={() => setSelectedInvoiceForView(sale)}
                             style={{
-                              padding: '0.32rem 0.55rem',
-                              background: '#f1f5f9',
+                              padding: '0.35rem 0.65rem',
+                              background: '#ffffff',
                               color: '#334155',
-                              border: '1px solid #cbd5e1',
-                              borderRadius: '6px',
+                              border: '1.5px solid #cbd5e1',
+                              borderRadius: '7px',
                               fontSize: '0.74rem',
-                              fontWeight: 700,
-                              cursor: 'pointer',
-                              whiteSpace: 'nowrap',
-                            }}
-                          >
-                            👁️ Invoice
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => openOrderDetails(sale)}
-                            style={{
-                              padding: '0.32rem 0.6rem',
-                              background: '#0f172a',
-                              color: '#ffffff',
-                              border: '1px solid #0f172a',
-                              borderRadius: '6px',
-                              fontSize: '0.74rem',
-                              fontWeight: 700,
+                              fontWeight: 800,
                               cursor: 'pointer',
                               whiteSpace: 'nowrap',
                               display: 'inline-flex',
                               alignItems: 'center',
                               gap: '0.25rem',
+                              transition: 'all 0.15s ease',
+                            }}
+                          >
+                            <Eye size={12} />
+                            <span>Invoice</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => openOrderDetails(sale)}
+                            className="adm-hero-btn-primary"
+                            style={{
+                              padding: '0.35rem 0.75rem',
+                              fontSize: '0.74rem',
+                              whiteSpace: 'nowrap',
                             }}
                             title="View Order Details, Accounting Summary, and Payment Receipts"
                           >
-                            <span>💳 Payments</span>
+                            <Receipt size={12} />
+                            <span>Payments</span>
                             {payments.length > 0 && (
-                              <span style={{ background: '#334155', color: '#ffffff', padding: '0.05rem 0.35rem', borderRadius: '4px', fontSize: '0.68rem' }}>
+                              <span style={{ background: 'rgba(255,255,255,0.25)', color: '#ffffff', padding: '0.5px 5px', borderRadius: '4px', fontSize: '0.66rem', fontWeight: 800 }}>
                                 {payments.length}
                               </span>
                             )}
@@ -739,22 +996,24 @@ function AdminOrdersPage() {
                               type="button"
                               onClick={() => openOrderDetails(sale)}
                               style={{
-                                padding: '0.32rem 0.6rem',
-                                background: '#2563eb',
+                                padding: '0.35rem 0.75rem',
+                                background: '#16a34a',
                                 color: '#ffffff',
-                                border: '1px solid #1d4ed8',
-                                borderRadius: '6px',
+                                border: 'none',
+                                borderRadius: '7px',
                                 fontSize: '0.74rem',
-                                fontWeight: 700,
+                                fontWeight: 800,
                                 cursor: 'pointer',
                                 whiteSpace: 'nowrap',
                                 display: 'inline-flex',
                                 alignItems: 'center',
                                 gap: '0.25rem',
+                                boxShadow: '0 2px 6px rgba(22, 163, 74, 0.25)',
                               }}
                               title="Distribute Income for Pending Payment Receipts"
                             >
-                              <span>💰 Distribute</span>
+                              <DollarSign size={12} />
+                              <span>Distribute</span>
                             </button>
                           )}
                         </div>
@@ -765,6 +1024,16 @@ function AdminOrdersPage() {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Table Footer */}
+        <div style={{ padding: '0.85rem 1.4rem', background: '#f8fafc', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', color: '#64748b' }}>
+          <span style={{ fontWeight: 700, color: '#334155' }}>
+            ● Centralized order database synchronized with MySQL 8.0 schema
+          </span>
+          <span style={{ fontWeight: 800, color: '#3569a7' }}>
+            Showing {filteredSales.length} of {salesRecords.length} Orders
+          </span>
         </div>
       </div>
 
