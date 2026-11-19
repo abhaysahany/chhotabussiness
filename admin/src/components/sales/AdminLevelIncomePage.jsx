@@ -919,9 +919,11 @@ function AdminLevelIncomePage() {
                 orders.map((row) => (
                   <tr
                     key={row.id}
+                    onClick={() => navigate(`/income/level-orders/${row.order_id || row.id}`)}
                     style={{
                       borderBottom: '1px solid #f1f5f9',
-                      transition: 'background-color 0.15s',
+                      transition: 'background-color 0.15s ease',
+                      cursor: 'pointer',
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.backgroundColor = '#f8fafc';
@@ -1048,22 +1050,27 @@ function AdminLevelIncomePage() {
                     </td>
 
                     {/* Action Button */}
-                    <td style={{ padding: '0.9rem 1.25rem', textAlign: 'center' }}>
+                    <td style={{ padding: '0.75rem 0.85rem', textAlign: 'center' }}>
                       <button
-                        onClick={() => setSelectedOrderId(row.order_id)}
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/income/level-orders/${row.order_id || row.id}`);
+                        }}
                         style={{
+                          padding: '0.35rem 0.65rem',
+                          borderRadius: '6px',
+                          background: '#ede9fe',
+                          color: '#6d28d9',
+                          border: '1px solid #ddd6fe',
+                          fontWeight: 600,
+                          fontSize: '0.75rem',
+                          cursor: 'pointer',
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '0.35rem',
-                          backgroundColor: '#f1f5f9',
-                          border: '1px solid #cbd5e1',
-                          borderRadius: '6px',
-                          padding: '0.35rem 0.75rem',
-                          fontSize: '0.78rem',
-                          fontWeight: 700,
-                          color: '#475569',
-                          cursor: 'pointer',
-                          transition: 'all 0.15s',
+                          whiteSpace: 'nowrap',
+                          transition: 'all 0.15s ease',
                         }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.backgroundColor = '#7c3aed';
@@ -1071,17 +1078,16 @@ function AdminLevelIncomePage() {
                           e.currentTarget.style.borderColor = '#7c3aed';
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = '#f1f5f9';
-                          e.currentTarget.style.color = '#475569';
-                          e.currentTarget.style.borderColor = '#cbd5e1';
+                          e.currentTarget.style.backgroundColor = '#ede9fe';
+                          e.currentTarget.style.color = '#6d28d9';
+                          e.currentTarget.style.borderColor = '#ddd6fe';
                         }}
                       >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <circle cx="12" cy="12" r="10" />
-                          <line x1="12" y1="16" x2="12" y2="12" />
-                          <line x1="12" y1="8" x2="12.01" y2="8" />
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                          <circle cx="12" cy="12" r="3" />
                         </svg>
-                        Audit
+                        View Details
                       </button>
                     </td>
                   </tr>
