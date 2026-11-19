@@ -2917,6 +2917,89 @@ div[style*="position: fixed"]:not(.sidebar-container):not(.sidebar-backdrop):not
   flex-wrap: wrap;
 }
 
+/* Executive Unified Action & Filter Toolbar */
+.adm-toolbar-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #cbd5e1;
+  padding: 0.75rem 1.15rem;
+  box-shadow: 0 4px 14px -3px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.adm-toolbar-filters {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.adm-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-shrink: 0;
+}
+
+.adm-toolbar-input {
+  width: 100%;
+  height: 38px;
+  padding: 0 0.85rem 0 2.35rem;
+  border-radius: 9px;
+  border: 1.5px solid #cbd5e1;
+  font-size: 0.82rem;
+  background: #ffffff;
+  color: #0f172a;
+  outline: none;
+  box-sizing: border-box;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.adm-toolbar-input:focus {
+  border-color: #3569a7;
+  box-shadow: 0 0 0 3px rgba(53, 105, 167, 0.12);
+}
+
+.adm-toolbar-select {
+  height: 38px;
+  padding: 0 1.1rem 0 0.75rem;
+  border-radius: 9px;
+  border: 1.5px solid #cbd5e1;
+  font-size: 0.82rem;
+  font-weight: 700;
+  background: #ffffff;
+  color: #334155;
+  outline: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.adm-toolbar-select:focus {
+  border-color: #3569a7;
+  box-shadow: 0 0 0 3px rgba(53, 105, 167, 0.12);
+}
+
+@media (max-width: 1080px) {
+  .adm-toolbar-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+  .adm-toolbar-filters {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .adm-toolbar-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
 /* Executive 3D Luxury Hero Banner */
 .adm-hero-banner {
   background: radial-gradient(120% 120% at 96% 8%, rgba(53, 105, 167, 0.06) 0%, rgba(255, 255, 255, 0.98) 45%, #ffffff 100%);

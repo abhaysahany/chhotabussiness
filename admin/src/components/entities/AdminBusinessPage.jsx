@@ -1066,49 +1066,27 @@ function AdminBusinessPage({ onNavigate }) {
           </div>
 
           {/* 3. Executive Filter & View Switcher Bar */}
-          <div className="adm-chart-card" style={{ padding: '0.95rem 1.4rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-            <div style={{ display: 'flex', gap: '0.75rem', flex: 1, maxWidth: '780px', alignItems: 'center', flexWrap: 'wrap' }}>
+          <div className="adm-toolbar-card">
+            <div className="adm-toolbar-filters">
               {/* Search Box */}
-              <div style={{ position: 'relative', flex: '1 1 240px' }}>
+              <div style={{ position: 'relative', flex: '1 1 200px', minWidth: '160px' }}>
                 <input
                   type="text"
-                  placeholder="Search by Business Name, Owner, Email or GST..."
+                  className="adm-toolbar-input"
+                  placeholder="Search by name, owner, email, GST..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '0.55rem 0.85rem 0.55rem 2.4rem',
-                    borderRadius: '10px',
-                    border: '1.5px solid #cbd5e1',
-                    fontSize: '0.84rem',
-                    background: '#ffffff',
-                    color: '#0f172a',
-                    outline: 'none',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
-                    transition: 'all 0.2s ease',
-                  }}
-                  onFocus={(e) => (e.currentTarget.style.borderColor = '#3569a7')}
-                  onBlur={(e) => (e.currentTarget.style.borderColor = '#cbd5e1')}
                 />
-                <Search size={16} color="#94a3b8" style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+                <Search size={15} color="#94a3b8" style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
               </div>
 
               {/* Category Dropdown */}
-              <div style={{ position: 'relative', flexShrink: 0 }}>
+              <div style={{ position: 'relative', flexShrink: 0, width: '150px' }}>
                 <select
+                  className="adm-toolbar-select"
+                  style={{ width: '100%' }}
                   value={selectedCategoryFilter}
                   onChange={(e) => setSelectedCategoryFilter(e.target.value)}
-                  style={{
-                    padding: '0.55rem 1.25rem 0.55rem 0.85rem',
-                    borderRadius: '10px',
-                    border: '1.5px solid #cbd5e1',
-                    fontSize: '0.84rem',
-                    background: '#ffffff',
-                    color: '#334155',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    outline: 'none',
-                  }}
                 >
                   <option value="">All Categories</option>
                   {categories.map((c) => (
@@ -1120,21 +1098,12 @@ function AdminBusinessPage({ onNavigate }) {
               </div>
 
               {/* Status Dropdown */}
-              <div style={{ position: 'relative', flexShrink: 0 }}>
+              <div style={{ position: 'relative', flexShrink: 0, width: '130px' }}>
                 <select
+                  className="adm-toolbar-select"
+                  style={{ width: '100%' }}
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  style={{
-                    padding: '0.55rem 1.25rem 0.55rem 0.85rem',
-                    borderRadius: '10px',
-                    border: '1.5px solid #cbd5e1',
-                    fontSize: '0.84rem',
-                    background: '#ffffff',
-                    color: '#334155',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    outline: 'none',
-                  }}
                 >
                   <option value="">All Statuses</option>
                   <option value="verified">Verified</option>
@@ -1158,10 +1127,11 @@ function AdminBusinessPage({ onNavigate }) {
                     fontSize: '0.78rem',
                     fontWeight: 800,
                     cursor: 'pointer',
-                    padding: '0.4rem',
+                    padding: '0.35rem 0.5rem',
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '0.2rem',
+                    flexShrink: 0,
                   }}
                 >
                   <X size={14} /> Clear
@@ -1170,28 +1140,28 @@ function AdminBusinessPage({ onNavigate }) {
             </div>
 
             {/* View Switcher & Action */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-              <div style={{ display: 'flex', background: '#f8fafc', padding: '3px', borderRadius: '10px', gap: '3px', border: '1.5px solid #e2e8f0' }}>
+            <div className="adm-toolbar-actions">
+              <div style={{ display: 'flex', background: '#f8fafc', padding: '3px', borderRadius: '10px', gap: '3px', border: '1.5px solid #e2e8f0', height: '38px', boxSizing: 'border-box' }}>
                 <button
                   type="button"
                   onClick={() => setListingMode('table')}
                   style={{
-                    padding: '0.42rem 0.95rem',
+                    padding: '0 0.85rem',
                     borderRadius: '7px',
                     border: 'none',
                     fontWeight: 800,
-                    fontSize: '0.78rem',
+                    fontSize: '0.76rem',
                     cursor: 'pointer',
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '0.4rem',
+                    gap: '0.35rem',
                     background: listingMode === 'table' ? '#3569a7' : 'transparent',
                     color: listingMode === 'table' ? '#ffffff' : '#64748b',
                     boxShadow: listingMode === 'table' ? '0 2px 8px rgba(53, 105, 167, 0.35)' : 'none',
                     transition: 'all 0.18s cubic-bezier(0.16, 1, 0.3, 1)',
                   }}
                 >
-                  <TableIcon size={15} />
+                  <TableIcon size={14} />
                   <span>Data Table</span>
                 </button>
 
@@ -1199,22 +1169,22 @@ function AdminBusinessPage({ onNavigate }) {
                   type="button"
                   onClick={() => setListingMode('grid')}
                   style={{
-                    padding: '0.42rem 0.95rem',
+                    padding: '0 0.85rem',
                     borderRadius: '7px',
                     border: 'none',
                     fontWeight: 800,
-                    fontSize: '0.78rem',
+                    fontSize: '0.76rem',
                     cursor: 'pointer',
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '0.4rem',
+                    gap: '0.35rem',
                     background: listingMode === 'grid' ? '#3569a7' : 'transparent',
                     color: listingMode === 'grid' ? '#ffffff' : '#64748b',
                     boxShadow: listingMode === 'grid' ? '0 2px 8px rgba(53, 105, 167, 0.35)' : 'none',
                     transition: 'all 0.18s cubic-bezier(0.16, 1, 0.3, 1)',
                   }}
                 >
-                  <LayoutGrid size={15} />
+                  <LayoutGrid size={14} />
                   <span>Grid Cards</span>
                 </button>
               </div>
@@ -1223,9 +1193,9 @@ function AdminBusinessPage({ onNavigate }) {
                 type="button"
                 className="adm-hero-btn-primary"
                 onClick={() => handleOpenForm(null)}
-                style={{ padding: '0.52rem 1.15rem', fontSize: '0.82rem' }}
+                style={{ height: '38px', padding: '0 1.15rem', fontSize: '0.8rem', whiteSpace: 'nowrap' }}
               >
-                <Plus size={15} /> Register New Business
+                <Plus size={15} /> <span>Register Business</span>
               </button>
             </div>
           </div>
