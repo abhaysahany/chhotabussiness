@@ -2784,6 +2784,16 @@ div[style*="position: fixed"]:not(.sidebar-container):not(.sidebar-backdrop):not
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
+.adm-pod-purple {
+  background: radial-gradient(135% 135% at 20% 20%, #c084fc 0%, #9333ea 70%, #581c87 100%);
+  box-shadow: 
+    0 10px 22px -3px rgba(147, 51, 234, 0.45),
+    0 3px 8px rgba(147, 51, 234, 0.2),
+    inset 0 2px 3px rgba(255, 255, 255, 0.45),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
 /* 4 KPI Financial Vault Cards (Strict 2x2 Grid, Spacious & Executive) */
 .adm-kpi-grid {
   display: grid !important;
@@ -2875,6 +2885,14 @@ div[style*="position: fixed"]:not(.sidebar-container):not(.sidebar-backdrop):not
 }
 .adm-kpi-card-indigo:hover {
   border-color: rgba(79, 70, 229, 0.45);
+}
+
+.adm-kpi-card-purple {
+  border-top: 4px solid #9333ea;
+  background: radial-gradient(circle at 92% 10%, rgba(147, 51, 234, 0.06) 0%, #ffffff 60%);
+}
+.adm-kpi-card-purple:hover {
+  border-color: rgba(147, 51, 234, 0.45);
 }
 
 .adm-kpi-val {
