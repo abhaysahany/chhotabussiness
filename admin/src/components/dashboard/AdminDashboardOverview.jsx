@@ -381,14 +381,16 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
     ];
   }, [data]);
 
-  // Normalized Transactions
+  // Normalized Transactions (Latest 5 for Dashboard Overview)
   const recentTransactions = useMemo(() => {
-    return (data?.recentTransactions || []).map((t) => ({
-      ...t,
-      gross: Number(t.gross) || 0,
-      adminFee: Number(t.adminFee) || 0,
-      netEntity: Number(t.netEntity) || 0,
-    }));
+    return (data?.recentTransactions || [])
+      .map((t) => ({
+        ...t,
+        gross: Number(t.gross) || 0,
+        adminFee: Number(t.adminFee) || 0,
+        netEntity: Number(t.netEntity) || 0,
+      }))
+      .slice(0, 5);
   }, [data]);
 
   // Merchant Partners Performance List
@@ -1257,7 +1259,7 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem' }}>
                   <span style={{ fontSize: '0.64rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#3569a7', background: 'rgba(53, 105, 167, 0.08)', padding: '2px 8px', borderRadius: '9999px', border: '1px solid rgba(53, 105, 167, 0.2)', whiteSpace: 'nowrap' }}>
-                    ● AUDITED FINANCIAL LEDGER
+                    ● AUDITED FINANCIAL LEDGER (LATEST 5)
                   </span>
                 </div>
                 <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.015em' }}>
@@ -1427,7 +1429,9 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
               <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#0d9488', boxShadow: '0 0 8px rgba(13, 148, 136, 0.6)' }} />
               <span style={{ fontWeight: 700, color: '#334155' }}>Live Automated Fee Settlement Active</span>
             </div>
-            <span style={{ fontWeight: 800, color: '#3569a7' }}>{recentTransactions.length} Invoices Recorded</span>
+            <span style={{ fontWeight: 800, color: '#3569a7' }}>
+              Showing Latest {recentTransactions.length} of {data?.recentTransactions?.length || recentTransactions.length} Invoices
+            </span>
           </div>
         </div>
 
