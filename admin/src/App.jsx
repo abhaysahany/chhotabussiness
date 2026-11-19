@@ -57,6 +57,7 @@ import AdminRewardsClaimPage from './components/users/AdminRewardsClaimPage';
 import AdminContentLibraryPage from './components/content/AdminContentLibraryPage';
 import AdminContentSupportUploadsPage from './components/content/AdminContentSupportUploadsPage';
 import AdminSettingsPage from './components/settings/AdminSettingsPage';
+import AdminProfilePage from './components/profile/AdminProfilePage';
 import AdminDashboardOverview from './components/dashboard/AdminDashboardOverview';
 
 function App() {
@@ -170,6 +171,7 @@ function App() {
       'support-live': '/support/live',
       'support-contact': '/support/contact',
       'support-kb': '/support/kb',
+      profile: '/profile',
       settings: '/settings',
       starter: '/starter',
     };
@@ -391,6 +393,10 @@ function App() {
       />
 
       {/* System Settings & Starter Guide */}
+      <Route
+        path="/profile"
+        element={wrapProtected(<AdminProfilePage currentAdmin={currentAdmin} />)}
+      />
       <Route
         path="/settings"
         element={wrapProtected(<AdminSettingsPage />)}
