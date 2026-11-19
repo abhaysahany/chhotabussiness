@@ -1,0 +1,235 @@
+/* ==========================================================================
+   USER MANAGEMENT SUITE ENTERPRISE RESPONSIVE SYSTEM
+   ========================================================================== */
+
+.pro-users-container {
+  padding: 1.5rem 2rem;
+  background-color: #f8fafc;
+  min-height: 100vh;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Hero Header Banner */
+.pro-users-banner {
+  border-radius: 16px;
+  padding: 1.75rem 2rem;
+  color: #ffffff;
+  margin-bottom: 1.75rem;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.25);
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+}
+
+.pro-users-banner h1 {
+  font-size: clamp(1.3rem, 4vw, 1.85rem) !important;
+  font-weight: 800;
+  margin: 0 0 0.4rem 0;
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+.pro-users-banner p {
+  font-size: clamp(0.8rem, 2vw, 0.925rem);
+  margin: 0;
+  line-height: 1.45;
+}
+
+/* KPI Summary Cards Grid */
+.pro-users-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.75rem;
+}
+
+.pro-users-kpi-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  box-sizing: border-box;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.pro-users-kpi-card div[style*="font-size: 1.65rem"],
+.pro-users-kpi-card div[style*="font-size: 1.6rem"],
+.pro-users-kpi-card div[style*="font-size: 1.4rem"],
+.pro-users-kpi-card h2 {
+  font-size: clamp(1.25rem, 3.5vw, 1.6rem) !important;
+  word-break: break-word;
+}
+
+/* Filter and Search Bar */
+.pro-users-filter-bar {
+  background: #ffffff;
+  padding: 1.25rem 1.5rem;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+/* Table Card & Responsive Scroll */
+.pro-users-table-card {
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+  margin-bottom: 1.5rem;
+  box-sizing: border-box;
+}
+
+.pro-users-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Payout Reports 2-Column Split */
+.pro-payout-reports-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.8fr);
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Rewards Catalog Items Grid */
+.pro-rewards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+/* Modal Form Grids */
+.pro-modal-form-grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* ==========================================================================
+   BREAKPOINTS: LAPTOP & TABLET (max-width: 1024px)
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .pro-users-container {
+    padding: 1.25rem 1rem !important;
+  }
+
+  .pro-users-banner {
+    padding: 1.5rem 1.25rem !important;
+  }
+
+  .pro-users-kpi-grid {
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)) !important;
+    gap: 1rem !important;
+  }
+
+  .pro-payout-reports-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+}
+
+/* ==========================================================================
+   BREAKPOINTS: TABLET (max-width: 768px)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .pro-users-container {
+    padding: 0.85rem 0.65rem !important;
+  }
+
+  .pro-users-banner {
+    padding: 1.25rem 1rem !important;
+    border-radius: 12px !important;
+    margin-bottom: 1.25rem !important;
+  }
+
+  .pro-users-banner > div {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 1rem !important;
+  }
+
+  .pro-users-banner > div > div:last-child {
+    width: 100% !important;
+    text-align: left !important;
+  }
+
+  .pro-users-kpi-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+    margin-bottom: 1.25rem !important;
+  }
+
+  .pro-users-kpi-card {
+    padding: 1rem !important;
+    border-radius: 12px !important;
+  }
+
+  .pro-users-filter-bar {
+    padding: 1rem 0.85rem !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.75rem !important;
+    margin-bottom: 1.25rem !important;
+  }
+
+  .pro-users-filter-bar > div {
+    width: 100% !important;
+    min-width: 0 !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.65rem !important;
+  }
+
+  .pro-users-filter-bar input,
+  .pro-users-filter-bar select,
+  .pro-users-filter-bar button {
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .pro-modal-form-grid-2col {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  .pro-rewards-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+}
+
+/* ==========================================================================
+   BREAKPOINTS: MOBILE PHONES (max-width: 480px)
+   ========================================================================== */
+@media (max-width: 480px) {
+  .pro-users-container {
+    padding: 0.65rem 0.45rem !important;
+  }
+
+  .pro-users-banner {
+    padding: 1rem 0.85rem !important;
+  }
+
+  .pro-users-kpi-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.65rem !important;
+  }
+
+  .pro-users-filter-bar {
+    padding: 0.85rem 0.65rem !important;
+  }
+}

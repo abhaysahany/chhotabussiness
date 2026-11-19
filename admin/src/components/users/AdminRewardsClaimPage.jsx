@@ -147,7 +147,7 @@ function AdminRewardsClaimPage() {
   const totalBpRedeemed = claims.reduce((acc, curr) => acc + (Number(curr.points_deducted) || 0), 0);
 
   return (
-    <div style={{ padding: '1.5rem 2rem', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <div className="admin-page-container pro-users-container" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
       {/* Toast Alert */}
       {toastMessage && (
         <div
@@ -171,16 +171,16 @@ function AdminRewardsClaimPage() {
       )}
 
       {/* Header Banner */}
-      <div style={{ background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #3569a7 100%)', borderRadius: '16px', padding: '2rem 2.25rem', color: '#ffffff', marginBottom: '2rem', boxShadow: '0 10px 30px -5px rgba(49, 46, 129, 0.3)' }}>
+      <div className="pro-users-banner" style={{ background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #3569a7 100%)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.12)', padding: '0.25rem 0.85rem', borderRadius: '20px', fontSize: '0.78rem', fontWeight: '700', color: '#c7d2fe', marginBottom: '0.75rem' }}>
               <span>📦 User Management • Rewards Fulfillment Desk</span>
             </div>
-            <h1 style={{ fontSize: '1.85rem', fontWeight: '800', margin: '0 0 0.4rem 0', color: '#ffffff' }}>
+            <h1 style={{ fontWeight: '800', margin: '0 0 0.4rem 0', color: '#ffffff' }}>
               Member Reward Claims Queue
             </h1>
-            <p style={{ color: '#cbd5e1', fontSize: '0.925rem', maxWidth: '750px', margin: 0 }}>
+            <p style={{ color: '#cbd5e1', maxWidth: '750px', margin: 0 }}>
               Review member Business Points (BP) redemption requests, dispatch reward items with courier tracking, or process delivery confirmations.
             </p>
           </div>
@@ -206,28 +206,28 @@ function AdminRewardsClaimPage() {
       </div>
 
       {/* KPI Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1.75rem' }}>
-        <div style={{ background: '#ffffff', borderRadius: '12px', padding: '1.25rem', border: '1px solid #e2e8f0' }}>
+      <div className="pro-users-kpi-grid">
+        <div className="pro-users-kpi-card">
           <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#f59e0b', textTransform: 'uppercase' }}>⏳ Pending Verification</span>
-          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#b45309', margin: '0.3rem 0 0 0' }}>{pendingCount}</h2>
+          <h2 style={{ color: '#b45309', margin: '0.3rem 0 0 0' }}>{pendingCount}</h2>
         </div>
-        <div style={{ background: '#ffffff', borderRadius: '12px', padding: '1.25rem', border: '1px solid #e2e8f0' }}>
+        <div className="pro-users-kpi-card">
           <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#0284c7', textTransform: 'uppercase' }}>🚚 In Transit / Dispatched</span>
-          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0369a1', margin: '0.3rem 0 0 0' }}>{dispatchedCount}</h2>
+          <h2 style={{ color: '#0369a1', margin: '0.3rem 0 0 0' }}>{dispatchedCount}</h2>
         </div>
-        <div style={{ background: '#ffffff', borderRadius: '12px', padding: '1.25rem', border: '1px solid #e2e8f0' }}>
+        <div className="pro-users-kpi-card">
           <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#16a34a', textTransform: 'uppercase' }}>✓ Successfully Delivered</span>
-          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#15803d', margin: '0.3rem 0 0 0' }}>{deliveredCount}</h2>
+          <h2 style={{ color: '#15803d', margin: '0.3rem 0 0 0' }}>{deliveredCount}</h2>
         </div>
-        <div style={{ background: '#ffffff', borderRadius: '12px', padding: '1.25rem', border: '1px solid #e2e8f0' }}>
+        <div className="pro-users-kpi-card">
           <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#7c3aed', textTransform: 'uppercase' }}>💎 Total BP Redeemed</span>
-          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#6d28d9', margin: '0.3rem 0 0 0' }}>{totalBpRedeemed} BP</h2>
+          <h2 style={{ color: '#6d28d9', margin: '0.3rem 0 0 0' }}>{totalBpRedeemed} BP</h2>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '1.25rem', marginBottom: '1.75rem', display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ flex: 1, minWidth: '260px' }}>
+      <div className="pro-users-filter-bar">
+        <div style={{ flex: 1, minWidth: '220px' }}>
           <input
             type="text"
             placeholder="Search claim code, member name, reward, AWB tracking..."
@@ -253,9 +253,9 @@ function AdminRewardsClaimPage() {
       </div>
 
       {/* Claims Table */}
-      <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' }}>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', textAlign: 'left' }}>
+      <div className="pro-users-table-card">
+        <div className="pro-users-table-scroll table-responsive-inner" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', textAlign: 'left', minWidth: '950px' }}>
             <thead>
               <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 <th style={{ padding: '1rem 1.25rem' }}>Claim Ref / Date</th>
@@ -412,8 +412,11 @@ function AdminRewardsClaimPage() {
               borderRadius: '16px',
               width: '100%',
               maxWidth: '480px',
-              padding: '2rem',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              padding: '1.5rem',
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              boxSizing: 'border-box',
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.85rem', marginBottom: '1.25rem' }}>

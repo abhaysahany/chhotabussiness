@@ -235,7 +235,7 @@ function AdminPayoutRequestsPage() {
   };
 
   return (
-    <div className="admin-page-container" style={{ padding: '1.5rem 2rem', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <div className="admin-page-container pro-users-container" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
       {/* Toast */}
       {toastMessage && (
         <div
@@ -313,8 +313,8 @@ function AdminPayoutRequestsPage() {
       </div>
 
       {/* KPI Stats Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem', borderLeft: '4px solid #f59e0b' }}>
+      <div className="pro-users-kpi-grid">
+        <div className="pro-users-kpi-card" style={{ borderLeft: '4px solid #f59e0b' }}>
           <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>PENDING REQUESTS</div>
           <div style={{ fontSize: '1.4rem', fontWeight: 800, color: pendingRequests.length > 0 ? '#d97706' : '#16a34a', marginTop: '0.35rem' }}>
             {pendingRequests.length} Requests
@@ -324,7 +324,7 @@ function AdminPayoutRequestsPage() {
           </div>
         </div>
 
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem', borderLeft: '4px solid #2563eb' }}>
+        <div className="pro-users-kpi-card" style={{ borderLeft: '4px solid #2563eb' }}>
           <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>GROSS REQUESTED AMOUNT</div>
           <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#2563eb', marginTop: '0.35rem' }}>
             ₹{totalPendingGross.toLocaleString()}
@@ -334,7 +334,7 @@ function AdminPayoutRequestsPage() {
           </div>
         </div>
 
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem', borderLeft: '4px solid #dc2626' }}>
+        <div className="pro-users-kpi-card" style={{ borderLeft: '4px solid #dc2626' }}>
           <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>TDS WITHHOLDING (5%)</div>
           <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#dc2626', marginTop: '0.35rem' }}>
             ₹{totalPendingTDS.toLocaleString()}
@@ -344,7 +344,7 @@ function AdminPayoutRequestsPage() {
           </div>
         </div>
 
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem', borderLeft: '4px solid #16a34a' }}>
+        <div className="pro-users-kpi-card" style={{ borderLeft: '4px solid #16a34a' }}>
           <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>NET PAYABLE TO MEMBERS</div>
           <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#16a34a', marginTop: '0.35rem' }}>
             ₹{totalPendingNetPayable.toLocaleString()}
@@ -467,9 +467,9 @@ function AdminPayoutRequestsPage() {
       </div>
 
       {/* Payout Requests Table */}
-      <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+      <div className="pro-users-table-card">
+        <div className="pro-users-table-scroll table-responsive-inner" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', minWidth: '950px' }}>
             <thead>
               <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left', color: '#475569' }}>
                 <th style={{ padding: '0.85rem 1rem' }}>Payout Code / Date</th>
@@ -621,8 +621,9 @@ function AdminPayoutRequestsPage() {
               maxWidth: '560px',
               maxHeight: '90vh',
               overflowY: 'auto',
-              padding: '2rem',
+              padding: '1.5rem',
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              boxSizing: 'border-box',
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.85rem', marginBottom: '1.25rem' }}>
@@ -777,8 +778,11 @@ function AdminPayoutRequestsPage() {
               borderRadius: '16px',
               width: '100%',
               maxWidth: '480px',
-              padding: '2rem',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              padding: '1.5rem',
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              boxSizing: 'border-box',
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>

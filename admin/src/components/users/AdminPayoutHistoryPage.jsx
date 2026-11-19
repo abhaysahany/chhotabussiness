@@ -68,7 +68,7 @@ function AdminPayoutHistoryPage() {
   }, [payouts]);
 
   return (
-    <div className="admin-page-container" style={{ padding: '1.5rem 2rem', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <div className="admin-page-container pro-users-container" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
       {/* Header */}
       <div className="page-header" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
@@ -103,8 +103,8 @@ function AdminPayoutHistoryPage() {
       </div>
 
       {/* KPI Stats Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem', borderLeft: '4px solid #16a34a' }}>
+      <div className="pro-users-kpi-grid">
+        <div className="pro-users-kpi-card" style={{ borderLeft: '4px solid #16a34a' }}>
           <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>TOTAL DISBURSED (NET)</div>
           <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#16a34a', marginTop: '0.35rem' }}>
             ₹{totalSettledNet.toLocaleString()}
@@ -114,7 +114,7 @@ function AdminPayoutHistoryPage() {
           </div>
         </div>
 
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem', borderLeft: '4px solid #2563eb' }}>
+        <div className="pro-users-kpi-card" style={{ borderLeft: '4px solid #2563eb' }}>
           <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>GROSS SETTLEMENT VALUE</div>
           <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#2563eb', marginTop: '0.35rem' }}>
             ₹{totalSettledGross.toLocaleString()}
@@ -124,7 +124,7 @@ function AdminPayoutHistoryPage() {
           </div>
         </div>
 
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem', borderLeft: '4px solid #7c3aed' }}>
+        <div className="pro-users-kpi-card" style={{ borderLeft: '4px solid #7c3aed' }}>
           <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>TDS WITHHELD (SEC 194H)</div>
           <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#7c3aed', marginTop: '0.35rem' }}>
             ₹{totalTdsCollected.toLocaleString()}
@@ -134,7 +134,7 @@ function AdminPayoutHistoryPage() {
           </div>
         </div>
 
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem', borderLeft: '4px solid #0891b2' }}>
+        <div className="pro-users-kpi-card" style={{ borderLeft: '4px solid #0891b2' }}>
           <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>TOTAL LEDGER RECORDS</div>
           <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0891b2', marginTop: '0.35rem' }}>
             {payouts.length} Entries
@@ -146,8 +146,8 @@ function AdminPayoutHistoryPage() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', padding: '1.25rem', marginBottom: '1.5rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ flex: 1, minWidth: '240px' }}>
+      <div className="pro-users-filter-bar">
+        <div style={{ flex: 1, minWidth: '220px' }}>
           <input
             type="text"
             placeholder="Search history by Payout Code, Member Code, Name, Bank, UTR, or Account..."
@@ -183,9 +183,9 @@ function AdminPayoutHistoryPage() {
       </div>
 
       {/* History Table */}
-      <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+      <div className="pro-users-table-card">
+        <div className="pro-users-table-scroll table-responsive-inner" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', minWidth: '980px' }}>
             <thead>
               <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left', color: '#475569' }}>
                 <th style={{ padding: '0.85rem 1rem' }}>Payout Code / Date</th>
@@ -328,8 +328,11 @@ function AdminPayoutHistoryPage() {
               borderRadius: '16px',
               width: '100%',
               maxWidth: '560px',
-              padding: '2rem',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              padding: '1.5rem',
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              boxSizing: 'border-box',
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.85rem', marginBottom: '1.25rem' }}>
