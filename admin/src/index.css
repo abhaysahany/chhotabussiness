@@ -4,6 +4,7 @@
 @import './components/users/users.css';
 @import './components/content/content.css';
 @import './components/support/support.css';
+@import './components/settings/settings.css';
 
 :root {
   --sidebar-width: 240px;
