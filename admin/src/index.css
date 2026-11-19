@@ -2792,6 +2792,32 @@ div[style*="position: fixed"]:not(.sidebar-container):not(.sidebar-backdrop):not
   width: 100%;
 }
 
+.adm-kpi-grid-4 {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 1.15rem !important;
+  width: 100%;
+}
+
+.adm-kpi-grid-4 > .adm-kpi-card {
+  padding: 1.25rem 1.35rem !important;
+  min-height: 172px !important;
+}
+
+@media (max-width: 1200px) {
+  .adm-kpi-grid-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 1.1rem !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .adm-kpi-grid-4 {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+}
+
 @media (max-width: 768px) {
   .adm-kpi-grid {
     grid-template-columns: 1fr !important;

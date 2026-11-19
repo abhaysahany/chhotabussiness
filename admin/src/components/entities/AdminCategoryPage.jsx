@@ -242,96 +242,94 @@ function AdminCategoryPage({ onNavigate }) {
         </div>
       )}
 
-      {/* 2. 4 Executive 3D KPI Vault Cards (Strict 2x2 Spacious Grid) */}
-      <div className="adm-kpi-grid">
+      {/* 2. 4 Executive 3D KPI Vault Cards (Single Horizontal Row: 4 Cards) */}
+      <div className="adm-kpi-grid-4">
         {/* Card 1: Categories */}
         <div className="adm-kpi-card adm-kpi-card-steel">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
               <span
                 style={{
-                  fontSize: '0.7rem',
+                  fontSize: '0.66rem',
                   fontWeight: 800,
                   color: '#3569a7',
                   background: 'rgba(53, 105, 167, 0.1)',
-                  padding: '3px 10px',
-                  borderRadius: '6px',
+                  padding: '2.5px 8px',
+                  borderRadius: '5px',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
+                  letterSpacing: '0.04em',
                   display: 'inline-block',
-                  marginBottom: '0.45rem',
+                  marginBottom: '0.35rem',
                   whiteSpace: 'nowrap',
                 }}
               >
-                ● CLASSIFICATION TAXONOMY
+                ● TAXONOMY
               </span>
-              <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#475569', letterSpacing: '0.04em' }}>
-                TOTAL ENTITY CATEGORIES
+              <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                TOTAL CATEGORIES
               </div>
             </div>
-            <div className="adm-3d-pod adm-pod-steel" style={{ width: '48px', height: '48px', borderRadius: '14px' }}>
-              <FolderTree size={22} strokeWidth={2.4} />
+            <div className="adm-3d-pod adm-pod-steel" style={{ width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0 }}>
+              <FolderTree size={19} strokeWidth={2.4} />
             </div>
           </div>
-          <div style={{ margin: '0.85rem 0 0.45rem 0' }}>
-            <div className="adm-kpi-val">
+          <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
+            <div className="adm-kpi-val" style={{ fontSize: '1.6rem' }}>
               {categories.length}
             </div>
           </div>
           <div className="adm-kpi-footer">
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600 }}>
-              <Layers size={14} color="#3569a7" />
-              <span>Active Taxonomies</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.73rem', color: '#64748b' }}>
+              <Layers size={13} color="#3569a7" />
+              <span>Classifications</span>
             </span>
-            <span style={{ color: '#3569a7', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-              <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#3569a7' }}></span>
-              Master Directory
+            <span style={{ color: '#3569a7', fontWeight: 800, fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+              ● Directory
             </span>
           </div>
         </div>
 
         {/* Card 2: Active Status */}
         <div className="adm-kpi-card adm-kpi-card-emerald">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
               <span
                 style={{
-                  fontSize: '0.7rem',
+                  fontSize: '0.66rem',
                   fontWeight: 800,
                   color: '#0d9488',
                   background: 'rgba(13, 148, 136, 0.1)',
-                  padding: '3px 10px',
-                  borderRadius: '6px',
+                  padding: '2.5px 8px',
+                  borderRadius: '5px',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
+                  letterSpacing: '0.04em',
                   display: 'inline-block',
-                  marginBottom: '0.45rem',
+                  marginBottom: '0.35rem',
                   whiteSpace: 'nowrap',
                 }}
               >
-                ● ONBOARDING READY
+                ● ONBOARDING
               </span>
-              <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#475569', letterSpacing: '0.04em' }}>
-                ACTIVE ONBOARDING STATUS
+              <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                ACTIVE STATUS
               </div>
             </div>
-            <div className="adm-3d-pod adm-pod-emerald" style={{ width: '48px', height: '48px', borderRadius: '14px' }}>
-              <CheckCircle2 size={22} strokeWidth={2.4} />
+            <div className="adm-3d-pod adm-pod-emerald" style={{ width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0 }}>
+              <CheckCircle2 size={19} strokeWidth={2.4} />
             </div>
           </div>
-          <div style={{ margin: '0.85rem 0 0.45rem 0' }}>
-            <div className="adm-kpi-val" style={{ color: '#0d9488' }}>
+          <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
+            <div className="adm-kpi-val" style={{ fontSize: '1.6rem', color: '#0d9488' }}>
               {activeCategoriesCount}
             </div>
           </div>
           <div className="adm-kpi-footer">
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600 }}>
-              <CheckCircle2 size={14} color="#0d9488" />
-              <span>Ready for Registration</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.73rem', color: '#64748b' }}>
+              <CheckCircle2 size={13} color="#0d9488" />
+              <span>Ready to register</span>
             </span>
-            <span style={{ color: '#0d9488', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-              <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#0d9488' }}></span>
-              Operational
+            <span style={{ color: '#0d9488', fontWeight: 800, fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+              ● Operational
             </span>
           </div>
         </div>
@@ -343,46 +341,46 @@ function AdminCategoryPage({ onNavigate }) {
           style={{ cursor: 'pointer' }}
           title="Click to manage linked registered businesses"
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
               <span
                 style={{
-                  fontSize: '0.7rem',
+                  fontSize: '0.66rem',
                   fontWeight: 800,
                   color: '#4f46e5',
                   background: 'rgba(79, 70, 229, 0.1)',
-                  padding: '3px 10px',
-                  borderRadius: '6px',
+                  padding: '2.5px 8px',
+                  borderRadius: '5px',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
+                  letterSpacing: '0.04em',
                   display: 'inline-block',
-                  marginBottom: '0.45rem',
+                  marginBottom: '0.35rem',
                   whiteSpace: 'nowrap',
                 }}
               >
-                ● CORPORATE PARTNERS
+                ● ENTERPRISES
               </span>
-              <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#475569', letterSpacing: '0.04em' }}>
-                REGISTERED BUSINESS ENTITIES
+              <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                BUSINESS ENTITIES
               </div>
             </div>
-            <div className="adm-3d-pod adm-pod-indigo" style={{ width: '48px', height: '48px', borderRadius: '14px' }}>
-              <Building2 size={22} strokeWidth={2.4} />
+            <div className="adm-3d-pod adm-pod-indigo" style={{ width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0 }}>
+              <Building2 size={19} strokeWidth={2.4} />
             </div>
           </div>
-          <div style={{ margin: '0.85rem 0 0.45rem 0' }}>
-            <div className="adm-kpi-val" style={{ color: '#4f46e5' }}>
+          <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
+            <div className="adm-kpi-val" style={{ fontSize: '1.6rem', color: '#4f46e5' }}>
               {totalBusinesses}
             </div>
           </div>
           <div className="adm-kpi-footer">
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600 }}>
-              <Building2 size={14} color="#4f46e5" />
-              <span>Linked Enterprises</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.73rem', color: '#64748b' }}>
+              <Building2 size={13} color="#4f46e5" />
+              <span>Businesses</span>
             </span>
-            <span style={{ color: '#4f46e5', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
-              <span>View businesses</span>
-              <ArrowUpRight size={13} />
+            <span style={{ color: '#4f46e5', fontWeight: 800, fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '0.2rem', whiteSpace: 'nowrap' }}>
+              <span>View</span>
+              <ArrowUpRight size={12} />
             </span>
           </div>
         </div>
@@ -394,46 +392,46 @@ function AdminCategoryPage({ onNavigate }) {
           style={{ cursor: 'pointer' }}
           title="Click to manage linked freelancer accounts"
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
               <span
                 style={{
-                  fontSize: '0.7rem',
+                  fontSize: '0.66rem',
                   fontWeight: 800,
                   color: '#d97706',
                   background: 'rgba(217, 119, 6, 0.1)',
-                  padding: '3px 10px',
-                  borderRadius: '6px',
+                  padding: '2.5px 8px',
+                  borderRadius: '5px',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
+                  letterSpacing: '0.04em',
                   display: 'inline-block',
-                  marginBottom: '0.45rem',
+                  marginBottom: '0.35rem',
                   whiteSpace: 'nowrap',
                 }}
               >
-                ● INDEPENDENT NETWORK
+                ● FREELANCERS
               </span>
-              <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#475569', letterSpacing: '0.04em' }}>
-                REGISTERED FREELANCE ACCOUNTS
+              <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                FREELANCE ACCOUNTS
               </div>
             </div>
-            <div className="adm-3d-pod adm-pod-amber" style={{ width: '48px', height: '48px', borderRadius: '14px' }}>
-              <Users size={22} strokeWidth={2.4} />
+            <div className="adm-3d-pod adm-pod-amber" style={{ width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0 }}>
+              <Users size={19} strokeWidth={2.4} />
             </div>
           </div>
-          <div style={{ margin: '0.85rem 0 0.45rem 0' }}>
-            <div className="adm-kpi-val" style={{ color: '#d97706' }}>
+          <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
+            <div className="adm-kpi-val" style={{ fontSize: '1.6rem', color: '#d97706' }}>
               {totalFreelancers}
             </div>
           </div>
           <div className="adm-kpi-footer">
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600 }}>
-              <Users size={14} color="#d97706" />
-              <span>Contractor Network</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.73rem', color: '#64748b' }}>
+              <Users size={13} color="#d97706" />
+              <span>Contractors</span>
             </span>
-            <span style={{ color: '#d97706', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
-              <span>View freelancers</span>
-              <ArrowUpRight size={13} />
+            <span style={{ color: '#d97706', fontWeight: 800, fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '0.2rem', whiteSpace: 'nowrap' }}>
+              <span>View</span>
+              <ArrowUpRight size={12} />
             </span>
           </div>
         </div>
