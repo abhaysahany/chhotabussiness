@@ -1246,16 +1246,21 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
       </div>
 
       {/* 5. Enterprise Merchant Ledger & Top Partners */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.25rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.4rem' }}>
         {/* Recent Invoices & Sales Ledger */}
-        <div className="adm-chart-card" style={{ flex: '2 1 560px', padding: 0, overflow: 'hidden' }}>
-          <div style={{ padding: '1.15rem 1.4rem', borderBottom: '1px solid #e2e8f0', background: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-              <div className="adm-3d-pod adm-pod-steel" style={{ width: '34px', height: '34px', borderRadius: '9px' }}>
-                <FileCheck size={16} strokeWidth={2.4} />
+        <div className="adm-chart-card adm-chart-card-glow" style={{ flex: '2 1 560px', padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ padding: '1.25rem 1.6rem', borderBottom: '1px solid #e2e8f0', background: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
+              <div className="adm-3d-pod adm-pod-steel" style={{ width: '48px', height: '48px', borderRadius: '14px', flexShrink: 0 }}>
+                <Receipt size={22} strokeWidth={2.4} />
               </div>
               <div>
-                <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: '#0f172a' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem' }}>
+                  <span style={{ fontSize: '0.64rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#3569a7', background: 'rgba(53, 105, 167, 0.08)', padding: '2px 8px', borderRadius: '9999px', border: '1px solid rgba(53, 105, 167, 0.2)', whiteSpace: 'nowrap' }}>
+                    ● AUDITED FINANCIAL LEDGER
+                  </span>
+                </div>
+                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.015em' }}>
                   Recent Merchant Invoices &amp; Automatic Settlements
                 </h3>
                 <p style={{ margin: '0.15rem 0 0 0', fontSize: '0.74rem', color: '#64748b' }}>
@@ -1263,35 +1268,52 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
                 </p>
               </div>
             </div>
+
             <button
               type="button"
               onClick={() => onNavigate && onNavigate('orders-management')}
               style={{
                 background: '#ffffff',
-                border: '1px solid #cbd5e1',
-                padding: '0.38rem 0.8rem',
-                borderRadius: '8px',
+                border: '1.5px solid #cbd5e1',
+                padding: '0.45rem 0.95rem',
+                borderRadius: '10px',
                 color: '#3569a7',
-                fontSize: '0.75rem',
+                fontSize: '0.76rem',
                 fontWeight: 800,
                 cursor: 'pointer',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.03)',
+                transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                whiteSpace: 'nowrap',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-1.5px)';
+                e.currentTarget.style.borderColor = '#3569a7';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(53, 105, 167, 0.18)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.borderColor = '#cbd5e1';
+                e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.03)';
               }}
             >
-              View All Invoices →
+              <span>View All Invoices</span>
+              <ArrowUpRight size={14} />
             </button>
           </div>
 
-          <div style={{ overflowX: 'auto' }}>
+          <div style={{ overflowX: 'auto', flex: 1 }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.82rem' }}>
               <thead>
-                <tr style={{ background: 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)', color: '#cbd5e1', fontWeight: 800, fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  <th style={{ padding: '0.85rem 1rem' }}>Invoice / Client</th>
-                  <th style={{ padding: '0.85rem 1rem' }}>Merchant Entity</th>
-                  <th style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>Gross GMV</th>
-                  <th style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>Admin Cut</th>
-                  <th style={{ padding: '0.85rem 1rem', textAlign: 'center' }}>Status</th>
-                  <th style={{ padding: '0.85rem 1rem', textAlign: 'center' }}>Action</th>
+                <tr style={{ background: 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)', color: '#cbd5e1', fontWeight: 800, fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  <th style={{ padding: '0.9rem 1.15rem' }}>Invoice / Client</th>
+                  <th style={{ padding: '0.9rem 1.15rem' }}>Merchant Entity</th>
+                  <th style={{ padding: '0.9rem 1.15rem', textAlign: 'right' }}>Gross GMV</th>
+                  <th style={{ padding: '0.9rem 1.15rem', textAlign: 'right' }}>Admin Cut</th>
+                  <th style={{ padding: '0.9rem 1.15rem', textAlign: 'center' }}>Status</th>
+                  <th style={{ padding: '0.9rem 1.15rem', textAlign: 'center' }}>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -1310,31 +1332,15 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
                     return (
                       <tr
                         key={txn.id || idx}
-                        style={{ borderBottom: '1px solid #f1f5f9', transition: 'background-color 0.15s ease' }}
-                        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(248, 250, 252, 0.85)')}
-                        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                        className="adm-table-row"
                       >
-                        <td style={{ padding: '0.85rem 1rem' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                            <div
-                              style={{
-                                width: '32px',
-                                height: '32px',
-                                borderRadius: '9px',
-                                background: 'linear-gradient(135deg, #4a80c2 0%, #264e7e 100%)',
-                                color: '#ffffff',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: '0.72rem',
-                                fontWeight: 800,
-                                flexShrink: 0,
-                              }}
-                            >
+                        <td style={{ padding: '0.85rem 1.15rem' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                            <div className="adm-avatar-3d">
                               {getInitials(custName)}
                             </div>
                             <div>
-                              <div style={{ fontWeight: 800, color: '#0f172a' }}>
+                              <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.86rem' }}>
                                 {custName}
                               </div>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginTop: '2px' }}>
@@ -1354,37 +1360,57 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
                             </div>
                           </div>
                         </td>
-                        <td style={{ padding: '0.85rem 1rem' }}>
-                          <span style={{ fontWeight: 700, color: '#334155' }}>
-                            {typeof txn.entity === 'object' && txn.entity !== null ? (txn.entity.name || 'Merchant Entity') : String(txn.entity || 'Merchant Entity')}
-                          </span>
+                        <td style={{ padding: '0.85rem 1.15rem' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                            <Building2 size={14} color="#64748b" />
+                            <span style={{ fontWeight: 800, color: '#1e293b', fontSize: '0.84rem' }}>
+                              {typeof txn.entity === 'object' && txn.entity !== null ? (txn.entity.name || 'Merchant Entity') : String(txn.entity || 'Merchant Entity')}
+                            </span>
+                          </div>
                         </td>
-                        <td style={{ padding: '0.85rem 1rem', textAlign: 'right', color: '#0f172a', fontWeight: 800 }}>
+                        <td style={{ padding: '0.85rem 1.15rem', textAlign: 'right', color: '#0f172a', fontWeight: 800, fontSize: '0.88rem' }}>
                           ₹{txn.gross.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                         </td>
-                        <td style={{ padding: '0.85rem 1rem', textAlign: 'right', color: '#0d9488', fontWeight: 800 }}>
+                        <td style={{ padding: '0.85rem 1.15rem', textAlign: 'right', color: '#0d9488', fontWeight: 800, fontSize: '0.88rem' }}>
                           ₹{txn.adminFee.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                         </td>
-                        <td style={{ padding: '0.85rem 1rem', textAlign: 'center' }}>
+                        <td style={{ padding: '0.85rem 1.15rem', textAlign: 'center' }}>
                           <StatusBadge status={txn.status} fallback="completed" />
                         </td>
-                        <td style={{ padding: '0.85rem 1rem', textAlign: 'center' }}>
+                        <td style={{ padding: '0.85rem 1.15rem', textAlign: 'center' }}>
                           <button
                             type="button"
                             onClick={() => setSelectedInvoice(txn)}
                             style={{
-                              background: '#f1f5f9',
-                              border: '1px solid #cbd5e1',
-                              borderRadius: '7px',
-                              padding: '0.32rem 0.72rem',
+                              background: '#f8fafc',
+                              border: '1.5px solid #cbd5e1',
+                              borderRadius: '8px',
+                              padding: '0.35rem 0.75rem',
                               fontSize: '0.74rem',
                               fontWeight: 800,
                               color: '#3569a7',
                               cursor: 'pointer',
-                              transition: 'all 0.15s ease',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.25rem',
+                              transition: 'all 0.18s cubic-bezier(0.16, 1, 0.3, 1)',
+                              boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.background = '#3569a7';
+                              e.currentTarget.style.color = '#ffffff';
+                              e.currentTarget.style.borderColor = '#3569a7';
+                              e.currentTarget.style.boxShadow = '0 3px 8px rgba(53, 105, 167, 0.25)';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.background = '#f8fafc';
+                              e.currentTarget.style.color = '#3569a7';
+                              e.currentTarget.style.borderColor = '#cbd5e1';
+                              e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.02)';
                             }}
                           >
-                            Slip
+                            <Printer size={13} />
+                            <span>Slip</span>
                           </button>
                         </td>
                       </tr>
@@ -1394,95 +1420,120 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
               </tbody>
             </table>
           </div>
+
+          {/* Table Card Ledger Footer */}
+          <div style={{ padding: '0.75rem 1.4rem', background: '#f8fafc', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem', color: '#64748b' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#0d9488', boxShadow: '0 0 8px rgba(13, 148, 136, 0.6)' }} />
+              <span style={{ fontWeight: 700, color: '#334155' }}>Live Automated Fee Settlement Active</span>
+            </div>
+            <span style={{ fontWeight: 800, color: '#3569a7' }}>{recentTransactions.length} Invoices Recorded</span>
+          </div>
         </div>
 
         {/* Corporate Merchant & Entity Performance Matrix */}
-        <div className="adm-chart-card" style={{ flex: '1 1 340px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.1rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-              <div className="adm-3d-pod adm-pod-steel" style={{ width: '34px', height: '34px', borderRadius: '9px' }}>
-                <Briefcase size={16} strokeWidth={2.4} />
-              </div>
-              <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: '#0f172a' }}>
-                Top Merchant Entities
-              </h3>
-            </div>
-            <button
-              type="button"
-              onClick={() => onNavigate && onNavigate('businesses')}
-              style={{ background: 'none', border: 'none', color: '#3569a7', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}
-            >
-              All Entities →
-            </button>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-            {merchantPartners.length === 0 ? (
-              <div style={{ padding: '1.75rem', textAlign: 'center', color: '#64748b', fontSize: '0.82rem' }}>
-                No active merchant partners found.
-              </div>
-            ) : (
-              merchantPartners.map((m, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    background: '#f8fafc',
-                    border: '1px solid #e2e8f0',
-                    borderRadius: '12px',
-                    padding: '0.85rem 1rem',
-                    transition: 'all 0.2s ease',
-                  }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <div>
-                      <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#0f172a' }}>
-                        {typeof m.name === 'object' && m.name !== null ? (m.name.name || 'Partner') : String(m.name || 'Partner')}
-                      </div>
-                      <div style={{ marginTop: '3px' }}>
-                        <CategoryBadge category={m.category} count={m.count} fallback="Entity" />
-                      </div>
-                    </div>
-                    <span
-                      style={{
-                        fontSize: '0.72rem',
-                        fontWeight: 800,
-                        color: '#3569a7',
-                        background: 'rgba(53, 105, 167, 0.1)',
-                        padding: '2.5px 7px',
-                        borderRadius: '6px',
-                        border: '1px solid rgba(53, 105, 167, 0.2)',
-                      }}
-                    >
-                      {typeof m.share === 'object' ? '0%' : String(m.share || '0%')} Share
+        <div className="adm-chart-card adm-chart-card-glow" style={{ flex: '1 1 360px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem', marginBottom: '1.1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                <div className="adm-3d-pod adm-pod-emerald" style={{ width: '48px', height: '48px', borderRadius: '14px', flexShrink: 0 }}>
+                  <Building2 size={22} strokeWidth={2.4} />
+                </div>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.15rem' }}>
+                    <span style={{ fontSize: '0.64rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#0d9488', background: 'rgba(13, 148, 136, 0.08)', padding: '2px 7px', borderRadius: '9999px', border: '1px solid rgba(13, 148, 136, 0.2)', whiteSpace: 'nowrap' }}>
+                      ● VOLUME LEADERS
                     </span>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem', fontSize: '0.75rem', borderTop: '1px solid #e2e8f0', paddingTop: '0.45rem' }}>
-                    <span style={{ color: '#64748b' }}>Turnover: <strong style={{ color: '#0f172a' }}>{typeof m.gmv === 'object' ? '₹0.00' : String(m.gmv || '₹0.00')}</strong></span>
-                    <span style={{ color: '#0d9488', fontWeight: 800 }}>Admin Cut: {typeof m.adminCut === 'object' ? '₹0.00' : String(m.adminCut || '₹0.00')}</span>
-                  </div>
+                  <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.015em' }}>
+                    Top Merchant Entities
+                  </h3>
+                  <p style={{ margin: '0.15rem 0 0 0', fontSize: '0.74rem', color: '#64748b' }}>
+                    Revenue share &amp; corporate fee throughput
+                  </p>
                 </div>
-              ))
-            )}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => onNavigate && onNavigate('businesses')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#3569a7',
+                  fontSize: '0.76rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.25rem',
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0,
+                }}
+              >
+                <span>All Entities</span>
+                <ArrowUpRight size={13} />
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+              {merchantPartners.length === 0 ? (
+                <div style={{ padding: '1.75rem', textAlign: 'center', color: '#64748b', fontSize: '0.82rem' }}>
+                  No active merchant partners found.
+                </div>
+              ) : (
+                merchantPartners.map((m, idx) => (
+                  <div
+                    key={idx}
+                    className="adm-entity-card"
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <div>
+                        <div style={{ fontWeight: 800, fontSize: '0.92rem', color: '#0f172a' }}>
+                          {typeof m.name === 'object' && m.name !== null ? (m.name.name || 'Partner') : String(m.name || 'Partner')}
+                        </div>
+                        <div style={{ marginTop: '4px' }}>
+                          <CategoryBadge category={m.category} count={m.count} fallback="Entity" />
+                        </div>
+                      </div>
+                      <span
+                        style={{
+                          fontSize: '0.72rem',
+                          fontWeight: 800,
+                          color: '#3569a7',
+                          background: 'rgba(53, 105, 167, 0.1)',
+                          padding: '3px 8px',
+                          borderRadius: '8px',
+                          border: '1px solid rgba(53, 105, 167, 0.25)',
+                        }}
+                      >
+                        {typeof m.share === 'object' ? '0%' : String(m.share || '0%')} Share
+                      </span>
+                    </div>
+
+                    {/* Progress Bar for GMV Share */}
+                    <div style={{ width: '100%', height: '6px', background: '#e2e8f0', borderRadius: '9999px', overflow: 'hidden', margin: '0.65rem 0 0.55rem 0' }}>
+                      <div style={{ width: typeof m.share === 'string' ? m.share : '100%', height: '100%', background: 'linear-gradient(90deg, #3569a7 0%, #0d9488 100%)', borderRadius: '9999px' }} />
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', borderTop: '1px solid #e2e8f0', paddingTop: '0.55rem', marginTop: '0.2rem' }}>
+                      <span style={{ color: '#64748b' }}>Turnover: <strong style={{ color: '#0f172a' }}>{typeof m.gmv === 'object' ? '₹0.00' : String(m.gmv || '₹0.00')}</strong></span>
+                      <span style={{ color: '#0d9488', fontWeight: 800 }}>Admin Cut: {typeof m.adminCut === 'object' ? '₹0.00' : String(m.adminCut || '₹0.00')}</span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
 
-          <div style={{ marginTop: '1.25rem', borderTop: '1px solid #f1f5f9', paddingTop: '0.85rem' }}>
+          <div style={{ marginTop: '1.25rem', borderTop: '1px solid #f1f5f9', paddingTop: '0.95rem' }}>
             <button
               type="button"
               onClick={() => onNavigate && onNavigate('businesses')}
-              style={{
-                width: '100%',
-                padding: '0.6rem',
-                background: 'rgba(53, 105, 167, 0.08)',
-                border: '1px solid rgba(53, 105, 167, 0.22)',
-                borderRadius: '10px',
-                color: '#3569a7',
-                fontWeight: 800,
-                fontSize: '0.78rem',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-              }}
+              className="adm-partner-btn"
             >
-              Manage Business &amp; Freelancer Partners →
+              <span>Manage Business &amp; Freelancer Partners</span>
+              <ArrowUpRight size={15} />
             </button>
           </div>
         </div>

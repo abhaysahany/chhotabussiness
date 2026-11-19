@@ -3149,3 +3149,79 @@ div[style*="position: fixed"]:not(.sidebar-container):not(.sidebar-backdrop):not
   font-weight: 700;
   color: #0f172a;
 }
+
+/* Ledger Table and Merchant Partner Aesthetics */
+.adm-table-row {
+  border-bottom: 1px solid #f1f5f9;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.adm-table-row:hover {
+  background-color: #f8fafc;
+}
+
+.adm-avatar-3d {
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  background: radial-gradient(135% 135% at 25% 25%, #5b9ae2 0%, #3569a7 60%, #17345b 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.74rem;
+  font-weight: 800;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(53, 105, 167, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  transition: transform 0.2s ease;
+}
+
+.adm-table-row:hover .adm-avatar-3d {
+  transform: scale(1.06);
+}
+
+.adm-entity-card {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1.05rem 1.15rem;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.adm-entity-card:hover {
+  transform: translateY(-2.5px);
+  border-color: #3569a7;
+  box-shadow: 0 10px 24px -4px rgba(53, 105, 167, 0.12);
+  background: #ffffff;
+}
+
+.adm-partner-btn {
+  width: 100%;
+  padding: 0.72rem 1rem;
+  background: linear-gradient(135deg, rgba(53, 105, 167, 0.08) 0%, rgba(13, 148, 136, 0.08) 100%);
+  border: 1.5px solid rgba(53, 105, 167, 0.25);
+  border-radius: 12px;
+  color: #3569a7;
+  font-weight: 800;
+  font-size: 0.82rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.adm-partner-btn:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #3569a7 0%, #204673 100%);
+  color: #ffffff;
+  border-color: #3569a7;
+  box-shadow: 0 8px 20px rgba(53, 105, 167, 0.35);
+}
+
+.adm-partner-btn:active {
+  transform: translateY(0);
+}
