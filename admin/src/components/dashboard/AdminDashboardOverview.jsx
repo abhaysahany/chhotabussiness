@@ -260,31 +260,50 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
     chart: {
       id: 'admin-target-gauge',
       type: 'radialBar',
-      height: 240,
+      height: 250,
       sparkline: { enabled: true },
       fontFamily: 'Plus Jakarta Sans, sans-serif',
+      dropShadow: {
+        enabled: true,
+        top: 2,
+        left: 0,
+        blur: 6,
+        opacity: 0.1,
+        color: '#0d9488',
+      },
     },
     plotOptions: {
       radialBar: {
-        startAngle: -110,
-        endAngle: 110,
+        startAngle: -95,
+        endAngle: 95,
+        hollow: {
+          size: '68%',
+        },
         track: {
-          background: '#eaf1f8',
+          background: '#f1f5f9',
           strokeWidth: '97%',
+          margin: 6,
+          dropShadow: {
+            enabled: true,
+            top: 2,
+            left: 0,
+            blur: 4,
+            opacity: 0.05,
+          },
         },
         dataLabels: {
           name: {
             show: true,
-            fontSize: '12px',
+            fontSize: '11px',
             color: '#64748b',
-            offsetY: 20,
+            offsetY: 10,
             fontWeight: 700,
           },
           value: {
-            offsetY: -15,
-            fontSize: '24px',
+            offsetY: -16,
+            fontSize: '26px',
             fontWeight: 800,
-            color: '#3569a7',
+            color: '#0f172a',
             formatter: (val) => `${val}%`,
           },
         },
@@ -295,12 +314,16 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
       gradient: {
         shade: 'dark',
         type: 'horizontal',
+        shadeIntensity: 0.5,
         gradientToColors: ['#0d9488'],
+        inverseColors: true,
+        opacityFrom: 1,
+        opacityTo: 1,
         stops: [0, 100],
       },
     },
     colors: ['#3569a7'],
-    labels: ['Monthly Target Progress'],
+    labels: ['Target Realized'],
   }), []);
 
   const targetPercent = useMemo(() => {
@@ -1035,38 +1058,38 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
         {/* Chart 3: Radial Target Gauge */}
         <div className="adm-chart-card adm-chart-card-glow" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.85rem', marginBottom: '0.85rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
-                <div className="adm-3d-pod adm-pod-steel" style={{ width: '48px', height: '48px', borderRadius: '14px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem', marginBottom: '0.85rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', minWidth: 0, flex: 1 }}>
+                <div className="adm-3d-pod adm-pod-steel" style={{ width: '46px', height: '46px', borderRadius: '13px', flexShrink: 0 }}>
                   <Target size={22} strokeWidth={2.4} />
                 </div>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem' }}>
-                    <span style={{ fontSize: '0.66rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#3569a7', background: 'rgba(53, 105, 167, 0.08)', padding: '2px 8px', borderRadius: '9999px', border: '1px solid rgba(53, 105, 167, 0.2)' }}>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.15rem' }}>
+                    <span style={{ fontSize: '0.64rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#3569a7', background: 'rgba(53, 105, 167, 0.08)', padding: '2px 7px', borderRadius: '9999px', border: '1px solid rgba(53, 105, 167, 0.2)', whiteSpace: 'nowrap' }}>
                       ● REVENUE TRAJECTORY
                     </span>
                   </div>
-                  <h3 style={{ margin: 0, fontSize: '1.08rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.015em' }}>
+                  <h3 style={{ margin: 0, fontSize: '1.02rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.015em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     Monthly Platform GMV Target
                   </h3>
-                  <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.76rem', color: '#64748b' }}>
+                  <p style={{ margin: '0.15rem 0 0 0', fontSize: '0.74rem', color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     Overall platform revenue trajectory toward monthly target
                   </p>
                 </div>
               </div>
 
-              <div style={{ background: '#f8fafc', border: '1.5px solid #e2e8f0', padding: '0.35rem 0.8rem', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '0.45rem', whiteSpace: 'nowrap' }}>
-                <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#64748b' }}>Target:</span>
-                <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#3569a7' }}>₹65 Lakhs</span>
+              <div style={{ background: '#f8fafc', border: '1.5px solid #e2e8f0', padding: '0.35rem 0.75rem', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '0.45rem', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                <span style={{ fontSize: '0.66rem', fontWeight: 700, color: '#64748b' }}>Target:</span>
+                <span style={{ fontSize: '0.76rem', fontWeight: 800, color: '#3569a7' }}>₹65 Lakhs</span>
               </div>
             </div>
 
-            <div style={{ minHeight: '220px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0.25rem 0' }}>
+            <div style={{ minHeight: '235px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0.25rem 0' }}>
               <Chart
                 options={radialTargetOptions}
                 series={radialTargetSeries}
                 type="radialBar"
-                height={240}
+                height={250}
               />
             </div>
 
@@ -1113,27 +1136,27 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
         {/* Chart 4: Grouped Column Velocity */}
         <div className="adm-chart-card adm-chart-card-glow" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.85rem', marginBottom: '0.85rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
-                <div className="adm-3d-pod adm-pod-emerald" style={{ width: '48px', height: '48px', borderRadius: '14px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem', marginBottom: '0.85rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', minWidth: 0, flex: 1 }}>
+                <div className="adm-3d-pod adm-pod-emerald" style={{ width: '46px', height: '46px', borderRadius: '13px', flexShrink: 0 }}>
                   <BarChart3 size={22} strokeWidth={2.4} />
                 </div>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem' }}>
-                    <span style={{ fontSize: '0.66rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#0d9488', background: 'rgba(13, 148, 136, 0.08)', padding: '2px 8px', borderRadius: '9999px', border: '1px solid rgba(13, 148, 136, 0.2)' }}>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.15rem' }}>
+                    <span style={{ fontSize: '0.64rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#0d9488', background: 'rgba(13, 148, 136, 0.08)', padding: '2px 7px', borderRadius: '9999px', border: '1px solid rgba(13, 148, 136, 0.2)', whiteSpace: 'nowrap' }}>
                       ● NETWORK EXPANSION
                     </span>
                   </div>
-                  <h3 style={{ margin: 0, fontSize: '1.08rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.015em' }}>
+                  <h3 style={{ margin: 0, fontSize: '1.02rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.015em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     Affiliate Growth &amp; KYC Velocity
                   </h3>
-                  <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.76rem', color: '#64748b' }}>
+                  <p style={{ margin: '0.15rem 0 0 0', fontSize: '0.74rem', color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     Daily network signups vs compliance verified accounts
                   </p>
                 </div>
               </div>
 
-              <span style={{ fontSize: '0.72rem', background: 'rgba(13, 148, 136, 0.1)', color: '#0d9488', padding: '3px 9px', borderRadius: '8px', fontWeight: 800, border: '1px solid rgba(13, 148, 136, 0.2)', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: '0.72rem', background: 'rgba(13, 148, 136, 0.1)', color: '#0d9488', padding: '3px 9px', borderRadius: '8px', fontWeight: 800, border: '1px solid rgba(13, 148, 136, 0.2)', whiteSpace: 'nowrap', flexShrink: 0 }}>
                 Weekly Velocity
               </span>
             </div>
