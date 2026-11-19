@@ -349,8 +349,8 @@ function AdminPaymentHistoryPage() {
         </div>
       </div>
 
-      {/* 3. 4 Executive 3D KPI Vault Cards (Single Horizontal Row: 4 Cards) */}
-      <div className="adm-kpi-grid-4">
+      {/* 3. 4 Executive 3D KPI Vault Cards (2x2 Grid) */}
+      <div className="adm-kpi-grid">
         {/* Card 1: Distributed Payments */}
         <div className="adm-kpi-card adm-kpi-card-indigo">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
@@ -372,25 +372,25 @@ function AdminPaymentHistoryPage() {
               >
                 ● SETTLED REVENUE
               </span>
-              <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap' }}>
                 DISTRIBUTED PAYMENTS
               </div>
             </div>
-            <div className="adm-3d-pod adm-pod-indigo" style={{ width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0 }}>
-              <Coins size={19} strokeWidth={2.4} />
+            <div className="adm-3d-pod adm-pod-indigo" style={{ width: '46px', height: '46px', borderRadius: '13px', flexShrink: 0 }}>
+              <Coins size={21} strokeWidth={2.4} />
             </div>
           </div>
-          <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
-            <div className="adm-kpi-val" style={{ fontSize: '1.5rem', color: '#1e40af' }}>
+          <div style={{ margin: '0.75rem 0 0.4rem 0' }}>
+            <div className="adm-kpi-val" style={{ fontSize: '1.65rem', color: '#1e40af' }}>
               {formatCurrency(totalDistributedPayments)}
             </div>
           </div>
           <div className="adm-kpi-footer">
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.73rem', color: '#64748b' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.74rem', color: '#64748b' }}>
               <Coins size={13} color="#2563eb" />
               <span>{filteredPayments.length} Settled Receipts</span>
             </span>
-            <span style={{ color: '#2563eb', fontWeight: 800, fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+            <span style={{ color: '#2563eb', fontWeight: 800, fontSize: '0.74rem', whiteSpace: 'nowrap' }}>
               ● Verified
             </span>
           </div>
@@ -417,25 +417,25 @@ function AdminPaymentHistoryPage() {
               >
                 ● 100% ALLOCATED
               </span>
-              <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap' }}>
                 ADMIN CUT DISTRIBUTED
               </div>
             </div>
-            <div className="adm-3d-pod adm-pod-emerald" style={{ width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0 }}>
-              <Zap size={19} strokeWidth={2.4} />
+            <div className="adm-3d-pod adm-pod-emerald" style={{ width: '46px', height: '46px', borderRadius: '13px', flexShrink: 0 }}>
+              <Zap size={21} strokeWidth={2.4} />
             </div>
           </div>
-          <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
-            <div className="adm-kpi-val" style={{ fontSize: '1.5rem', color: '#059669' }}>
+          <div style={{ margin: '0.75rem 0 0.4rem 0' }}>
+            <div className="adm-kpi-val" style={{ fontSize: '1.65rem', color: '#059669' }}>
               {formatCurrency(totalDistributedAdminCut)}
             </div>
           </div>
           <div className="adm-kpi-footer">
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.73rem', color: '#64748b' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.74rem', color: '#64748b' }}>
               <CheckCircle2 size={13} color="#059669" />
               <span>100% Commission Allocated</span>
             </span>
-            <span style={{ color: '#059669', fontWeight: 800, fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+            <span style={{ color: '#059669', fontWeight: 800, fontSize: '0.74rem', whiteSpace: 'nowrap' }}>
               ● Completed
             </span>
           </div>
@@ -462,25 +462,25 @@ function AdminPaymentHistoryPage() {
               >
                 ● 40% SPONSOR SHARE
               </span>
-              <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap' }}>
                 DIRECT INCOME (40%)
               </div>
             </div>
-            <div className="adm-3d-pod adm-pod-purple" style={{ width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0 }}>
-              <Users size={19} strokeWidth={2.4} />
+            <div className="adm-3d-pod adm-pod-purple" style={{ width: '46px', height: '46px', borderRadius: '13px', flexShrink: 0 }}>
+              <Users size={21} strokeWidth={2.4} />
             </div>
           </div>
-          <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
-            <div className="adm-kpi-val" style={{ fontSize: '1.5rem', color: '#7c3aed' }}>
+          <div style={{ margin: '0.75rem 0 0.4rem 0' }}>
+            <div className="adm-kpi-val" style={{ fontSize: '1.65rem', color: '#7c3aed' }}>
               {formatCurrency(totalDirectIncome)}
             </div>
           </div>
           <div className="adm-kpi-footer">
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.73rem', color: '#64748b' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.74rem', color: '#64748b' }}>
               <Users size={13} color="#7c3aed" />
               <span>Sponsor Direct Pool</span>
             </span>
-            <span style={{ color: '#7c3aed', fontWeight: 800, fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+            <span style={{ color: '#7c3aed', fontWeight: 800, fontSize: '0.74rem', whiteSpace: 'nowrap' }}>
               ● Distributed
             </span>
           </div>
@@ -507,25 +507,25 @@ function AdminPaymentHistoryPage() {
               >
                 ● 40% TEAM POOL
               </span>
-              <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap' }}>
                 LEVEL INCOME (40%)
               </div>
             </div>
-            <div className="adm-3d-pod adm-pod-amber" style={{ width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0 }}>
-              <Share2 size={19} strokeWidth={2.4} />
+            <div className="adm-3d-pod adm-pod-amber" style={{ width: '46px', height: '46px', borderRadius: '13px', flexShrink: 0 }}>
+              <Share2 size={21} strokeWidth={2.4} />
             </div>
           </div>
-          <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
-            <div className="adm-kpi-val" style={{ fontSize: '1.5rem', color: '#d97706' }}>
+          <div style={{ margin: '0.75rem 0 0.4rem 0' }}>
+            <div className="adm-kpi-val" style={{ fontSize: '1.65rem', color: '#d97706' }}>
               {formatCurrency(totalLevelIncome)}
             </div>
           </div>
           <div className="adm-kpi-footer">
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.73rem', color: '#64748b' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.74rem', color: '#64748b' }}>
               <Share2 size={13} color="#d97706" />
               <span>Levels 2–5 Team Pool</span>
             </span>
-            <span style={{ color: '#d97706', fontWeight: 800, fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+            <span style={{ color: '#d97706', fontWeight: 800, fontSize: '0.74rem', whiteSpace: 'nowrap' }}>
               ● Distributed
             </span>
           </div>
