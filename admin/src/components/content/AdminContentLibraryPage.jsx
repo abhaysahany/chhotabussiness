@@ -711,7 +711,7 @@ function AdminContentLibraryPage() {
   const totalSharesSum = assets.reduce((sum, item) => sum + (item.shares || 0), 0);
 
   return (
-    <div className="admin-content-container" style={{ padding: '1.5rem 2rem', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <div className="admin-page-container admin-content-container" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
       {/* Toast Alert */}
       {toastMsg && (
         <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', backgroundColor: '#059669', color: '#fff', padding: '0.85rem 1.35rem', borderRadius: '10px', fontWeight: '700', boxShadow: '0 10px 25px -5px rgba(5,150,105,0.4)', zIndex: 2000, fontSize: '0.875rem' }}>
@@ -726,8 +726,8 @@ function AdminContentLibraryPage() {
             <span style={{ background: 'rgba(255,255,255,0.12)', padding: '0.25rem 0.85rem', borderRadius: '20px', fontSize: '0.78rem', fontWeight: '700', color: '#bae6fd', display: 'inline-block', marginBottom: '0.75rem' }}>
               🖼️ MySQL Database Backed Content Center
             </span>
-            <h1 style={{ fontSize: '1.85rem', fontWeight: '800', margin: '0 0 0.4rem 0', color: '#ffffff' }}>Content Management Library</h1>
-            <p style={{ color: '#94a3b8', fontSize: '0.925rem', maxWidth: '650px', margin: 0 }}>
+            <h1 style={{ fontWeight: '800', margin: '0 0 0.4rem 0', color: '#ffffff' }}>Content Management Library</h1>
+            <p style={{ color: '#94a3b8', maxWidth: '650px', margin: 0 }}>
               Upload and manage marketing banners, videos, brand sounds, and PDF flyers directly stored in MySQL database for user downloads and sharing.
             </p>
           </div>
@@ -782,13 +782,13 @@ function AdminContentLibraryPage() {
 
       {/* Filters Toolbar */}
       <div className="admin-content-filters" style={{ background: '#ffffff', borderRadius: '12px', padding: '1.25rem', border: '1px solid #e2e8f0', marginBottom: '1.5rem', display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div className="admin-content-filter-group" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', flex: 1, minWidth: '280px' }}>
+        <div className="admin-content-filter-group" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', flex: 1 }}>
           <input
             type="text"
             placeholder="Search content title, entity, or tags..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ padding: '0.55rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', minWidth: '240px', flex: 1, outline: 'none' }}
+            style={{ padding: '0.55rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', flex: 1, outline: 'none' }}
           />
 
           <select
@@ -917,8 +917,8 @@ function AdminContentLibraryPage() {
         </div>
       ) : (
         /* TABLE VIEW */
-        <div className="admin-content-table-wrap table-responsive" style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', overflowX: 'auto', width: '100%' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
+        <div className="admin-content-table-wrap table-responsive" style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', overflowX: 'auto', width: '100%', WebkitOverflowScrolling: 'touch' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem', minWidth: '850px' }}>
             <thead>
               <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontWeight: '700' }}>
                 <th style={{ padding: '0.85rem 1rem' }}>ID</th>

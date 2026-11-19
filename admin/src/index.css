@@ -2,6 +2,7 @@
 @import './components/products/products.css';
 @import './components/sales/sales.css';
 @import './components/users/users.css';
+@import './components/content/content.css';
 
 :root {
   --sidebar-width: 240px;
