@@ -256,7 +256,7 @@ function AdminLevelIncomeDetailsModal({ orderId, onClose }) {
                     {buyer.name || 'N/A'}
                   </div>
                   <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.2rem' }}>
-                    Code: <strong>{buyer.user_code || 'N/A'}</strong>
+                    Member ID: <strong>{buyer.user_code || 'N/A'}</strong>
                   </div>
                   {buyer.phone && (
                     <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.2rem' }}>
@@ -281,7 +281,7 @@ function AdminLevelIncomeDetailsModal({ orderId, onClose }) {
                     {sponsor.name || 'N/A'}
                   </div>
                   <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.2rem' }}>
-                    Code: <strong>{sponsor.user_code || 'N/A'}</strong>
+                    Sponsor ID: <strong>{sponsor.user_code || 'N/A'}</strong>
                   </div>
                   <div style={{ fontSize: '0.75rem', color: '#8b5cf6', marginTop: '0.2rem', fontWeight: 600 }}>
                     Earns Direct Commission
@@ -415,7 +415,7 @@ function AdminLevelIncomeDetailsModal({ orderId, onClose }) {
                             <td style={{ padding: '0.75rem 1rem' }}>
                               <div style={{ fontWeight: 700, color: '#0f172a' }}>{lvl.beneficiary_name}</div>
                               <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
-                                Code: <strong>{lvl.user_code}</strong>
+                                Member ID: <strong>{lvl.user_code}</strong>
                                 {lvl.beneficiary_phone && ` • ${lvl.beneficiary_phone}`}
                               </div>
                             </td>
@@ -544,7 +544,7 @@ function AdminLevelIncomeDetailsModal({ orderId, onClose }) {
                             </td>
                             <td style={{ padding: '0.75rem 1rem' }}>
                               <div style={{ fontWeight: 700, color: '#0f172a' }}>{inst.beneficiary_name}</div>
-                              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Code: {inst.user_code}</div>
+                              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Member ID: {inst.user_code}</div>
                             </td>
                             <td style={{ padding: '0.75rem 1rem', textAlign: 'right', fontWeight: 800, color: '#10b981' }}>
                               +₹{Number(inst.amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}

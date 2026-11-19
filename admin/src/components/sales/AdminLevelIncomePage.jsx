@@ -615,7 +615,7 @@ function AdminLevelIncomePage() {
             </svg>
             <input
               type="text"
-              placeholder="Search by Invoice #, Order ID, Buyer Code, Beneficiary Code, Entity..."
+              placeholder="Search by Invoice #, Order ID, Buyer Member ID, Beneficiary Member ID, Entity..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               style={{
@@ -961,7 +961,7 @@ function AdminLevelIncomePage() {
                         {row.buyer?.name || row.level_id || 'N/A'}
                       </div>
                       <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                        Code: <strong>{row.buyer?.user_code || row.level_id}</strong>
+                        Member ID: <strong>{row.buyer?.user_code || row.level_id}</strong>
                       </div>
                     </td>
 
@@ -971,7 +971,7 @@ function AdminLevelIncomePage() {
                         {row.beneficiary?.name || row.user_code || 'N/A'}
                       </div>
                       <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                        Code: <strong>{row.beneficiary?.user_code || row.user_code}</strong>
+                        Member ID: <strong>{row.beneficiary?.user_code || row.user_code}</strong>
                       </div>
                     </td>
 
