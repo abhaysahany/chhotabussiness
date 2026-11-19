@@ -1245,10 +1245,10 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
         </div>
       </div>
 
-      {/* 5. Enterprise Merchant Ledger & Top Partners */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.4rem' }}>
-        {/* Recent Invoices & Sales Ledger */}
-        <div className="adm-chart-card adm-chart-card-glow" style={{ flex: '2 1 560px', padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+      {/* 5. Enterprise Merchant Ledger & Top Partners (Col-12 Stack: Uppar-Niche) */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.4rem', width: '100%' }}>
+        {/* Recent Invoices & Sales Ledger (Full Width Col-12) */}
+        <div className="adm-chart-card adm-chart-card-glow" style={{ width: '100%', padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
           <div style={{ padding: '1.25rem 1.6rem', borderBottom: '1px solid #e2e8f0', background: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
               <div className="adm-3d-pod adm-pod-steel" style={{ width: '48px', height: '48px', borderRadius: '14px', flexShrink: 0 }}>
@@ -1431,10 +1431,10 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
           </div>
         </div>
 
-        {/* Corporate Merchant & Entity Performance Matrix */}
-        <div className="adm-chart-card adm-chart-card-glow" style={{ flex: '1 1 360px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        {/* Corporate Merchant & Entity Performance Matrix (Full Width Col-12) */}
+        <div className="adm-chart-card adm-chart-card-glow" style={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem', marginBottom: '1.1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
                 <div className="adm-3d-pod adm-pod-emerald" style={{ width: '48px', height: '48px', borderRadius: '14px', flexShrink: 0 }}>
                   <Building2 size={22} strokeWidth={2.4} />
@@ -1476,7 +1476,7 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
               </button>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1rem' }}>
               {merchantPartners.length === 0 ? (
                 <div style={{ padding: '1.75rem', textAlign: 'center', color: '#64748b', fontSize: '0.82rem' }}>
                   No active merchant partners found.
