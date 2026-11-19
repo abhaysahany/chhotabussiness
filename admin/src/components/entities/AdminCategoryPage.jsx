@@ -242,26 +242,51 @@ function AdminCategoryPage({ onNavigate }) {
         </div>
       )}
 
-      {/* 2. 4 Executive 3D KPI Vault Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
+      {/* 2. 4 Executive 3D KPI Vault Cards (Strict 2x2 Spacious Grid) */}
+      <div className="adm-kpi-grid">
         {/* Card 1: Categories */}
         <div className="adm-kpi-card adm-kpi-card-steel">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
-              <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.04em' }}>
-                TOTAL CATEGORIES
+              <span
+                style={{
+                  fontSize: '0.7rem',
+                  fontWeight: 800,
+                  color: '#3569a7',
+                  background: 'rgba(53, 105, 167, 0.1)',
+                  padding: '3px 10px',
+                  borderRadius: '6px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  display: 'inline-block',
+                  marginBottom: '0.45rem',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                ● CLASSIFICATION TAXONOMY
               </span>
-              <div className="adm-kpi-val" style={{ marginTop: '0.35rem' }}>
-                {categories.length}
+              <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#475569', letterSpacing: '0.04em' }}>
+                TOTAL ENTITY CATEGORIES
               </div>
             </div>
-            <div className="adm-3d-pod adm-pod-steel" style={{ width: '44px', height: '44px', borderRadius: '12px' }}>
-              <FolderTree size={20} strokeWidth={2.4} />
+            <div className="adm-3d-pod adm-pod-steel" style={{ width: '48px', height: '48px', borderRadius: '14px' }}>
+              <FolderTree size={22} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div style={{ margin: '0.85rem 0 0.45rem 0' }}>
+            <div className="adm-kpi-val">
+              {categories.length}
             </div>
           </div>
           <div className="adm-kpi-footer">
-            <span style={{ color: '#3569a7', fontWeight: 700 }}>● Active Classifications</span>
-            <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Global Directory</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600 }}>
+              <Layers size={14} color="#3569a7" />
+              <span>Active Taxonomies</span>
+            </span>
+            <span style={{ color: '#3569a7', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+              <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#3569a7' }}></span>
+              Master Directory
+            </span>
           </div>
         </div>
 
@@ -269,20 +294,45 @@ function AdminCategoryPage({ onNavigate }) {
         <div className="adm-kpi-card adm-kpi-card-emerald">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
-              <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.04em' }}>
-                ACTIVE ONBOARDING
+              <span
+                style={{
+                  fontSize: '0.7rem',
+                  fontWeight: 800,
+                  color: '#0d9488',
+                  background: 'rgba(13, 148, 136, 0.1)',
+                  padding: '3px 10px',
+                  borderRadius: '6px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  display: 'inline-block',
+                  marginBottom: '0.45rem',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                ● ONBOARDING READY
               </span>
-              <div className="adm-kpi-val" style={{ marginTop: '0.35rem', color: '#0d9488' }}>
-                {activeCategoriesCount}
+              <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#475569', letterSpacing: '0.04em' }}>
+                ACTIVE ONBOARDING STATUS
               </div>
             </div>
-            <div className="adm-3d-pod adm-pod-emerald" style={{ width: '44px', height: '44px', borderRadius: '12px' }}>
-              <CheckCircle2 size={20} strokeWidth={2.4} />
+            <div className="adm-3d-pod adm-pod-emerald" style={{ width: '48px', height: '48px', borderRadius: '14px' }}>
+              <CheckCircle2 size={22} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div style={{ margin: '0.85rem 0 0.45rem 0' }}>
+            <div className="adm-kpi-val" style={{ color: '#0d9488' }}>
+              {activeCategoriesCount}
             </div>
           </div>
           <div className="adm-kpi-footer">
-            <span style={{ color: '#0d9488', fontWeight: 700 }}>● Ready for Registration</span>
-            <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>100% Operational</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600 }}>
+              <CheckCircle2 size={14} color="#0d9488" />
+              <span>Ready for Registration</span>
+            </span>
+            <span style={{ color: '#0d9488', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+              <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#0d9488' }}></span>
+              Operational
+            </span>
           </div>
         </div>
 
@@ -295,23 +345,45 @@ function AdminCategoryPage({ onNavigate }) {
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
-              <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.04em' }}>
-                LINKED BUSINESSES
+              <span
+                style={{
+                  fontSize: '0.7rem',
+                  fontWeight: 800,
+                  color: '#4f46e5',
+                  background: 'rgba(79, 70, 229, 0.1)',
+                  padding: '3px 10px',
+                  borderRadius: '6px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  display: 'inline-block',
+                  marginBottom: '0.45rem',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                ● CORPORATE PARTNERS
               </span>
-              <div className="adm-kpi-val" style={{ marginTop: '0.35rem', color: '#4f46e5' }}>
-                {totalBusinesses}
+              <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#475569', letterSpacing: '0.04em' }}>
+                REGISTERED BUSINESS ENTITIES
               </div>
             </div>
-            <div className="adm-3d-pod adm-pod-indigo" style={{ width: '44px', height: '44px', borderRadius: '12px' }}>
-              <Building2 size={20} strokeWidth={2.4} />
+            <div className="adm-3d-pod adm-pod-indigo" style={{ width: '48px', height: '48px', borderRadius: '14px' }}>
+              <Building2 size={22} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div style={{ margin: '0.85rem 0 0.45rem 0' }}>
+            <div className="adm-kpi-val" style={{ color: '#4f46e5' }}>
+              {totalBusinesses}
             </div>
           </div>
           <div className="adm-kpi-footer">
-            <span style={{ color: '#4f46e5', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}>
-              <span>View businesses</span>
-              <ArrowUpRight size={12} />
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600 }}>
+              <Building2 size={14} color="#4f46e5" />
+              <span>Linked Enterprises</span>
             </span>
-            <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Corporate Partners</span>
+            <span style={{ color: '#4f46e5', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+              <span>View businesses</span>
+              <ArrowUpRight size={13} />
+            </span>
           </div>
         </div>
 
@@ -324,23 +396,45 @@ function AdminCategoryPage({ onNavigate }) {
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
-              <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.04em' }}>
-                LINKED FREELANCERS
+              <span
+                style={{
+                  fontSize: '0.7rem',
+                  fontWeight: 800,
+                  color: '#d97706',
+                  background: 'rgba(217, 119, 6, 0.1)',
+                  padding: '3px 10px',
+                  borderRadius: '6px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  display: 'inline-block',
+                  marginBottom: '0.45rem',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                ● INDEPENDENT NETWORK
               </span>
-              <div className="adm-kpi-val" style={{ marginTop: '0.35rem', color: '#d97706' }}>
-                {totalFreelancers}
+              <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#475569', letterSpacing: '0.04em' }}>
+                REGISTERED FREELANCE ACCOUNTS
               </div>
             </div>
-            <div className="adm-3d-pod adm-pod-amber" style={{ width: '44px', height: '44px', borderRadius: '12px' }}>
-              <Users size={20} strokeWidth={2.4} />
+            <div className="adm-3d-pod adm-pod-amber" style={{ width: '48px', height: '48px', borderRadius: '14px' }}>
+              <Users size={22} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div style={{ margin: '0.85rem 0 0.45rem 0' }}>
+            <div className="adm-kpi-val" style={{ color: '#d97706' }}>
+              {totalFreelancers}
             </div>
           </div>
           <div className="adm-kpi-footer">
-            <span style={{ color: '#d97706', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}>
-              <span>View freelancers</span>
-              <ArrowUpRight size={12} />
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600 }}>
+              <Users size={14} color="#d97706" />
+              <span>Contractor Network</span>
             </span>
-            <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Independent Contractors</span>
+            <span style={{ color: '#d97706', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+              <span>View freelancers</span>
+              <ArrowUpRight size={13} />
+            </span>
           </div>
         </div>
       </div>
