@@ -603,3 +603,76 @@
     grid-template-columns: 1fr !important;
   }
 }
+
+/* ==========================================================================
+   LEVEL INCOME & DIRECT INCOME ADVANCED RESPONSIVE SYSTEM
+   ========================================================================== */
+.pro-income-header-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.pro-level-breakdown-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.85rem;
+}
+
+.pro-level-reconciliation-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.pro-income-financials-5col {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+@media (max-width: 1024px) {
+  .pro-income-financials-5col {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .pro-income-header-title-wrap h1 {
+    font-size: 1.3rem !important;
+  }
+
+  .pro-level-breakdown-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.65rem !important;
+  }
+
+  .pro-level-reconciliation-card {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.75rem !important;
+  }
+
+  .pro-income-financials-5col {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .pro-income-header-title-wrap h1 {
+    font-size: 1.15rem !important;
+  }
+
+  .pro-level-breakdown-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .pro-income-financials-5col {
+    grid-template-columns: 1fr !important;
+  }
+}
+

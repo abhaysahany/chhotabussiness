@@ -203,22 +203,13 @@ function AdminLevelIncomePage() {
   const levelBreakdown = overview?.level_breakdown || overview?.levelBreakdown || [];
 
   return (
-    <div className="pro-orders-container" style={{ padding: '1.5rem', maxWidth: '1440px', margin: '0 auto' }}>
-      {/* Header Section */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: '1rem',
-          marginBottom: '1.5rem',
-        }}
-      >
+    <div className="admin-page-container pro-orders-container">
+      {/* 1. PAGE HEADER */}
+      <div className="page-header pro-orders-header">
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-            <h1 style={{ margin: 0, fontSize: '1.75rem', fontWeight: 800, color: '#0f172a' }}>
-              Level Income Multi-Tier Monitoring
+          <div className="pro-income-header-title-wrap">
+            <h1 className="page-title pro-orders-header-title">
+              Level Income
             </h1>
             <span
               style={{
@@ -234,12 +225,12 @@ function AdminLevelIncomePage() {
               UPLINE TIERS (L2 - L5)
             </span>
           </div>
-          <p style={{ margin: '0.35rem 0 0 0', color: '#64748b', fontSize: '0.92rem' }}>
+          <p className="page-subtitle" style={{ margin: '0.35rem 0 0 0', color: '#64748b', fontSize: '0.85rem' }}>
             Consolidated multi-level earnings, upline distribution ledger, and 4-way platform reconciliation.
           </p>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+        <div className="pro-orders-header-actions">
           <button
             onClick={() => {
               loadOverview();
@@ -304,17 +295,10 @@ function AdminLevelIncomePage() {
         </div>
       </div>
 
-      {/* KPI Overview Cards */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
-          gap: '1rem',
-          marginBottom: '1.25rem',
-        }}
-      >
+      {/* 2. KPI OVERVIEW CARDS */}
+      <div className="pro-orders-kpi-grid" style={{ marginBottom: '1.25rem' }}>
         {/* Total Orders */}
-        <div style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.25rem', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
+        <div className="stat-card pro-orders-kpi-card" style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.25rem', borderLeft: '4px solid #7c3aed', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>
               Eligible Orders
@@ -336,7 +320,7 @@ function AdminLevelIncomePage() {
         </div>
 
         {/* Expected Level Income */}
-        <div style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.25rem', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
+        <div className="stat-card pro-orders-kpi-card" style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.25rem', borderLeft: '4px solid #6d28d9', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>
               Expected Level Pool
@@ -360,7 +344,7 @@ function AdminLevelIncomePage() {
         </div>
 
         {/* Distributed Level Income */}
-        <div style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.25rem', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
+        <div className="stat-card pro-orders-kpi-card" style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.25rem', borderLeft: '4px solid #10b981', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>
               Distributed Payout
@@ -383,7 +367,7 @@ function AdminLevelIncomePage() {
         </div>
 
         {/* Pending Balance */}
-        <div style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.25rem', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
+        <div className="stat-card pro-orders-kpi-card" style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.25rem', borderLeft: '4px solid #f59e0b', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>
               Pending Balance
@@ -406,7 +390,7 @@ function AdminLevelIncomePage() {
         </div>
 
         {/* Total Beneficiaries */}
-        <div style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.25rem', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
+        <div className="stat-card pro-orders-kpi-card" style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.25rem', borderLeft: '4px solid #0284c7', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>
               Beneficiaries
@@ -449,13 +433,7 @@ function AdminLevelIncomePage() {
             </span>
           </div>
 
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              gap: '0.85rem',
-            }}
-          >
+          <div className="pro-level-breakdown-grid">
             {levelBreakdown.map((lvl) => (
               <div
                 key={lvl.level}
@@ -506,18 +484,13 @@ function AdminLevelIncomePage() {
 
       {/* Platform Cross-Reconciliation Health Card */}
       <div
-        className="pro-income-reconciliation-grid"
+        className="pro-level-reconciliation-card"
         style={{
           backgroundColor: overview?.reconciliation_status === 'Reconciled' ? '#f0fdf4' : '#fffbeb',
           border: `1px solid ${overview?.reconciliation_status === 'Reconciled' ? '#bbf7d0' : '#fde68a'}`,
           borderRadius: '14px',
           padding: '1.25rem 1.5rem',
           marginBottom: '1.5rem',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: '1rem',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
@@ -591,14 +564,7 @@ function AdminLevelIncomePage() {
         }}
       >
         {/* Row 1: Search & Level Filter */}
-        <div
-          className="pro-income-filter-grid-row1"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '2fr 1fr 1fr',
-            gap: '1rem',
-          }}
-        >
+        <div className="pro-income-filter-grid-row1">
           {/* Keyword Search */}
           <div style={{ position: 'relative' }}>
             <svg
@@ -682,15 +648,7 @@ function AdminLevelIncomePage() {
         </div>
 
         {/* Row 2: Secondary Filters & Date Range */}
-        <div
-          className="pro-income-filter-grid-row2"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-            gap: '1rem',
-            alignItems: 'center',
-          }}
-        >
+        <div className="pro-income-filter-grid-row2">
           {/* Entity Type */}
           <div>
             <select
@@ -781,12 +739,14 @@ function AdminLevelIncomePage() {
 
       {/* Main Table Card */}
       <div
+        className="pro-orders-table-wrapper table-responsive"
         style={{
           backgroundColor: '#ffffff',
           border: '1px solid #e2e8f0',
           borderRadius: '16px',
           overflow: 'hidden',
           boxShadow: '0 1px 3px rgba(0, 0, 0, 0.03)',
+          marginBottom: '1.5rem',
         }}
       >
         <div
@@ -843,8 +803,8 @@ function AdminLevelIncomePage() {
         </div>
 
         {/* Table Content */}
-        <div className="table-responsive-inner" style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
+        <div className="table-responsive-inner" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <table className="pro-orders-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem', minWidth: '1100px' }}>
             <thead>
               <tr style={{ backgroundColor: '#f1f5f9', color: '#475569', borderBottom: '1px solid #e2e8f0' }}>
                 <th style={{ padding: '0.85rem 1.25rem', fontWeight: 700 }}>Order & Invoice</th>
@@ -1100,6 +1060,7 @@ function AdminLevelIncomePage() {
         {/* Pagination Footer */}
         {pagination.last_page > 1 && (
           <div
+            className="pro-orders-pagination-bar"
             style={{
               padding: '1rem 1.5rem',
               backgroundColor: '#f8fafc',

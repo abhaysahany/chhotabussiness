@@ -255,9 +255,9 @@ function AdminDirectIncomePage() {
       {/* 1. PAGE HEADER */}
       <div className="page-header pro-orders-header">
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <div className="pro-income-header-title-wrap">
             <h1 className="page-title pro-orders-header-title">
-              Direct Income – Order-wise Overview
+              Direct Income
             </h1>
             <span
               style={{

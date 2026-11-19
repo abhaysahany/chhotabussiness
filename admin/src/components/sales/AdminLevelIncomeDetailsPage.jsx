@@ -68,7 +68,7 @@ function AdminLevelIncomeDetailsPage() {
   const installments = details?.installments || [];
 
   return (
-    <div className="pro-orders-container" style={{ padding: '1.5rem', maxWidth: '1440px', margin: '0 auto' }}>
+    <div className="admin-page-container pro-orders-container">
       {/* Header & Breadcrumb */}
       <div style={{ marginBottom: '1.5rem' }}>
         <button
@@ -94,9 +94,9 @@ function AdminLevelIncomeDetailsPage() {
           Back to Level Income Records
         </button>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+        <div className="page-header pro-orders-header" style={{ margin: 0 }}>
           <div>
-            <h1 style={{ margin: 0, fontSize: '1.75rem', fontWeight: 800, color: '#0f172a' }}>
+            <h1 className="page-title pro-orders-header-title" style={{ margin: 0, fontWeight: 800, color: '#0f172a' }}>
               Level Income Order Audit
             </h1>
             <p style={{ margin: '0.25rem 0 0 0', color: '#64748b', fontSize: '0.92rem' }}>
@@ -181,14 +181,7 @@ function AdminLevelIncomeDetailsPage() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           {/* Top Section: Overview Cards */}
-          <div
-            className="pro-income-details-grid"
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-              gap: '1rem',
-            }}
-          >
+          <div className="pro-income-details-grid">
             {/* Entity & Order Card */}
             <div style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.25rem' }}>
               <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>
@@ -276,13 +269,7 @@ function AdminLevelIncomeDetailsPage() {
           </div>
 
           {/* Financial Breakdown KPI Cards */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-              gap: '1rem',
-            }}
-          >
+          <div className="pro-income-financials-5col">
             <div style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem 1.25rem' }}>
               <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>Order Gross Value</div>
               <div style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0f172a', marginTop: '0.35rem' }}>
@@ -316,7 +303,7 @@ function AdminLevelIncomeDetailsPage() {
           </div>
 
           {/* Section 1: Multi-Level Allocation Table */}
-          <div style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', overflow: 'hidden' }}>
+          <div className="pro-orders-table-wrapper table-responsive" style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', overflow: 'hidden' }}>
             <div
               style={{
                 padding: '1.1rem 1.5rem',
@@ -351,8 +338,8 @@ function AdminLevelIncomeDetailsPage() {
               </span>
             </div>
 
-            <div className="table-responsive-inner" style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
+            <div className="table-responsive-inner" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+              <table className="pro-orders-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem', minWidth: '780px' }}>
                 <thead>
                   <tr style={{ backgroundColor: '#f1f5f9', color: '#475569', borderBottom: '1px solid #e2e8f0' }}>
                     <th style={{ padding: '0.75rem 1.25rem', fontWeight: 700 }}>Level Tier</th>
@@ -443,7 +430,7 @@ function AdminLevelIncomeDetailsPage() {
           </div>
 
           {/* Section 2: Installment Distribution History */}
-          <div style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', overflow: 'hidden' }}>
+          <div className="pro-orders-table-wrapper table-responsive" style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', overflow: 'hidden' }}>
             <div
               style={{
                 padding: '1.1rem 1.5rem',
@@ -478,8 +465,8 @@ function AdminLevelIncomeDetailsPage() {
               </span>
             </div>
 
-            <div className="table-responsive-inner" style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
+            <div className="table-responsive-inner" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+              <table className="pro-orders-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem', minWidth: '780px' }}>
                 <thead>
                   <tr style={{ backgroundColor: '#f1f5f9', color: '#475569', borderBottom: '1px solid #e2e8f0' }}>
                     <th style={{ padding: '0.75rem 1.25rem', fontWeight: 700 }}>Record ID</th>

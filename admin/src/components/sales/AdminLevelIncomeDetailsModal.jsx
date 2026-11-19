@@ -314,13 +314,7 @@ function AdminLevelIncomeDetailsModal({ orderId, onClose }) {
               </div>
 
               {/* Section 2: Financial KPI Badges */}
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-                  gap: '0.75rem',
-                }}
-              >
+              <div className="pro-income-financials-5col">
                 <div style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '0.75rem 1rem' }}>
                   <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>Order Gross</div>
                   <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a', marginTop: '0.25rem' }}>
@@ -374,8 +368,8 @@ function AdminLevelIncomeDetailsModal({ orderId, onClose }) {
                   </span>
                 </div>
 
-                <div className="table-responsive-inner" style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
+                <div className="table-responsive-inner" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem', minWidth: '700px' }}>
                     <thead>
                       <tr style={{ backgroundColor: '#f1f5f9', color: '#475569', borderBottom: '1px solid #e2e8f0' }}>
                         <th style={{ padding: '0.65rem 1rem', fontWeight: 700 }}>Level Tier</th>
@@ -486,8 +480,8 @@ function AdminLevelIncomeDetailsModal({ orderId, onClose }) {
                   </span>
                 </div>
 
-                <div className="table-responsive-inner" style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
+                <div className="table-responsive-inner" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem', minWidth: '700px' }}>
                     <thead>
                       <tr style={{ backgroundColor: '#f1f5f9', color: '#475569', borderBottom: '1px solid #e2e8f0' }}>
                         <th style={{ padding: '0.65rem 1rem', fontWeight: 700 }}>Record #</th>
