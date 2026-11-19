@@ -1006,123 +1006,209 @@ function AdminServicesPage() {
           </div>
         </div>
       ) : (
-        /* GRID CARDS VIEW */
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.4rem' }}>
+        /* GRID CARDS VIEW - EXECUTIVE 3D LUXURY FINTECH CARDS */
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1.5rem' }}>
           {filteredServices.map((s) => {
             const ownerName = s.owner_name || s.ownerName;
             const ownerType = s.owner_type || s.ownerType || 'business';
             const comm = s.admin_commission_percent || s.adminCommissionPercent || 20;
             const categoryName = typeof s.category === 'object' && s.category !== null ? (s.category.name || 'Service') : String(s.category || 'Service');
+            const priceNum = Number(s.price) || 0;
+            const commPercent = Number(comm) || 0;
+            const adminCutAmount = (priceNum * commPercent) / 100;
 
             return (
-              <div
-                key={s.id}
-                className="adm-chart-card adm-chart-card-glow"
-                style={{
-                  padding: 0,
-                  overflow: 'hidden',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <div>
-                  {/* Media Header */}
-                  <div style={{ position: 'relative', height: '170px', overflow: 'hidden', background: '#f1f5f9' }}>
-                    <img
-                      src={s.image || 'https://images.unsplash.com/photo-1450133064473-71024230f91b?w=400'}
-                      alt={s.name}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      onError={(e) => {
-                        e.target.src = 'https://images.unsplash.com/photo-1450133064473-71024230f91b?w=400';
-                      }}
-                    />
-                    <div style={{ position: 'absolute', top: '10px', left: '10px', display: 'flex', gap: '0.35rem' }}>
-                      <span
-                        style={{
-                          background: 'rgba(15, 23, 42, 0.75)',
-                          backdropFilter: 'blur(4px)',
-                          color: '#ffffff',
-                          padding: '3px 8px',
-                          borderRadius: '6px',
-                          fontSize: '0.68rem',
-                          fontWeight: 800,
-                        }}
-                      >
-                        {categoryName}
-                      </span>
-                    </div>
+              <div key={s.id} className="adm-service-card-3d">
+                {/* 1. Media Header Showcase */}
+                <div className="adm-service-media-wrap">
+                  <img
+                    src={s.image || 'https://images.unsplash.com/photo-1450133064473-71024230f91b?w=400'}
+                    alt={s.name}
+                    className="adm-service-media-img"
+                    onError={(e) => {
+                      e.target.src = 'https://images.unsplash.com/photo-1450133064473-71024230f91b?w=400';
+                    }}
+                  />
+                  <div className="adm-service-media-overlay" />
 
-                    <div style={{ position: 'absolute', top: '10px', right: '10px' }}>
-                      <StatusBadge status={s.status} fallback="active" />
+                  {/* Category Floating Pill (Glassmorphism) */}
+                  <div style={{ position: 'absolute', top: '12px', left: '12px', zIndex: 2 }}>
+                    <div className="adm-service-badge-glass">
+                      <FolderTree size={12} color="#0284c7" />
+                      <span>{categoryName}</span>
                     </div>
                   </div>
 
-                  {/* Body Content */}
-                  <div style={{ padding: '1.15rem' }}>
-                    <span className="adm-code-chip">ID: SRV-{s.id}</span>
-                    <h4 style={{ fontSize: '1.02rem', fontWeight: 800, color: '#0f172a', margin: '0.4rem 0 0.25rem 0', lineHeight: 1.35 }}>
-                      {s.name}
-                    </h4>
-
-                    {/* Provider Vault */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.76rem', color: '#64748b', marginBottom: '0.75rem' }}>
-                      <span>Provider:</span>
-                      <strong style={{ color: '#0f172a' }}>{ownerName}</strong>
+                  {/* Status Live Toggle Pill (Top-Right) */}
+                  <div style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 2 }}>
+                    <button
+                      type="button"
+                      onClick={() => handleToggleStatus(s)}
+                      title="Click to toggle active status"
+                      style={{
+                        background: s.status === 'active' ? 'rgba(236, 253, 245, 0.95)' : 'rgba(248, 250, 252, 0.95)',
+                        backdropFilter: 'blur(6px)',
+                        border: s.status === 'active' ? '1.5px solid #a7f3d0' : '1.5px solid #cbd5e1',
+                        borderRadius: '9999px',
+                        padding: '3px 10px',
+                        color: s.status === 'active' ? '#047857' : '#64748b',
+                        fontSize: '0.7rem',
+                        fontWeight: 800,
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.35rem',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
+                        transition: 'all 0.2s ease',
+                      }}
+                    >
                       <span
                         style={{
-                          padding: '1px 6px',
-                          borderRadius: '4px',
-                          fontSize: '0.65rem',
-                          fontWeight: 800,
-                          background: ownerType === 'business' ? '#f0fdf4' : '#faf5ff',
-                          color: ownerType === 'business' ? '#15803d' : '#7e22ce',
+                          width: '7px',
+                          height: '7px',
+                          borderRadius: '50%',
+                          background: s.status === 'active' ? '#10b981' : '#94a3b8',
+                          boxShadow: s.status === 'active' ? '0 0 6px rgba(16, 185, 129, 0.6)' : 'none',
                         }}
-                      >
-                        {ownerType}
-                      </span>
+                      />
+                      <span>{s.status === 'active' ? 'Active' : 'Inactive'}</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* 2. Structured & Readable Card Body */}
+                <div className="adm-service-body">
+                  {/* ID Tag and Delivery Turnaround */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+                    <span className="adm-code-chip" style={{ fontSize: '0.72rem', padding: '3px 9px' }}>
+                      ID: SRV-{s.id}
+                    </span>
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.3rem',
+                        fontSize: '0.72rem',
+                        fontWeight: 700,
+                        color: '#475569',
+                        background: '#f1f5f9',
+                        padding: '3px 9px',
+                        borderRadius: '6px',
+                        border: '1px solid #e2e8f0',
+                      }}
+                    >
+                      <Clock size={12} color="#64748b" />
+                      <span>{s.duration || '3 Business Days'}</span>
+                    </span>
+                  </div>
+
+                  {/* Clean Service Title */}
+                  <h4 className="adm-service-title" title={s.name}>
+                    {s.name}
+                  </h4>
+
+                  {/* Dedicated Verified Provider Vault */}
+                  <div className="adm-service-provider-vault">
+                    <div
+                      className={`adm-3d-pod ${ownerType === 'business' ? 'adm-pod-amber' : 'adm-pod-purple'}`}
+                      style={{ width: '36px', height: '36px', borderRadius: '10px', flexShrink: 0 }}
+                    >
+                      {ownerType === 'business' ? <Building2 size={16} strokeWidth={2.4} /> : <Zap size={16} strokeWidth={2.4} />}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.4rem', marginBottom: '2px' }}>
+                        <span style={{ fontSize: '0.62rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#64748b' }}>
+                          Service Provider
+                        </span>
+                        <span
+                          style={{
+                            padding: '1.5px 7px',
+                            borderRadius: '5px',
+                            fontSize: '0.64rem',
+                            fontWeight: 800,
+                            background: ownerType === 'business' ? '#fef3c7' : '#f3e8ff',
+                            color: ownerType === 'business' ? '#b45309' : '#7e22ce',
+                            border: `1px solid ${ownerType === 'business' ? '#fde68a' : '#e9d5ff'}`,
+                          }}
+                        >
+                          {ownerType === 'business' ? 'Enterprise' : 'Freelancer'}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '0.84rem', fontWeight: 800, color: '#1e293b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {ownerName || 'Verified Vendor'}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 3D Revenue & Pricing Split Vault */}
+                  <div className="adm-service-split-vault">
+                    <div>
+                      <div style={{ fontSize: '0.62rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.04em' }}>
+                        Customer Base Price
+                      </div>
+                      <div style={{ fontSize: '1.22rem', fontWeight: 800, color: '#0f172a', marginTop: '2px' }}>
+                        ₹{priceNum.toLocaleString('en-IN')}
+                      </div>
+                      <div style={{ fontSize: '0.68rem', fontWeight: 600, color: '#94a3b8', marginTop: '1px' }}>
+                        Standard Billing
+                      </div>
                     </div>
 
-                    {/* Price & Commission Row */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem', background: '#f8fafc', padding: '0.65rem 0.8rem', borderRadius: '10px', border: '1px solid #e2e8f0', marginBottom: '0.85rem' }}>
-                      <div>
-                        <div style={{ fontSize: '0.64rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748b' }}>Base Price</div>
-                        <div style={{ fontSize: '0.98rem', fontWeight: 800, color: '#0f172a' }}>₹{Number(s.price).toLocaleString('en-IN')}</div>
+                    <div>
+                      <div style={{ fontSize: '0.62rem', fontWeight: 800, textTransform: 'uppercase', color: '#059669', letterSpacing: '0.04em' }}>
+                        Platform Cut ({commPercent}%)
                       </div>
-                      <div>
-                        <div style={{ fontSize: '0.64rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748b' }}>Admin Cut</div>
-                        <div style={{ fontSize: '0.98rem', fontWeight: 800, color: '#059669' }}>{comm}%</div>
+                      <div style={{ fontSize: '1.22rem', fontWeight: 800, color: '#059669', marginTop: '2px' }}>
+                        ₹{adminCutAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                      </div>
+                      <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#10b981', marginTop: '1px' }}>
+                        Retained Commission
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Footer Actions */}
-                <div style={{ padding: '0.85rem 1.15rem', borderTop: '1px solid #f1f5f9', background: '#fafbfc', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
-                    <Clock size={12} color="#64748b" />
-                    <span>{s.duration || '3 Days'}</span>
-                  </span>
+                {/* 3. Luxury Card Action Footer */}
+                <div className="adm-service-footer">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#64748b' }}>
+                      Turnaround:
+                    </span>
+                    <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#0f172a' }}>
+                      {s.duration || '3 Days'}
+                    </span>
+                  </div>
 
-                  <div style={{ display: 'flex', gap: '0.4rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
                     <button
                       type="button"
                       onClick={() => openEditModal(s)}
                       style={{
-                        background: '#ffffff',
+                        background: '#f8fafc',
                         border: '1.5px solid #cbd5e1',
-                        borderRadius: '7px',
-                        padding: '0.32rem 0.75rem',
+                        borderRadius: '8px',
+                        padding: '0.38rem 0.85rem',
                         color: '#3569a7',
                         fontWeight: 800,
-                        fontSize: '0.74rem',
+                        fontSize: '0.76rem',
                         cursor: 'pointer',
                         display: 'inline-flex',
                         alignItems: 'center',
-                        gap: '0.25rem',
+                        gap: '0.35rem',
+                        transition: 'all 0.15s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = '#3569a7';
+                        e.currentTarget.style.borderColor = '#3569a7';
+                        e.currentTarget.style.color = '#ffffff';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = '#f8fafc';
+                        e.currentTarget.style.borderColor = '#cbd5e1';
+                        e.currentTarget.style.color = '#3569a7';
                       }}
                     >
-                      <Edit3 size={12} />
+                      <Edit3 size={13} />
                       <span>Edit</span>
                     </button>
 
@@ -1132,19 +1218,30 @@ function AdminServicesPage() {
                       style={{
                         background: '#ffffff',
                         border: '1.5px solid #fecaca',
-                        borderRadius: '7px',
-                        padding: '0.32rem 0.75rem',
+                        borderRadius: '8px',
+                        padding: '0.38rem 0.85rem',
                         color: '#dc2626',
                         fontWeight: 800,
-                        fontSize: '0.74rem',
+                        fontSize: '0.76rem',
                         cursor: 'pointer',
                         display: 'inline-flex',
                         alignItems: 'center',
-                        gap: '0.25rem',
+                        gap: '0.35rem',
+                        transition: 'all 0.15s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = '#dc2626';
+                        e.currentTarget.style.borderColor = '#dc2626';
+                        e.currentTarget.style.color = '#ffffff';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = '#ffffff';
+                        e.currentTarget.style.borderColor = '#fecaca';
+                        e.currentTarget.style.color = '#dc2626';
                       }}
                     >
-                      <Trash2 size={12} />
-                      <span>Del</span>
+                      <Trash2 size={13} />
+                      <span>Delete</span>
                     </button>
                   </div>
                 </div>
