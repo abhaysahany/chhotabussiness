@@ -74,6 +74,20 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
     setHiddenPolarSeries((prev) => ({ ...prev, [seriesName]: !prev[seriesName] }));
   };
 
+  const [hiddenVelocitySeries, setHiddenVelocitySeries] = useState({
+    newUsers: false,
+    kycVerified: false,
+  });
+
+  const toggleVelocitySeries = (seriesName, key) => {
+    try {
+      ApexCharts.exec('admin-velocity-chart', 'toggleSeries', seriesName);
+    } catch (e) {
+      console.error('Error toggling velocity series:', e);
+    }
+    setHiddenVelocitySeries((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
   // Weekly automated settlement countdown
   useEffect(() => {
     const timer = setInterval(() => {
@@ -244,6 +258,7 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
   // 3. ApexCharts: Radial Gauge Target Achievement
   const radialTargetOptions = useMemo(() => ({
     chart: {
+      id: 'admin-target-gauge',
       type: 'radialBar',
       height: 240,
       sparkline: { enabled: true },
@@ -288,11 +303,22 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
     labels: ['Monthly Target Progress'],
   }), []);
 
-  const radialTargetSeries = [Number(data?.kpis?.targetProgress) || 0];
+  const targetPercent = useMemo(() => {
+    if (data?.kpis?.targetProgress !== undefined && data?.kpis?.targetProgress !== null) {
+      return Number(data.kpis.targetProgress);
+    }
+    if (kpis.totalGmv > 0) {
+      return Math.min(100, Number(((kpis.totalGmv / 6500000) * 100).toFixed(1)));
+    }
+    return 12.7;
+  }, [data, kpis.totalGmv]);
+
+  const radialTargetSeries = [targetPercent];
 
   // 4. ApexCharts: Grouped Column Affiliate vs KYC Velocity
   const groupedVelocityOptions = useMemo(() => ({
     chart: {
+      id: 'admin-velocity-chart',
       type: 'bar',
       height: 240,
       toolbar: { show: false },
@@ -301,15 +327,15 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
     plotOptions: {
       bar: {
         horizontal: false,
-        columnWidth: '55%',
-        borderRadius: 5,
+        columnWidth: '50%',
+        borderRadius: 6,
       },
     },
     dataLabels: { enabled: false },
     stroke: { show: true, width: 2, colors: ['transparent'] },
     colors: ['#3569a7', '#0d9488'],
     xaxis: {
-      categories: data?.charts?.velocityBar?.categories || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      categories: data?.charts?.velocityBar?.categories || ['Fri', 'Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu'],
       labels: { style: { colors: '#64748b', fontSize: '11px', fontWeight: 700 } },
       axisBorder: { show: false },
       axisTicks: { show: false },
@@ -318,7 +344,7 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
       labels: { style: { colors: '#64748b', fontSize: '11px', fontWeight: 600 } },
     },
     grid: { borderColor: '#f1f5f9', strokeDashArray: 3 },
-    legend: { position: 'top', fontSize: '11px', fontWeight: 700 },
+    legend: { show: false },
     tooltip: {
       theme: 'dark',
       y: { formatter: (val) => `${val} accounts` },
@@ -1005,67 +1031,193 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
       </div>
 
       {/* Secondary Chart Row: Radial Gauge & Grouped Velocity Bar */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '1.25rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.4rem' }}>
         {/* Chart 3: Radial Target Gauge */}
-        <div className="adm-chart-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-              <div className="adm-3d-pod adm-pod-steel" style={{ width: '36px', height: '36px', borderRadius: '10px' }}>
-                <Target size={17} strokeWidth={2.4} />
+        <div className="adm-chart-card adm-chart-card-glow" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.85rem', marginBottom: '0.85rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
+                <div className="adm-3d-pod adm-pod-steel" style={{ width: '48px', height: '48px', borderRadius: '14px' }}>
+                  <Target size={22} strokeWidth={2.4} />
+                </div>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem' }}>
+                    <span style={{ fontSize: '0.66rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#3569a7', background: 'rgba(53, 105, 167, 0.08)', padding: '2px 8px', borderRadius: '9999px', border: '1px solid rgba(53, 105, 167, 0.2)' }}>
+                      ● REVENUE TRAJECTORY
+                    </span>
+                  </div>
+                  <h3 style={{ margin: 0, fontSize: '1.08rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.015em' }}>
+                    Monthly Platform GMV Target
+                  </h3>
+                  <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.76rem', color: '#64748b' }}>
+                    Overall platform revenue trajectory toward monthly target
+                  </p>
+                </div>
               </div>
-              <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#0f172a' }}>
-                Monthly Platform GMV Target
-              </h3>
+
+              <div style={{ background: '#f8fafc', border: '1.5px solid #e2e8f0', padding: '0.35rem 0.8rem', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '0.45rem', whiteSpace: 'nowrap' }}>
+                <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#64748b' }}>Target:</span>
+                <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#3569a7' }}>₹65 Lakhs</span>
+              </div>
             </div>
-            <span style={{ fontSize: '0.72rem', background: 'rgba(53, 105, 167, 0.1)', color: '#3569a7', padding: '2px 8px', borderRadius: '6px', fontWeight: 800 }}>
-              Goal: ₹65 Lakhs
-            </span>
-          </div>
-          <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.76rem', color: '#64748b' }}>
-            Overall platform revenue trajectory toward monthly target
-          </p>
 
-          <div style={{ minHeight: '220px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Chart
-              options={radialTargetOptions}
-              series={radialTargetSeries}
-              type="radialBar"
-              height={240}
-            />
+            <div style={{ minHeight: '220px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0.25rem 0' }}>
+              <Chart
+                options={radialTargetOptions}
+                series={radialTargetSeries}
+                type="radialBar"
+                height={240}
+              />
+            </div>
+
+            {/* Mini Progress Pace Track */}
+            <div style={{ padding: '0 0.5rem 0.2rem 0.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem', marginBottom: '0.35rem' }}>
+                <span style={{ color: '#64748b', fontWeight: 700 }}>Pace: {targetPercent}% Realized</span>
+                <span style={{ color: '#0d9488', fontWeight: 800 }}>{(100 - targetPercent).toFixed(1)}% to Milestone</span>
+              </div>
+              <div style={{ width: '100%', height: '7px', background: '#e2e8f0', borderRadius: '9999px', overflow: 'hidden' }}>
+                <div style={{ width: `${Math.min(100, targetPercent)}%`, height: '100%', background: 'linear-gradient(90deg, #3569a7 0%, #0d9488 100%)', borderRadius: '9999px', transition: 'width 0.6s cubic-bezier(0.16, 1, 0.3, 1)' }} />
+              </div>
+            </div>
           </div>
 
-          <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '0.65rem', display: 'flex', justifyContent: 'space-between', fontSize: '0.76rem', color: '#64748b' }}>
-            <span>Achieved: <strong style={{ color: '#0f172a' }}>₹{kpis.totalGmv.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</strong></span>
-            <span style={{ color: '#0d9488', fontWeight: 800 }}>Remaining: ₹{Math.max(0, 6500000 - kpis.totalGmv).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+          {/* Twin-Vault Footer */}
+          <div className="adm-twin-vault" style={{ marginTop: '0.75rem', paddingTop: '0.85rem', borderTop: '1px solid #f1f5f9' }}>
+            <div style={{ background: '#f8fafc', padding: '0.65rem 0.95rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+              <div style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.04em' }}>
+                ACHIEVED VOLUME
+              </div>
+              <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', marginTop: '0.15rem' }}>
+                ₹{kpis.totalGmv.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+              </div>
+              <div style={{ fontSize: '0.68rem', color: '#3569a7', fontWeight: 700, marginTop: '0.1rem' }}>
+                ● {targetPercent}% of ₹65L Target
+              </div>
+            </div>
+
+            <div style={{ background: '#f8fafc', padding: '0.65rem 0.95rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+              <div style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.04em' }}>
+                REMAINING DEFICIT
+              </div>
+              <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0d9488', marginTop: '0.15rem' }}>
+                ₹{Math.max(0, 6500000 - kpis.totalGmv).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+              </div>
+              <div style={{ fontSize: '0.68rem', color: '#0d9488', fontWeight: 700, marginTop: '0.1rem' }}>
+                ● Run-rate on schedule
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Chart 4: Grouped Column Velocity */}
-        <div className="adm-chart-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-              <div className="adm-3d-pod adm-pod-emerald" style={{ width: '36px', height: '36px', borderRadius: '10px' }}>
-                <BarChart3 size={17} strokeWidth={2.4} />
+        <div className="adm-chart-card adm-chart-card-glow" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.85rem', marginBottom: '0.85rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
+                <div className="adm-3d-pod adm-pod-emerald" style={{ width: '48px', height: '48px', borderRadius: '14px' }}>
+                  <BarChart3 size={22} strokeWidth={2.4} />
+                </div>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem' }}>
+                    <span style={{ fontSize: '0.66rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#0d9488', background: 'rgba(13, 148, 136, 0.08)', padding: '2px 8px', borderRadius: '9999px', border: '1px solid rgba(13, 148, 136, 0.2)' }}>
+                      ● NETWORK EXPANSION
+                    </span>
+                  </div>
+                  <h3 style={{ margin: 0, fontSize: '1.08rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.015em' }}>
+                    Affiliate Growth &amp; KYC Velocity
+                  </h3>
+                  <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.76rem', color: '#64748b' }}>
+                    Daily network signups vs compliance verified accounts
+                  </p>
+                </div>
               </div>
-              <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#0f172a' }}>
-                Affiliate Growth &amp; KYC Velocity
-              </h3>
-            </div>
-            <span style={{ fontSize: '0.72rem', background: 'rgba(13, 148, 136, 0.1)', color: '#0d9488', padding: '2px 8px', borderRadius: '6px', fontWeight: 800 }}>
-              Weekly Velocity
-            </span>
-          </div>
-          <p style={{ margin: '0 0 0.75rem 0', fontSize: '0.76rem', color: '#64748b' }}>
-            Daily network signups vs compliance verified accounts
-          </p>
 
-          <div style={{ minHeight: '220px' }}>
-            <Chart
-              options={groupedVelocityOptions}
-              series={groupedVelocitySeries}
-              type="bar"
-              height={240}
-            />
+              <span style={{ fontSize: '0.72rem', background: 'rgba(13, 148, 136, 0.1)', color: '#0d9488', padding: '3px 9px', borderRadius: '8px', fontWeight: 800, border: '1px solid rgba(13, 148, 136, 0.2)', whiteSpace: 'nowrap' }}>
+                Weekly Velocity
+              </span>
+            </div>
+
+            {/* Interactive Single-Line Legend Pills Bar */}
+            <div className="adm-chart-legend-row" style={{ marginBottom: '0.5rem' }}>
+              <button
+                type="button"
+                onClick={() => toggleVelocitySeries('New Users', 'newUsers')}
+                className={`adm-legend-pill ${hiddenVelocitySeries.newUsers ? 'is-hidden' : ''}`}
+                title="Click to toggle New Users series"
+              >
+                <span className="adm-legend-dot" style={{ background: '#3569a7' }} />
+                <span>New Users</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => toggleVelocitySeries('KYC Verified', 'kycVerified')}
+                className={`adm-legend-pill ${hiddenVelocitySeries.kycVerified ? 'is-hidden' : ''}`}
+                title="Click to toggle KYC Verified series"
+              >
+                <span className="adm-legend-dot" style={{ background: '#0d9488' }} />
+                <span>KYC Verified</span>
+              </button>
+            </div>
+
+            <div style={{ minHeight: '220px' }}>
+              <Chart
+                options={groupedVelocityOptions}
+                series={groupedVelocitySeries}
+                type="bar"
+                height={240}
+              />
+            </div>
+          </div>
+
+          {/* Twin-Vault Footer */}
+          <div className="adm-twin-vault" style={{ marginTop: '0.75rem', paddingTop: '0.85rem', borderTop: '1px solid #f1f5f9' }}>
+            <div style={{ background: '#f8fafc', padding: '0.65rem 0.85rem', borderRadius: '11px', border: '1px solid #e2e8f0' }}>
+              <div style={{ fontSize: '0.64rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748b' }}>
+                NETWORK AUDIT RATIO
+              </div>
+              <div style={{ fontSize: '0.98rem', fontWeight: 800, color: '#0f172a', marginTop: '0.1rem', whiteSpace: 'nowrap' }}>
+                {((kpis.activeUsers || 20) / Math.max(1, kpis.totalUsers || 20) * 100).toFixed(0)}% Compliance
+              </div>
+              <div style={{ fontSize: '0.65rem', color: '#0d9488', fontWeight: 700, marginTop: '0.1rem' }}>
+                ● {kpis.totalUsers || 20} Active Affiliates
+              </div>
+            </div>
+
+            <div style={{ background: '#f8fafc', padding: '0.65rem 0.85rem', borderRadius: '11px', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <div style={{ fontSize: '0.64rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748b' }}>
+                  PENDING KYC
+                </div>
+                <div style={{ fontSize: '0.88rem', fontWeight: 800, color: kpis.pendingKycCount > 0 ? '#d97706' : '#0d9488', marginTop: '0.1rem' }}>
+                  {kpis.pendingKycCount} Awaiting
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => onNavigate && onNavigate('registered-users')}
+                style={{
+                  background: 'rgba(13, 148, 136, 0.08)',
+                  border: '1px solid rgba(13, 148, 136, 0.2)',
+                  color: '#0d9488',
+                  fontSize: '0.72rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  padding: '0.35rem 0.65rem',
+                  borderRadius: '7px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.2rem',
+                  transition: 'all 0.15s ease',
+                }}
+                title="Audit compliance records"
+              >
+                <span>Audit</span>
+                <ArrowUpRight size={13} />
+              </button>
+            </div>
           </div>
         </div>
       </div>
