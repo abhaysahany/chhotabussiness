@@ -41,6 +41,8 @@ import AdminPaymentHistoryPage from './components/sales/AdminPaymentHistoryPage'
 // Import Income & Commissions Reporting Suite Pages
 import AdminDirectIncomePage from './components/sales/AdminDirectIncomePage';
 import AdminDirectIncomeDetailsPage from './components/sales/AdminDirectIncomeDetailsPage';
+import AdminLevelIncomePage from './components/sales/AdminLevelIncomePage';
+import AdminLevelIncomeDetailsPage from './components/sales/AdminLevelIncomeDetailsPage';
 
 // Import User Management Suite Pages
 import AdminUserDetailsPage from './components/users/AdminUserDetailsPage';
@@ -55,6 +57,7 @@ import AdminRewardsClaimPage from './components/users/AdminRewardsClaimPage';
 import AdminContentLibraryPage from './components/content/AdminContentLibraryPage';
 import AdminContentSupportUploadsPage from './components/content/AdminContentSupportUploadsPage';
 import AdminSettingsPage from './components/settings/AdminSettingsPage';
+import AdminProfilePage from './components/profile/AdminProfilePage';
 import AdminDashboardOverview from './components/dashboard/AdminDashboardOverview';
 
 function App() {
@@ -149,6 +152,9 @@ function App() {
       'income-direct': '/income/direct-orders',
       'income-direct-orders': '/income/direct-orders',
       'direct-income': '/income/direct-orders',
+      'income-level': '/income/level-orders',
+      'income-level-orders': '/income/level-orders',
+      'level-income': '/income/level-orders',
       'users-details': '/users',
       'users-kyc': '/users/kyc',
       'users-payout-requests': '/payouts/requests',
@@ -165,6 +171,7 @@ function App() {
       'support-live': '/support/live',
       'support-contact': '/support/contact',
       'support-kb': '/support/kb',
+      profile: '/profile',
       settings: '/settings',
       starter: '/starter',
     };
@@ -314,6 +321,14 @@ function App() {
         path="/income/direct-orders/:orderId"
         element={wrapProtected(<AdminDirectIncomeDetailsPage />)}
       />
+      <Route
+        path="/income/level-orders"
+        element={wrapProtected(<AdminLevelIncomePage />)}
+      />
+      <Route
+        path="/income/level-orders/:orderId"
+        element={wrapProtected(<AdminLevelIncomeDetailsPage />)}
+      />
 
       {/* User Management Suite */}
       <Route
@@ -379,6 +394,10 @@ function App() {
 
       {/* System Settings & Starter Guide */}
       <Route
+        path="/profile"
+        element={wrapProtected(<AdminProfilePage currentAdmin={currentAdmin} />)}
+      />
+      <Route
         path="/settings"
         element={wrapProtected(<AdminSettingsPage />)}
       />
@@ -393,6 +412,9 @@ function App() {
       <Route path="/admin/income/direct-orders/:orderId" element={wrapProtected(<AdminDirectIncomeDetailsPage />)} />
       <Route path="/admin/direct-income/:orderId" element={wrapProtected(<AdminDirectIncomeDetailsPage />)} />
       <Route path="/orders/direct-income" element={<Navigate to="/income/direct-orders" replace />} />
+      <Route path="/admin/income/level-orders" element={<Navigate to="/income/level-orders" replace />} />
+      <Route path="/admin/income/level-orders/:orderId" element={wrapProtected(<AdminLevelIncomeDetailsPage />)} />
+      <Route path="/orders/level-income" element={<Navigate to="/income/level-orders" replace />} />
       <Route path="/orders/management" element={<Navigate to="/orders" replace />} />
       <Route path="/orders/dump-requests" element={<Navigate to="/orders/dumps" replace />} />
       <Route path="/sales" element={<Navigate to="/orders" replace />} />

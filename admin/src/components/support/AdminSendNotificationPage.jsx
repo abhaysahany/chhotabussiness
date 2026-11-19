@@ -143,7 +143,7 @@ function AdminSendNotificationPage() {
   });
 
   return (
-    <div style={{ padding: '1.5rem 2rem', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <div className="pro-support-container">
       {/* Toast Alert */}
       {toastMessage && (
         <div
@@ -167,20 +167,20 @@ function AdminSendNotificationPage() {
       )}
 
       {/* Header Banner */}
-      <div style={{ background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #3569a7 100%)', borderRadius: '16px', padding: '2rem 2.25rem', color: '#ffffff', marginBottom: '2rem', boxShadow: '0 10px 30px -5px rgba(49, 46, 129, 0.3)' }}>
+      <div className="pro-support-banner">
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.12)', padding: '0.25rem 0.85rem', borderRadius: '20px', fontSize: '0.78rem', fontWeight: '700', color: '#c7d2fe', marginBottom: '0.75rem' }}>
           <span>📢 Support System • User Notifications Broadcast Desk</span>
         </div>
-        <h1 style={{ fontSize: '1.85rem', fontWeight: '800', margin: '0 0 0.4rem 0', color: '#ffffff' }}>
+        <h1>
           Send Notifications & Announcements
         </h1>
-        <p style={{ color: '#cbd5e1', fontSize: '0.925rem', maxWidth: '750px', margin: 0 }}>
+        <p>
           Broadcast high-priority announcements, alerts, and personalized messages to Single Users, Active KYC Verified Partners, Inactive Users, or the entire network.
         </p>
       </div>
 
       {/* KPI Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+      <div className="pro-support-kpi-grid">
         <div style={{ background: '#ffffff', borderRadius: '12px', padding: '1.25rem', border: '1px solid #e2e8f0' }}>
           <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Total Broadcasts Sent</span>
           <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0f172a', margin: '0.3rem 0 0 0' }}>
@@ -208,9 +208,9 @@ function AdminSendNotificationPage() {
       </div>
 
       {/* Main Two Column Layout: Compose Form & History Table */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1.9fr', gap: '2rem', alignItems: 'start' }}>
+      <div className="pro-support-split-grid">
         {/* Left Column: Notification Composer */}
-        <div style={{ background: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', padding: '1.75rem', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
+        <div className="pro-support-composer-card">
           <div style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '0.85rem', marginBottom: '1.25rem' }}>
             <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>
               ✍️ Compose Notification
@@ -232,7 +232,7 @@ function AdminSendNotificationPage() {
               <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.4rem' }}>
                 Target Audience Selection <span style={{ color: '#ef4444' }}>*</span>
               </label>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+              <div className="pro-support-audience-grid">
                 <button
                   type="button"
                   onClick={() => {
@@ -458,8 +458,8 @@ function AdminSendNotificationPage() {
         </div>
 
         {/* Right Column: Sent Notifications Logs Table */}
-        <div style={{ background: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
-          <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+        <div className="pro-support-table-card">
+          <div className="pro-support-table-header">
             <div>
               <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>
                 📋 Broadcast History & Delivery Logs
@@ -469,7 +469,7 @@ function AdminSendNotificationPage() {
               </span>
             </div>
 
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <div className="pro-support-table-controls">
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value)}
@@ -492,18 +492,18 @@ function AdminSendNotificationPage() {
             </div>
           </div>
 
-          <div style={{ padding: '0.75rem 1.25rem', borderBottom: '1px solid #f1f5f9' }}>
+          <div className="pro-support-search-wrap">
             <input
               type="text"
               placeholder="Search title, message, recipient code..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ width: '100%', padding: '0.5rem 0.85rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.82rem' }}
+              style={{ width: '100%', padding: '0.5rem 0.85rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.82rem', boxSizing: 'border-box' }}
             />
           </div>
 
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.83rem', textAlign: 'left' }}>
+          <div className="pro-support-table-scroll">
+            <table style={{ width: '100%', minWidth: '650px', borderCollapse: 'collapse', fontSize: '0.83rem', textAlign: 'left' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   <th style={{ padding: '0.85rem 1.25rem' }}>Notification Title & Message</th>

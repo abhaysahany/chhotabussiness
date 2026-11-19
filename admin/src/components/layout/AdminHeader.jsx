@@ -1,22 +1,5 @@
-import React, { useState } from 'react';
-import {
-  PanelLeftClose,
-  PanelLeftOpen,
-  Search,
-  Moon,
-  Sun,
-  Maximize,
-  ChevronDown,
-  User,
-  Bell,
-  CreditCard,
-  Settings,
-  LifeBuoy,
-  Lock,
-  LogOut,
-  Menu,
-  ShieldCheck,
-} from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function AdminHeader({
   currentAdmin,
@@ -28,8 +11,27 @@ function AdminHeader({
   mobileSidebarOpen,
   setMobileSidebarOpen,
 }) {
+  const navigate = useNavigate();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isLocked, setIsLocked] = useState(false);
+  const [lockPassword, setLockPassword] = useState('');
+  const menuRef = useRef(null);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setShowProfileMenu(false);
+      }
+    };
+    if (showProfileMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showProfileMenu]);
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -41,288 +43,402 @@ function AdminHeader({
     }
   };
 
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    const query = searchQuery.trim();
+    if (query) {
+      navigate(`/users?search=${encodeURIComponent(query)}`);
+      setSearchQuery('');
+    }
+  };
+
   return (
-    <header className="topbar-header">
-      {/* Left Section: Mobile Toggle / Collapse Button + 3D Luxury Search Bar */}
-      <div className="topbar-left">
-        {/* Mobile Hamburger Menu Toggle (< 1024px) */}
-        <button
-          type="button"
-          className="mobile-hamburger-btn"
-          onClick={() => setMobileSidebarOpen && setMobileSidebarOpen(!mobileSidebarOpen)}
-          title="Toggle Navigation Menu"
-          aria-label="Toggle Navigation Menu"
-        >
-          <Menu size={20} strokeWidth={2.4} />
-        </button>
-
-        {/* Laptop & Desktop Sidebar Collapse Toggle (>= 1024px) with 3D Pod Styling */}
-        <button
-          type="button"
-          className="desktop-sidebar-toggle-btn"
-          onClick={() => setCollapsed && setCollapsed(!collapsed)}
-          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        >
-          {collapsed ? (
-            <PanelLeftOpen size={19} strokeWidth={2.4} />
-          ) : (
-            <PanelLeftClose size={19} strokeWidth={2.4} />
-          )}
-        </button>
-
-        {/* Luxury 3D Fintech Search Bar */}
-        <div className="adm-topbar-search">
-          <Search size={16} className="adm-topbar-search-icon" strokeWidth={2.4} />
-          <input
-            type="text"
-            className="adm-topbar-search-input"
-            placeholder="Quick Search (Orders, Users, Entities)..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <button className="adm-topbar-search-btn" title="Search">
-            <Search size={14} strokeWidth={2.6} />
-          </button>
-        </div>
-      </div>
-
-      {/* Right Section: 3D Utility Action Pods & Profile Pill */}
-      <div className="topbar-right">
-        {/* Theme Toggle 3D Button */}
-        <button
-          type="button"
-          className="topbar-icon-btn-3d"
-          onClick={() => setDarkMode(!darkMode)}
-          title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-          aria-label="Toggle Theme"
-        >
-          {darkMode ? (
-            <Sun size={18} strokeWidth={2.2} color="#f59e0b" />
-          ) : (
-            <Moon size={18} strokeWidth={2.2} color="#475569" />
-          )}
-        </button>
-
-        {/* Fullscreen Toggle 3D Button */}
-        <button
-          type="button"
-          className="topbar-icon-btn-3d desktop-only-btn"
-          onClick={toggleFullscreen}
-          title="Toggle Fullscreen"
-          aria-label="Toggle Fullscreen"
-        >
-          <Maximize size={18} strokeWidth={2.2} color="#475569" />
-        </button>
-
-        {/* User Profile 3D Pill Button */}
-        <div className="profile-wrapper">
+    <>
+      <header className="topbar-header">
+        {/* Left Section: Mobile Toggle / Collapse Button + Search Bar */}
+        <div className="topbar-left">
+          {/* Mobile Hamburger Menu Toggle (Tablets & Phones < 1024px) */}
           <button
             type="button"
-            className="adm-profile-pill"
-            onClick={() => setShowProfileMenu(!showProfileMenu)}
+            className="mobile-hamburger-btn"
+            onClick={() => setMobileSidebarOpen && setMobileSidebarOpen(!mobileSidebarOpen)}
+            title="Toggle Navigation Menu"
+            aria-label="Toggle Navigation Menu"
           >
-            <div className="adm-avatar-pod">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
+
+          {/* Laptop & Desktop Sidebar Collapse Toggle (>= 1024px) */}
+          <button
+            type="button"
+            className="desktop-sidebar-toggle-btn"
+            onClick={() => setCollapsed && setCollapsed(!collapsed)}
+            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+              <line x1="9" y1="3" x2="9" y2="21" />
+              {collapsed ? (
+                <polyline points="13 10 15 12 13 14" />
+              ) : (
+                <polyline points="15 10 13 12 15 14" />
+              )}
+            </svg>
+          </button>
+
+          <form className="search-box" onSubmit={handleSearchSubmit}>
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Quick Search users, orders..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <button type="submit" className="search-btn" title="Search">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </button>
+          </form>
+        </div>
+
+        {/* Right Section: Utility Tools & Profile Dropdown */}
+        <div className="topbar-right">
+          {/* Theme Toggle Button */}
+          <button
+            type="button"
+            className="topbar-icon-btn"
+            onClick={() => setDarkMode(!darkMode)}
+            title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          >
+            {darkMode ? (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="5" />
+                <line x1="12" y1="1" x2="12" y2="3" />
+                <line x1="12" y1="21" x2="12" y2="23" />
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                <line x1="1" y1="12" x2="3" y2="12" />
+                <line x1="21" y1="12" x2="23" y2="12" />
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+              </svg>
+            ) : (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+              </svg>
+            )}
+          </button>
+
+          {/* Fullscreen Toggle */}
+          <button type="button" className="topbar-icon-btn desktop-only-btn" onClick={toggleFullscreen} title="Fullscreen Toggle">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+            </svg>
+          </button>
+
+          {/* User Profile Section */}
+          <div className="profile-wrapper" ref={menuRef}>
+            <button
+              type="button"
+              className="profile-btn"
+              onClick={() => setShowProfileMenu(!showProfileMenu)}
+            >
               <img
                 src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80"
                 alt="Admin Avatar"
+                className="profile-avatar-img"
                 onError={(e) => {
                   e.target.style.display = 'none';
                   if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
                 }}
               />
-              <div
-                className="profile-avatar-fallback"
-                style={{
-                  display: 'none',
-                  width: '100%',
-                  height: '100%',
-                  borderRadius: '50%',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '0.8rem',
-                  fontWeight: 800,
-                }}
-              >
-                {currentAdmin?.name ? currentAdmin.name.charAt(0).toUpperCase() : 'S'}
+              <div className="profile-avatar-fallback" style={{ display: 'none' }}>
+                {currentAdmin?.name ? currentAdmin.name.charAt(0).toUpperCase() : 'A'}
               </div>
-              <span className="adm-avatar-online-dot" />
-            </div>
-
-            <div style={{ textAlign: 'left', lineHeight: 1.2 }}>
-              <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#0f172a', whiteSpace: 'nowrap' }}>
+              <span className="profile-name">
                 {currentAdmin?.name || 'Super Administrator'}
-              </div>
-              <div style={{ fontSize: '0.66rem', fontWeight: 700, color: '#059669', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Enterprise Master
-              </div>
-            </div>
+              </span>
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#3569a7"
+                strokeWidth="2.5"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
 
-            <ChevronDown
-              size={14}
-              strokeWidth={2.5}
-              color="#64748b"
-              style={{
-                transition: 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                transform: showProfileMenu ? 'rotate(180deg)' : 'rotate(0deg)',
-              }}
-            />
-          </button>
+            {showProfileMenu && (
+              <div className="profile-dropdown-menu custom-user-menu">
+                <div className="dropdown-welcome-header">
+                  Welcome back, {currentAdmin?.name ? currentAdmin.name.split(' ')[0] : 'Admin'}!
+                </div>
 
-          {/* Luxury Dropdown Menu */}
-          {showProfileMenu && (
+                {/* 1. Profile */}
+                <button
+                  type="button"
+                  className="dropdown-menu-item"
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    navigate('/profile');
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                  <span>Profile</span>
+                </button>
+
+                {/* 2. Notifications */}
+                <button
+                  type="button"
+                  className="dropdown-menu-item"
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    navigate('/notifications');
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                  </svg>
+                  <span>Notifications</span>
+                </button>
+
+                {/* 3. Balance / Financial Ledger */}
+                <button
+                  type="button"
+                  className="dropdown-menu-item"
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    navigate('/payments/history');
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+                    <line x1="1" y1="10" x2="23" y2="10" />
+                  </svg>
+                  <span>
+                    Balance: <strong>₹9,85,250</strong>
+                  </span>
+                </button>
+
+                {/* 4. Account Settings */}
+                <button
+                  type="button"
+                  className="dropdown-menu-item"
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    navigate('/settings');
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="3" />
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                  </svg>
+                  <span>Account Settings</span>
+                </button>
+
+                {/* 5. Support Center */}
+                <button
+                  type="button"
+                  className="dropdown-menu-item"
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    navigate('/support/tickets');
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+                    <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
+                  </svg>
+                  <span>Support Center</span>
+                </button>
+
+                <div className="dropdown-divider"></div>
+
+                {/* 6. Lock Screen */}
+                <button
+                  type="button"
+                  className="dropdown-menu-item"
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    setIsLocked(true);
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                  <span>Lock Screen</span>
+                </button>
+
+                {/* 7. Log Out */}
+                <button
+                  type="button"
+                  className="dropdown-menu-item logout-item-pink"
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    if (onLogout) onLogout();
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" strokeWidth="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                  </svg>
+                  <span>Log Out</span>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </header>
+
+      {/* Full-Screen Interactive Lock Screen Modal Overlay */}
+      {isLocked && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 999999,
+            backgroundColor: 'rgba(15, 23, 42, 0.95)',
+            backdropFilter: 'blur(12px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1.5rem',
+            boxSizing: 'border-box',
+          }}
+        >
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '20px',
+              padding: '2.5rem 2rem',
+              maxWidth: '420px',
+              width: '100%',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+              textAlign: 'center',
+              boxSizing: 'border-box',
+            }}
+          >
             <div
-              className="profile-dropdown-menu custom-user-menu"
               style={{
-                position: 'absolute',
-                right: 0,
-                top: '46px',
-                width: '230px',
-                background: 'rgba(255, 255, 255, 0.98)',
-                backdropFilter: 'blur(16px)',
-                border: '1.5px solid #e2e8f0',
-                borderRadius: '16px',
-                boxShadow: '0 20px 40px -10px rgba(0, 0, 0, 0.15)',
-                padding: '0.65rem 0.5rem',
-                zIndex: 9999,
+                width: '84px',
+                height: '84px',
+                borderRadius: '50%',
+                margin: '0 auto 1.25rem',
+                border: '3px solid #3b82f6',
+                overflow: 'hidden',
+                boxShadow: '0 4px 14px rgba(59, 130, 246, 0.3)',
                 display: 'flex',
-                flexDirection: 'column',
-                gap: '0.2rem',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: '#f8fafc',
               }}
             >
-              <div style={{ padding: '0.5rem 0.75rem', borderBottom: '1px solid #f1f5f9', marginBottom: '0.35rem' }}>
-                <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#0f172a' }}>
-                  {currentAdmin?.name || 'Super Administrator'}
-                </div>
-                <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
-                  {currentAdmin?.email || 'admin@vyaparadnet.com'}
-                </div>
+              <img
+                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=160&q=80"
+                alt="Locked Admin"
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
+                }}
+              />
+              <div style={{ display: 'none', width: '100%', height: '100%', background: '#1e293b', color: '#fff', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', fontWeight: 800 }}>
+                {currentAdmin?.name ? currentAdmin.name.charAt(0).toUpperCase() : 'A'}
               </div>
+            </div>
+
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#fee2e2', color: '#b91c1c', padding: '0.25rem 0.75rem', borderRadius: '14px', fontSize: '0.75rem', fontWeight: 700, marginBottom: '0.75rem' }}>
+              <span>🔒</span> Session Screen Locked
+            </div>
+
+            <h3 style={{ margin: '0 0 0.35rem 0', fontSize: '1.35rem', fontWeight: 800, color: '#0f172a' }}>
+              {currentAdmin?.name || 'Super Administrator'}
+            </h3>
+            <p style={{ margin: '0 0 1.5rem 0', fontSize: '0.825rem', color: '#64748b' }}>
+              Your session is locked. Enter password or click Unlock below to resume.
+            </p>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                setIsLocked(false);
+                setLockPassword('');
+              }}
+              style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}
+            >
+              <input
+                type="password"
+                placeholder="Enter password to unlock..."
+                value={lockPassword}
+                onChange={(e) => setLockPassword(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem 1rem',
+                  borderRadius: '10px',
+                  border: '1.5px solid #cbd5e1',
+                  fontSize: '0.9rem',
+                  textAlign: 'center',
+                  boxSizing: 'border-box',
+                }}
+              />
 
               <button
-                type="button"
-                className="dropdown-menu-item"
-                onClick={() => setShowProfileMenu(false)}
+                type="submit"
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.6rem',
-                  padding: '0.5rem 0.75rem',
-                  borderRadius: '8px',
+                  width: '100%',
+                  padding: '0.8rem',
+                  background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                  color: '#ffffff',
                   border: 'none',
-                  background: 'transparent',
-                  color: '#334155',
-                  fontSize: '0.8rem',
-                  fontWeight: 600,
+                  borderRadius: '10px',
+                  fontWeight: 800,
+                  fontSize: '0.92rem',
                   cursor: 'pointer',
-                  textAlign: 'left',
+                  boxShadow: '0 4px 14px rgba(37, 99, 235, 0.35)',
                 }}
               >
-                <User size={15} color="#2563eb" />
-                <span>My Profile</span>
+                🔓 Unlock Screen
               </button>
 
               <button
                 type="button"
-                className="dropdown-menu-item"
-                onClick={() => setShowProfileMenu(false)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.6rem',
-                  padding: '0.5rem 0.75rem',
-                  borderRadius: '8px',
-                  border: 'none',
-                  background: 'transparent',
-                  color: '#334155',
-                  fontSize: '0.8rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                }}
-              >
-                <Bell size={15} color="#d97706" />
-                <span>Notifications</span>
-              </button>
-
-              <button
-                type="button"
-                className="dropdown-menu-item"
-                onClick={() => setShowProfileMenu(false)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.6rem',
-                  padding: '0.5rem 0.75rem',
-                  borderRadius: '8px',
-                  border: 'none',
-                  background: 'transparent',
-                  color: '#334155',
-                  fontSize: '0.8rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                }}
-              >
-                <Settings size={15} color="#64748b" />
-                <span>Account Settings</span>
-              </button>
-
-              <button
-                type="button"
-                className="dropdown-menu-item"
-                onClick={() => setShowProfileMenu(false)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.6rem',
-                  padding: '0.5rem 0.75rem',
-                  borderRadius: '8px',
-                  border: 'none',
-                  background: 'transparent',
-                  color: '#334155',
-                  fontSize: '0.8rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                }}
-              >
-                <LifeBuoy size={15} color="#0d9488" />
-                <span>Support Center</span>
-              </button>
-
-              <div style={{ height: '1px', background: '#f1f5f9', margin: '0.35rem 0' }} />
-
-              <button
-                type="button"
-                className="dropdown-menu-item"
                 onClick={() => {
-                  setShowProfileMenu(false);
+                  setIsLocked(false);
                   if (onLogout) onLogout();
                 }}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.6rem',
-                  padding: '0.5rem 0.75rem',
-                  borderRadius: '8px',
+                  background: 'transparent',
                   border: 'none',
-                  background: 'rgba(239, 68, 68, 0.08)',
-                  color: '#dc2626',
-                  fontSize: '0.8rem',
+                  color: '#ef4444',
+                  fontSize: '0.82rem',
                   fontWeight: 700,
                   cursor: 'pointer',
-                  textAlign: 'left',
+                  padding: '0.4rem',
+                  marginTop: '0.25rem',
                 }}
               >
-                <LogOut size={15} color="#dc2626" />
-                <span>Logout Session</span>
+                ← Switch User / Log Out
               </button>
-            </div>
-          )}
+            </form>
+          </div>
         </div>
-      </div>
-    </header>
+      )}
+    </>
   );
 }
 

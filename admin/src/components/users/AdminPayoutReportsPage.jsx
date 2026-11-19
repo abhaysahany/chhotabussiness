@@ -98,7 +98,7 @@ function AdminPayoutReportsPage() {
   };
 
   return (
-    <div className="admin-page-container" style={{ padding: '1.5rem 2rem', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <div className="admin-page-container pro-users-container" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
       {/* Header */}
       <div className="page-header" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
@@ -134,8 +134,8 @@ function AdminPayoutReportsPage() {
       </div>
 
       {/* KPI Stats Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem', borderLeft: '4px solid #16a34a' }}>
+      <div className="pro-users-kpi-grid">
+        <div className="pro-users-kpi-card" style={{ borderLeft: '4px solid #16a34a' }}>
           <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>LIFETIME NET DISBURSED</div>
           <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#16a34a', marginTop: '0.35rem' }}>
             ₹{lifetimeNet.toLocaleString()}
@@ -145,7 +145,7 @@ function AdminPayoutReportsPage() {
           </div>
         </div>
 
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem', borderLeft: '4px solid #7c3aed' }}>
+        <div className="pro-users-kpi-card" style={{ borderLeft: '4px solid #7c3aed' }}>
           <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>TOTAL TDS COLLECTED (194H)</div>
           <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#7c3aed', marginTop: '0.35rem' }}>
             ₹{lifetimeTDS.toLocaleString()}
@@ -155,7 +155,7 @@ function AdminPayoutReportsPage() {
           </div>
         </div>
 
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem', borderLeft: '4px solid #2563eb' }}>
+        <div className="pro-users-kpi-card" style={{ borderLeft: '4px solid #2563eb' }}>
           <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>GROSS COMMISSION PAYOUT</div>
           <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#2563eb', marginTop: '0.35rem' }}>
             ₹{lifetimeGross.toLocaleString()}
@@ -165,7 +165,7 @@ function AdminPayoutReportsPage() {
           </div>
         </div>
 
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem', borderLeft: '4px solid #d97706' }}>
+        <div className="pro-users-kpi-card" style={{ borderLeft: '4px solid #d97706' }}>
           <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>AVERAGE DISBURSAL SIZE</div>
           <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#d97706', marginTop: '0.35rem' }}>
             ₹{avgPayout.toLocaleString()}
@@ -177,7 +177,7 @@ function AdminPayoutReportsPage() {
       </div>
 
       {/* Grid: Methods & Quarterly Compliance */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.2fr) minmax(0, 1.8fr)', gap: '1.5rem', marginBottom: '1.5rem' }}>
+      <div className="pro-payout-reports-grid">
         {/* Method Distribution Breakdown */}
         <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', padding: '1.5rem' }}>
           <h3 style={{ margin: '0 0 0.25rem 0', fontSize: '1rem', fontWeight: 800, color: '#0f172a' }}>
@@ -250,7 +250,7 @@ function AdminPayoutReportsPage() {
       </div>
 
       {/* Member-wise Earnings & Payout Summary Table */}
-      <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
+      <div className="pro-users-table-card">
         <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#0f172a' }}>
@@ -262,8 +262,8 @@ function AdminPayoutReportsPage() {
           </div>
         </div>
 
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+        <div className="pro-users-table-scroll table-responsive-inner" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', minWidth: '850px' }}>
             <thead>
               <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left', color: '#475569' }}>
                 <th style={{ padding: '0.85rem 1rem' }}>Rank / Member</th>

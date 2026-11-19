@@ -198,7 +198,7 @@ function AdminSupportTicketsPage({ currentAdmin }) {
       )}
 
       {/* Filter Bar */}
-      <div className="card" style={{ padding: '1rem', marginBottom: '1.25rem', display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+      <div className="card pro-ticket-filter-bar">
         <input
           type="text"
           className="form-input"
@@ -239,9 +239,9 @@ function AdminSupportTicketsPage({ currentAdmin }) {
       </div>
 
       {/* Main Grid: Ticket Queue & Active Thread */}
-      <div className="status-grid" style={{ gridTemplateColumns: '1fr 2fr', gap: '1.25rem', alignItems: 'stretch' }}>
+      <div className="pro-ticket-split-grid">
         {/* Left List */}
-        <div className="card" style={{ padding: '1.25rem', height: '580px', display: 'flex', flexDirection: 'column' }}>
+        <div className="card pro-ticket-queue-card">
           <h3 style={{ fontSize: '0.9375rem', fontWeight: 700, marginBottom: '0.75rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>
             Inquiries Queue ({tickets.length})
           </h3>
@@ -285,16 +285,16 @@ function AdminSupportTicketsPage({ currentAdmin }) {
         </div>
 
         {/* Right Thread View */}
-        <div className="card" style={{ padding: '1.25rem', height: '580px', display: 'flex', flexDirection: 'column' }}>
+        <div className="card pro-ticket-thread-card">
           {selectedTicket ? (
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem', marginBottom: '0.75rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.65rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem', marginBottom: '0.75rem' }}>
                 <div>
                   <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#3569a7' }}>{selectedTicket.ticket_code || selectedTicket.id} • {selectedTicket.category}</span>
                   <h3 style={{ fontSize: '1.125rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: '0.15rem' }}>{selectedTicket.subject}</h3>
                   <span style={{ fontSize: '0.785rem', color: 'var(--text-muted)' }}>Submitted by: {selectedTicket.user_name} ({selectedTicket.user_email})</span>
                 </div>
-                <div style={{ display: 'flex', gap: '0.4rem' }}>
+                <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
                   <button className="btn-primary" style={{ backgroundColor: '#10b981', padding: '0.35rem 0.65rem', fontSize: '0.75rem' }} onClick={() => handleStatusUpdate('Resolved')}>
                     ✓ Resolve
                   </button>
@@ -332,7 +332,7 @@ function AdminSupportTicketsPage({ currentAdmin }) {
               </div>
 
               {/* Preset Shortcuts */}
-              <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '0.5rem' }}>
+              <div className="pro-ticket-shortcuts">
                 <button
                   type="button"
                   className="btn-secondary"
@@ -390,7 +390,7 @@ function AdminSupportTicketsPage({ currentAdmin }) {
                 <div style={{ marginBottom: '0.5rem' }}>
                   <FieldError error={replyError} />
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
                   <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Replying as: {adminName}</span>
                   <button type="submit" className="btn-primary" disabled={sending} style={{ padding: '0.4rem 0.85rem', cursor: sending ? 'not-allowed' : 'pointer', opacity: sending ? 0.7 : 1 }}>
                     {sending ? 'Sending...' : '🚀 Send Reply'}

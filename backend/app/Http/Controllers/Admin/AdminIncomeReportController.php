@@ -7,9 +7,11 @@ use App\Models\Admin;
 use App\Models\CommissionSetting;
 use App\Models\DirectIncome;
 use App\Models\DirectIncomeOrderSummary;
+use App\Models\LevelIncome;
 use App\Models\Order;
 use App\Models\OrderPaymentDump;
 use App\Models\SalePayment;
+use App\Models\TotalLevelIncome;
 use App\Models\User;
 use App\Models\WalletTransfer;
 use Carbon\Carbon;
@@ -837,5 +839,541 @@ class AdminIncomeReportController extends Controller
                 'message' => $recMessage,
             ],
         ], 200);
+    }
+
+    /**
+     * API 4 – Global Level Income Overview & Platform Reconciliation
+     *
+     * GET /api/admin/income/level-overview
+     * Returns consolidated financial statistics and reconciliation health for Level Income.
+     */
+    public function getLevelIncomeOverview(Request $request): JsonResponse
+    {
+        $admin = $this->verifyAdminAccess($request);
+        if ($admin instanceof JsonResponse) {
+            return $admin;
+        }
+
+        // Single-pass SQL aggregation across total_level_incomes table
+        $summaryStats = DB::table('total_level_incomes')
+            ->selectRaw("
+                COUNT(*) as total_records,
+                COUNT(DISTINCT order_id) as total_orders,
+                COALESCE(SUM(total_amount), 0) as total_expected,
+                COALESCE(SUM(paid_amount), 0) as total_distributed,
+                COALESCE(SUM(balance_amount), 0) as total_pending,
+                COALESCE(SUM(dump_amount), 0) as total_dump,
+                COUNT(DISTINCT user_code) as total_beneficiaries,
+                COUNT(CASE WHEN balance_amount > 0 AND paid_amount > 0 THEN 1 END) as partial_records,
+                COUNT(CASE WHEN paid_amount = 0 AND balance_amount > 0 THEN 1 END) as pending_records,
+                COUNT(CASE WHEN balance_amount <= 0 AND paid_amount > 0 THEN 1 END) as completed_records
+            ")
+            ->first();
+
+        $totalRecords = (int) ($summaryStats->total_records ?? 0);
+        $totalOrders = (int) ($summaryStats->total_orders ?? 0);
+        $totalExpected = (float) round((float) ($summaryStats->total_expected ?? 0), 2);
+        $totalDistributed = (float) round((float) ($summaryStats->total_distributed ?? 0), 2);
+        $totalPending = (float) round((float) ($summaryStats->total_pending ?? 0), 2);
+        $totalDump = (float) round((float) ($summaryStats->total_dump ?? 0), 2);
+        $totalBeneficiariesCount = (int) ($summaryStats->total_beneficiaries ?? 0);
+        $partialRecords = (int) ($summaryStats->partial_records ?? 0);
+        $pendingRecords = (int) ($summaryStats->pending_records ?? 0);
+        $completedRecords = (int) ($summaryStats->completed_records ?? 0);
+
+        $completionPercentage = $totalExpected > 0
+            ? round(($totalDistributed / $totalExpected) * 100, 2)
+            : 0.0;
+
+        // Authoritative ledger total from level_incomes table (individual installments)
+        $levelIncomesLedgerTotal = (float) round(
+            DB::table('level_incomes')->sum('amount'),
+            2
+        );
+        $totalDistributionsCount = (int) DB::table('level_incomes')->count();
+
+        // Wallet transfers with walletType = 'Level Income'
+        $walletTransfersCreditTotal = (float) round(
+            DB::table('wallet_transfers')
+                ->where('walletType', 'Level Income')
+                ->sum('credit'),
+            2
+        );
+
+        // Per-level breakdown (e.g. Level 2, 3, 4, 5)
+        $levelBreakdownRaw = DB::table('total_level_incomes')
+            ->selectRaw("
+                level,
+                COUNT(*) as count,
+                COUNT(DISTINCT user_code) as beneficiaries,
+                COALESCE(SUM(total_amount), 0) as total_expected,
+                COALESCE(SUM(paid_amount), 0) as total_paid,
+                COALESCE(SUM(balance_amount), 0) as total_balance,
+                COALESCE(SUM(dump_amount), 0) as total_dump
+            ")
+            ->groupBy('level')
+            ->orderBy('level', 'asc')
+            ->get();
+
+        $levelBreakdown = [];
+        foreach ($levelBreakdownRaw as $lvl) {
+            $levelBreakdown[] = [
+                'level' => (int) $lvl->level,
+                'level_label' => 'Level ' . $lvl->level,
+                'count' => (int) $lvl->count,
+                'beneficiaries' => (int) $lvl->beneficiaries,
+                'total_expected' => (float) round($lvl->total_expected, 2),
+                'total_paid' => (float) round($lvl->total_paid, 2),
+                'total_balance' => (float) round($lvl->total_balance, 2),
+                'total_dump' => (float) round($lvl->total_dump, 2),
+            ];
+        }
+
+        $reconciliationDiff = round(abs($totalDistributed - $levelIncomesLedgerTotal), 2);
+        $isReconciled = ($reconciliationDiff === 0.0);
+        $isWalletMatched = ($walletTransfersCreditTotal === $totalDistributed);
+
+        if ($isReconciled && $isWalletMatched) {
+            $reconciliationStatus = 'Reconciled';
+            $reconciliationMessage = 'All platform Level Income records match across total level summaries, level income ledger installments, and wallet transfers with 0.00 variance.';
+        } elseif ($isReconciled && !$isWalletMatched) {
+            $reconciliationStatus = 'Incomplete Wallet Trace';
+            $reconciliationMessage = "Total level summaries and installment payouts match perfectly (₹{$totalDistributed}); wallet credit total reflects ₹{$walletTransfersCreditTotal}.";
+        } else {
+            $reconciliationStatus = 'Mismatch';
+            $reconciliationMessage = "Discrepancy detected between summary (₹{$totalDistributed}) and installment payouts ledger (₹{$levelIncomesLedgerTotal}).";
+        }
+
+        $metrics = [
+            'total_eligible_orders' => $totalOrders,
+            'totalEligibleOrders' => $totalOrders,
+            'total_records' => $totalRecords,
+            'totalRecords' => $totalRecords,
+            'total_expected_level_income' => $totalExpected,
+            'totalExpectedLevelIncome' => $totalExpected,
+            'total_distributed_level_income' => $totalDistributed,
+            'totalDistributedLevelIncome' => $totalDistributed,
+            'total_pending_level_income' => $totalPending,
+            'totalPendingLevelIncome' => $totalPending,
+            'total_dump_level_income' => $totalDump,
+            'totalDumpLevelIncome' => $totalDump,
+            'total_distributions_count' => $totalDistributionsCount,
+            'totalDistributionsCount' => $totalDistributionsCount,
+            'total_beneficiaries_count' => $totalBeneficiariesCount,
+            'totalBeneficiariesCount' => $totalBeneficiariesCount,
+            'completion_percentage' => $completionPercentage,
+            'completionPercentage' => $completionPercentage,
+            'partial_records_count' => $partialRecords,
+            'pending_records_count' => $pendingRecords,
+            'completed_records_count' => $completedRecords,
+            'level_breakdown' => $levelBreakdown,
+            'levelBreakdown' => $levelBreakdown,
+            'reconciliation_status' => $reconciliationStatus,
+            'reconciliationStatus' => $reconciliationStatus,
+            'reconciliation_difference' => $reconciliationDiff,
+            'reconciliationDifference' => $reconciliationDiff,
+            'reconciliation_message' => $reconciliationMessage,
+            'reconciliationMessage' => $reconciliationMessage,
+            'is_reconciled' => $isReconciled,
+            'isReconciled' => $isReconciled,
+            'is_wallet_matched' => $isWalletMatched,
+            'isWalletMatched' => $isWalletMatched,
+            'ledger_totals' => [
+                'total_level_incomes_paid' => $totalDistributed,
+                'level_incomes_installments' => $levelIncomesLedgerTotal,
+                'wallet_transfers_level' => $walletTransfersCreditTotal,
+            ],
+        ];
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $metrics,
+            'metrics' => $metrics,
+        ]);
+    }
+
+    /**
+     * API 5 – Paginated Order/Record-wise Level Income List
+     *
+     * GET /api/admin/income/level-orders
+     * Supports search, level filtering (1-5), status, entity, date range, and pagination.
+     */
+    public function getOrderLevelIncomeList(Request $request): JsonResponse
+    {
+        $admin = $this->verifyAdminAccess($request);
+        if ($admin instanceof JsonResponse) {
+            return $admin;
+        }
+
+        $query = DB::table('total_level_incomes')
+            ->leftJoin('orders', 'total_level_incomes.order_id', '=', 'orders.id')
+            ->leftJoin('users as beneficiary', 'total_level_incomes.user_code', '=', 'beneficiary.user_code')
+            ->leftJoin('users as buyer', 'total_level_incomes.level_id', '=', 'buyer.user_code')
+            ->select([
+                'total_level_incomes.*',
+                'orders.invoice_number as order_invoice_number',
+                'orders.date as order_date',
+                'orders.created_at as order_created_at',
+                'orders.entity_id as order_entity_id',
+                'orders.entity_name as order_entity_name',
+                'orders.entity_type as order_entity_type',
+                'orders.gross_amount as order_gross_amount',
+                'orders.net_entity_payout as order_net_entity_payout',
+                'orders.status as order_status',
+                'orders.income_distribution_status as order_income_distribution_status',
+                'beneficiary.id as beneficiary_user_id',
+                'beneficiary.name as beneficiary_name',
+                'beneficiary.email as beneficiary_email',
+                'beneficiary.phone as beneficiary_phone',
+                'buyer.id as buyer_user_id',
+                'buyer.name as buyer_name',
+                'buyer.email as buyer_email',
+                'buyer.phone as buyer_phone',
+            ]);
+
+        // Filter: Level (1-5 or all)
+        if ($request->filled('level') && $request->input('level') !== 'all') {
+            $query->where('total_level_incomes.level', (int) $request->input('level'));
+        }
+
+        // Filter: Distribution Status (completed, partial, pending)
+        if ($request->filled('status') && $request->input('status') !== 'all') {
+            $status = strtolower(trim((string) $request->input('status')));
+            if ($status === 'completed') {
+                $query->where('total_level_incomes.balance_amount', '<=', 0)
+                      ->where('total_level_incomes.paid_amount', '>', 0);
+            } elseif ($status === 'partial') {
+                $query->where('total_level_incomes.paid_amount', '>', 0)
+                      ->where('total_level_incomes.balance_amount', '>', 0);
+            } elseif ($status === 'pending') {
+                $query->where('total_level_incomes.paid_amount', '<=', 0)
+                      ->where('total_level_incomes.balance_amount', '>', 0);
+            }
+        }
+
+        // Filter: Search keyword
+        if ($request->filled('search')) {
+            $s = trim((string) $request->input('search'));
+            $cleanCode = preg_replace('/^CB/i', '', $s);
+            $query->where(function ($q) use ($s, $cleanCode) {
+                $q->where('total_level_incomes.invoice_number', 'like', "%{$s}%")
+                  ->orWhere('total_level_incomes.order_id', 'like', "%{$s}%")
+                  ->orWhere('total_level_incomes.user_code', 'like', "%{$s}%")
+                  ->orWhere('total_level_incomes.level_id', 'like', "%{$s}%")
+                  ->orWhere('orders.entity_name', 'like', "%{$s}%")
+                  ->orWhere('beneficiary.name', 'like', "%{$s}%")
+                  ->orWhere('buyer.name', 'like', "%{$s}%");
+                if (!empty($cleanCode)) {
+                    $q->orWhere('total_level_incomes.user_code', 'like', "%{$cleanCode}%")
+                      ->orWhere('total_level_incomes.level_id', 'like', "%{$cleanCode}%");
+                }
+            });
+        }
+
+        // Filter: Entity
+        if ($request->filled('entity_id')) {
+            $query->where('orders.entity_id', $request->input('entity_id'));
+        }
+        if ($request->filled('entity_type') && $request->input('entity_type') !== 'all') {
+            $query->where('orders.entity_type', $request->input('entity_type'));
+        }
+
+        // Filter: Beneficiary (user_code)
+        if ($request->filled('beneficiary')) {
+            $b = trim((string) $request->input('beneficiary'));
+            $query->where('total_level_incomes.user_code', 'like', "%{$b}%");
+        }
+
+        // Filter: Buyer (level_id)
+        if ($request->filled('buyer')) {
+            $byr = trim((string) $request->input('buyer'));
+            $query->where('total_level_incomes.level_id', 'like', "%{$byr}%");
+        }
+
+        // Filter: Date Range
+        if ($request->filled('start_date')) {
+            $start = trim((string) $request->input('start_date'));
+            $query->where(function ($q) use ($start) {
+                $q->where('orders.date', '>=', $start)
+                  ->orWhere('total_level_incomes.created_at', '>=', $start . ' 00:00:00');
+            });
+        }
+        if ($request->filled('end_date')) {
+            $end = trim((string) $request->input('end_date'));
+            $query->where(function ($q) use ($end) {
+                $q->where('orders.date', '<=', $end)
+                  ->orWhere('total_level_incomes.created_at', '<=', $end . ' 23:59:59');
+            });
+        }
+
+        // Sorting
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortOrder = strtolower($request->input('sort_order', 'desc')) === 'asc' ? 'asc' : 'desc';
+        $allowedSort = [
+            'created_at' => 'total_level_incomes.created_at',
+            'order_id' => 'total_level_incomes.order_id',
+            'invoice_number' => 'total_level_incomes.invoice_number',
+            'level' => 'total_level_incomes.level',
+            'total_amount' => 'total_level_incomes.total_amount',
+            'paid_amount' => 'total_level_incomes.paid_amount',
+            'balance_amount' => 'total_level_incomes.balance_amount',
+            'dump_amount' => 'total_level_incomes.dump_amount',
+        ];
+        $sortCol = $allowedSort[$sortBy] ?? 'total_level_incomes.created_at';
+        $query->orderBy($sortCol, $sortOrder);
+
+        // Pagination
+        $perPage = max(1, min(100, (int) $request->input('per_page', 20)));
+        $paginator = $query->paginate($perPage);
+
+        // Transform records
+        $records = collect($paginator->items())->map(function ($row) {
+            $total = (float) $row->total_amount;
+            $paid = (float) $row->paid_amount;
+            $balance = (float) $row->balance_amount;
+            $dump = (float) $row->dump_amount;
+
+            $status = 'pending';
+            if ($balance <= 0 && $paid > 0) {
+                $status = 'completed';
+            } elseif ($paid > 0 && $balance > 0) {
+                $status = 'partial';
+            }
+
+            // Get count of distribution installments for this order and beneficiary/level
+            $distCount = DB::table('level_incomes')
+                ->where('order_id', $row->order_id)
+                ->where('user_code', $row->user_code)
+                ->where('level', $row->level)
+                ->count();
+
+            return [
+                'id' => $row->id,
+                'order_id' => $row->order_id,
+                'invoice_number' => $row->invoice_number ?: $row->order_invoice_number,
+                'level' => (int) $row->level,
+                'level_label' => 'Level ' . $row->level,
+                'payment_type' => $row->payment_type,
+                'total_amount' => $total,
+                'paid_amount' => $paid,
+                'balance_amount' => $balance,
+                'dump_amount' => $dump,
+                'status' => $status,
+                'distribution_status' => $status,
+                'distribution_count' => $distCount,
+                'created_at' => $row->created_at,
+                'updated_at' => $row->updated_at,
+                'order' => [
+                    'id' => $row->order_id,
+                    'invoice_number' => $row->order_invoice_number ?: $row->invoice_number,
+                    'date' => $row->order_date,
+                    'created_at' => $row->order_created_at,
+                    'entity_id' => $row->order_entity_id,
+                    'entity_name' => $row->order_entity_name,
+                    'entity_type' => $row->order_entity_type,
+                    'gross_amount' => (float) ($row->order_gross_amount ?? 0),
+                    'net_entity_payout' => (float) ($row->order_net_entity_payout ?? 0),
+                    'status' => $row->order_status,
+                ],
+                'beneficiary' => [
+                    'user_id' => $row->beneficiary_user_id,
+                    'user_code' => $row->user_code,
+                    'name' => $row->beneficiary_name ?: ('User #' . $row->user_code),
+                    'email' => $row->beneficiary_email,
+                    'phone' => $row->beneficiary_phone,
+                ],
+                'buyer' => [
+                    'user_id' => $row->buyer_user_id,
+                    'user_code' => $row->level_id,
+                    'name' => $row->buyer_name ?: ('Member #' . $row->level_id),
+                    'email' => $row->buyer_email,
+                    'phone' => $row->buyer_phone,
+                ],
+            ];
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $records,
+            'records' => $records,
+            'orders' => $records,
+            'pagination' => [
+                'current_page' => $paginator->currentPage(),
+                'last_page' => $paginator->lastPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
+            ],
+        ]);
+    }
+
+    /**
+     * API 6 – Comprehensive Drill-Down Details for Single Order Level Income Audit
+     *
+     * GET /api/admin/income/level-orders/{orderId}
+     * Returns full multi-level audit breakdown, parent financials, and level_incomes installments.
+     */
+    public function getOrderLevelIncomeDetails(Request $request, $orderId): JsonResponse
+    {
+        $admin = $this->verifyAdminAccess($request);
+        if ($admin instanceof JsonResponse) {
+            return $admin;
+        }
+
+        // 1. Resolve Order with relations
+        $order = Order::with(['payments', 'dumpRequests'])
+            ->where('id', $orderId)
+            ->orWhere('invoice_number', $orderId)
+            ->first();
+
+        // If not found by order id or invoice, check total_level_incomes.id
+        if (!$order) {
+            $tli = DB::table('total_level_incomes')->where('id', $orderId)->first();
+            if ($tli) {
+                $order = Order::with(['payments', 'dumpRequests'])->where('id', $tli->order_id)->first();
+            }
+        }
+
+        if (!$order) {
+            return response()->json([
+                'status' => 'error',
+                'message' => "Order #{$orderId} not found in database.",
+            ], 404);
+        }
+
+        // 2. Resolve Customer (Buyer) and Sponsor
+        $customer = $order->customer_user_code ? User::where('user_code', $order->customer_user_code)->first() : null;
+        $sponsorCode = $customer ? $customer->sponsor_id : $order->sponsor;
+        $sponsor = $sponsorCode ? User::where('user_code', $sponsorCode)->orWhere('id', $sponsorCode)->first() : null;
+
+        // 3. Resolve all TotalLevelIncome records for this order
+        $levelSummaries = DB::table('total_level_incomes')
+            ->where('order_id', $order->id)
+            ->orWhere('invoice_number', $order->invoice_number)
+            ->orderBy('level', 'asc')
+            ->get();
+
+        // Enrich each level summary with beneficiary details
+        $levelsData = [];
+        $orderExpectedLevelTotal = 0.0;
+        $orderPaidLevelTotal = 0.0;
+        $orderBalanceLevelTotal = 0.0;
+        $orderDumpLevelTotal = 0.0;
+
+        foreach ($levelSummaries as $ls) {
+            $beneficiaryUser = User::where('user_code', $ls->user_code)->first();
+            $tot = (float) $ls->total_amount;
+            $pd = (float) $ls->paid_amount;
+            $bal = (float) $ls->balance_amount;
+            $dmp = (float) $ls->dump_amount;
+
+            $orderExpectedLevelTotal += $tot;
+            $orderPaidLevelTotal += $pd;
+            $orderBalanceLevelTotal += $bal;
+            $orderDumpLevelTotal += $dmp;
+
+            $status = ($bal <= 0 && $pd > 0) ? 'completed' : (($pd > 0 && $bal > 0) ? 'partial' : 'pending');
+
+            $levelsData[] = [
+                'id' => $ls->id,
+                'level' => (int) $ls->level,
+                'level_label' => 'Level ' . $ls->level,
+                'user_code' => $ls->user_code,
+                'beneficiary_name' => $beneficiaryUser ? $beneficiaryUser->name : ('User #' . $ls->user_code),
+                'beneficiary_phone' => $beneficiaryUser ? $beneficiaryUser->phone : '',
+                'beneficiary_email' => $beneficiaryUser ? $beneficiaryUser->email : '',
+                'total_amount' => $tot,
+                'paid_amount' => $pd,
+                'balance_amount' => $bal,
+                'dump_amount' => $dmp,
+                'status' => $status,
+                'payment_type' => $ls->payment_type,
+                'created_at' => $ls->created_at,
+                'updated_at' => $ls->updated_at,
+            ];
+        }
+
+        // 4. Resolve all installment payouts from level_incomes table
+        $installments = DB::table('level_incomes')
+            ->where('order_id', $order->id)
+            ->orWhere('invoice_number', $order->invoice_number)
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($rec) {
+                $u = User::where('user_code', $rec->user_code)->first();
+                return [
+                    'id' => $rec->id,
+                    'order_id' => $rec->order_id,
+                    'invoice_number' => $rec->invoice_number,
+                    'payment_id' => $rec->payment_id,
+                    'payment_type' => $rec->payment_type,
+                    'user_code' => $rec->user_code,
+                    'beneficiary_name' => $u ? $u->name : ('User #' . $rec->user_code),
+                    'level_id' => $rec->level_id,
+                    'level' => (int) $rec->level,
+                    'level_label' => 'Level ' . $rec->level,
+                    'amount' => (float) $rec->amount,
+                    'created_at' => $rec->created_at,
+                ];
+            });
+
+        // 5. Parent order financials
+        $orderGross = (float) ($order->gross_amount ?? 0);
+        $orderCut = (float) ($order->admin_commission_cut ?? 0);
+        $orderNetPayout = (float) ($order->net_entity_payout ?? 0);
+        $orderLevelCommission = (float) ($order->level_commissions_total > 0
+            ? $order->level_commissions_total
+            : ($order->level_income_amount > 0 ? $order->level_income_amount : $orderExpectedLevelTotal));
+
+        // 6. Reconciliation for this order
+        $installmentsSum = (float) round($installments->sum('amount'), 2);
+        $diff = round(abs($orderPaidLevelTotal - $installmentsSum), 2);
+        $orderReconciliationStatus = ($diff === 0.0) ? 'Reconciled' : 'Discrepancy';
+
+        $audit = [
+            'order_id' => $order->id,
+            'invoice_number' => $order->invoice_number,
+            'date' => $order->date,
+            'created_at' => $order->created_at,
+            'entity' => [
+                'id' => $order->entity_id,
+                'name' => $order->entity_name,
+                'type' => $order->entity_type,
+            ],
+            'buyer' => [
+                'user_code' => $order->customer_user_code,
+                'name' => $order->customer_name ?: ($customer ? $customer->name : 'N/A'),
+                'email' => $order->customer_email ?: ($customer ? $customer->email : 'N/A'),
+                'phone' => $order->customer_phone ?: ($customer ? $customer->phone : 'N/A'),
+            ],
+            'sponsor' => [
+                'user_code' => $sponsorCode,
+                'name' => $sponsor ? $sponsor->name : ($order->sponsor ?? 'N/A'),
+                'email' => $sponsor ? $sponsor->email : 'N/A',
+                'phone' => $sponsor ? $sponsor->phone : 'N/A',
+            ],
+            'financials' => [
+                'gross_amount' => $orderGross,
+                'admin_commission_cut' => $orderCut,
+                'net_entity_payout' => $orderNetPayout,
+                'expected_level_commission' => $orderLevelCommission,
+                'total_expected_amount' => $orderExpectedLevelTotal,
+                'total_distributed_amount' => $orderPaidLevelTotal,
+                'total_pending_amount' => $orderBalanceLevelTotal,
+                'total_dump_amount' => $orderDumpLevelTotal,
+                'installments_sum' => $installmentsSum,
+                'reconciliation_status' => $orderReconciliationStatus,
+                'reconciliation_difference' => $diff,
+            ],
+            'levels' => $levelsData,
+            'installments' => $installments,
+            'payments' => $order->payments,
+            'dump_requests' => $order->dumpRequests,
+        ];
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $audit,
+            'audit' => $audit,
+        ]);
     }
 }

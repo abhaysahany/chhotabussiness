@@ -147,7 +147,7 @@ function AdminUserKycPage() {
   };
 
   return (
-    <div className="admin-page-container" style={{ padding: '1.5rem 2rem', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <div className="admin-page-container pro-users-container" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
       {/* Toast Notification */}
       {toastMsg && (
         <div
@@ -171,16 +171,16 @@ function AdminUserKycPage() {
       )}
 
       {/* Page Header */}
-      <div style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)', borderRadius: '16px', padding: '2rem 2.25rem', color: '#ffffff', marginBottom: '1.75rem', boxShadow: '0 10px 25px -5px rgba(15, 23, 42, 0.25)' }}>
+      <div className="pro-users-banner" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
           <div>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.12)', padding: '0.25rem 0.85rem', borderRadius: '20px', fontSize: '0.78rem', fontWeight: 700, color: '#c7d2fe', marginBottom: '0.75rem' }}>
               <span>🛡️ Statutory Identity & Tax Compliance Audit</span>
             </div>
-            <h1 style={{ fontSize: '1.85rem', fontWeight: 800, margin: '0 0 0.4rem 0', color: '#ffffff' }}>
+            <h1 style={{ fontWeight: 800, margin: '0 0 0.4rem 0', color: '#ffffff' }}>
               User KYC Verification & Compliance
             </h1>
-            <p style={{ color: '#cbd5e1', fontSize: '0.925rem', maxWidth: '720px', margin: 0 }}>
+            <p style={{ color: '#cbd5e1', maxWidth: '720px', margin: 0 }}>
               Verify identity documents (PAN & Aadhaar Card only). Approving KYC unlocks bank and UPI payout additions for the member.
             </p>
           </div>
@@ -206,8 +206,8 @@ function AdminUserKycPage() {
       </div>
 
       {/* KPI Stats Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem', marginBottom: '1.75rem' }}>
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.25rem 1.5rem', borderLeft: '4px solid #f59e0b' }}>
+      <div className="pro-users-kpi-grid">
+        <div className="pro-users-kpi-card" style={{ borderLeft: '4px solid #f59e0b' }}>
           <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Under Process / Review</div>
           <div style={{ fontSize: '1.65rem', fontWeight: 800, color: pendingCount > 0 ? '#d97706' : '#64748b', marginTop: '0.35rem' }}>
             {pendingCount} Pending
@@ -215,7 +215,7 @@ function AdminUserKycPage() {
           <div style={{ fontSize: '0.72rem', color: '#64748b' }}>Awaiting Admin Decision</div>
         </div>
 
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.25rem 1.5rem', borderLeft: '4px solid #16a34a' }}>
+        <div className="pro-users-kpi-card" style={{ borderLeft: '4px solid #16a34a' }}>
           <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Verified & Approved</div>
           <div style={{ fontSize: '1.65rem', fontWeight: 800, color: '#15803d', marginTop: '0.35rem' }}>
             {verifiedCount} Verified
@@ -223,7 +223,7 @@ function AdminUserKycPage() {
           <div style={{ fontSize: '0.72rem', color: '#16a34a' }}>Payouts Unlocked</div>
         </div>
 
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.25rem 1.5rem', borderLeft: '4px solid #dc2626' }}>
+        <div className="pro-users-kpi-card" style={{ borderLeft: '4px solid #dc2626' }}>
           <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Rejected Submissions</div>
           <div style={{ fontSize: '1.65rem', fontWeight: 800, color: '#dc2626', marginTop: '0.35rem' }}>
             {rejectedCount} Rejected
@@ -233,8 +233,8 @@ function AdminUserKycPage() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '1.25rem', marginBottom: '1.5rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ flex: 1, minWidth: '260px' }}>
+      <div className="pro-users-filter-bar">
+        <div style={{ flex: 1, minWidth: '220px' }}>
           <input
             type="text"
             placeholder="Search by User Code, Name, Email, PAN Number, or Aadhaar..."
@@ -257,9 +257,9 @@ function AdminUserKycPage() {
       </div>
 
       {/* KYC Table */}
-      <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+      <div className="pro-users-table-card">
+        <div className="pro-users-table-scroll table-responsive-inner" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', minWidth: '850px' }}>
             <thead>
               <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left', color: '#475569' }}>
                 <th style={{ padding: '0.85rem 1rem' }}>User Info</th>
@@ -384,7 +384,7 @@ function AdminUserKycPage() {
             padding: '1rem',
           }}
         >
-          <div style={{ background: '#ffffff', borderRadius: '16px', width: '100%', maxWidth: '580px', padding: '2rem', maxHeight: '90vh', overflowY: 'auto' }}>
+          <div style={{ background: '#ffffff', borderRadius: '16px', width: '100%', maxWidth: '580px', padding: '1.5rem', maxHeight: '90vh', overflowY: 'auto', boxSizing: 'border-box' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
               <div>
                 <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#2563eb', textTransform: 'uppercase' }}>KYC Compliance Audit</span>

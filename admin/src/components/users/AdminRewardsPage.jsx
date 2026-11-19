@@ -223,7 +223,7 @@ function AdminRewardsPage() {
   });
 
   return (
-    <div style={{ padding: '1.5rem 2rem', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <div className="admin-page-container pro-users-container" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
       {/* Toast Alert */}
       {toastMessage && (
         <div
@@ -247,16 +247,16 @@ function AdminRewardsPage() {
       )}
 
       {/* Header Banner */}
-      <div style={{ background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #3569a7 100%)', borderRadius: '16px', padding: '2rem 2.25rem', color: '#ffffff', marginBottom: '2rem', boxShadow: '0 10px 30px -5px rgba(49, 46, 129, 0.3)' }}>
+      <div className="pro-users-banner" style={{ background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #3569a7 100%)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.12)', padding: '0.25rem 0.85rem', borderRadius: '20px', fontSize: '0.78rem', fontWeight: '700', color: '#c7d2fe', marginBottom: '0.75rem' }}>
               <span>🎁 User Management • Rewards Master Catalog</span>
             </div>
-            <h1 style={{ fontSize: '1.85rem', fontWeight: '800', margin: '0 0 0.4rem 0', color: '#ffffff' }}>
+            <h1 style={{ fontWeight: '800', margin: '0 0 0.4rem 0', color: '#ffffff' }}>
               Rewards Catalog Management
             </h1>
-            <p style={{ color: '#cbd5e1', fontSize: '0.925rem', maxWidth: '750px', margin: 0 }}>
+            <p style={{ color: '#cbd5e1', maxWidth: '750px', margin: 0 }}>
               Create, configure, and manage reward items with required Business Points (BP). Users can claim these rewards anytime from their BP wallet balance.
             </p>
           </div>
@@ -286,35 +286,35 @@ function AdminRewardsPage() {
       </div>
 
       {/* KPI Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.75rem' }}>
-        <div style={{ background: '#ffffff', borderRadius: '12px', padding: '1.25rem', border: '1px solid #e2e8f0' }}>
+      <div className="pro-users-kpi-grid">
+        <div className="pro-users-kpi-card">
           <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Total Active Rewards</span>
-          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0f172a', margin: '0.3rem 0 0 0' }}>
+          <h2 style={{ color: '#0f172a', margin: '0.3rem 0 0 0' }}>
             {rewards.filter((r) => r.status === 'active').length}
           </h2>
         </div>
-        <div style={{ background: '#ffffff', borderRadius: '12px', padding: '1.25rem', border: '1px solid #e2e8f0' }}>
+        <div className="pro-users-kpi-card">
           <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Total Catalog Items</span>
-          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#2563eb', margin: '0.3rem 0 0 0' }}>
+          <h2 style={{ color: '#2563eb', margin: '0.3rem 0 0 0' }}>
             {rewards.length}
           </h2>
         </div>
-        <div style={{ background: '#ffffff', borderRadius: '12px', padding: '1.25rem', border: '1px solid #e2e8f0' }}>
+        <div className="pro-users-kpi-card">
           <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Lowest BP Tier</span>
-          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#16a34a', margin: '0.3rem 0 0 0' }}>
+          <h2 style={{ color: '#16a34a', margin: '0.3rem 0 0 0' }}>
             {rewards.length > 0 ? Math.min(...rewards.map((r) => r.required_bp)) : 0} BP
           </h2>
         </div>
-        <div style={{ background: '#ffffff', borderRadius: '12px', padding: '1.25rem', border: '1px solid #e2e8f0' }}>
+        <div className="pro-users-kpi-card">
           <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Highest Luxury Tier</span>
-          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#7c3aed', margin: '0.3rem 0 0 0' }}>
+          <h2 style={{ color: '#7c3aed', margin: '0.3rem 0 0 0' }}>
             {rewards.length > 0 ? Math.max(...rewards.map((r) => r.required_bp)) : 0} BP
           </h2>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '1.25rem', marginBottom: '1.75rem', display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div className="pro-users-filter-bar">
         <div style={{ flex: 1, minWidth: '260px' }}>
           <input
             type="text"
@@ -361,7 +361,7 @@ function AdminRewardsPage() {
       {loading ? (
         <div style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>Loading rewards catalog from database...</div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
+        <div className="pro-rewards-grid">
           {filteredRewards.map((reward) => (
             <div
               key={reward.id}
@@ -453,8 +453,11 @@ function AdminRewardsPage() {
               borderRadius: '16px',
               width: '100%',
               maxWidth: '540px',
-              padding: '2rem',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              padding: '1.5rem',
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              boxSizing: 'border-box',
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.85rem', marginBottom: '1.25rem' }}>
@@ -502,7 +505,7 @@ function AdminRewardsPage() {
                 <FieldError error={fieldErrors.title} />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="pro-modal-form-grid-2col">
                 <div>
                   <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>
                     Required Business Points (BP) <span style={{ color: '#ef4444' }}>*</span>

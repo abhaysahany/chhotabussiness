@@ -212,7 +212,7 @@ function AdminContentSupportUploadsPage() {
   const totalHelpful = topics.reduce((sum, item) => sum + (Number(item.helpful_count) || 0), 0);
 
   return (
-    <div className="admin-content-container" style={{ padding: '1.5rem 2rem', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <div className="admin-page-container admin-content-container" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
       {/* Toast Alert */}
       {toastMsg && (
         <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', backgroundColor: '#059669', color: '#fff', padding: '0.85rem 1.35rem', borderRadius: '10px', fontWeight: '700', boxShadow: '0 10px 25px -5px rgba(5,150,105,0.4)', zIndex: 2000, fontSize: '0.875rem' }}>
@@ -227,8 +227,8 @@ function AdminContentSupportUploadsPage() {
             <span style={{ background: 'rgba(255,255,255,0.12)', padding: '0.25rem 0.85rem', borderRadius: '20px', fontSize: '0.78rem', fontWeight: '700', color: '#c7d2fe', display: 'inline-block', marginBottom: '0.75rem' }}>
               🎧 User Content Support & Video Tutorial Manager • MySQL Database
             </span>
-            <h1 style={{ fontSize: '1.85rem', fontWeight: '800', margin: '0 0 0.4rem 0', color: '#ffffff' }}>Content Support & Help Topics</h1>
-            <p style={{ color: '#94a3b8', fontSize: '0.925rem', maxWidth: '650px', margin: 0 }}>
+            <h1 style={{ fontWeight: '800', margin: '0 0 0.4rem 0', color: '#ffffff' }}>Content Support & Help Topics</h1>
+            <p style={{ color: '#94a3b8', maxWidth: '650px', margin: 0 }}>
               Upload YouTube video guides, help topics, FAQs, and step-by-step documentation saved directly in MySQL database to display in the Member Panel's Content Support section.
             </p>
           </div>
@@ -377,7 +377,7 @@ function AdminContentSupportUploadsPage() {
       {/* CREATE / EDIT SUPPORT TOPIC MODAL */}
       {showModal && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '1rem' }}>
-          <div style={{ background: '#fff', borderRadius: '14px', width: '100%', maxWidth: '640px', overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' }}>
+          <div style={{ background: '#fff', borderRadius: '14px', width: '100%', maxWidth: '640px', maxHeight: '92vh', overflowY: 'auto', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', boxSizing: 'border-box' }}>
             <div style={{ background: 'linear-gradient(135deg, #312e81 0%, #4338ca 100%)', padding: '1.25rem 1.5rem', color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
                 <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0 }}>{editingTopic ? 'Edit Support Topic' : 'Upload New Support Video & Article'}</h3>
@@ -386,7 +386,7 @@ function AdminContentSupportUploadsPage() {
               <button onClick={() => setShowModal(false)} style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '1.4rem', cursor: 'pointer' }}>×</button>
             </div>
 
-            <form onSubmit={handleSaveTopic} style={{ padding: '1.5rem', maxHeight: '75vh', overflowY: 'auto' }}>
+            <form onSubmit={handleSaveTopic} style={{ padding: '1.5rem', overflowY: 'auto' }}>
               {modalBannerError && (
                 <div style={{ backgroundColor: '#fef2f2', color: '#991b1b', border: '1px solid #fecaca', padding: '0.65rem 0.85rem', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.82rem', fontWeight: 600 }}>
                   ⚠️ {modalBannerError}
@@ -409,7 +409,7 @@ function AdminContentSupportUploadsPage() {
                 <FieldError error={modalErrors.title} />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+              <div className="admin-content-modal-grid">
                 <div>
                   <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', color: '#475569', marginBottom: '0.35rem' }}>Category Module *</label>
                   <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} style={{ width: '100%', padding: '0.55rem', fontSize: '0.835rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }}>
@@ -471,7 +471,7 @@ function AdminContentSupportUploadsPage() {
                 <textarea rows={5} value={formData.article_body} onChange={(e) => setFormData({ ...formData, article_body: e.target.value })} placeholder="Detailed help instructions, markdown bullet steps, etc..." style={{ width: '100%', padding: '0.55rem', fontSize: '0.835rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none', resize: 'vertical' }} />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+              <div className="admin-content-modal-grid">
                 <div>
                   <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', color: '#475569', marginBottom: '0.35rem' }}>FAQ Question (Optional)</label>
                   <input type="text" value={formData.faq_question} onChange={(e) => setFormData({ ...formData, faq_question: e.target.value })} placeholder="Quick FAQ question..." style={{ width: '100%', padding: '0.55rem', fontSize: '0.835rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }} />
@@ -496,7 +496,7 @@ function AdminContentSupportUploadsPage() {
       {/* INSPECT TOPIC & YOUTUBE PLAYER MODAL */}
       {inspectingTopic && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000, padding: '1rem' }}>
-          <div style={{ background: '#fff', borderRadius: '16px', width: '100%', maxWidth: '680px', overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }}>
+          <div style={{ background: '#fff', borderRadius: '16px', width: '100%', maxWidth: '680px', maxHeight: '92vh', overflowY: 'auto', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)', boxSizing: 'border-box' }}>
             <div style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', padding: '1.25rem 1.5rem', color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
                 <span style={{ fontSize: '0.75rem', color: '#818cf8', fontWeight: '800', textTransform: 'uppercase' }}>{typeof inspectingTopic.category === 'object' && inspectingTopic.category !== null ? (inspectingTopic.category.name || 'General') : String(inspectingTopic.category || 'General')}</span>

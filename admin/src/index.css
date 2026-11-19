@@ -1,6 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 @import './components/products/products.css';
 @import './components/sales/sales.css';
+@import './components/users/users.css';
+@import './components/content/content.css';
+@import './components/support/support.css';
+@import './components/settings/settings.css';
 
 :root {
   --sidebar-width: 240px;

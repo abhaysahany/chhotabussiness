@@ -171,7 +171,7 @@ function AdminUserDetailsPage() {
   const totalBpCollected = users.reduce((acc, curr) => acc + (curr.bpBalance || 0), 0);
 
   return (
-    <div style={{ padding: '1.5rem 2rem', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <div className="admin-page-container pro-users-container" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
       {/* Toast Alert */}
       {toastMsg && (
         <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', backgroundColor: '#059669', color: '#fff', padding: '0.85rem 1.35rem', borderRadius: '10px', fontWeight: '700', boxShadow: '0 10px 25px -5px rgba(5,150,105,0.4)', zIndex: 2000, fontSize: '0.875rem' }}>
@@ -180,14 +180,14 @@ function AdminUserDetailsPage() {
       )}
 
       {/* Hero Banner Header */}
-      <div style={{ background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)', borderRadius: '16px', padding: '2rem 2.5rem', color: '#ffffff', marginBottom: '2rem', boxShadow: '0 10px 25px -5px rgba(67, 56, 202, 0.3)' }}>
+      <div className="pro-users-banner" style={{ background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
           <div>
             <span style={{ background: 'rgba(255,255,255,0.15)', padding: '0.25rem 0.75rem', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#c7d2fe', display: 'inline-block', marginBottom: '0.75rem' }}>
               👥 User Management & BP Ledger
             </span>
-            <h1 style={{ fontSize: '2rem', fontWeight: '800', margin: '0 0 0.5rem 0', color: '#fff' }}>User Accounts & Wallets</h1>
-            <p style={{ color: '#e0e7ff', fontSize: '0.95rem', margin: 0, maxWidth: '650px' }}>
+            <h1 style={{ fontWeight: '800', margin: '0 0 0.5rem 0', color: '#fff' }}>User Accounts & Wallets</h1>
+            <p style={{ color: '#e0e7ff', margin: 0, maxWidth: '650px' }}>
               Full database directory of all platform members, active Business Points (BP) balances, commission wallets, and account controls.
             </p>
           </div>
@@ -202,14 +202,14 @@ function AdminUserDetailsPage() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div style={{ background: '#ffffff', padding: '1.25rem 1.5rem', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '1.5rem', display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', flex: 1, minWidth: '300px' }}>
+      <div className="pro-users-filter-bar">
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', flex: 1 }}>
           <input
             type="text"
             placeholder="Search by name, email, phone, or User ID..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ padding: '0.6rem 1rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.875rem', flex: 1, minWidth: '220px', outline: 'none' }}
+            style={{ padding: '0.6rem 1rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.875rem', flex: 1, minWidth: '180px', outline: 'none' }}
           />
           <select
             value={roleFilter}
@@ -239,8 +239,9 @@ function AdminUserDetailsPage() {
       </div>
 
       {/* Users Table */}
-      <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
+      <div className="pro-users-table-card">
+        <div className="pro-users-table-scroll table-responsive-inner" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem', minWidth: '980px' }}>
           <thead>
             <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               <th style={{ padding: '0.85rem 1rem' }}>User ID</th>
@@ -334,12 +335,13 @@ function AdminUserDetailsPage() {
             )}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* BP WALLET INSPECTION MODAL */}
       {selectedUserBpWallet && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(5px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 99999, padding: '1rem' }}>
-          <div style={{ background: '#fff', borderRadius: '16px', width: '100%', maxWidth: '580px', maxHeight: '85vh', overflowY: 'auto', padding: '2rem', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' }}>
+          <div style={{ background: '#fff', borderRadius: '16px', width: '100%', maxWidth: '580px', maxHeight: '90vh', overflowY: 'auto', padding: '1.5rem', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', boxSizing: 'border-box' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.85rem', marginBottom: '1.25rem' }}>
               <div>
                 <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>
@@ -352,7 +354,7 @@ function AdminUserDetailsPage() {
               <button onClick={() => setSelectedUserBpWallet(null)} style={{ background: 'none', border: 'none', fontSize: '1.3rem', color: '#64748b', cursor: 'pointer' }}>×</button>
             </div>
 
-            <div style={{ background: 'linear-gradient(135deg, #581c87 0%, #7e22ce 100%)', color: '#ffffff', borderRadius: '12px', padding: '1.25rem', marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ background: 'linear-gradient(135deg, #581c87 0%, #7e22ce 100%)', color: '#ffffff', borderRadius: '12px', padding: '1.25rem', marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
               <div>
                 <div style={{ fontSize: '0.75rem', color: '#e9d5ff', fontWeight: 700, textTransform: 'uppercase' }}>Total BP Balance</div>
                 <div style={{ fontSize: '1.75rem', fontWeight: 800 }}>{selectedUserBpWallet.bpBalance} BP</div>
@@ -385,7 +387,7 @@ function AdminUserDetailsPage() {
       {/* EDIT USER MODAL */}
       {editingUser && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '1rem' }}>
-          <div style={{ background: '#fff', borderRadius: '14px', width: '100%', maxWidth: '540px', overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' }}>
+          <div style={{ background: '#fff', borderRadius: '14px', width: '100%', maxWidth: '540px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', boxSizing: 'border-box' }}>
             <div style={{ background: 'linear-gradient(135deg, #1e1b4b 0%, #4338ca 100%)', padding: '1.25rem 1.5rem', color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
                 <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0 }}>Edit User & Wallets: {editingUser.name}</h3>
@@ -394,13 +396,13 @@ function AdminUserDetailsPage() {
               <button onClick={() => setEditingUser(null)} style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '1.4rem', cursor: 'pointer' }}>×</button>
             </div>
 
-            <form onSubmit={handleSaveUser} style={{ padding: '1.5rem' }}>
+            <form onSubmit={handleSaveUser} style={{ padding: '1.25rem' }}>
               {modalBannerError && (
                 <div style={{ backgroundColor: '#fef2f2', color: '#991b1b', border: '1px solid #fecaca', padding: '0.65rem 0.85rem', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.82rem', fontWeight: 600 }}>
                   ⚠️ {modalBannerError}
                 </div>
               )}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+              <div className="pro-modal-form-grid-2col">
                 <div>
                   <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', color: '#475569', marginBottom: '0.3rem' }}>Full Name *</label>
                   <input
@@ -433,7 +435,7 @@ function AdminUserDetailsPage() {
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+              <div className="pro-modal-form-grid-2col">
                 <div>
                   <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', color: '#475569', marginBottom: '0.3rem' }}>💎 BP Wallet Balance (BP)</label>
                   <input

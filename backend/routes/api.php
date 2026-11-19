@@ -457,17 +457,25 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/admin/settings/branding', [SystemSettingController::class, 'saveBranding']);
     Route::put('/admin/settings/branding', [SystemSettingController::class, 'saveBranding']);
 
-    // Admin Global Order-wise Direct Income Reporting Endpoints (Admin Phase 1)
+    // Admin Global Order-wise Direct & Level Income Reporting Endpoints
     Route::prefix('admin/income')->group(function () {
         Route::get('/direct-overview', [\App\Http\Controllers\Admin\AdminIncomeReportController::class, 'getDirectIncomeOverview']);
         Route::get('/direct-orders', [\App\Http\Controllers\Admin\AdminIncomeReportController::class, 'getOrderDirectIncomeList']);
         Route::get('/direct-orders/{orderId}', [\App\Http\Controllers\Admin\AdminIncomeReportController::class, 'getOrderDirectIncomeDetails']);
+
+        Route::get('/level-overview', [\App\Http\Controllers\Admin\AdminIncomeReportController::class, 'getLevelIncomeOverview']);
+        Route::get('/level-orders', [\App\Http\Controllers\Admin\AdminIncomeReportController::class, 'getOrderLevelIncomeList']);
+        Route::get('/level-orders/{orderId}', [\App\Http\Controllers\Admin\AdminIncomeReportController::class, 'getOrderLevelIncomeDetails']);
     });
 
-    // Admin Direct Income Aliases
+    // Admin Direct & Level Income Aliases
     Route::get('/admin/direct-income/overview', [\App\Http\Controllers\Admin\AdminIncomeReportController::class, 'getDirectIncomeOverview']);
     Route::get('/admin/direct-income/orders', [\App\Http\Controllers\Admin\AdminIncomeReportController::class, 'getOrderDirectIncomeList']);
     Route::get('/admin/direct-income/orders/{orderId}', [\App\Http\Controllers\Admin\AdminIncomeReportController::class, 'getOrderDirectIncomeDetails']);
+
+    Route::get('/admin/level-income/overview', [\App\Http\Controllers\Admin\AdminIncomeReportController::class, 'getLevelIncomeOverview']);
+    Route::get('/admin/level-income/orders', [\App\Http\Controllers\Admin\AdminIncomeReportController::class, 'getOrderLevelIncomeList']);
+    Route::get('/admin/level-income/orders/{orderId}', [\App\Http\Controllers\Admin\AdminIncomeReportController::class, 'getOrderLevelIncomeDetails']);
 });
 
 
