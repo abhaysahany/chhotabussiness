@@ -1,5 +1,26 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import './products.css';
+import {
+  Package,
+  Layers,
+  CheckCircle2,
+  Users,
+  Building2,
+  Zap,
+  Search,
+  Plus,
+  Clock,
+  CreditCard,
+  Tag,
+  FolderTree,
+  Edit3,
+  Trash2,
+  Eye,
+  X,
+  AlertTriangle,
+  Check,
+  ShieldCheck,
+  Percent,
+} from 'lucide-react';
 import api from '../../api/axios';
 import { getBusinessEntities, getFreelancers } from '../../api/adminEntityService';
 import { formatDate } from '../../utils/timezone';
@@ -31,6 +52,7 @@ const normalizePackage = (pkg) => {
 
   return {
     ...safePkg,
+    id: safePkg.id,
     name: String(safePkg.name || 'Untitled Package'),
     category: getCategoryLabel(safePkg.category),
     price: Number(safePkg.price) || 0,
@@ -43,6 +65,7 @@ const normalizePackage = (pkg) => {
     description: String(safePkg.description || ''),
     itemsIncluded: Array.isArray(safePkg.items_included) ? safePkg.items_included : [],
     image: String(safePkg.image || DEFAULT_PACKAGE_IMAGE),
+    created_at: safePkg.created_at,
   };
 };
 
@@ -55,6 +78,7 @@ function AdminPackagesPage() {
   const [editingPackage, setEditingPackage] = useState(null);
   const [selectedPackageDetails, setSelectedPackageDetails] = useState(null);
   const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('success');
   const [packages, setPackages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [apiError, setApiError] = useState('');
@@ -75,9 +99,10 @@ function AdminPackagesPage() {
   const [registeredBusinesses, setRegisteredBusinesses] = useState([]);
   const [registeredFreelancers, setRegisteredFreelancers] = useState([]);
 
-  const showToast = (msg) => {
+  const showToast = (msg, type = 'success') => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(''), 3000);
+    setToastType(type);
+    setTimeout(() => setToastMessage(''), 4000);
   };
 
   // Fetch Packages and Entity Owners from MySQL Database
@@ -215,25 +240,25 @@ function AdminPackagesPage() {
       setPackages((prev) =>
         prev.map((item) => (item.id === id ? { ...item, status: nextStatus } : item))
       );
-      showToast(`Package status updated to ${nextStatus} in database.`);
+      showToast(`Package status updated to ${nextStatus}.`, 'success');
     } catch (e) {
       console.error('Error updating status in database:', e);
-      showToast('Error updating status.');
+      showToast('Error updating package status.', 'error');
     }
   };
 
   const handleDeletePackage = async (id) => {
-    if (window.confirm('Delete this package listing from database?')) {
+    if (window.confirm('Are you sure you want to delete this package listing?')) {
       try {
         await api.delete(`/catalog/packages/${id}`);
         setPackages((prev) => prev.filter((item) => item.id !== id));
         if (selectedPackageDetails?.id === id) {
           setSelectedPackageDetails(null);
         }
-        showToast('Package deleted from database!');
+        showToast('Package deleted successfully!', 'success');
       } catch (e) {
         console.error('Error deleting package:', e);
-        showToast('Error deleting package.');
+        showToast('Error deleting package.', 'error');
       }
     }
   };
@@ -307,7 +332,7 @@ function AdminPackagesPage() {
         setPackages((prev) =>
           prev.map((item) => (item.id === editingPackage.id ? updatedPkg : item))
         );
-        showToast('✓ Package updated in MySQL database successfully!');
+        showToast('Package updated successfully!', 'success');
       } else {
         const res = await api.post('/catalog/packages', {
           name: formData.name.trim(),
@@ -327,7 +352,7 @@ function AdminPackagesPage() {
             image: formData.image || DEFAULT_PACKAGE_IMAGE,
           });
           setPackages((prev) => [saved, ...prev]);
-          showToast('✓ Package saved to MySQL database successfully!');
+          showToast('New package bundle created successfully!', 'success');
         }
       }
 
@@ -343,14 +368,6 @@ function AdminPackagesPage() {
     } finally {
       setSaving(false);
     }
-  };
-
-  const getCategoryBadgeClass = (category) => {
-    const label = getCategoryLabel(category).toLowerCase();
-    if (label.includes('software')) return 'badge-category software';
-    if (label.includes('legal')) return 'badge-category legal';
-    if (label.includes('marketing')) return 'badge-category marketing';
-    return 'badge-category default';
   };
 
   const filteredPackages = useMemo(() => {
@@ -376,62 +393,92 @@ function AdminPackagesPage() {
   }, [packages, searchQuery, categoryFilter, ownerFilter]);
 
   const totalPackages = packages.length;
-  const activePackages = packages.filter((p) => p.status === 'active').length;
-  const totalSubscribers = packages.reduce((acc, p) => acc + (Number(p.subscribersCount) || 0), 0);
+  const activePackages = useMemo(() => packages.filter((p) => p.status === 'active').length, [packages]);
+  const totalSubscribers = useMemo(() => packages.reduce((acc, p) => acc + (Number(p.subscribersCount) || 0), 0), [packages]);
+  const businessPackages = useMemo(() => packages.filter((p) => p.ownerType === 'business').length, [packages]);
 
   return (
-    <div className="pro-products-container">
-      {/* Toast Notification */}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.4rem', width: '100%', boxSizing: 'border-box' }}>
+      {/* Toast Alert Notification */}
       {toastMessage && (
         <div
           style={{
-            position: 'fixed',
-            top: '80px',
-            right: '24px',
-            background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)',
-            color: '#ffffff',
-            padding: '0.85rem 1.4rem',
-            borderRadius: '12px',
-            boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
-            zIndex: 9999,
-            fontWeight: '600',
-            borderLeft: '4px solid #6366f1',
+            backgroundColor: toastType === 'error' ? '#fef2f2' : '#ecfdf5',
+            color: toastType === 'error' ? '#b91c1c' : '#047857',
+            border: `1.5px solid ${toastType === 'error' ? '#fecaca' : '#a7f3d0'}`,
+            padding: '0.9rem 1.35rem',
+            borderRadius: '14px',
+            fontWeight: 700,
+            fontSize: '0.86rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '0.65rem',
+            boxShadow: '0 4px 14px rgba(0,0,0,0.06)',
           }}
         >
-          <span>⚡ {toastMessage}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            {toastType === 'error' ? <AlertTriangle size={18} color="#dc2626" /> : <CheckCircle2 size={18} color="#059669" />}
+            <span>{toastMessage}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setToastMessage('')}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', padding: '0.2rem' }}
+          >
+            <X size={16} />
+          </button>
         </div>
       )}
 
-      {/* Hero Header */}
-      <div className="pro-header-banner">
-        <div className="pro-header-title-group">
-          <h2>Pricing Packages Suite</h2>
-          <div className="pro-header-breadcrumb">
-            <span>Enterprise Admin</span>
-            <span>›</span>
-            <span>Business</span>
-            <span>›</span>
-            <span className="active">Pricing Packages</span>
+      {/* 1. Executive 3D Luxury Hero Banner */}
+      <div className="adm-hero-banner">
+        <div className="adm-hero-top-row">
+          <div className="adm-hero-pod-3d">
+            <Package size={32} strokeWidth={2.3} />
+          </div>
+
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#3569a7', background: 'rgba(53, 105, 167, 0.08)', padding: '3px 10px', borderRadius: '9999px', border: '1px solid rgba(53, 105, 167, 0.2)' }}>
+                ● PRICING &amp; BUNDLE ARCHITECTURE
+              </span>
+              <span style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#0d9488', background: 'rgba(13, 148, 136, 0.08)', padding: '3px 10px', borderRadius: '9999px', border: '1px solid rgba(13, 148, 136, 0.2)' }}>
+                ● {packages.length} Active Bundles
+              </span>
+            </div>
+
+            <h1 style={{ margin: 0, fontSize: '1.65rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.025em' }}>
+              Pricing Packages Suite
+            </h1>
+            <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#64748b', maxWidth: '680px', lineHeight: 1.5 }}>
+              Configure multi-tier subscription plans, bundled offerings, platform commissions, and recurring billing cycles.
+            </p>
+          </div>
+
+          <div style={{ flexShrink: 0 }}>
+            <button
+              type="button"
+              className="adm-hero-btn-primary"
+              onClick={openCreateModal}
+              style={{ padding: '0.75rem 1.5rem', fontSize: '0.88rem' }}
+            >
+              <Plus size={18} strokeWidth={2.4} />
+              <span>Create New Package</span>
+            </button>
           </div>
         </div>
-        <button className="pro-btn-create" onClick={openCreateModal}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          Create New Package
-        </button>
       </div>
 
-      {/* API Error Banner */}
+      {/* API Error Banner if any */}
       {apiError && (
         <div
           style={{
             background: '#fef2f2',
-            border: '1px solid #fecaca',
+            border: '1.5px solid #fecaca',
             color: '#991b1b',
-            padding: '0.9rem 1.2rem',
-            borderRadius: '12px',
+            padding: '0.9rem 1.25rem',
+            borderRadius: '14px',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
@@ -439,390 +486,1047 @@ function AdminPackagesPage() {
             flexWrap: 'wrap',
           }}
         >
-          <span style={{ fontSize: '0.86rem', fontWeight: 600 }}>⚠️ {apiError}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.86rem', fontWeight: 700 }}>
+            <AlertTriangle size={18} color="#dc2626" />
+            <span>{apiError}</span>
+          </div>
           <button
             type="button"
-            className="btn-action-sm"
             onClick={loadPackages}
-            style={{ background: '#ffffff', borderColor: '#fca5a5', color: '#991b1b' }}
+            style={{
+              background: '#ffffff',
+              border: '1.5px solid #fca5a5',
+              borderRadius: '8px',
+              padding: '0.35rem 0.85rem',
+              color: '#991b1b',
+              fontWeight: 800,
+              fontSize: '0.78rem',
+              cursor: 'pointer',
+            }}
           >
-            Retry
+            Retry Connection
           </button>
         </div>
       )}
 
-      {/* Metrics Grid */}
-      <div className="pro-stats-grid">
-        <div className="pro-stat-card">
-          <div className="pro-stat-header">
-            <div className="pro-stat-icon-wrapper indigo">⚡</div>
-            <span className="pro-stat-trend">Package Bundles</span>
-          </div>
-          <div className="pro-stat-value">{totalPackages}</div>
-          <div className="pro-stat-label">Total Bundled Packages</div>
-        </div>
-
-        <div className="pro-stat-card">
-          <div className="pro-stat-header">
-            <div className="pro-stat-icon-wrapper emerald">✓</div>
-            <span className="pro-stat-trend">Ready to Buy</span>
-          </div>
-          <div className="pro-stat-value" style={{ color: '#10b981' }}>{activePackages}</div>
-          <div className="pro-stat-label">Active Plans Live</div>
-        </div>
-
-        <div className="pro-stat-card">
-          <div className="pro-stat-header">
-            <div className="pro-stat-icon-wrapper purple">👥</div>
-            <span className="pro-stat-trend">Subscribers</span>
-          </div>
-          <div className="pro-stat-value" style={{ color: '#6366f1' }}>{totalSubscribers}</div>
-          <div className="pro-stat-label">Enrolled Account Subscriptions</div>
-        </div>
-      </div>
-
-      {/* Toolbar Controls */}
-      <div className="pro-toolbar">
-        <div className="pro-search-box">
-          <svg className="pro-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-          <input
-            type="text"
-            placeholder="Search packages by title, billing cycle, or provider name..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-
-        <div className="pro-filter-group">
-          <select className="pro-select" value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
-            <option value="all">All Categories</option>
-            {categoriesList.map((cat) => (
-              <option key={cat} value={cat}>{cat}</option>
-            ))}
-          </select>
-
-          <select className="pro-select" value={ownerFilter} onChange={(e) => setOwnerFilter(e.target.value)}>
-            <option value="all">All Owner Types</option>
-            <option value="business">Business Owners</option>
-            <option value="freelancer">Freelancer Owners</option>
-          </select>
-
-          <div className="pro-view-switcher">
-            <button
-              className={`pro-view-btn ${viewMode === 'table' ? 'active' : ''}`}
-              onClick={() => setViewMode('table')}
-              title="Table View"
-            >
-              📋 Table
-            </button>
-            <button
-              className={`pro-view-btn ${viewMode === 'grid' ? 'active' : ''}`}
-              onClick={() => setViewMode('grid')}
-              title="Grid View"
-            >
-              🖼️ Grid
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Loading State */}
-      {loading ? (
-        <div className="pro-card-table" style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>
-          <div style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>⏳</div>
-          <p style={{ margin: 0, fontWeight: '600' }}>Loading pricing packages from database...</p>
-        </div>
-      ) : viewMode === 'table' ? (
-        <div className="pro-card-table table-responsive">
-          <div className="pro-table-header">
-            <h3>Pricing Packages Directory ({filteredPackages.length} Bundles)</h3>
-          </div>
-
-          <table className="pro-table">
-            <thead>
-              <tr>
-                <th>Package Name</th>
-                <th>Category</th>
-                <th>Provider Entity (Business / Freelance)</th>
-                <th>Price &amp; Commission</th>
-                <th>Billing Cycle</th>
-                <th>Active Subscribers</th>
-                <th>Status</th>
-                <th style={{ textAlign: 'right' }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredPackages.length === 0 ? (
-                <tr>
-                  <td colSpan="8" style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>
-                    <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>⚡</div>
-                    <p style={{ margin: 0, fontWeight: '600' }}>No pricing packages matching your search criteria</p>
-                  </td>
-                </tr>
-              ) : (
-                filteredPackages.map((pkg) => (
-                  <tr key={pkg.id}>
-                    <td>
-                      <div className="pro-item-cell">
-                        <img
-                          className="pro-item-thumb"
-                          src={pkg.image || DEFAULT_PACKAGE_IMAGE}
-                          alt={pkg.name}
-                          onError={(e) => { e.currentTarget.src = DEFAULT_PACKAGE_IMAGE; }}
-                        />
-                        <div>
-                          <div className="pro-item-title">{pkg.name}</div>
-                          <div className="pro-item-sub">
-                            ID: #{pkg.id} {pkg.created_at ? `• Added ${formatDate(pkg.created_at)}` : ''}
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <span className={getCategoryBadgeClass(pkg.category)}>
-                        {getCategoryLabel(pkg.category)}
-                      </span>
-                    </td>
-                    <td>
-                      <div>
-                        <strong style={{ display: 'block', fontSize: '0.85rem', color: '#334155', marginBottom: '0.2rem' }}>
-                          {pkg.ownerName}
-                        </strong>
-                        <span className={`badge-owner ${pkg.ownerType}`}>
-                          {pkg.ownerType === 'business' ? '🏢 Business' : '👨‍💻 Freelance'}
-                        </span>
-                      </div>
-                    </td>
-                    <td>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                        <strong style={{ fontSize: '0.95rem', color: '#0f172a' }}>
-                          ₹{(Number(pkg.price) || 0).toLocaleString('en-IN')}
-                        </strong>
-                        <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#1e40af', background: '#eff6ff', border: '1px solid #bfdbfe', padding: '0.1rem 0.4rem', borderRadius: '4px', display: 'inline-block', width: 'fit-content' }}>
-                          🏛️ {pkg.adminCommissionPercent}% Admin Cut
-                        </span>
-                      </div>
-                    </td>
-                    <td>
-                      <span style={{ fontSize: '0.85rem', color: '#475569' }}>
-                        💳 {pkg.billingCycle}
-                      </span>
-                    </td>
-                    <td>
-                      <span style={{ fontSize: '0.85rem', fontWeight: '600', color: '#334155' }}>
-                        👥 {pkg.subscribersCount} Users
-                      </span>
-                    </td>
-                    <td>
-                      <span className={`status-pill ${pkg.status}`}>
-                        {pkg.status === 'active' ? '● Active' : '○ Inactive'}
-                      </span>
-                    </td>
-                    <td style={{ textAlign: 'right' }}>
-                      <div className="pro-action-btns">
-                        <button
-                          type="button"
-                          className="btn-action-sm"
-                          onClick={() => setSelectedPackageDetails(pkg)}
-                        >
-                          View
-                        </button>
-                        <button
-                          type="button"
-                          className="btn-action-sm"
-                          onClick={() => openEditModal(pkg)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          className="btn-action-sm"
-                          onClick={() => handleToggleStatus(pkg.id)}
-                        >
-                          {pkg.status === 'active' ? 'Deactivate' : 'Activate'}
-                        </button>
-                        <button
-                          type="button"
-                          className="btn-action-delete"
-                          onClick={() => handleDeletePackage(pkg.id)}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      ) : filteredPackages.length === 0 ? (
-        <div className="pro-card-table" style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>
-          <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>⚡</div>
-          <p style={{ margin: 0, fontWeight: '600' }}>No pricing packages matching your search criteria</p>
-        </div>
-      ) : (
-        /* Grid View */
-        <div className="pro-grid-showcase">
-          {filteredPackages.map((pkg) => (
-            <div className="pro-card-showcase" key={pkg.id}>
-              <div className="pro-card-img-wrapper">
-                <img
-                  src={pkg.image || DEFAULT_PACKAGE_IMAGE}
-                  alt={pkg.name}
-                  onError={(e) => { e.currentTarget.src = DEFAULT_PACKAGE_IMAGE; }}
-                />
-                <div className="pro-card-badge-top">
-                  <span className={getCategoryBadgeClass(pkg.category)}>
-                    {getCategoryLabel(pkg.category)}
-                  </span>
-                  <span className={`status-pill ${pkg.status}`}>
-                    {pkg.status === 'active' ? '● Active' : '○ Inactive'}
-                  </span>
-                </div>
-              </div>
-              <div className="pro-card-body">
-                <div className="pro-card-owner">
-                  <span className={`badge-owner ${pkg.ownerType}`}>
-                    {pkg.ownerType === 'business' ? '🏢' : '👨‍💻'} {pkg.ownerName}
-                  </span>
-                </div>
-                <h4 className="pro-card-title">{pkg.name}</h4>
-                <div className="pro-card-sku">💳 {pkg.billingCycle} • 👥 {pkg.subscribersCount} Users</div>
-
-                <div className="pro-card-footer">
-                  <div>
-                    <span className="pro-card-price">₹{(Number(pkg.price) || 0).toLocaleString('en-IN')}</span>
-                    <span style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: '#1e40af', marginTop: '0.15rem' }}>
-                      🏛️ {pkg.adminCommissionPercent}% Admin Cut
-                    </span>
-                  </div>
-                  <div
-                    className="pro-card-stock"
-                    style={{ color: pkg.status === 'active' ? '#16a34a' : '#64748b', fontWeight: 600 }}
-                  >
-                    {pkg.status === 'active' ? 'Active Pack' : 'Inactive'}
-                  </div>
-                </div>
-
-                <div className="pro-card-actions">
-                  <button
-                    type="button"
-                    className="btn-action-sm"
-                    onClick={() => setSelectedPackageDetails(pkg)}
-                  >
-                    View
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-action-sm"
-                    onClick={() => openEditModal(pkg)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-action-sm"
-                    style={{ flex: 1 }}
-                    onClick={() => handleToggleStatus(pkg.id)}
-                  >
-                    {pkg.status === 'active' ? 'Deactivate' : 'Activate'}
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-action-delete"
-                    onClick={() => handleDeletePackage(pkg.id)}
-                  >
-                    Delete
-                  </button>
-                </div>
+      {/* 2. 4 Executive 3D KPI Vault Cards (Single Horizontal Row: 4 Cards) */}
+      <div className="adm-kpi-grid-4">
+        {/* Card 1: Total Bundled Packages */}
+        <div className="adm-kpi-card adm-kpi-card-steel">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <span
+                style={{
+                  fontSize: '0.66rem',
+                  fontWeight: 800,
+                  color: '#3569a7',
+                  background: 'rgba(53, 105, 167, 0.1)',
+                  padding: '2.5px 8px',
+                  borderRadius: '5px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                  display: 'inline-block',
+                  marginBottom: '0.35rem',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                ● BUNDLE SUITE
+              </span>
+              <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                TOTAL PACKAGES
               </div>
             </div>
-          ))}
+            <div className="adm-3d-pod adm-pod-steel" style={{ width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0 }}>
+              <Package size={19} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
+            <div className="adm-kpi-val" style={{ fontSize: '1.6rem' }}>
+              {totalPackages}
+            </div>
+          </div>
+          <div className="adm-kpi-footer">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.73rem', color: '#64748b' }}>
+              <Layers size={13} color="#3569a7" />
+              <span>Bundled offerings</span>
+            </span>
+            <span style={{ color: '#3569a7', fontWeight: 800, fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+              ● Global Base
+            </span>
+          </div>
+        </div>
+
+        {/* Card 2: Active Plans Live */}
+        <div className="adm-kpi-card adm-kpi-card-emerald">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <span
+                style={{
+                  fontSize: '0.66rem',
+                  fontWeight: 800,
+                  color: '#0d9488',
+                  background: 'rgba(13, 148, 136, 0.1)',
+                  padding: '2.5px 8px',
+                  borderRadius: '5px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                  display: 'inline-block',
+                  marginBottom: '0.35rem',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                ● READY TO BUY
+              </span>
+              <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                ACTIVE PLANS LIVE
+              </div>
+            </div>
+            <div className="adm-3d-pod adm-pod-emerald" style={{ width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0 }}>
+              <CheckCircle2 size={19} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
+            <div className="adm-kpi-val" style={{ fontSize: '1.6rem', color: '#0d9488' }}>
+              {activePackages}
+            </div>
+          </div>
+          <div className="adm-kpi-footer">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.73rem', color: '#64748b' }}>
+              <CheckCircle2 size={13} color="#0d9488" />
+              <span>Operational tiers</span>
+            </span>
+            <span style={{ color: '#0d9488', fontWeight: 800, fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+              ● Live Active
+            </span>
+          </div>
+        </div>
+
+        {/* Card 3: Enrolled Subscriptions */}
+        <div className="adm-kpi-card adm-kpi-card-purple">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <span
+                style={{
+                  fontSize: '0.66rem',
+                  fontWeight: 800,
+                  color: '#9333ea',
+                  background: 'rgba(147, 51, 234, 0.1)',
+                  padding: '2.5px 8px',
+                  borderRadius: '5px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                  display: 'inline-block',
+                  marginBottom: '0.35rem',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                ● USER RETENTION
+              </span>
+              <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                ENROLLED CLIENTS
+              </div>
+            </div>
+            <div className="adm-3d-pod adm-pod-purple" style={{ width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0 }}>
+              <Users size={19} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
+            <div className="adm-kpi-val" style={{ fontSize: '1.6rem', color: '#9333ea' }}>
+              {totalSubscribers}
+            </div>
+          </div>
+          <div className="adm-kpi-footer">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.73rem', color: '#64748b' }}>
+              <Users size={13} color="#9333ea" />
+              <span>Active subscriptions</span>
+            </span>
+            <span style={{ color: '#9333ea', fontWeight: 800, fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+              ● Subscribers
+            </span>
+          </div>
+        </div>
+
+        {/* Card 4: Corporate Bundles */}
+        <div className="adm-kpi-card adm-kpi-card-amber">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <span
+                style={{
+                  fontSize: '0.66rem',
+                  fontWeight: 800,
+                  color: '#d97706',
+                  background: 'rgba(217, 119, 6, 0.1)',
+                  padding: '2.5px 8px',
+                  borderRadius: '5px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                  display: 'inline-block',
+                  marginBottom: '0.35rem',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                ● ENTERPRISE TIERS
+              </span>
+              <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                CORPORATE PLANS
+              </div>
+            </div>
+            <div className="adm-3d-pod adm-pod-amber" style={{ width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0 }}>
+              <Building2 size={19} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
+            <div className="adm-kpi-val" style={{ fontSize: '1.6rem', color: '#d97706' }}>
+              {businessPackages}
+            </div>
+          </div>
+          <div className="adm-kpi-footer">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.73rem', color: '#64748b' }}>
+              <Building2 size={13} color="#d97706" />
+              <span>Corporate accounts</span>
+            </span>
+            <span style={{ color: '#d97706', fontWeight: 800, fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+              ● Enterprises
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Executive Filter & View Switcher Bar (Single Unified Row) */}
+      <div className="adm-toolbar-card">
+        <div className="adm-toolbar-filters">
+          {/* Search Box */}
+          <div style={{ position: 'relative', flex: '1 1 200px', minWidth: '160px' }}>
+            <input
+              type="text"
+              className="adm-toolbar-input"
+              placeholder="Search package, category, provider, cycle..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <Search size={15} color="#94a3b8" style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+          </div>
+
+          {/* Category Dropdown */}
+          <div style={{ position: 'relative', flexShrink: 0, width: '155px' }}>
+            <select
+              className="adm-toolbar-select"
+              style={{ width: '100%' }}
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+            >
+              <option value="all">All Categories</option>
+              {categoriesList.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Owner Type Dropdown */}
+          <div style={{ position: 'relative', flexShrink: 0, width: '155px' }}>
+            <select
+              className="adm-toolbar-select"
+              style={{ width: '100%' }}
+              value={ownerFilter}
+              onChange={(e) => setOwnerFilter(e.target.value)}
+            >
+              <option value="all">All Owner Types</option>
+              <option value="business">Business Owners</option>
+              <option value="freelancer">Freelancer Owners</option>
+            </select>
+          </div>
+
+          {(searchQuery || categoryFilter !== 'all' || ownerFilter !== 'all') && (
+            <button
+              type="button"
+              onClick={() => {
+                setSearchQuery('');
+                setCategoryFilter('all');
+                setOwnerFilter('all');
+              }}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#dc2626',
+                fontSize: '0.78rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                padding: '0.35rem 0.5rem',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.25rem',
+              }}
+            >
+              <X size={14} />
+              <span>Reset</span>
+            </button>
+          )}
+        </div>
+
+        <div className="adm-toolbar-actions">
+          {/* View Mode Switcher */}
+          <div style={{ display: 'inline-flex', background: '#f1f5f9', padding: '3px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+            <button
+              type="button"
+              onClick={() => setViewMode('table')}
+              style={{
+                padding: '0.35rem 0.75rem',
+                borderRadius: '7px',
+                border: 'none',
+                fontSize: '0.78rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                background: viewMode === 'table' ? '#ffffff' : 'transparent',
+                color: viewMode === 'table' ? '#0f172a' : '#64748b',
+                boxShadow: viewMode === 'table' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <Layers size={13} />
+              <span>Data Table</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('grid')}
+              style={{
+                padding: '0.35rem 0.75rem',
+                borderRadius: '7px',
+                border: 'none',
+                fontSize: '0.78rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                background: viewMode === 'grid' ? '#ffffff' : 'transparent',
+                color: viewMode === 'grid' ? '#0f172a' : '#64748b',
+                boxShadow: viewMode === 'grid' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <Package size={13} />
+              <span>Grid Cards</span>
+            </button>
+          </div>
+
+          {/* Quick Action Button */}
+          <button
+            type="button"
+            className="adm-hero-btn-primary"
+            onClick={openCreateModal}
+            style={{ padding: '0.45rem 0.95rem', fontSize: '0.8rem' }}
+          >
+            <Plus size={15} strokeWidth={2.4} />
+            <span>New Package</span>
+          </button>
+        </div>
+      </div>
+
+      {/* 4. Content Area: Data Table vs 3D Grid Showcase */}
+      {loading ? (
+        <div className="adm-table-card" style={{ padding: '3.5rem', textAlign: 'center', color: '#64748b' }}>
+          <div className="adm-3d-pod adm-pod-steel admFloatPodSlow" style={{ width: '48px', height: '48px', margin: '0 auto 1rem auto' }}>
+            <Package size={24} />
+          </div>
+          <div style={{ fontWeight: 800, fontSize: '0.98rem', color: '#0f172a' }}>Loading Pricing Packages...</div>
+          <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.82rem', color: '#94a3b8' }}>Synchronizing multi-tier packages from database</p>
+        </div>
+      ) : viewMode === 'table' ? (
+        /* DATA TABLE VIEW */
+        <div className="adm-table-card" style={{ overflow: 'hidden' }}>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '980px' }}>
+              <thead>
+                <tr style={{ background: 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)', color: '#ffffff', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  <th style={{ padding: '1rem 1.15rem', fontWeight: 800 }}>Package Details</th>
+                  <th style={{ padding: '1rem 1.15rem', fontWeight: 800 }}>Category</th>
+                  <th style={{ padding: '1rem 1.15rem', fontWeight: 800 }}>Provider Entity</th>
+                  <th style={{ padding: '1rem 1.15rem', fontWeight: 800 }}>Price &amp; Billing</th>
+                  <th style={{ padding: '1rem 1.15rem', fontWeight: 800, textAlign: 'center' }}>Admin Cut %</th>
+                  <th style={{ padding: '1rem 1.15rem', fontWeight: 800, textAlign: 'center' }}>Subscribers</th>
+                  <th style={{ padding: '1rem 1.15rem', fontWeight: 800, textAlign: 'center' }}>Live Status</th>
+                  <th style={{ padding: '1rem 1.15rem', fontWeight: 800, textAlign: 'center' }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredPackages.length === 0 ? (
+                  <tr>
+                    <td colSpan="8" style={{ padding: '3.5rem', textAlign: 'center', color: '#64748b' }}>
+                      <Package size={36} color="#cbd5e1" style={{ marginBottom: '0.5rem' }} />
+                      <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#334155' }}>No Packages Match Search</div>
+                      <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.8rem', color: '#94a3b8' }}>Try adjusting your search criteria or filters</p>
+                    </td>
+                  </tr>
+                ) : (
+                  filteredPackages.map((pkg) => {
+                    const priceNum = Number(pkg.price) || 0;
+                    const commPercent = Number(pkg.adminCommissionPercent) || 18;
+
+                    return (
+                      <tr key={pkg.id} className="adm-table-row">
+                        <td style={{ padding: '0.9rem 1.15rem' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                            <img
+                              src={pkg.image || DEFAULT_PACKAGE_IMAGE}
+                              alt={pkg.name}
+                              style={{
+                                width: '44px',
+                                height: '44px',
+                                borderRadius: '10px',
+                                objectFit: 'cover',
+                                border: '1.5px solid #e2e8f0',
+                                flexShrink: 0,
+                              }}
+                              onError={(e) => {
+                                e.currentTarget.src = DEFAULT_PACKAGE_IMAGE;
+                              }}
+                            />
+                            <div>
+                              <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.88rem' }}>
+                                {pkg.name}
+                              </div>
+                              <div style={{ marginTop: '2px', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                <span className="adm-code-chip">ID: PKG-{pkg.id}</span>
+                                {pkg.created_at && (
+                                  <span style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 600 }}>
+                                    • {formatDate(pkg.created_at)}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+
+                        <td style={{ padding: '0.9rem 1.15rem' }}>
+                          <span
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.35rem',
+                              padding: '0.28rem 0.7rem',
+                              borderRadius: '8px',
+                              fontSize: '0.74rem',
+                              fontWeight: 800,
+                              background: '#f0f9ff',
+                              color: '#0369a1',
+                              border: '1px solid #bae6fd',
+                            }}
+                          >
+                            <FolderTree size={12} />
+                            <span>{getCategoryLabel(pkg.category)}</span>
+                          </span>
+                        </td>
+
+                        <td style={{ padding: '0.9rem 1.15rem' }}>
+                          <div>
+                            <div style={{ fontWeight: 700, color: '#1e293b', fontSize: '0.82rem' }}>
+                              {pkg.ownerName}
+                            </div>
+                            <span
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.25rem',
+                                padding: '2px 8px',
+                                borderRadius: '6px',
+                                fontSize: '0.68rem',
+                                fontWeight: 800,
+                                marginTop: '2px',
+                                background: pkg.ownerType === 'business' ? '#fef3c7' : '#faf5ff',
+                                color: pkg.ownerType === 'business' ? '#b45309' : '#7e22ce',
+                                border: `1px solid ${pkg.ownerType === 'business' ? '#fde68a' : '#e9d5ff'}`,
+                              }}
+                            >
+                              {pkg.ownerType === 'business' ? <Building2 size={10} /> : <Zap size={10} />}
+                              <span>{pkg.ownerType === 'business' ? 'Corporate Partner' : 'Freelancer'}</span>
+                            </span>
+                          </div>
+                        </td>
+
+                        <td style={{ padding: '0.9rem 1.15rem' }}>
+                          <div>
+                            <span style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.94rem' }}>
+                              ₹{priceNum.toLocaleString('en-IN')}
+                            </span>
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.72rem', color: '#64748b', fontWeight: 600, marginTop: '2px' }}>
+                              <CreditCard size={11} color="#64748b" />
+                              <span>{pkg.billingCycle}</span>
+                            </div>
+                          </div>
+                        </td>
+
+                        <td style={{ padding: '0.9rem 1.15rem', textAlign: 'center' }}>
+                          <span
+                            style={{
+                              display: 'inline-block',
+                              background: '#ecfdf5',
+                              color: '#059669',
+                              border: '1px solid #a7f3d0',
+                              padding: '0.25rem 0.65rem',
+                              borderRadius: '8px',
+                              fontWeight: 800,
+                              fontSize: '0.76rem',
+                            }}
+                          >
+                            {commPercent}% Cut
+                          </span>
+                        </td>
+
+                        <td style={{ padding: '0.9rem 1.15rem', textAlign: 'center' }}>
+                          <span
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.3rem',
+                              padding: '0.25rem 0.65rem',
+                              borderRadius: '8px',
+                              fontSize: '0.74rem',
+                              fontWeight: 800,
+                              background: '#faf5ff',
+                              color: '#7e22ce',
+                              border: '1px solid #e9d5ff',
+                            }}
+                          >
+                            <Users size={12} color="#7e22ce" />
+                            <span>{pkg.subscribersCount} Users</span>
+                          </span>
+                        </td>
+
+                        <td style={{ padding: '0.9rem 1.15rem', textAlign: 'center' }}>
+                          <button
+                            type="button"
+                            onClick={() => handleToggleStatus(pkg.id)}
+                            style={{
+                              padding: '0.3rem 0.75rem',
+                              borderRadius: '9999px',
+                              border: pkg.status === 'active' ? '1px solid #a7f3d0' : '1px solid #e2e8f0',
+                              background: pkg.status === 'active' ? '#ecfdf5' : '#f8fafc',
+                              color: pkg.status === 'active' ? '#059669' : '#94a3b8',
+                              fontWeight: 800,
+                              fontSize: '0.72rem',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.3rem',
+                              transition: 'all 0.15s ease',
+                            }}
+                          >
+                            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: pkg.status === 'active' ? '#059669' : '#94a3b8' }} />
+                            <span>{pkg.status === 'active' ? 'Active' : 'Inactive'}</span>
+                          </button>
+                        </td>
+
+                        <td style={{ padding: '0.9rem 1.15rem', textAlign: 'center' }}>
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedPackageDetails(pkg)}
+                              title="View details"
+                              style={{
+                                background: '#f8fafc',
+                                border: '1.5px solid #cbd5e1',
+                                borderRadius: '7px',
+                                padding: '0.3rem 0.55rem',
+                                color: '#475569',
+                                fontWeight: 800,
+                                fontSize: '0.74rem',
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.25rem',
+                              }}
+                            >
+                              <Eye size={12} />
+                              <span>View</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => openEditModal(pkg)}
+                              title="Edit package"
+                              style={{
+                                background: '#f8fafc',
+                                border: '1.5px solid #cbd5e1',
+                                borderRadius: '7px',
+                                padding: '0.3rem 0.55rem',
+                                color: '#3569a7',
+                                fontWeight: 800,
+                                fontSize: '0.74rem',
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.25rem',
+                              }}
+                            >
+                              <Edit3 size={12} />
+                              <span>Edit</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => handleDeletePackage(pkg.id)}
+                              title="Delete package"
+                              style={{
+                                background: '#ffffff',
+                                border: '1.5px solid #fecaca',
+                                borderRadius: '7px',
+                                padding: '0.3rem 0.55rem',
+                                color: '#dc2626',
+                                fontWeight: 800,
+                                fontSize: '0.74rem',
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.25rem',
+                              }}
+                            >
+                              <Trash2 size={12} />
+                              <span>Del</span>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Table Footer Bar */}
+          <div style={{ padding: '0.85rem 1.4rem', background: '#f8fafc', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', color: '#64748b' }}>
+            <span style={{ fontWeight: 700, color: '#334155' }}>
+              ● Multi-tier pricing packages synchronized with MySQL database
+            </span>
+            <span style={{ fontWeight: 800, color: '#3569a7' }}>
+              Showing {filteredPackages.length} of {packages.length} Packages
+            </span>
+          </div>
+        </div>
+      ) : (
+        /* GRID CARDS VIEW - EXECUTIVE 3D LUXURY FINTECH CARDS */
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1.5rem' }}>
+          {filteredPackages.map((pkg) => {
+            const priceNum = Number(pkg.price) || 0;
+            const commPercent = Number(pkg.adminCommissionPercent) || 18;
+            const adminCutAmount = (priceNum * commPercent) / 100;
+
+            return (
+              <div key={pkg.id} className="adm-service-card-3d">
+                {/* 1. Media Header Showcase */}
+                <div className="adm-service-media-wrap">
+                  <img
+                    src={pkg.image || DEFAULT_PACKAGE_IMAGE}
+                    alt={pkg.name}
+                    className="adm-service-media-img"
+                    onError={(e) => {
+                      e.currentTarget.src = DEFAULT_PACKAGE_IMAGE;
+                    }}
+                  />
+                  <div className="adm-service-media-overlay" />
+
+                  {/* Category Floating Pill (Glassmorphism) */}
+                  <div style={{ position: 'absolute', top: '12px', left: '12px', zIndex: 2 }}>
+                    <div className="adm-service-badge-glass">
+                      <FolderTree size={12} color="#0284c7" />
+                      <span>{getCategoryLabel(pkg.category)}</span>
+                    </div>
+                  </div>
+
+                  {/* Status Live Toggle Pill (Top-Right) */}
+                  <div style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 2 }}>
+                    <button
+                      type="button"
+                      onClick={() => handleToggleStatus(pkg.id)}
+                      title="Click to toggle active status"
+                      style={{
+                        background: pkg.status === 'active' ? 'rgba(236, 253, 245, 0.95)' : 'rgba(248, 250, 252, 0.95)',
+                        backdropFilter: 'blur(6px)',
+                        border: pkg.status === 'active' ? '1.5px solid #a7f3d0' : '1.5px solid #cbd5e1',
+                        borderRadius: '9999px',
+                        padding: '3px 10px',
+                        color: pkg.status === 'active' ? '#047857' : '#64748b',
+                        fontSize: '0.7rem',
+                        fontWeight: 800,
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.35rem',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
+                        transition: 'all 0.2s ease',
+                      }}
+                    >
+                      <span
+                        style={{
+                          width: '7px',
+                          height: '7px',
+                          borderRadius: '50%',
+                          background: pkg.status === 'active' ? '#10b981' : '#94a3b8',
+                          boxShadow: pkg.status === 'active' ? '0 0 6px rgba(16, 185, 129, 0.6)' : 'none',
+                        }}
+                      />
+                      <span>{pkg.status === 'active' ? 'Active' : 'Inactive'}</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* 2. Structured & Readable Card Body */}
+                <div className="adm-service-body">
+                  {/* ID Tag and Billing Cycle */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+                    <span className="adm-code-chip" style={{ fontSize: '0.72rem', padding: '3px 9px' }}>
+                      ID: PKG-{pkg.id}
+                    </span>
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.3rem',
+                        fontSize: '0.72rem',
+                        fontWeight: 700,
+                        color: '#475569',
+                        background: '#f1f5f9',
+                        padding: '3px 9px',
+                        borderRadius: '6px',
+                        border: '1px solid #e2e8f0',
+                      }}
+                    >
+                      <CreditCard size={12} color="#64748b" />
+                      <span>{pkg.billingCycle}</span>
+                    </span>
+                  </div>
+
+                  {/* Clean Package Title */}
+                  <h4 className="adm-service-title" title={pkg.name}>
+                    {pkg.name}
+                  </h4>
+
+                  {/* Dedicated Verified Provider Vault */}
+                  <div className="adm-service-provider-vault">
+                    <div
+                      className={`adm-3d-pod ${pkg.ownerType === 'business' ? 'adm-pod-amber' : 'adm-pod-purple'}`}
+                      style={{ width: '36px', height: '36px', borderRadius: '10px', flexShrink: 0 }}
+                    >
+                      {pkg.ownerType === 'business' ? <Building2 size={16} strokeWidth={2.4} /> : <Zap size={16} strokeWidth={2.4} />}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.4rem', marginBottom: '2px' }}>
+                        <span style={{ fontSize: '0.62rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#64748b' }}>
+                          Package Owner
+                        </span>
+                        <span
+                          style={{
+                            padding: '1.5px 7px',
+                            borderRadius: '5px',
+                            fontSize: '0.64rem',
+                            fontWeight: 800,
+                            background: pkg.ownerType === 'business' ? '#fef3c7' : '#f3e8ff',
+                            color: pkg.ownerType === 'business' ? '#b45309' : '#7e22ce',
+                            border: `1px solid ${pkg.ownerType === 'business' ? '#fde68a' : '#e9d5ff'}`,
+                          }}
+                        >
+                          {pkg.ownerType === 'business' ? 'Enterprise' : 'Freelancer'}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '0.84rem', fontWeight: 800, color: '#1e293b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {pkg.ownerName || 'Platform Managed'}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 3D Revenue & Pricing Split Vault */}
+                  <div className="adm-service-split-vault">
+                    <div>
+                      <div style={{ fontSize: '0.62rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.04em' }}>
+                        Package Price
+                      </div>
+                      <div style={{ fontSize: '1.22rem', fontWeight: 800, color: '#0f172a', marginTop: '2px' }}>
+                        ₹{priceNum.toLocaleString('en-IN')}
+                      </div>
+                      <div style={{ fontSize: '0.68rem', fontWeight: 600, color: '#94a3b8', marginTop: '1px' }}>
+                        {pkg.billingCycle}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div style={{ fontSize: '0.62rem', fontWeight: 800, textTransform: 'uppercase', color: '#059669', letterSpacing: '0.04em' }}>
+                        Platform Cut ({commPercent}%)
+                      </div>
+                      <div style={{ fontSize: '1.22rem', fontWeight: 800, color: '#059669', marginTop: '2px' }}>
+                        ₹{adminCutAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                      </div>
+                      <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#10b981', marginTop: '1px' }}>
+                        Retained Commission
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. Luxury Card Action Footer */}
+                <div className="adm-service-footer">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <Users size={13} color="#9333ea" />
+                    <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#6b21a8' }}>
+                      {pkg.subscribersCount} Active Subscribers
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPackageDetails(pkg)}
+                      style={{
+                        background: '#f8fafc',
+                        border: '1.5px solid #cbd5e1',
+                        borderRadius: '8px',
+                        padding: '0.38rem 0.65rem',
+                        color: '#475569',
+                        fontWeight: 800,
+                        fontSize: '0.74rem',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.25rem',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      <Eye size={12} />
+                      <span>View</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => openEditModal(pkg)}
+                      style={{
+                        background: '#f8fafc',
+                        border: '1.5px solid #cbd5e1',
+                        borderRadius: '8px',
+                        padding: '0.38rem 0.75rem',
+                        color: '#3569a7',
+                        fontWeight: 800,
+                        fontSize: '0.74rem',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.25rem',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      <Edit3 size={12} />
+                      <span>Edit</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleDeletePackage(pkg.id)}
+                      style={{
+                        background: '#ffffff',
+                        border: '1.5px solid #fecaca',
+                        borderRadius: '8px',
+                        padding: '0.38rem 0.65rem',
+                        color: '#dc2626',
+                        fontWeight: 800,
+                        fontSize: '0.74rem',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.25rem',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      <Trash2 size={12} />
+                      <span>Del</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
 
       {/* Package Details Modal */}
       {selectedPackageDetails && (
-        <div className="pro-modal-overlay" onClick={() => setSelectedPackageDetails(null)}>
-          <div className="pro-modal-card" onClick={(e) => e.stopPropagation()}>
-            <div className="pro-modal-header">
-              <h3 className="pro-modal-title">Package Details (#{selectedPackageDetails.id})</h3>
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.6)',
+            backdropFilter: 'blur(5px)',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1.5rem',
+          }}
+          onClick={() => setSelectedPackageDetails(null)}
+        >
+          <div
+            style={{
+              backgroundColor: '#ffffff',
+              borderRadius: '20px',
+              maxWidth: '560px',
+              width: '100%',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              border: '1.5px solid #e2e8f0',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div
+              style={{
+                padding: '1.25rem 1.5rem',
+                borderBottom: '1px solid #e2e8f0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div className="adm-3d-pod adm-pod-steel" style={{ width: '38px', height: '38px', borderRadius: '10px' }}>
+                  <Package size={18} strokeWidth={2.4} />
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>
+                    Package Details (ID: #{selectedPackageDetails.id})
+                  </h3>
+                  <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600, marginTop: '2px' }}>
+                    Complete bundled plan breakdown &amp; deliverables
+                  </div>
+                </div>
+              </div>
               <button
                 type="button"
-                className="pro-modal-close"
                 onClick={() => setSelectedPackageDetails(null)}
+                style={{
+                  background: '#ffffff',
+                  border: '1.5px solid #cbd5e1',
+                  borderRadius: '8px',
+                  width: '32px',
+                  height: '32px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  color: '#64748b',
+                }}
               >
-                ×
+                <X size={16} />
               </button>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', fontSize: '0.88rem', color: '#334155' }}>
+
+            {/* Modal Body */}
+            <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.86rem', color: '#334155' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem' }}>
-                <strong style={{ fontSize: '1.05rem', color: '#0f172a' }}>{selectedPackageDetails.name}</strong>
-                <span className={`status-pill ${selectedPackageDetails.status}`}>
-                  {selectedPackageDetails.status === 'active' ? '● Active' : '○ Inactive'}
+                <strong style={{ fontSize: '1.15rem', color: '#0f172a', fontWeight: 800 }}>
+                  {selectedPackageDetails.name}
+                </strong>
+                <span
+                  style={{
+                    padding: '3px 10px',
+                    borderRadius: '9999px',
+                    fontSize: '0.72rem',
+                    fontWeight: 800,
+                    background: selectedPackageDetails.status === 'active' ? '#ecfdf5' : '#f8fafc',
+                    color: selectedPackageDetails.status === 'active' ? '#059669' : '#94a3b8',
+                    border: selectedPackageDetails.status === 'active' ? '1px solid #a7f3d0' : '1px solid #e2e8f0',
+                  }}
+                >
+                  ● {selectedPackageDetails.status === 'active' ? 'Active' : 'Inactive'}
                 </span>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', background: '#f8fafc', padding: '0.85rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', background: '#f8fafc', padding: '1rem', borderRadius: '14px', border: '1.5px solid #e2e8f0' }}>
                 <div>
-                  <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block' }}>Base Price</span>
-                  <strong style={{ fontSize: '1rem', color: '#0f172a' }}>
+                  <span style={{ fontSize: '0.7rem', color: '#64748b', display: 'block', fontWeight: 800, textTransform: 'uppercase' }}>Package Price</span>
+                  <strong style={{ fontSize: '1.15rem', color: '#0f172a' }}>
                     ₹{(Number(selectedPackageDetails.price) || 0).toLocaleString('en-IN')}
                   </strong>
+                  <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px' }}>
+                    {selectedPackageDetails.billingCycle}
+                  </div>
                 </div>
+
                 <div>
-                  <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block' }}>Admin Commission</span>
-                  <strong style={{ fontSize: '1rem', color: '#1e40af' }}>
+                  <span style={{ fontSize: '0.7rem', color: '#059669', display: 'block', fontWeight: 800, textTransform: 'uppercase' }}>Platform Cut</span>
+                  <strong style={{ fontSize: '1.15rem', color: '#059669' }}>
                     {selectedPackageDetails.adminCommissionPercent}%
                   </strong>
+                  <div style={{ fontSize: '0.72rem', color: '#10b981', marginTop: '2px' }}>
+                    Retained Commission
+                  </div>
                 </div>
-                <div>
-                  <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block' }}>Category</span>
-                  <strong>{getCategoryLabel(selectedPackageDetails.category)}</strong>
+
+                <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '0.65rem' }}>
+                  <span style={{ fontSize: '0.7rem', color: '#64748b', display: 'block', fontWeight: 800, textTransform: 'uppercase' }}>Category</span>
+                  <strong style={{ color: '#0369a1' }}>{getCategoryLabel(selectedPackageDetails.category)}</strong>
                 </div>
-                <div>
-                  <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block' }}>Created</span>
-                  <strong>{selectedPackageDetails.created_at ? formatDate(selectedPackageDetails.created_at) : '—'}</strong>
+
+                <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '0.65rem' }}>
+                  <span style={{ fontSize: '0.7rem', color: '#64748b', display: 'block', fontWeight: 800, textTransform: 'uppercase' }}>Active Subscribers</span>
+                  <strong style={{ color: '#7e22ce' }}>{selectedPackageDetails.subscribersCount} Accounts</strong>
                 </div>
               </div>
+
               {selectedPackageDetails.description && (
                 <div>
-                  <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block', marginBottom: '0.25rem' }}>Description</span>
-                  <p style={{ margin: 0, lineHeight: 1.5, color: '#475569' }}>{selectedPackageDetails.description}</p>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', display: 'block', marginBottom: '0.35rem', fontWeight: 800, textTransform: 'uppercase' }}>Description</span>
+                  <p style={{ margin: 0, lineHeight: 1.5, color: '#475569', background: '#f8fafc', padding: '0.85rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                    {selectedPackageDetails.description}
+                  </p>
                 </div>
               )}
+
               {Array.isArray(selectedPackageDetails.itemsIncluded) && selectedPackageDetails.itemsIncluded.length > 0 && (
                 <div>
-                  <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block', marginBottom: '0.35rem' }}>Included Deliverables</span>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', display: 'block', marginBottom: '0.4rem', fontWeight: 800, textTransform: 'uppercase' }}>Included Deliverables</span>
                   <ul style={{ margin: 0, paddingLeft: '1.25rem', color: '#334155', lineHeight: 1.6 }}>
                     {selectedPackageDetails.itemsIncluded.map((item, idx) => (
-                      <li key={idx}>{typeof item === 'object' && item !== null ? (item.name || item.title || JSON.stringify(item)) : String(item)}</li>
+                      <li key={idx}>
+                        {typeof item === 'object' && item !== null ? (item.name || item.title || JSON.stringify(item)) : String(item)}
+                      </li>
                     ))}
                   </ul>
                 </div>
               )}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem', borderTop: '1px solid #f1f5f9', paddingTop: '1rem' }}>
                 <button
                   type="button"
-                  className="btn-action-sm"
                   onClick={() => {
                     const target = selectedPackageDetails;
                     setSelectedPackageDetails(null);
                     openEditModal(target);
+                  }}
+                  style={{
+                    padding: '0.65rem 1.25rem',
+                    borderRadius: '10px',
+                    border: '1.5px solid #cbd5e1',
+                    background: '#f8fafc',
+                    color: '#3569a7',
+                    fontWeight: 800,
+                    fontSize: '0.82rem',
+                    cursor: 'pointer',
                   }}
                 >
                   Edit Package
                 </button>
                 <button
                   type="button"
-                  className="pro-btn-create"
-                  style={{ padding: '0.55rem 1.2rem' }}
+                  className="adm-hero-btn-primary"
+                  style={{ padding: '0.65rem 1.4rem', fontSize: '0.82rem' }}
                   onClick={() => setSelectedPackageDetails(null)}
                 >
-                  Close
+                  Close Vault
                 </button>
               </div>
             </div>
@@ -832,115 +1536,238 @@ function AdminPackagesPage() {
 
       {/* Add / Edit Package Modal */}
       {showAddModal && (
-        <div className="pro-modal-overlay" onClick={closeModal}>
-          <div className="pro-modal-card" onClick={(e) => e.stopPropagation()}>
-            <div className="pro-modal-header">
-              <h3 className="pro-modal-title">
-                {editingPackage ? `Edit Pricing Package (#${editingPackage.id})` : 'Create Pricing Package'}
-              </h3>
-              <button type="button" className="pro-modal-close" onClick={closeModal}>×</button>
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.6)',
+            backdropFilter: 'blur(5px)',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1.5rem',
+          }}
+          onClick={closeModal}
+        >
+          <div
+            style={{
+              backgroundColor: '#ffffff',
+              borderRadius: '20px',
+              maxWidth: '620px',
+              width: '100%',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              border: '1.5px solid #e2e8f0',
+              maxHeight: '92vh',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div
+              style={{
+                padding: '1.25rem 1.5rem',
+                borderBottom: '1px solid #e2e8f0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div className="adm-3d-pod adm-pod-steel" style={{ width: '40px', height: '40px', borderRadius: '12px' }}>
+                  <Package size={20} strokeWidth={2.4} />
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0f172a' }}>
+                    {editingPackage ? `Edit Pricing Package (#${editingPackage.id})` : 'Create Pricing Package'}
+                  </h3>
+                  <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600, marginTop: '2px' }}>
+                    Save package specifications &amp; billing rules to database
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={closeModal}
+                style={{
+                  background: '#ffffff',
+                  border: '1.5px solid #cbd5e1',
+                  borderRadius: '8px',
+                  width: '32px',
+                  height: '32px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  color: '#64748b',
+                }}
+              >
+                <X size={16} />
+              </button>
             </div>
 
-            <form onSubmit={handleAddSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }} noValidate>
+            {/* Modal Form Scrollable Area */}
+            <form
+              onSubmit={handleAddSubmit}
+              style={{ padding: '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1.1rem' }}
+              noValidate
+            >
               {modalBannerError && (
-                <div style={{ backgroundColor: '#fef2f2', color: '#991b1b', border: '1px solid #fecaca', padding: '0.65rem 0.85rem', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 600 }}>
-                  ⚠️ {modalBannerError}
+                <div
+                  style={{
+                    backgroundColor: '#fef2f2',
+                    color: '#991b1b',
+                    border: '1.5px solid #fecaca',
+                    padding: '0.75rem 1rem',
+                    borderRadius: '10px',
+                    fontSize: '0.82rem',
+                    fontWeight: 700,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                  }}
+                >
+                  <AlertTriangle size={16} color="#dc2626" />
+                  <span>{modalBannerError}</span>
                 </div>
               )}
 
-              <div className="pro-form-group">
-                <label className="pro-form-label">Package Title *</label>
+              {/* Title */}
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 800, color: '#1e293b', marginBottom: '0.35rem' }}>
+                  Package Title *
+                </label>
                 <input
                   type="text"
-                  className="pro-input"
-                  placeholder="e.g. Digital Growth Accelerator Bundle"
+                  className="adm-toolbar-input"
+                  style={{ width: '100%', height: '42px', ...getInputErrorStyle(modalErrors.name) }}
+                  placeholder="e.g. Enterprise Digital Growth Accelerator"
                   value={formData.name}
                   onChange={(e) => {
                     setFormData({ ...formData, name: e.target.value });
                     setModalErrors((prev) => ({ ...prev, name: undefined }));
                     setModalBannerError('');
                   }}
-                  style={getInputErrorStyle(modalErrors.name)}
                   required
                 />
                 <FieldError error={modalErrors.name} />
               </div>
 
               {/* Category Selector */}
-              <div className="pro-form-group">
-                <label className="pro-form-label">Select Category *</label>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 800, color: '#1e293b', marginBottom: '0.35rem' }}>
+                  Select Category *
+                </label>
                 <select
-                  className="pro-select-input"
+                  className="adm-toolbar-select"
+                  style={{ width: '100%', height: '42px' }}
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                   required
                 >
                   {categoriesList.map((cat) => (
-                    <option key={cat} value={cat}>{cat}</option>
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
                   ))}
                 </select>
               </div>
 
               {/* Owner Type Selector */}
-              <div className="pro-form-group">
-                <label className="pro-form-label">Package Owner Type *</label>
-                <div className="pro-owner-cards-group">
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 800, color: '#1e293b', marginBottom: '0.35rem' }}>
+                  Package Owner Type *
+                </label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                   <div
-                    className={`pro-owner-radio-card ${formData.ownerType === 'business' ? 'selected-business' : ''}`}
                     onClick={() => handleOwnerTypeChange('business')}
+                    style={{
+                      border: formData.ownerType === 'business' ? '2px solid #3569a7' : '1.5px solid #e2e8f0',
+                      backgroundColor: formData.ownerType === 'business' ? '#eff6ff' : '#f8fafc',
+                      borderRadius: '12px',
+                      padding: '0.75rem 1rem',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.75rem',
+                      transition: 'all 0.15s ease',
+                    }}
                   >
-                    <span style={{ fontSize: '1.25rem' }}>🏢</span>
+                    <Building2 size={22} color={formData.ownerType === 'business' ? '#3569a7' : '#64748b'} />
                     <div>
-                      <strong style={{ display: 'block', fontSize: '0.88rem' }}>Registered Business</strong>
-                      <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Corporate Solutions</span>
+                      <strong style={{ display: 'block', fontSize: '0.86rem', color: '#0f172a' }}>
+                        Registered Business
+                      </strong>
+                      <span style={{ fontSize: '0.7rem', color: '#64748b' }}>Corporate Solutions</span>
                     </div>
                   </div>
 
                   <div
-                    className={`pro-owner-radio-card ${formData.ownerType === 'freelancer' ? 'selected-freelancer' : ''}`}
                     onClick={() => handleOwnerTypeChange('freelancer')}
+                    style={{
+                      border: formData.ownerType === 'freelancer' ? '2px solid #9333ea' : '1.5px solid #e2e8f0',
+                      backgroundColor: formData.ownerType === 'freelancer' ? '#faf5ff' : '#f8fafc',
+                      borderRadius: '12px',
+                      padding: '0.75rem 1rem',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.75rem',
+                      transition: 'all 0.15s ease',
+                    }}
                   >
-                    <span style={{ fontSize: '1.25rem' }}>👨‍💻</span>
+                    <Zap size={22} color={formData.ownerType === 'freelancer' ? '#9333ea' : '#64748b'} />
                     <div>
-                      <strong style={{ display: 'block', fontSize: '0.88rem' }}>Registered Freelance</strong>
-                      <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Individual Expert</span>
+                      <strong style={{ display: 'block', fontSize: '0.86rem', color: '#0f172a' }}>
+                        Freelance Provider
+                      </strong>
+                      <span style={{ fontSize: '0.7rem', color: '#64748b' }}>Individual Expert</span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Entity Selector */}
-              <div className="pro-form-group">
-                <label className="pro-form-label">
+              {/* Provider Entity Dropdown */}
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 800, color: '#1e293b', marginBottom: '0.35rem' }}>
                   Select {formData.ownerType === 'business' ? 'Business Entity' : 'Freelance Provider'}
                 </label>
                 <select
-                  className="pro-select-input"
+                  className="adm-toolbar-select"
+                  style={{ width: '100%', height: '42px', ...getInputErrorStyle(modalErrors.ownerName) }}
                   value={formData.ownerName}
                   onChange={(e) => {
                     setFormData({ ...formData, ownerName: e.target.value });
                     setModalErrors((prev) => ({ ...prev, ownerName: undefined }));
                     setModalBannerError('');
                   }}
-                  style={getInputErrorStyle(modalErrors.ownerName)}
                 >
                   {(formData.ownerType === 'business' ? registeredBusinesses : registeredFreelancers).length === 0 ? (
                     <option value="">Platform Managed (No entities registered)</option>
                   ) : (
                     (formData.ownerType === 'business' ? registeredBusinesses : registeredFreelancers).map((name) => (
-                      <option key={name} value={name}>{name}</option>
+                      <option key={name} value={name}>
+                        {name}
+                      </option>
                     ))
                   )}
                 </select>
                 <FieldError error={modalErrors.ownerName} />
               </div>
 
+              {/* Price, Commission, Billing Cycle Row */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.85rem' }}>
-                <div className="pro-form-group">
-                  <label className="pro-form-label">Price (₹) *</label>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 800, color: '#1e293b', marginBottom: '0.35rem' }}>
+                    Price (₹) *
+                  </label>
                   <input
                     type="number"
-                    className="pro-input"
+                    className="adm-toolbar-input"
+                    style={{ width: '100%', height: '42px', ...getInputErrorStyle(modalErrors.price) }}
                     placeholder="e.g. 7999"
                     value={formData.price}
                     onChange={(e) => {
@@ -948,17 +1775,19 @@ function AdminPackagesPage() {
                       setModalErrors((prev) => ({ ...prev, price: undefined }));
                       setModalBannerError('');
                     }}
-                    style={getInputErrorStyle(modalErrors.price)}
                     required
                   />
                   <FieldError error={modalErrors.price} />
                 </div>
 
-                <div className="pro-form-group">
-                  <label className="pro-form-label">Admin Commission (%) *</label>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 800, color: '#1e293b', marginBottom: '0.35rem' }}>
+                    Admin Cut (%) *
+                  </label>
                   <input
                     type="number"
-                    className="pro-input"
+                    className="adm-toolbar-input"
+                    style={{ width: '100%', height: '42px', ...getInputErrorStyle(modalErrors.adminCommissionPercent) }}
                     placeholder="e.g. 18"
                     value={formData.adminCommissionPercent}
                     onChange={(e) => {
@@ -968,16 +1797,18 @@ function AdminPackagesPage() {
                     }}
                     min="0"
                     max="100"
-                    style={getInputErrorStyle(modalErrors.adminCommissionPercent)}
                     required
                   />
                   <FieldError error={modalErrors.adminCommissionPercent} />
                 </div>
 
-                <div className="pro-form-group">
-                  <label className="pro-form-label">Billing Cycle</label>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 800, color: '#1e293b', marginBottom: '0.35rem' }}>
+                    Billing Cycle
+                  </label>
                   <select
-                    className="pro-select-input"
+                    className="adm-toolbar-select"
+                    style={{ width: '100%', height: '42px' }}
                     value={formData.billingCycle}
                     onChange={(e) => setFormData({ ...formData, billingCycle: e.target.value })}
                   >
@@ -988,32 +1819,44 @@ function AdminPackagesPage() {
                 </div>
               </div>
 
-              <div className="pro-form-group">
-                <label className="pro-form-label">Package Description</label>
+              {/* Description */}
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 800, color: '#1e293b', marginBottom: '0.35rem' }}>
+                  Package Description
+                </label>
                 <textarea
-                  className="pro-input"
+                  className="adm-toolbar-input"
                   rows="2"
-                  placeholder="Optional summary of included services or benefits..."
+                  placeholder="Optional summary of bundled deliverables, milestones, or services..."
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  style={{ resize: 'vertical', minHeight: '64px' }}
+                  style={{ width: '100%', height: '70px', padding: '0.65rem', resize: 'vertical' }}
                 />
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
+              {/* Form Action Buttons */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem', borderTop: '1px solid #f1f5f9', paddingTop: '1rem' }}>
                 <button
                   type="button"
-                  className="btn-action-sm"
-                  style={{ padding: '0.7rem 1.4rem' }}
                   onClick={closeModal}
                   disabled={saving}
+                  style={{
+                    padding: '0.65rem 1.35rem',
+                    borderRadius: '10px',
+                    border: '1.5px solid #cbd5e1',
+                    background: '#f8fafc',
+                    color: '#64748b',
+                    fontWeight: 800,
+                    fontSize: '0.82rem',
+                    cursor: 'pointer',
+                  }}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="pro-btn-create"
-                  style={{ padding: '0.7rem 1.4rem', opacity: saving ? 0.7 : 1 }}
+                  className="adm-hero-btn-primary"
+                  style={{ padding: '0.65rem 1.5rem', fontSize: '0.82rem', opacity: saving ? 0.7 : 1 }}
                   disabled={saving}
                 >
                   {saving ? 'Saving...' : editingPackage ? 'Update Package' : 'Save Package'}
