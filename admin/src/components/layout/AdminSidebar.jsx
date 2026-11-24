@@ -381,7 +381,7 @@ function AdminSidebar({
         <div className="menu-group">
           {!collapsed && <div className="menu-group-title">INCOME &amp; COMMISSIONS</div>}
 
-          {/* Direct Income (Order-wise) */}
+          {/* Direct Income */}
           <NavLink
             to="/income/direct-orders"
             className={({ isActive }) => `menu-item ${isActive ? 'active' : ''}`}
@@ -390,7 +390,7 @@ function AdminSidebar({
             <div className="adm-nav-pod-3d adm-nav-pod-cyan">
               <Coins size={16} strokeWidth={2.4} />
             </div>
-            {!collapsed && <span className="menu-item-label">Direct Income (Order-wise)</span>}
+            {!collapsed && <span className="menu-item-label">Direct Income</span>}
           </NavLink>
 
           {/* Level Income */}
