@@ -7,10 +7,13 @@ require_once app_path('Helpers/admin_function.php');
 use App\Models\CommissionSetting;
 use App\Models\DirectIncome;
 use App\Models\DirectIncomeOrderSummary;
+use App\Models\LevelIncome;
 use App\Models\Order;
 use App\Models\OrderPaymentDump;
 use App\Models\SalePayment;
+use App\Models\TotalLevelIncome;
 use App\Models\User;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -291,6 +294,9 @@ class AdminIncomeAllocationService
             // 12. Synchronize consolidated Order-wise Direct Income Summary atomically inside the transaction
             $orderSummary = $this->syncOrderDirectIncomeSummary($order, $directRecord, $configSnapshot);
 
+            // 13. Synchronize consolidated Order-wise Level Income Summaries atomically inside the transaction
+            $this->syncOrderLevelIncomeSummaries($order, $configSnapshot);
+
             return [
                 'payment' => $payment->fresh(),
                 'order' => $order->fresh(['payments']),
@@ -476,6 +482,122 @@ class AdminIncomeAllocationService
         }
 
         return $summary->fresh();
+    }
+
+    /**
+     * Synchronize and persist consolidated Order-wise Level Income Summaries (TotalLevelIncome)
+     * across all active upline levels for an Order.
+     *
+     * @param Order $order
+     * @param array|null $configSnapshot
+     * @return Collection
+     */
+    public function syncOrderLevelIncomeSummaries(Order $order, ?array $configSnapshot = null): Collection
+    {
+        $customer = $order->customer_user_code ? User::where('user_code', $order->customer_user_code)->first() : null;
+        if (!$customer) {
+            return collect();
+        }
+
+        $config = $configSnapshot ?? CommissionSetting::getValidatedGlobalSnapshot();
+        $orderGross = (float) ($order->gross_amount ?? 0);
+        $orderCommissionRate = (float) ($order->admin_commission_percent ?: 15.0);
+        $expectedOrderAdminCut = (float) ($order->admin_commission_cut > 0
+            ? $order->admin_commission_cut
+            : round(($orderGross * $orderCommissionRate) / 100, 2));
+
+        $approvedDumps = OrderPaymentDump::where('order_id', $order->id)
+            ->where('status', 'approved')
+            ->get();
+
+        $totalApprovedDumpCut = (float) $approvedDumps->sum('admin_commission_cut');
+        if ($totalApprovedDumpCut <= 0 && $approvedDumps->isNotEmpty()) {
+            $dumpGrossSum = (float) $approvedDumps->sum('dump_amount');
+            $totalApprovedDumpCut = round(($dumpGrossSum * $orderCommissionRate) / 100, 2);
+        }
+
+        $maxLevel = !empty($config['levels']) ? (int) max(array_column($config['levels'], 'level')) : 5;
+        $levelPcts = [];
+        foreach ($config['levels'] as $lvl) {
+            $levelPcts[(int) $lvl['level']] = (float) $lvl['percent'];
+        }
+
+        $latestPayment = SalePayment::where('sales_record_id', $order->id)->latest('id')->first();
+        $paymentType = $latestPayment?->payment_type ?? 'advance';
+
+        $summaries = collect();
+        $currSponsorCode = $customer->sponsor_id ?: $order->sponsor;
+
+        for ($level = 1; $level <= $maxLevel; $level++) {
+            if (empty($currSponsorCode) || strtolower(trim((string) $currSponsorCode)) === 'root') {
+                break;
+            }
+
+            $upline = User::where('user_code', $currSponsorCode)->orWhere('id', $currSponsorCode)->first();
+            if (!$upline) {
+                break;
+            }
+
+            $lvlPct = (float) ($levelPcts[$level] ?? 0.0);
+            $currSponsorCode = $upline->sponsor_id;
+
+            if ($lvlPct <= 0) {
+                continue;
+            }
+
+            $lvlExpected = round(($expectedOrderAdminCut * $lvlPct) / 100, 2);
+
+            $lvlPaid = (float) round(
+                LevelIncome::where(function ($q) use ($order) {
+                    $q->where('order_id', $order->id)
+                      ->orWhere('invoice_number', $order->invoice_number);
+                })
+                ->where('user_code', $upline->user_code)
+                ->where('level', $level)
+                ->sum('amount'),
+                2
+            );
+
+            $lvlDump = round(($totalApprovedDumpCut * $lvlPct) / 100, 2);
+            $lvlBalance = max(0.0, round($lvlExpected - $lvlPaid - $lvlDump, 2));
+
+            $tli = TotalLevelIncome::lockForUpdate()
+                ->where('order_id', $order->id)
+                ->where('user_code', $upline->user_code)
+                ->where('level', (string) $level)
+                ->first();
+
+            if (!$tli && !empty($order->invoice_number)) {
+                $tli = TotalLevelIncome::lockForUpdate()
+                    ->where('invoice_number', $order->invoice_number)
+                    ->where('user_code', $upline->user_code)
+                    ->where('level', (string) $level)
+                    ->first();
+            }
+
+            $data = [
+                'order_id' => $order->id,
+                'invoice_number' => $order->invoice_number,
+                'user_code' => $upline->user_code,
+                'level_id' => $customer->user_code,
+                'level' => (string) $level,
+                'payment_type' => $paymentType,
+                'total_amount' => $lvlExpected,
+                'paid_amount' => $lvlPaid,
+                'balance_amount' => $lvlBalance,
+                'dump_amount' => $lvlDump,
+            ];
+
+            if ($tli) {
+                $tli->update($data);
+            } else {
+                $tli = TotalLevelIncome::create($data);
+            }
+
+            $summaries->push($tli->fresh());
+        }
+
+        return $summaries;
     }
 
     /**

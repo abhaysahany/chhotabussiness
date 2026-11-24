@@ -9,6 +9,7 @@ use App\Models\LevelIncome;
 use App\Models\Order;
 use App\Models\OrderPaymentDump;
 use App\Models\SalePayment;
+use App\Models\TotalLevelIncome;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -171,11 +172,23 @@ class UserIncomeController extends Controller
             ? LevelIncome::where('user_code', $user->user_code)->orderBy('id', 'desc')->get()
             : collect([]);
 
-        // Calculate cumulative totals across existing level records
-        $totalAmount = (float) ($records->sum('amount') ?: $records->sum('total_amount'));
-        $paidAmount = (float) ($records->sum('amount') ?: $records->sum('paid_amount'));
-        $balanceAmount = max(0.0, round($totalAmount - $paidAmount, 2));
-        $dumpAmount = (float) $records->sum('dump_amount');
+        // Query total_level_incomes summaries by user_code for order-level expected, paid, balance, and dump amounts
+        $totalLevelSummaries = $user->user_code
+            ? TotalLevelIncome::where('user_code', $user->user_code)->get()
+            : collect([]);
+
+        // Calculate cumulative totals across level records
+        if ($totalLevelSummaries->isNotEmpty()) {
+            $totalAmount = (float) round($totalLevelSummaries->sum('total_amount'), 2);
+            $paidAmount = (float) round($totalLevelSummaries->sum('paid_amount'), 2);
+            $dumpAmount = (float) round($totalLevelSummaries->sum('dump_amount'), 2);
+            $balanceAmount = (float) round($totalLevelSummaries->sum('balance_amount'), 2);
+        } else {
+            $totalAmount = (float) ($records->sum('amount') ?: $records->sum('total_amount'));
+            $paidAmount = (float) ($records->sum('amount') ?: $records->sum('paid_amount'));
+            $balanceAmount = max(0.0, round($totalAmount - $paidAmount, 2));
+            $dumpAmount = (float) $records->sum('dump_amount');
+        }
 
         $todayAmount = (float) $records->filter(function ($rec) {
             return $rec->created_at && Carbon::parse($rec->created_at)->setTimezone('Asia/Kolkata')->isToday();
@@ -203,12 +216,23 @@ class UserIncomeController extends Controller
         $levelsBreakdown = [];
         foreach ($levelNumbers as $levelNum) {
             $levelGroup = $recordsByLevel->get($levelNum, collect([]));
-            $lvlTotal = (float) ($levelGroup->sum('amount') ?: $levelGroup->sum('total_amount'));
-            $lvlPaid = (float) ($levelGroup->sum('amount') ?: $levelGroup->sum('paid_amount'));
-            $lvlBalance = max(0.0, round($lvlTotal - $lvlPaid, 2));
-            $lvlDump = (float) $levelGroup->sum('dump_amount');
+            $levelSummaryGroup = $totalLevelSummaries->filter(function ($s) use ($levelNum) {
+                return (int) $s->level === (int) $levelNum;
+            });
 
-            $firstRec = $levelGroup->first();
+            if ($levelSummaryGroup->isNotEmpty()) {
+                $lvlTotal = (float) round($levelSummaryGroup->sum('total_amount'), 2);
+                $lvlPaid = (float) round($levelSummaryGroup->sum('paid_amount'), 2);
+                $lvlDump = (float) round($levelSummaryGroup->sum('dump_amount'), 2);
+                $lvlBalance = (float) round($levelSummaryGroup->sum('balance_amount'), 2);
+                $firstRec = $levelGroup->first() ?: $levelSummaryGroup->first();
+            } else {
+                $lvlTotal = (float) ($levelGroup->sum('amount') ?: $levelGroup->sum('total_amount'));
+                $lvlPaid = (float) ($levelGroup->sum('amount') ?: $levelGroup->sum('paid_amount'));
+                $lvlBalance = max(0.0, round($lvlTotal - $lvlPaid, 2));
+                $lvlDump = (float) $levelGroup->sum('dump_amount');
+                $firstRec = $levelGroup->first();
+            }
 
             $levelsBreakdown[] = [
                 'id' => $firstRec?->id,
@@ -228,7 +252,7 @@ class UserIncomeController extends Controller
                 'balanceAmount' => $lvlBalance,
                 'dump_amount' => $lvlDump,
                 'dumpAmount' => $lvlDump,
-                'has_record' => $levelGroup->isNotEmpty(),
+                'has_record' => $levelGroup->isNotEmpty() || $levelSummaryGroup->isNotEmpty(),
                 'created_at' => $firstRec?->created_at?->toIso8601String(),
                 'updated_at' => $firstRec?->updated_at?->toIso8601String(),
             ];
@@ -254,11 +278,16 @@ class UserIncomeController extends Controller
             'levels_count' => $records->count(),
         ];
 
-        $mappedRecords = $records->map(function ($rec) use ($user) {
-            $total = (float) ($rec->amount ?? $rec->total_amount ?? 0);
-            $paid = (float) ($rec->amount ?? $rec->paid_amount ?? 0);
-            $balance = max(0.0, round($total - $paid, 2));
-            $dump = (float) $rec->dump_amount;
+        $mappedRecords = $records->map(function ($rec) use ($user, $totalLevelSummaries) {
+            $tli = $totalLevelSummaries->first(function ($t) use ($rec) {
+                return (!empty($rec->order_id) && (int) $t->order_id === (int) $rec->order_id && (int) $t->level === (int) $rec->level)
+                    || (!empty($rec->invoice_number) && $t->invoice_number === $rec->invoice_number && (int) $t->level === (int) $rec->level);
+            });
+
+            $total = $tli ? (float) $tli->total_amount : (float) ($rec->amount ?? $rec->total_amount ?? 0);
+            $paid = $tli ? (float) $tli->paid_amount : (float) ($rec->amount ?? $rec->paid_amount ?? 0);
+            $dump = $tli ? (float) $tli->dump_amount : (float) ($rec->dump_amount ?? 0);
+            $balance = $tli ? (float) $tli->balance_amount : max(0.0, round($total - $paid, 2));
 
             return [
                 'id' => $rec->id,
@@ -270,7 +299,7 @@ class UserIncomeController extends Controller
                 'paymentId' => $rec->payment_id,
                 'payment_type' => $rec->payment_type,
                 'paymentType' => $rec->payment_type,
-                'amount' => $total,
+                'amount' => (float) ($rec->amount ?? $rec->total_amount ?? 0),
                 'user_id' => $user->id,
                 'userId' => $user->id,
                 'user_code' => $rec->user_code ?: $user->user_code,
@@ -293,7 +322,7 @@ class UserIncomeController extends Controller
                 'balanceAmount' => $balance,
                 'dump_amount' => $dump,
                 'dumpAmount' => $dump,
-                'status' => $paid >= $total && $total > 0 ? 'paid' : ($paid > 0 ? 'partial' : 'active'),
+                'status' => $balance <= 0 && $paid > 0 ? 'paid' : ($paid > 0 ? 'partial' : 'active'),
                 'created_at' => $rec->created_at?->toIso8601String(),
                 'updated_at' => $rec->updated_at?->toIso8601String(),
             ];
@@ -332,6 +361,7 @@ class UserIncomeController extends Controller
 
         $directIncomes = $userCode ? DirectIncome::where('user_code', $userCode)->get() : collect([]);
         $levelIncomes = $userCode ? LevelIncome::where('user_code', $userCode)->get() : collect([]);
+        $totalLevelSummaries = $userCode ? TotalLevelIncome::where('user_code', $userCode)->get() : collect([]);
 
         $directTotal = (float) $directIncomes->sum('total_amount');
         $directPaid = (float) $directIncomes->sum('paid_amount');
@@ -341,10 +371,18 @@ class UserIncomeController extends Controller
             return $rec->created_at && Carbon::parse($rec->created_at)->setTimezone('Asia/Kolkata')->isToday();
         })->sum('total_amount');
 
-        $levelTotal = (float) ($levelIncomes->sum('amount') ?: $levelIncomes->sum('total_amount'));
-        $levelPaid = (float) ($levelIncomes->sum('amount') ?: $levelIncomes->sum('paid_amount'));
-        $levelBalance = max(0.0, round($levelTotal - $levelPaid, 2));
-        $levelDump = (float) $levelIncomes->sum('dump_amount');
+        if ($totalLevelSummaries->isNotEmpty()) {
+            $levelTotal = (float) round($totalLevelSummaries->sum('total_amount'), 2);
+            $levelPaid = (float) round($totalLevelSummaries->sum('paid_amount'), 2);
+            $levelDump = (float) round($totalLevelSummaries->sum('dump_amount'), 2);
+            $levelBalance = (float) round($totalLevelSummaries->sum('balance_amount'), 2);
+        } else {
+            $levelTotal = (float) ($levelIncomes->sum('amount') ?: $levelIncomes->sum('total_amount'));
+            $levelPaid = (float) ($levelIncomes->sum('amount') ?: $levelIncomes->sum('paid_amount'));
+            $levelBalance = max(0.0, round($levelTotal - $levelPaid, 2));
+            $levelDump = (float) $levelIncomes->sum('dump_amount');
+        }
+
         $todayLevel = (float) $levelIncomes->filter(function ($rec) {
             return $rec->created_at && Carbon::parse($rec->created_at)->setTimezone('Asia/Kolkata')->isToday();
         })->sum(fn($rec) => (float)($rec->amount ?? $rec->total_amount ?? 0));
@@ -376,11 +414,16 @@ class UserIncomeController extends Controller
             ];
         })->values()->all();
 
-        $mappedLevelRecords = $levelIncomes->map(function ($rec) use ($user) {
-            $total = (float) ($rec->amount ?? $rec->total_amount ?? 0);
-            $paid = (float) ($rec->amount ?? $rec->paid_amount ?? 0);
-            $balance = max(0.0, round($total - $paid, 2));
-            $dump = (float) $rec->dump_amount;
+        $mappedLevelRecords = $levelIncomes->map(function ($rec) use ($user, $totalLevelSummaries) {
+            $tli = $totalLevelSummaries->first(function ($t) use ($rec) {
+                return (!empty($rec->order_id) && (int) $t->order_id === (int) $rec->order_id && (int) $t->level === (int) $rec->level)
+                    || (!empty($rec->invoice_number) && $t->invoice_number === $rec->invoice_number && (int) $t->level === (int) $rec->level);
+            });
+
+            $total = $tli ? (float) $tli->total_amount : (float) ($rec->amount ?? $rec->total_amount ?? 0);
+            $paid = $tli ? (float) $tli->paid_amount : (float) ($rec->amount ?? $rec->paid_amount ?? 0);
+            $dump = $tli ? (float) $tli->dump_amount : (float) ($rec->dump_amount ?? 0);
+            $balance = $tli ? (float) $tli->balance_amount : max(0.0, round($total - $paid, 2));
 
             return [
                 'id' => $rec->id,
