@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -692,13 +692,13 @@ function MemberDirectIncomeDetailsPage({ onNavigate }) {
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', textAlign: 'left', minWidth: '700px' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#64748b' }}>
-                    <th style={{ padding: '0.65rem 1rem', fontWeight: 600 }}>Receipt #</th>
-                    <th style={{ padding: '0.65rem 1rem', fontWeight: 600 }}>Installment</th>
-                    <th style={{ padding: '0.65rem 1rem', fontWeight: 600 }}>Payment Date</th>
-                    <th style={{ padding: '0.65rem 1rem', fontWeight: 600, textAlign: 'right' }}>Amount Paid</th>
-                    <th style={{ padding: '0.65rem 1rem', fontWeight: 600, textAlign: 'right', color: '#059669' }}>Your Direct Income</th>
-                    <th style={{ padding: '0.65rem 1rem', fontWeight: 600, textAlign: 'center' }}>Status</th>
-                    <th style={{ padding: '0.65rem 1rem', fontWeight: 600, textAlign: 'center' }}>Details</th>
+                    <th style={{ padding: '0.75rem 1rem', fontWeight: 600, width: '10%' }}>Receipt #</th>
+                    <th style={{ padding: '0.75rem 1rem', fontWeight: 600, width: '22%' }}>Installment</th>
+                    <th style={{ padding: '0.75rem 1rem', fontWeight: 600, width: '16%' }}>Payment Date</th>
+                    <th style={{ padding: '0.75rem 1rem', fontWeight: 600, textAlign: 'right', width: '15%' }}>Amount Paid</th>
+                    <th style={{ padding: '0.75rem 1rem', fontWeight: 600, textAlign: 'right', color: '#059669', width: '17%' }}>Your Direct Income</th>
+                    <th style={{ padding: '0.75rem 1rem', fontWeight: 600, textAlign: 'center', width: '10%' }}>Status</th>
+                    <th style={{ padding: '0.75rem 1rem', fontWeight: 600, textAlign: 'center', width: '10%' }}>Details</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -712,102 +712,96 @@ function MemberDirectIncomeDetailsPage({ onNavigate }) {
                     distributions.map((item, idx) => {
                       const isExpanded = !!expandedReceipts[item.payment_id];
                       return (
-                        <tr key={item.payment_id || idx} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                          <td colSpan={7} style={{ padding: 0 }}>
-                            {/* Primary Row */}
-                            <div
-                              onClick={() => toggleReceiptDetails(item.payment_id)}
-                              style={{
-                                display: 'grid',
-                                gridTemplateColumns: '1fr 1.5fr 1.3fr 1.3fr 1.5fr 1.2fr 0.9fr',
-                                alignItems: 'center',
-                                padding: '0.65rem 1rem',
-                                background: isExpanded ? '#f8fafc' : 'transparent',
-                                cursor: 'pointer',
-                                transition: 'background 0.15s ease',
-                              }}
-                              onMouseEnter={(e) => { if (!isExpanded) e.currentTarget.style.backgroundColor = '#fafbfc'; }}
-                              onMouseLeave={(e) => { if (!isExpanded) e.currentTarget.style.backgroundColor = 'transparent'; }}
-                            >
-                              <div style={{ fontWeight: 700, color: '#0f172a' }}>
-                                #{item.payment_id || item.installment_number || idx + 1}
-                              </div>
-                              <div style={{ textTransform: 'capitalize', fontWeight: 600, color: '#334155' }}>
-                                {item.installment_label || item.installment_type || 'Advance'}
-                              </div>
-                              <div style={{ color: '#64748b' }}>
-                                {formatDate(item.payment_date)}
-                              </div>
-                              <div style={{ textAlign: 'right', fontWeight: 700, color: '#0f172a' }}>
-                                {formatINR(item.payment_amount)}
-                              </div>
-                              <div style={{ textAlign: 'right', fontWeight: 800, color: '#059669' }}>
-                                {formatINR(item.direct_income_amount)}
-                              </div>
-                              <div style={{ textAlign: 'center' }}>
-                                <span
-                                  style={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: '0.25rem',
-                                    fontSize: '0.7rem',
-                                    fontWeight: 700,
-                                    padding: '0.15rem 0.5rem',
-                                    borderRadius: '4px',
-                                    background: '#ecfdf5',
-                                    color: '#059669',
-                                    border: '1px solid #a7f3d0',
-                                  }}
-                                >
-                                  <CheckCircle2 size={11} />
-                                  <span>Distributed</span>
-                                </span>
-                              </div>
-                              <div style={{ textAlign: 'center' }}>
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    toggleReceiptDetails(item.payment_id);
-                                  }}
-                                  style={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: '0.2rem',
-                                    background: isExpanded ? '#2563eb' : '#f1f5f9',
-                                    color: isExpanded ? '#ffffff' : '#334155',
-                                    border: '1px solid',
-                                    borderColor: isExpanded ? '#2563eb' : '#cbd5e1',
-                                    padding: '0.2rem 0.5rem',
-                                    borderRadius: '5px',
-                                    fontSize: '0.72rem',
-                                    fontWeight: 600,
-                                    cursor: 'pointer',
-                                    transition: 'all 0.15s ease',
-                                  }}
-                                >
-                                  <span>{isExpanded ? 'Hide' : 'Details'}</span>
-                                  {isExpanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
-                                </button>
-                              </div>
-                            </div>
-
-                            {/* Expandable Sub-Row (Inline Details Panel) */}
-                            {isExpanded && (
-                              <div
+                        <Fragment key={item.payment_id || idx}>
+                          {/* Primary Row */}
+                          <tr
+                            onClick={() => toggleReceiptDetails(item.payment_id)}
+                            style={{
+                              borderBottom: isExpanded ? 'none' : '1px solid #f1f5f9',
+                              background: isExpanded ? '#f8fafc' : 'transparent',
+                              cursor: 'pointer',
+                              transition: 'background 0.15s ease',
+                            }}
+                            onMouseEnter={(e) => { if (!isExpanded) e.currentTarget.style.backgroundColor = '#fafbfc'; }}
+                            onMouseLeave={(e) => { if (!isExpanded) e.currentTarget.style.backgroundColor = 'transparent'; }}
+                          >
+                            <td style={{ padding: '0.75rem 1rem', fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap' }}>
+                              #{item.payment_id || item.installment_number || idx + 1}
+                            </td>
+                            <td style={{ padding: '0.75rem 1rem', textTransform: 'capitalize', fontWeight: 600, color: '#334155' }}>
+                              {item.installment_label || item.installment_type || 'Advance'}
+                            </td>
+                            <td style={{ padding: '0.75rem 1rem', color: '#64748b', whiteSpace: 'nowrap' }}>
+                              {formatDate(item.payment_date)}
+                            </td>
+                            <td style={{ padding: '0.75rem 1rem', textAlign: 'right', fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap' }}>
+                              {formatINR(item.payment_amount)}
+                            </td>
+                            <td style={{ padding: '0.75rem 1rem', textAlign: 'right', fontWeight: 800, color: '#059669', whiteSpace: 'nowrap' }}>
+                              {formatINR(item.direct_income_amount)}
+                            </td>
+                            <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
+                              <span
                                 style={{
-                                  background: '#f8fafc',
-                                  borderTop: '1px dashed #e2e8f0',
-                                  borderBottom: '1px solid #e2e8f0',
-                                  padding: '0.75rem 1.25rem',
-                                  fontSize: '0.78rem',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '0.25rem',
+                                  fontSize: '0.7rem',
+                                  fontWeight: 700,
+                                  padding: '0.2rem 0.55rem',
+                                  borderRadius: '4px',
+                                  background: '#ecfdf5',
+                                  color: '#059669',
+                                  border: '1px solid #a7f3d0',
                                 }}
                               >
+                                <CheckCircle2 size={11} />
+                                <span>Distributed</span>
+                              </span>
+                            </td>
+                            <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleReceiptDetails(item.payment_id);
+                                }}
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '0.2rem',
+                                  background: isExpanded ? '#2563eb' : '#f1f5f9',
+                                  color: isExpanded ? '#ffffff' : '#334155',
+                                  border: '1px solid',
+                                  borderColor: isExpanded ? '#2563eb' : '#cbd5e1',
+                                  padding: '0.25rem 0.55rem',
+                                  borderRadius: '5px',
+                                  fontSize: '0.72rem',
+                                  fontWeight: 600,
+                                  cursor: 'pointer',
+                                  transition: 'all 0.15s ease',
+                                }}
+                              >
+                                <span>{isExpanded ? 'Hide' : 'Details'}</span>
+                                {isExpanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+                              </button>
+                            </td>
+                          </tr>
+
+                          {/* Expandable Sub-Row (Inline Details Panel) */}
+                          {isExpanded && (
+                            <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+                              <td colSpan={7} style={{ padding: '0.75rem 1.25rem 1rem 1.25rem' }}>
                                 <div
                                   style={{
                                     display: 'grid',
                                     gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
                                     gap: '0.75rem',
+                                    background: '#ffffff',
+                                    padding: '0.85rem 1rem',
+                                    borderRadius: '8px',
+                                    border: '1px solid #e2e8f0',
+                                    fontSize: '0.78rem',
                                   }}
                                 >
                                   <div>
@@ -846,10 +840,10 @@ function MemberDirectIncomeDetailsPage({ onNavigate }) {
                                     </span>
                                   </div>
                                 </div>
-                              </div>
-                            )}
-                          </td>
-                        </tr>
+                              </td>
+                            </tr>
+                          )}
+                        </Fragment>
                       );
                     })
                   )}
