@@ -1,5 +1,5 @@
 import React from 'react';
-import { Section, Row, Column, Img, Heading, Text } from '@react-email/components';
+import { Section, Img, Text } from '@react-email/components';
 
 interface EmailHeaderProps {
   logoUrl?: string;
@@ -15,7 +15,7 @@ export const EmailHeader: React.FC<EmailHeaderProps> = ({
         style={{
           backgroundColor: '#0F4C81',
           background: 'linear-gradient(135deg, #001844 0%, #0F4C81 60%, #1D4ED8 100%)',
-          padding: '32px 24px 28px 24px',
+          padding: '28px 24px 22px 24px',
           textAlign: 'center',
         }}
       >
@@ -29,7 +29,7 @@ export const EmailHeader: React.FC<EmailHeaderProps> = ({
         >
           <tbody>
             <tr>
-              <td align="center" valign="middle" style={{ paddingBottom: '14px' }}>
+              <td align="center" valign="middle">
                 <a
                   href="https://vyaparadnet.com"
                   target="_blank"
@@ -43,9 +43,10 @@ export const EmailHeader: React.FC<EmailHeaderProps> = ({
                     cellSpacing={0}
                     style={{
                       backgroundColor: '#FFFFFF',
-                      borderRadius: '10px',
-                      padding: '8px 20px',
+                      borderRadius: '12px',
+                      padding: '10px 24px',
                       margin: '0 auto',
+                      boxShadow: '0 4px 14px rgba(0, 0, 0, 0.15)',
                     }}
                   >
                     <tbody>
@@ -53,15 +54,15 @@ export const EmailHeader: React.FC<EmailHeaderProps> = ({
                         <td align="center" valign="middle">
                           <Img
                             src={logoUrl}
-                            width="190"
-                            height="63"
-                            alt="Vyapar AdNET Logo"
+                            width="200"
+                            height="66"
+                            alt="Vyapar AdNET"
                             style={{
                               display: 'block',
-                              width: '190px',
+                              width: '200px',
                               height: 'auto',
-                              maxWidth: '220px',
-                              maxHeight: '68px',
+                              maxWidth: '230px',
+                              maxHeight: '72px',
                               border: 0,
                               outline: 'none',
                               textDecoration: 'none',
@@ -76,37 +77,18 @@ export const EmailHeader: React.FC<EmailHeaderProps> = ({
               </td>
             </tr>
             <tr>
-              <td align="center" valign="middle" style={{ padding: 0 }}>
-                <Heading
-                  as="h1"
-                  style={{
-                    margin: 0,
-                    fontFamily:
-                      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-                    fontSize: '24px',
-                    fontWeight: 800,
-                    letterSpacing: '0.5px',
-                    color: '#FFFFFF',
-                    textTransform: 'uppercase',
-                    lineHeight: '1.2',
-                  }}
-                >
-                  Vyapar AdNET
-                </Heading>
-              </td>
-            </tr>
-            <tr>
-              <td align="center" valign="middle" style={{ paddingTop: '4px' }}>
+              <td align="center" valign="middle" style={{ paddingTop: '10px' }}>
                 <Text
                   style={{
                     margin: 0,
                     fontFamily:
                       "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-                    fontSize: '12px',
-                    fontWeight: 500,
-                    letterSpacing: '0.4px',
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    letterSpacing: '0.8px',
                     color: '#BFDBFE',
                     textTransform: 'uppercase',
+                    lineHeight: '1.4',
                   }}
                 >
                   Commercial B2B &amp; Affiliate Network Platform
