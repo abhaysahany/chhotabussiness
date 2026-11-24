@@ -3,6 +3,7 @@
 use App\Models\CommissionSetting;
 use App\Models\DirectIncome;
 use App\Models\LevelIncome;
+use App\Models\Order;
 use App\Models\TotalLevelIncome;
 use App\Models\User;
 use App\Models\WalletTransfer;
@@ -184,8 +185,11 @@ function levelIncome(
 
                 if ($existingTLI) {
                     // Update existing project's total_level_incomes record
-                    $existingTLI->total_amount = round((float) $existingTLI->total_amount + $incomeAmount, 2);
                     $existingTLI->paid_amount = round((float) $existingTLI->paid_amount + $incomeAmount, 2);
+                    if ((float) $existingTLI->total_amount < (float) $existingTLI->paid_amount) {
+                        $existingTLI->total_amount = $existingTLI->paid_amount;
+                    }
+                    $existingTLI->balance_amount = max(0.0, round((float) $existingTLI->total_amount - (float) $existingTLI->paid_amount - (float) $existingTLI->dump_amount, 2));
                     $existingTLI->payment_type = $paymentType;
                     if ($orderId !== null && empty($existingTLI->order_id)) {
                         $existingTLI->order_id = $orderId;
@@ -196,7 +200,25 @@ function levelIncome(
                     $existingTLI->save();
                     $totalLevelRecord = $existingTLI;
                 } else {
-                    // Create new total_level_incomes record for new project from entity
+                    // Resolve expected order-level amount if parent order is known
+                    $order = $orderId ? Order::find($orderId) : null;
+                    if (!$order && $invoiceNumber) {
+                        $order = Order::where('invoice_number', $invoiceNumber)->first();
+                    }
+                    $expectedLvlAmount = $incomeAmount;
+                    if ($order && (float) ($order->gross_amount ?? 0) > 0) {
+                        $commRate = (float) ($order->admin_commission_percent ?: 15.0);
+                        $orderCut = (float) ($order->admin_commission_cut > 0 ? $order->admin_commission_cut : round(($order->gross_amount * $commRate) / 100, 2));
+                        $lvlPct = (float) ($perLevelAmounts[$level] ?? 0.0);
+                        $cfgSnapshot = CommissionSetting::getValidatedGlobalSnapshot();
+                        $lvlDef = collect($cfgSnapshot['levels'] ?? [])->firstWhere('level', $level);
+                        $configuredPct = (float) ($lvlDef['percent'] ?? 0.0);
+                        if ($configuredPct > 0) {
+                            $expectedLvlAmount = round(($orderCut * $configuredPct) / 100, 2);
+                        }
+                    }
+
+                    // Create new total_level_incomes record for project
                     $totalLevelRecord = new TotalLevelIncome();
                     if ($orderId !== null) {
                         $totalLevelRecord->order_id = $orderId;
@@ -208,10 +230,10 @@ function levelIncome(
                     $totalLevelRecord->level_id = $buyer->user_code ?: (string) $buyerUserCode;
                     $totalLevelRecord->level = (string) $level;
                     $totalLevelRecord->payment_type = $paymentType;
-                    $totalLevelRecord->total_amount = $incomeAmount;
+                    $totalLevelRecord->total_amount = $expectedLvlAmount;
                     $totalLevelRecord->paid_amount = $incomeAmount;
-                    $totalLevelRecord->balance_amount = 0.00;
                     $totalLevelRecord->dump_amount = 0.00;
+                    $totalLevelRecord->balance_amount = max(0.0, round($expectedLvlAmount - $incomeAmount, 2));
                     $totalLevelRecord->save();
                 }
 
