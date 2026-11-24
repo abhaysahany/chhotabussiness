@@ -33,8 +33,8 @@ class SessionController extends Controller
         // Force touch activity timestamp on explicit ping
         $token->touchActivity(force: true);
 
-        $idleTimeoutMinutes = (int) config('session_timeout.idle_timeout_minutes', 30);
-        $absoluteTimeoutHours = (int) config('session_timeout.absolute_timeout_hours', 12);
+        $idleTimeoutMinutes = (int) config('session_timeout.idle_timeout_minutes', 120);
+        $absoluteTimeoutHours = (int) config('session_timeout.absolute_timeout_hours', 2);
 
         $now = Carbon::now();
         $idleElapsed = $token->last_activity_at ? $now->diffInSeconds($token->last_activity_at) : 0;
@@ -61,8 +61,8 @@ class SessionController extends Controller
     {
         return response()->json([
             'status' => 'success',
-            'idle_timeout_minutes' => (int) config('session_timeout.idle_timeout_minutes', 30),
-            'absolute_timeout_hours' => (int) config('session_timeout.absolute_timeout_hours', 12),
+            'idle_timeout_minutes' => (int) config('session_timeout.idle_timeout_minutes', 120),
+            'absolute_timeout_hours' => (int) config('session_timeout.absolute_timeout_hours', 2),
             'remember_me_enabled' => (bool) config('session_timeout.remember_me_enabled', false),
         ]);
     }
