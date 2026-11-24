@@ -350,6 +350,27 @@ function AppContent() {
     initAuth();
   }, []);
 
+  // Capture and persist referral code across navigation (?ref=, ?sponsor=, ?code=)
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(location.search || window.location.search);
+      const ref =
+        params.get('ref') ||
+        params.get('sponsor') ||
+        params.get('sponsor_id') ||
+        params.get('code') ||
+        params.get('r');
+
+      if (ref && ref.trim()) {
+        const clean = ref.trim();
+        sessionStorage.setItem('vyapar_referral_code', clean);
+        localStorage.setItem('vyapar_referral_code', clean);
+      }
+    } catch {
+      // ignore
+    }
+  }, [location.search]);
+
   // Fetch dashboard info when authenticated
   useEffect(() => {
     if (user) {
@@ -560,6 +581,19 @@ function AppContent() {
         />
         <Route
           path="/register"
+          element={
+            <RegisterForm
+              onRegisterSuccess={handleRegister}
+              onGoogleSuccess={handleGoogleAuthSuccess}
+              onSwitchToLogin={() => handleNavigate('/login')}
+              onBackToHome={() => handleNavigate('/')}
+              onSocialClick={(provider) => redirectToSocialProvider(provider, 'register')}
+              onOpenLegalPage={(page) => handleNavigate(page === 'terms' ? '/terms' : '/privacy')}
+            />
+          }
+        />
+        <Route
+          path="/register/:refCode"
           element={
             <RegisterForm
               onRegisterSuccess={handleRegister}
