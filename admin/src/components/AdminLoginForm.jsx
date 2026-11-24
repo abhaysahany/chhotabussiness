@@ -141,7 +141,7 @@ function AdminLoginForm({ onLoginSuccess, initialShowForgot = false }) {
     }
   };
 
-  // Step 1: Send OTP to Admin Email
+  // Step 1: Send OTP to Admin
   const handleSendOtp = async (e) => {
     if (e) e.preventDefault();
     if (!resetLogin) {

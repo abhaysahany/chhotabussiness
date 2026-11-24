@@ -681,13 +681,15 @@ function SalesReportPage({ user }) {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(15, 23, 42, 0.72)',
+            backgroundColor: 'rgba(15, 23, 42, 0.75)',
             backdropFilter: 'blur(8px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 1000,
-            padding: '1.25rem',
+            zIndex: 99999,
+            padding: '2.5rem 1.25rem',
+            overflowY: 'auto',
+            boxSizing: 'border-box',
           }}
           onClick={(e) => {
             if (e.target === e.currentTarget) setSelectedOrder(null);
@@ -699,8 +701,12 @@ function SalesReportPage({ user }) {
               borderRadius: '22px',
               width: '100%',
               maxWidth: '600px',
+              maxHeight: 'calc(100vh - 5rem)',
+              margin: 'auto',
               boxShadow: '0 25px 60px -15px rgba(15, 23, 42, 0.35)',
               overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
               border: '1.5px solid #E2E8F0',
               animation: 'vanFadeScaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
@@ -709,12 +715,13 @@ function SalesReportPage({ user }) {
             <div
               style={{
                 background: 'linear-gradient(135deg, #0284C7 0%, #0369A1 50%, #0F172A 100%)',
-                padding: '1.35rem 1.6rem',
+                padding: '1.25rem 1.6rem',
                 color: '#FFFFFF',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 position: 'relative',
+                flexShrink: 0,
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
@@ -766,7 +773,7 @@ function SalesReportPage({ user }) {
             </div>
 
             {/* Modal Body */}
-            <div style={{ padding: '1.6rem', display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
+            <div style={{ padding: '1.4rem 1.6rem', display: 'flex', flexDirection: 'column', gap: '1.15rem', overflowY: 'auto', flex: '1 1 auto' }}>
               {/* 4-Grid Metadata */}
               <div
                 style={{
@@ -897,6 +904,7 @@ function SalesReportPage({ user }) {
                 borderTop: '1px solid #F1F5F9',
                 display: 'flex',
                 justifyContent: 'flex-end',
+                flexShrink: 0,
               }}
             >
               <button

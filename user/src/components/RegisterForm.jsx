@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 import {
   Building2,
   Mail,
@@ -36,7 +37,97 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [sponsorId, setSponsorId] = useState('CB100201');
+  const location = useLocation();
+  const { refCode: routeRefCode } = useParams();
+  const [searchParams] = useSearchParams();
+
+  // Helper to extract referral code from URL query params, route params, or persisted storage
+  const getInitialSponsorId = () => {
+    try {
+      // 1. Route param /register/:refCode
+      if (routeRefCode && routeRefCode.trim()) {
+        const clean = routeRefCode.trim();
+        sessionStorage.setItem('vyapar_referral_code', clean);
+        localStorage.setItem('vyapar_referral_code', clean);
+        return clean;
+      }
+
+      // 2. Query params ?ref= or ?sponsor= or ?code=
+      const queryRef =
+        searchParams?.get('ref') ||
+        searchParams?.get('sponsor') ||
+        searchParams?.get('sponsor_id') ||
+        searchParams?.get('code') ||
+        searchParams?.get('r');
+
+      if (queryRef && queryRef.trim()) {
+        const clean = queryRef.trim();
+        sessionStorage.setItem('vyapar_referral_code', clean);
+        localStorage.setItem('vyapar_referral_code', clean);
+        return clean;
+      }
+
+      // 3. Fallback direct window.location.search parse
+      if (typeof window !== 'undefined' && window.location?.search) {
+        const raw = new URLSearchParams(window.location.search);
+        const rawRef =
+          raw.get('ref') ||
+          raw.get('sponsor') ||
+          raw.get('sponsor_id') ||
+          raw.get('code') ||
+          raw.get('r');
+        if (rawRef && rawRef.trim()) {
+          const clean = rawRef.trim();
+          sessionStorage.setItem('vyapar_referral_code', clean);
+          localStorage.setItem('vyapar_referral_code', clean);
+          return clean;
+        }
+      }
+
+      // 4. Stored referral code from earlier landing
+      const savedRef =
+        sessionStorage.getItem('vyapar_referral_code') ||
+        localStorage.getItem('vyapar_referral_code');
+
+      if (savedRef && savedRef.trim()) {
+        return savedRef.trim();
+      }
+    } catch (e) {
+      console.warn('Error reading referral code:', e);
+    }
+    return 'CB100001';
+  };
+
+  const [sponsorId, setSponsorId] = useState(getInitialSponsorId);
+
+  // Synchronize sponsorId immediately if the URL query parameter (?ref=...) or route parameter changes
+  useEffect(() => {
+    const rawParams = new URLSearchParams(location.search || window.location.search);
+    const activeRef =
+      routeRefCode ||
+      searchParams.get('ref') ||
+      searchParams.get('sponsor') ||
+      searchParams.get('sponsor_id') ||
+      searchParams.get('code') ||
+      searchParams.get('r') ||
+      rawParams.get('ref') ||
+      rawParams.get('sponsor') ||
+      rawParams.get('sponsor_id') ||
+      rawParams.get('code') ||
+      rawParams.get('r');
+
+    if (activeRef && activeRef.trim()) {
+      const clean = activeRef.trim();
+      setSponsorId(clean);
+      clearFieldError('sponsor_id');
+      try {
+        sessionStorage.setItem('vyapar_referral_code', clean);
+        localStorage.setItem('vyapar_referral_code', clean);
+      } catch {
+        // ignore
+      }
+    }
+  }, [location.search, routeRefCode, searchParams]);
 
   // Real-time Auto-Verification Sponsor State
   const [sponsorStatus, setSponsorStatus] = useState(null); // { verified: boolean, name: string, user_code: string } | null

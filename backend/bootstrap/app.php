@@ -35,9 +35,12 @@ return Application::configure(basePath: dirname(__DIR__))
             ]);
 
             if ($request->is('api/*') || $request->is('entity/*') || $request->expectsJson()) {
+                $msg = config('app.debug')
+                    ? 'Database query error: ' . $e->getMessage()
+                    : 'Service temporarily unavailable. Please try again shortly.';
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Service temporarily unavailable. Please try again shortly.',
+                    'message' => $msg,
                 ], 503);
             }
         });
@@ -51,9 +54,12 @@ return Application::configure(basePath: dirname(__DIR__))
             ]);
 
             if ($request->is('api/*') || $request->is('entity/*') || $request->expectsJson()) {
+                $msg = config('app.debug')
+                    ? 'Database connection error: ' . $e->getMessage()
+                    : 'Service temporarily unavailable. Please try again shortly.';
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Service temporarily unavailable. Please try again shortly.',
+                    'message' => $msg,
                 ], 503);
             }
         });
