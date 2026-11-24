@@ -31,6 +31,11 @@ class AdminIncomeAllocationService
         $this->diamondRewardService = $diamondRewardService ?? new DiamondRewardService();
     }
 
+    public function getDiamondRewardService(): DiamondRewardService
+    {
+        return $this->diamondRewardService;
+    }
+
     /**
      * Calculate and return income allocation details for a specific payment receipt without persisting.
      *
