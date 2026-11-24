@@ -19,6 +19,8 @@ import {
   Wallet,
   ChevronRight,
   Coins,
+  ShieldAlert,
+  Info,
 } from 'lucide-react';
 import { getUserRewards, getUserFreshProfile, getUserDiamondRewards } from '../../api/userRewardService';
 import { formatDateTime } from '../../utils/timezone';
@@ -39,6 +41,8 @@ function RewardDetails({ user, onNavigate }) {
     diamond_balance: 0,
     level_1_diamonds: 0,
     level_2_diamonds: 0,
+    dump_diamonds: 0,
+    dump_reward_inr: 0,
     conversion_rate_inr: 100,
   });
   const [diamondTransactions, setDiamondTransactions] = useState([]);
@@ -212,6 +216,22 @@ function RewardDetails({ user, onNavigate }) {
               <span>{formatDiamonds(diamondWallet.diamond_balance)}</span>
               <span style={{ fontSize: '0.9rem', color: '#ffffff', fontWeight: 700 }}>Diamonds</span>
             </div>
+            {Number(diamondWallet.dump_diamonds || 0) > 0 && (
+              <div
+                style={{
+                  fontSize: '0.72rem',
+                  color: '#f3e8ff',
+                  marginTop: '0.35rem',
+                  fontWeight: 700,
+                  background: 'rgba(124, 58, 237, 0.35)',
+                  padding: '0.2rem 0.6rem',
+                  borderRadius: '6px',
+                  border: '1px solid rgba(216, 180, 254, 0.4)',
+                }}
+              >
+                🛡️ Approved Dump: {formatDiamonds(diamondWallet.dump_diamonds)} 💎 (₹{Number(diamondWallet.dump_reward_inr || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })})
+              </div>
+            )}
             <span style={{ fontSize: '0.74rem', color: '#e2e8f0', display: 'block', marginTop: '0.25rem', fontWeight: 600 }}>
               Member: <strong style={{ color: '#38bdf8' }}>{currentUser?.user_code || userCode || 'Database User'}</strong>
             </span>
@@ -315,11 +335,11 @@ function RewardDetails({ user, onNavigate }) {
           </span>
         </div>
 
-        {/* 3 Signature 3D Diamond Summary Cards */}
+        {/* 4 Signature 3D Diamond Summary Cards (Including Approved Dump Write-Off) */}
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
             gap: '1.15rem',
             marginBottom: '1.75rem',
           }}
@@ -431,6 +451,59 @@ function RewardDetails({ user, onNavigate }) {
               </span>
             </div>
           </div>
+
+          {/* Card 4: Approved Dump Reward Write-Off */}
+          <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #7C3AED, #A855F7)' }} />
+            <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
+              <span
+                className="van-stat-card-title"
+                style={{
+                  color: '#7C3AED',
+                  whiteSpace: 'normal',
+                  lineHeight: 1.3,
+                  fontSize: '0.78rem',
+                }}
+              >
+                Approved Dump Reward
+              </span>
+              <div
+                className="van-3d-kpi-icon"
+                style={{
+                  background: 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)',
+                  color: '#ffffff',
+                  boxShadow: '0 4px 12px rgba(124, 58, 237, 0.35)',
+                  animationDelay: '1.2s',
+                }}
+                title="Uncollectible installment write-off"
+              >
+                <ShieldAlert size={22} strokeWidth={2.4} />
+              </div>
+            </div>
+            <div className="van-stat-card-value" style={{ color: Number(diamondWallet.dump_diamonds || 0) > 0 ? '#6D28D9' : '#64748B' }}>
+              💎 {formatDiamonds(diamondWallet.dump_diamonds || 0)}
+            </div>
+            <div className="van-stat-card-bottom">
+              <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
+                {Number(diamondWallet.dump_reward_inr || 0) > 0
+                  ? `₹${Number(diamondWallet.dump_reward_inr).toLocaleString('en-IN', { minimumFractionDigits: 2 })} uncollectible loss`
+                  : 'Zero dump write-offs'}
+              </span>
+              <span
+                style={{
+                  padding: '0.15rem 0.55rem',
+                  borderRadius: '9999px',
+                  fontSize: '0.7rem',
+                  fontWeight: 800,
+                  background: Number(diamondWallet.dump_diamonds || 0) > 0 ? '#f3e8ff' : '#f1f5f9',
+                  color: Number(diamondWallet.dump_diamonds || 0) > 0 ? '#7c3aed' : '#64748b',
+                  border: `1px solid ${Number(diamondWallet.dump_diamonds || 0) > 0 ? '#d8b4fe' : '#e2e8f0'}`,
+                }}
+              >
+                Approved Dump
+              </span>
+            </div>
+          </div>
         </div>
 
         {/* Recent Diamond Transactions Table */}
@@ -505,27 +578,56 @@ function RewardDetails({ user, onNavigate }) {
                     <th style={{ padding: '0.85rem 1rem', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Reward Level</th>
                     <th style={{ padding: '0.85rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Reward Amount</th>
                     <th style={{ padding: '0.85rem 1rem', textAlign: 'right', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Diamonds</th>
-                    <th style={{ padding: '0.85rem 1rem', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Credit Date</th>
+                    <th style={{ padding: '0.85rem 1rem', textAlign: 'center', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Status / Event</th>
+                    <th style={{ padding: '0.85rem 1rem', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Date</th>
                   </tr>
                 </thead>
                 <tbody>
                   {diamondTransactions.map((tx) => {
-                    const isReversal = tx.transaction_type === 'reversal' || tx.transaction_type === 'debit' || Number(tx.diamond_quantity) < 0;
+                    const isDump = tx.is_dump || tx.transaction_type === 'dump';
+                    const isReversal = !isDump && (tx.transaction_type === 'reversal' || tx.transaction_type === 'debit' || Number(tx.diamond_quantity) < 0);
+                    const rowBg = isDump ? '#faf5ff' : '#ffffff';
+                    const rowHoverBg = isDump ? '#f3e8ff' : '#f8fafc';
+
                     return (
                       <tr
                         key={tx.id}
                         style={{
-                          borderBottom: '1px solid #f1f5f9',
+                          backgroundColor: rowBg,
+                          borderBottom: isDump ? '1px solid #e9d5ff' : '1px solid #f1f5f9',
                           transition: 'background-color 0.15s ease',
                         }}
-                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f8fafc'; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#ffffff'; }}
+                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = rowHoverBg; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = rowBg; }}
                       >
                         <td style={{ padding: '0.85rem 1rem', fontWeight: 700, color: '#0f172a' }}>
-                          <div>{tx.source || tx.source_reference}</div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+                            <span>{tx.source || tx.source_reference}</span>
+                            {isDump && (
+                              <span
+                                style={{
+                                  padding: '0.15rem 0.45rem',
+                                  borderRadius: '4px',
+                                  fontSize: '0.68rem',
+                                  fontWeight: 800,
+                                  background: '#f3e8ff',
+                                  color: '#7c3aed',
+                                  border: '1px solid #d8b4fe',
+                                }}
+                              >
+                                Dump Write-Off
+                              </span>
+                            )}
+                          </div>
                           {tx.source_member_code && (
                             <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 500, marginTop: '0.15rem' }}>
                               Member: <span style={{ fontFamily: 'monospace', fontWeight: 700, color: '#1e40af' }}>{tx.source_member_code}</span>
+                              {tx.source_member_name && <span> ({tx.source_member_name})</span>}
+                            </div>
+                          )}
+                          {isDump && tx.description && (
+                            <div style={{ fontSize: '0.72rem', color: '#7c3aed', fontWeight: 500, marginTop: '0.15rem' }}>
+                              {tx.description}
                             </div>
                           )}
                         </td>
@@ -544,11 +646,68 @@ function RewardDetails({ user, onNavigate }) {
                             Level {tx.reward_level}
                           </span>
                         </td>
-                        <td style={{ padding: '0.85rem 1rem', textAlign: 'right', fontWeight: 800, color: isReversal ? '#dc2626' : '#0f172a' }}>
-                          ₹{Math.abs(Number(tx.allocated_amount || 0)).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+                        <td style={{ padding: '0.85rem 1rem', textAlign: 'right', fontWeight: 800, color: isDump ? '#6d28d9' : isReversal ? '#dc2626' : '#0f172a' }}>
+                          <div>₹{Math.abs(Number(tx.allocated_amount || 0)).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</div>
+                          {isDump && (
+                            <div style={{ fontSize: '0.7rem', color: '#7c3aed', fontWeight: 600 }}>Uncollectible Loss</div>
+                          )}
                         </td>
-                        <td style={{ padding: '0.85rem 1rem', textAlign: 'right', fontWeight: 800, color: isReversal ? '#dc2626' : '#0891b2' }}>
-                          {isReversal ? '-' : '+'}{formatDiamonds(Math.abs(Number(tx.diamond_quantity || 0)))} 💎
+                        <td style={{ padding: '0.85rem 1rem', textAlign: 'right', fontWeight: 800, color: isDump ? '#7c3aed' : isReversal ? '#dc2626' : '#0891b2' }}>
+                          <div>
+                            {isDump ? '⚠️ ' : isReversal ? '-' : '+'}
+                            {formatDiamonds(Math.abs(Number(tx.diamond_quantity || 0)))} 💎
+                          </div>
+                          {isDump && (
+                            <div style={{ fontSize: '0.7rem', color: '#6d28d9', fontWeight: 700 }}>(Written Off)</div>
+                          )}
+                        </td>
+                        <td style={{ padding: '0.85rem 1rem', textAlign: 'center' }}>
+                          {isDump ? (
+                            <span
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.3rem',
+                                padding: '0.2rem 0.6rem',
+                                borderRadius: '9999px',
+                                fontSize: '0.72rem',
+                                fontWeight: 800,
+                                background: '#f3e8ff',
+                                color: '#7c3aed',
+                                border: '1px solid #d8b4fe',
+                              }}
+                            >
+                              <ShieldAlert size={12} strokeWidth={2.4} /> Approved Dump
+                            </span>
+                          ) : isReversal ? (
+                            <span
+                              style={{
+                                padding: '0.2rem 0.6rem',
+                                borderRadius: '9999px',
+                                fontSize: '0.72rem',
+                                fontWeight: 800,
+                                background: '#fee2e2',
+                                color: '#dc2626',
+                                border: '1px solid #fca5a5',
+                              }}
+                            >
+                              Reversal
+                            </span>
+                          ) : (
+                            <span
+                              style={{
+                                padding: '0.2rem 0.6rem',
+                                borderRadius: '9999px',
+                                fontSize: '0.72rem',
+                                fontWeight: 800,
+                                background: '#dcfce7',
+                                color: '#16a34a',
+                                border: '1px solid #bbf7d0',
+                              }}
+                            >
+                              Credited
+                            </span>
+                          )}
                         </td>
                         <td style={{ padding: '0.85rem 1rem', color: '#64748b', fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
                           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
@@ -561,6 +720,26 @@ function RewardDetails({ user, onNavigate }) {
                   })}
                 </tbody>
               </table>
+            </div>
+          )}
+
+          {Number(diamondWallet?.dump_diamonds || 0) > 0 && (
+            <div
+              style={{
+                padding: '0.9rem 1.25rem',
+                background: '#faf5ff',
+                borderTop: '1px solid #e9d5ff',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.65rem',
+                fontSize: '0.78rem',
+                color: '#6d28d9',
+              }}
+            >
+              <ShieldAlert size={18} color="#7c3aed" style={{ flexShrink: 0 }} />
+              <div>
+                <strong>Accounting Transparency Notice:</strong> Approved dump write-offs represent bad debt / uncollectible installment losses approved by administration. They reflect your expected reward that was extinguished and are recorded for complete audit transparency without affecting your active credited diamond balance.
+              </div>
             </div>
           )}
         </div>
