@@ -78,10 +78,11 @@ function LevelIncomePage({ user, onNavigate }) {
     total_amount: 0,
     paid_amount: 0,
     balance_amount: 0,
+    dump_amount: 0,
   };
 
   const totalLevelIncome = Number(summary.total_amount ?? summary.totalAmount ?? 0);
-  const remainingBalance = Number(summary.balance_amount ?? summary.balanceAmount ?? 0);
+  const dumpAmount = Number(summary.dump_amount ?? summary.dumpAmount ?? 0);
   const totalPaid = Number(summary.paid_amount ?? summary.paidAmount ?? 0);
 
   const allRecords = data?.records || [];
@@ -447,7 +448,7 @@ function LevelIncomePage({ user, onNavigate }) {
           </div>
         </div>
 
-        {/* Card 2: Remaining Balance */}
+        {/* Card 2: Dump Amount */}
         <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #F59E0B, #D97706)' }} />
           <div className="van-stat-card-top" style={{ alignItems: 'flex-start' }}>
@@ -460,25 +461,25 @@ function LevelIncomePage({ user, onNavigate }) {
                 fontSize: '0.78rem',
               }}
             >
-              Remaining Balance
+              Dump Amount
             </span>
             <div
               className="van-3d-kpi-icon van-3d-icon-amber"
               style={{ animationDelay: '0.4s' }}
-              title="Available for Withdrawal / Payout"
+              title="Approved Dump Write-Off Amount"
             >
               <Clock size={22} strokeWidth={2.4} />
             </div>
           </div>
-          <div className="van-stat-card-value" style={{ color: remainingBalance > 0 ? '#B45309' : '#64748B' }}>
-            {formatINR(remainingBalance)}
+          <div className="van-stat-card-value" style={{ color: dumpAmount > 0 ? '#B45309' : '#64748B' }}>
+            {formatINR(dumpAmount)}
           </div>
           <div className="van-stat-card-bottom">
             <span style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600 }}>
-              Available for withdrawal / payout
+              Approved dump write-off amount
             </span>
             <span className="van-card-badge-pill amber" style={{ background: '#FEF3C7', color: '#92400E', border: '1px solid #FDE68A' }}>
-              Available
+              Dump Value
             </span>
           </div>
         </div>
