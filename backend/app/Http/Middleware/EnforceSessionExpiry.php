@@ -44,7 +44,7 @@ class EnforceSessionExpiry
             return $next($request);
         }
 
-        $absoluteLimit = (int) config('session_timeout.absolute_timeout_hours', 0);
+        $absoluteLimit = (int) config('session_timeout.absolute_timeout_hours', 2);
         // 1. Authoritative Absolute Session Lifetime Check (Disabled if <= 0)
         if ($absoluteLimit > 0 && $token->isAbsoluteExpired($absoluteLimit)) {
             $token->delete();
@@ -57,7 +57,7 @@ class EnforceSessionExpiry
             ], 401);
         }
 
-        $idleLimit = (int) config('session_timeout.idle_timeout_minutes', 0);
+        $idleLimit = (int) config('session_timeout.idle_timeout_minutes', 120);
         // 2. Authoritative Inactivity Timeout Check (Disabled if <= 0)
         if ($idleLimit > 0 && $token->isIdleExpired($idleLimit)) {
             $token->delete();

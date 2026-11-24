@@ -8,9 +8,10 @@ return [
     |
     | Number of minutes of genuine inactivity before a session/token is considered
     | expired. Set to 0 to disable inactivity expiration entirely.
+    | Default: 120 minutes (2 hours).
     |
     */
-    'idle_timeout_minutes' => (int) env('AUTH_IDLE_TIMEOUT_MINUTES', 0),
+    'idle_timeout_minutes' => (int) env('AUTH_IDLE_TIMEOUT_MINUTES', 120),
 
     /*
     |--------------------------------------------------------------------------
@@ -19,9 +20,10 @@ return [
     |
     | Maximum absolute session duration in hours from the moment of authentication.
     | Set to 0 to disable absolute session limit.
+    | Default: 2 hours (120 minutes).
     |
     */
-    'absolute_timeout_hours' => (int) env('AUTH_ABSOLUTE_TIMEOUT_HOURS', 0),
+    'absolute_timeout_hours' => (int) env('AUTH_ABSOLUTE_TIMEOUT_HOURS', 2),
 
     /*
     |--------------------------------------------------------------------------

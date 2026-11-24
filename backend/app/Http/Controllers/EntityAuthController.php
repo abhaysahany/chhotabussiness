@@ -355,8 +355,8 @@ class EntityAuthController extends Controller
             'user' => $userPayload,
             'token' => $token,
             'session' => [
-                'idle_timeout_minutes' => (int) config('session_timeout.idle_timeout_minutes', 30),
-                'absolute_timeout_hours' => (int) config('session_timeout.absolute_timeout_hours', 12),
+                'idle_timeout_minutes' => (int) config('session_timeout.idle_timeout_minutes', 120),
+                'absolute_timeout_hours' => (int) config('session_timeout.absolute_timeout_hours', 2),
                 'session_start' => now()->toIso8601String(),
             ],
         ], 200);

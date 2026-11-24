@@ -12,9 +12,9 @@ export const REMEMBER_KEY = `${PANEL_PREFIX}_remember`;
 export const EXPIRED_NOTICE_KEY = `${PANEL_PREFIX}_session_expired_notice`;
 export const CHANNEL_NAME = `vyapar_${PANEL_PREFIX}_auth_channel`;
 
-// Default policy constants (matches backend config: 0 = disabled)
-export const IDLE_TIMEOUT_MS = 0; // Disabled: sessions do not expire due to inactivity
-export const ABSOLUTE_TIMEOUT_MS = 0; // Disabled: sessions do not expire due to absolute duration
+// Default policy constants: 120 minutes (2 hours) session timeout
+export const IDLE_TIMEOUT_MS = 120 * 60 * 1000; // 120 minutes of genuine inactivity
+export const ABSOLUTE_TIMEOUT_MS = 120 * 60 * 1000; // Maximum 2 hours absolute session duration from login
 const PING_THROTTLE_MS = 60 * 1000; // Ping backend at most once every 60s when active
 const LOCAL_TOUCH_THROTTLE_MS = 2 * 1000; // Throttle writing to localStorage to every 2s
 
@@ -204,7 +204,7 @@ export const clearAdminSessionStorage = () => {
 export const handleSessionExpired = (reason = 'idle', redirect = true) => {
   const message =
     reason === 'absolute'
-      ? 'Your session has reached its maximum lifetime (12 hours). Please login again.'
+      ? 'Your session has reached its maximum lifetime (2 hours). Please login again.'
       : 'Your session has expired due to inactivity. Please login again.';
 
   localStorage.setItem(EXPIRED_NOTICE_KEY, message);
