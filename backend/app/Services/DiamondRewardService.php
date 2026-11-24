@@ -6,6 +6,7 @@ use App\Models\DiamondRewardAudit;
 use App\Models\DiamondTransaction;
 use App\Models\DiamondWallet;
 use App\Models\Order;
+use App\Models\OrderPaymentDump;
 use App\Models\SalePayment;
 use App\Models\User;
 use Illuminate\Database\UniqueConstraintViolationException;
@@ -510,13 +511,143 @@ class DiamondRewardService
 
     protected function recordAudit(array $attributes): void
     {
+        $match = [
+            'sale_payment_id' => $attributes['sale_payment_id'] ?? null,
+            'reward_level' => $attributes['reward_level'],
+            'status' => $attributes['status'],
+        ];
+
+        if (empty($attributes['sale_payment_id'])) {
+            $match['order_id'] = $attributes['order_id'] ?? null;
+            $match['target_user_id'] = $attributes['target_user_id'] ?? null;
+        }
+
         DiamondRewardAudit::updateOrCreate(
-            [
-                'sale_payment_id' => $attributes['sale_payment_id'],
-                'reward_level' => $attributes['reward_level'],
-                'status' => $attributes['status'],
-            ],
+            $match,
             $attributes
         );
+    }
+
+    /**
+     * Record auditable dump write-off for Diamond Rewards when an uncollectible installment is approved.
+     * Non-cash adjustment that tracks lost reward diamonds without inflating user balances.
+     *
+     * @param Order $order
+     * @param OrderPaymentDump $dump
+     * @return array
+     */
+    public function recordDumpRewards(Order $order, OrderPaymentDump $dump): array
+    {
+        $conversionRate = $this->getConversionRateInr();
+        $ratePaise = $this->decimalToScaled($conversionRate, 2);
+
+        $dumpAdminCut = (float) ($dump->admin_commission_cut ?? 0);
+        if ($dumpAdminCut <= 0) {
+            $commissionPercent = (float) ($order->admin_commission_percent ?? $dump->admin_commission_percent ?? 15.0);
+            $dumpAdminCut = round(((float) $dump->dump_amount * $commissionPercent) / 100, 2);
+        }
+
+        $allocationService = new AdminIncomeAllocationService($this);
+        $split = $allocationService->calculateSplit($dumpAdminCut);
+
+        $rewardL1Amount = (float) ($split['reward_level_1_amount'] ?? 0);
+        $rewardL2Amount = (float) ($split['reward_level_2_amount'] ?? 0);
+
+        $buyerCode = trim((string) ($order->customer_user_code ?? ''));
+        $sourceMember = $this->findMemberByCode($buyerCode);
+        $recipients = $this->resolveRewardRecipients($sourceMember, $order);
+
+        $levelsInput = [
+            1 => $this->decimalToScaled($rewardL1Amount, 2),
+            2 => $this->decimalToScaled($rewardL2Amount, 2),
+        ];
+
+        $results = [];
+
+        foreach ($levelsInput as $level => $amountPaise) {
+            if ($amountPaise <= 0) {
+                continue;
+            }
+
+            $sourceRef = "dump:{$dump->id}:reward_level:{$level}";
+            $allocatedInr = $this->formatScaled($amountPaise, 2);
+            $recipientInfo = $recipients[$level] ?? null;
+
+            if (!$recipientInfo || !$recipientInfo['user']) {
+                $this->recordAudit([
+                    'order_id' => $order->id,
+                    'sale_payment_id' => null,
+                    'reward_level' => $level,
+                    'source_member_id' => $sourceMember?->id,
+                    'source_member_code' => $sourceMember?->user_code ?: ($buyerCode ?: null),
+                    'target_sponsor_code' => $recipientInfo['code'] ?? null,
+                    'target_user_id' => null,
+                    'allocated_amount' => $allocatedInr,
+                    'conversion_rate' => $conversionRate,
+                    'diamond_quantity' => '0.0000',
+                    'status' => 'skipped_dump_ineligible_sponsor',
+                    'reason' => 'Dump reward not assigned: sponsor ineligible or missing.',
+                ]);
+                continue;
+            }
+
+            /** @var User $sponsorUser */
+            $sponsorUser = $recipientInfo['user'];
+            $dumpDiamondsScaled = $this->convertPaiseToScaledDiamonds($amountPaise, $ratePaise);
+            $dumpDiamondQtyStr = $this->formatScaled($dumpDiamondsScaled, 4);
+
+            $wallet = $this->lockOrCreateWalletForUser($sponsorUser->id);
+            $currentBalanceStr = $wallet->diamond_balance;
+
+            $invoiceLabel = $order->invoice_number ?: ('Order #' . $order->id);
+            $buyerDisplay = $sourceMember?->user_code ?: ($buyerCode ?: 'Member');
+            $dumpReason = $dump->dump_reason ?: 'Uncollectible installment write-off';
+
+            $tx = DiamondTransaction::firstOrCreate(
+                [
+                    'source_reference' => $sourceRef,
+                    'transaction_type' => 'dump',
+                ],
+                [
+                    'user_id' => $sponsorUser->id,
+                    'order_id' => $order->id,
+                    'sale_payment_id' => null,
+                    'reward_level' => $level,
+                    'source_member_id' => $sourceMember?->id,
+                    'source_member_code' => $buyerDisplay,
+                    'allocated_amount' => $allocatedInr,
+                    'conversion_rate' => $conversionRate,
+                    'diamond_quantity' => $dumpDiamondQtyStr,
+                    'balance_after' => $currentBalanceStr, // Non-cash write-off; preserves credited wallet balance
+                    'description' => "Reward Level {$level} uncollectible dump write-off from {$invoiceLabel} ({$dumpReason}).",
+                ]
+            );
+
+            $this->recordAudit([
+                'order_id' => $order->id,
+                'sale_payment_id' => null,
+                'reward_level' => $level,
+                'source_member_id' => $sourceMember?->id,
+                'source_member_code' => $buyerDisplay,
+                'target_sponsor_code' => $sponsorUser->user_code,
+                'target_user_id' => $sponsorUser->id,
+                'allocated_amount' => $allocatedInr,
+                'conversion_rate' => $conversionRate,
+                'diamond_quantity' => $dumpDiamondQtyStr,
+                'status' => 'approved_dump',
+                'reason' => "Approved dump write-off: {$dumpDiamondQtyStr} Diamonds (₹{$allocatedInr}) uncollectible loss.",
+            ]);
+
+            $results[$level] = [
+                'status' => 'recorded_dump',
+                'transaction_id' => $tx->id,
+                'user_id' => $sponsorUser->id,
+                'user_code' => $sponsorUser->user_code,
+                'allocated_amount' => (float) $allocatedInr,
+                'diamond_quantity' => $dumpDiamondQtyStr,
+            ];
+        }
+
+        return $results;
     }
 }

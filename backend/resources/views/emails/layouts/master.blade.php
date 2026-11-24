@@ -106,15 +106,15 @@
                 <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" class="email-container" style="max-width: 580px; margin: 0 auto; background-color: #FFFFFF; border-radius: 12px; overflow: hidden; border: 1px solid #E2E8F0; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);">
                     <!-- Brand Header -->
                     <tr>
-                        <td align="center" bgcolor="#0F4C81" class="header-padding" style="background-color: #0F4C81; background: linear-gradient(135deg, #001844 0%, #0F4C81 60%, #1D4ED8 100%); padding: 32px 24px 28px 24px; text-align: center;">
+                        <td align="center" bgcolor="#0F4C81" class="header-padding" style="background-color: #0F4C81; background: linear-gradient(135deg, #001844 0%, #0F4C81 60%, #1D4ED8 100%); padding: 28px 24px 22px 24px; text-align: center;">
                             <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center" style="margin: 0 auto;">
                                 <tr>
-                                    <td align="center" valign="middle" style="padding-bottom: 14px;">
+                                    <td align="center" valign="middle">
                                         <a href="https://vyaparadnet.com" target="_blank" style="text-decoration: none; display: inline-block;">
-                                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="background-color: #FFFFFF; border-radius: 10px; padding: 8px 20px; margin: 0 auto;">
+                                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="background-color: #FFFFFF; border-radius: 12px; padding: 10px 24px; margin: 0 auto; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);">
                                                 <tr>
                                                     <td align="center" valign="middle">
-                                                        <img src="{{ $logoUrl }}" width="190" height="63" alt="Vyapar AdNET" border="0" style="display: block; width: 190px; height: auto; max-width: 220px; max-height: 68px; border: 0; outline: none; text-decoration: none; margin: 0 auto;" />
+                                                        <img src="{{ $logoUrl }}" width="200" height="66" alt="Vyapar AdNET" border="0" style="display: block; width: 200px; height: auto; max-width: 230px; max-height: 72px; border: 0; outline: none; text-decoration: none; margin: 0 auto;" />
                                                     </td>
                                                 </tr>
                                             </table>
@@ -122,15 +122,8 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td align="center" valign="middle" style="padding: 0;">
-                                        <h1 style="margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 24px; font-weight: 800; letter-spacing: 0.5px; color: #FFFFFF; text-transform: uppercase; line-height: 1.2;">
-                                            Vyapar AdNET
-                                        </h1>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td align="center" valign="middle" style="padding-top: 4px;">
-                                        <p style="margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.4px; color: #BFDBFE; text-transform: uppercase;">
+                                    <td align="center" valign="middle" style="padding-top: 10px;">
+                                        <p style="margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.8px; color: #BFDBFE; text-transform: uppercase;">
                                             Commercial B2B &amp; Affiliate Network Platform
                                         </p>
                                     </td>
