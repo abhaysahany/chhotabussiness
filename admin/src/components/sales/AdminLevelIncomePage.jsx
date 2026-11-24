@@ -1,11 +1,38 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Users,
+  CheckCircle2,
+  Clock,
+  ShieldAlert,
+  ShieldCheck,
+  Zap,
+  Search,
+  RefreshCw,
+  ArrowLeft,
+  ArrowRight,
+  ExternalLink,
+  Layers,
+  Award,
+  FileText,
+  Building2,
+  User,
+  Filter,
+  RotateCcw,
+  Sparkles,
+  TrendingUp,
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
+  CreditCard,
+  AlertTriangle,
+  Download,
+} from 'lucide-react';
 import {
   getAdminLevelIncomeOverview,
   getAdminLevelIncomeOrders,
 } from '../../api/adminIncomeService';
 import { formatDate } from '../../utils/timezone';
-import AdminLevelIncomeDetailsModal from './AdminLevelIncomeDetailsModal';
 
 function AdminLevelIncomePage() {
   const navigate = useNavigate();
@@ -32,17 +59,13 @@ function AdminLevelIncomePage() {
   const [levelFilter, setLevelFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [entityTypeFilter, setEntityTypeFilter] = useState('all');
-  const [beneficiaryFilter, setBeneficiaryFilter] = useState('');
-  const [buyerFilter, setBuyerFilter] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [sortBy, setSortBy] = useState('created_at');
   const [sortOrder, setSortOrder] = useState('desc');
   const [perPage, setPerPage] = useState(20);
   const [currentPage, setCurrentPage] = useState(1);
-
-  // Modal State for Quick Drill-Down
-  const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
   // Debounce search input (350ms)
   useEffect(() => {
@@ -52,6 +75,11 @@ function AdminLevelIncomePage() {
     }, 350);
     return () => clearTimeout(handler);
   }, [search]);
+
+  const formatCurrency = (val) => {
+    const num = Number(val) || 0;
+    return '₹' + num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
 
   // Fetch Overview Data
   const loadOverview = useCallback(async () => {
@@ -85,8 +113,6 @@ function AdminLevelIncomePage() {
       if (levelFilter !== 'all') params.level = levelFilter;
       if (statusFilter !== 'all') params.status = statusFilter;
       if (entityTypeFilter !== 'all') params.entity_type = entityTypeFilter;
-      if (beneficiaryFilter.trim()) params.beneficiary = beneficiaryFilter.trim();
-      if (buyerFilter.trim()) params.buyer = buyerFilter.trim();
       if (startDate) params.start_date = startDate;
       if (endDate) params.end_date = endDate;
 
@@ -117,8 +143,6 @@ function AdminLevelIncomePage() {
     levelFilter,
     statusFilter,
     entityTypeFilter,
-    beneficiaryFilter,
-    buyerFilter,
     startDate,
     endDate,
   ]);
@@ -138,8 +162,6 @@ function AdminLevelIncomePage() {
     setLevelFilter('all');
     setStatusFilter('all');
     setEntityTypeFilter('all');
-    setBeneficiaryFilter('');
-    setBuyerFilter('');
     setStartDate('');
     setEndDate('');
     setSortBy('created_at');
@@ -159,9 +181,9 @@ function AdminLevelIncomePage() {
       'Invoice #',
       'Order Date',
       'Entity Name',
-      'Buyer Code',
+      'Buyer Member ID',
       'Buyer Name',
-      'Beneficiary Code',
+      'Beneficiary Member ID',
       'Beneficiary Name',
       'Level Tier',
       'Total Expected (INR)',
@@ -200,385 +222,791 @@ function AdminLevelIncomePage() {
     document.body.removeChild(link);
   };
 
-  const levelBreakdown = overview?.level_breakdown || overview?.levelBreakdown || [];
+  // Status badge helper
+  const getBadgeStyle = (status) => {
+    const s = String(status || '').toLowerCase();
+    if (s === 'completed' || s === 'reconciled' || s === 'balanced') {
+      return { background: 'rgba(5, 150, 105, 0.08)', color: '#047857', border: '1px solid rgba(5, 150, 105, 0.25)' };
+    }
+    if (s === 'partial' || s === 'incomplete wallet trace') {
+      return { background: 'rgba(217, 119, 6, 0.08)', color: '#b45309', border: '1px solid rgba(217, 119, 6, 0.25)' };
+    }
+    if (s === 'mismatch' || s === 'discrepancy' || s === 'rejected') {
+      return { background: 'rgba(220, 38, 38, 0.08)', color: '#dc2626', border: '1px solid rgba(220, 38, 38, 0.25)' };
+    }
+    return { background: '#f1f5f9', color: '#475569', border: '1px solid #cbd5e1' };
+  };
+
+  const isPlatformReconciled =
+    overview?.is_reconciled === true ||
+    overview?.isReconciled === true ||
+    overview?.reconciliation_status === 'Reconciled' ||
+    (overview?.reconciliation_difference ?? overview?.reconciliationDifference) === 0;
 
   return (
-    <div className="admin-page-container pro-orders-container">
-      {/* 1. PAGE HEADER */}
-      <div className="page-header pro-orders-header">
-        <div>
-          <div className="pro-income-header-title-wrap">
-            <h1 className="page-title pro-orders-header-title">
-              Level Income
-            </h1>
-            <span
-              style={{
-                backgroundColor: '#ede9fe',
-                color: '#6d28d9',
-                fontSize: '0.75rem',
-                fontWeight: 700,
-                padding: '0.25rem 0.65rem',
-                borderRadius: '9999px',
-                letterSpacing: '0.05em',
-              }}
-            >
-              UPLINE TIERS (L2 - L5)
-            </span>
-          </div>
-          <p className="page-subtitle" style={{ margin: '0.35rem 0 0 0', color: '#64748b', fontSize: '0.85rem' }}>
-            Consolidated multi-level earnings, upline distribution ledger, and 4-way platform reconciliation.
-          </p>
-        </div>
-
-        <div className="pro-orders-header-actions">
-          <button
-            onClick={() => {
-              loadOverview();
-              loadOrders();
-            }}
-            disabled={loadingOverview || loadingOrders}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.45rem',
-              backgroundColor: '#ffffff',
-              border: '1px solid #cbd5e1',
-              borderRadius: '8px',
-              padding: '0.55rem 1rem',
-              fontSize: '0.875rem',
-              fontWeight: 600,
-              color: '#334155',
-              cursor: 'pointer',
-              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
-            }}
-          >
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              className={loadingOrders ? 'spin' : ''}
-            >
-              <polyline points="23 4 23 10 17 10" />
-              <polyline points="1 20 1 14 7 14" />
-              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
-            </svg>
-            Refresh
-          </button>
-
-          <button
-            onClick={handleExportCSV}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.45rem',
-              backgroundColor: '#7c3aed',
-              border: 'none',
-              borderRadius: '8px',
-              padding: '0.55rem 1.15rem',
-              fontSize: '0.875rem',
-              fontWeight: 700,
-              color: '#ffffff',
-              cursor: 'pointer',
-              boxShadow: '0 4px 12px rgba(124, 58, 237, 0.25)',
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="7 10 12 15 17 10" />
-              <line x1="12" y1="15" x2="12" y2="3" />
-            </svg>
-            Export CSV
-          </button>
-        </div>
-      </div>
-
-      {/* 2. KPI OVERVIEW CARDS */}
-      <div className="pro-orders-kpi-grid" style={{ marginBottom: '1.25rem' }}>
-        {/* Total Orders */}
-        <div className="stat-card pro-orders-kpi-card" style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.25rem', borderLeft: '4px solid #7c3aed', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>
-              Eligible Orders
-            </span>
-            <span style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#ede9fe', color: '#7c3aed', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="9" cy="21" r="1" />
-                <circle cx="20" cy="21" r="1" />
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-              </svg>
-            </span>
-          </div>
-          <div style={{ fontSize: '1.65rem', fontWeight: 800, color: '#0f172a', marginTop: '0.5rem' }}>
-            {overview ? (overview.total_eligible_orders || overview.totalEligibleOrders || 0) : '—'}
-          </div>
-          <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.25rem' }}>
-            {overview?.total_records || 0} Level records tracked
-          </div>
-        </div>
-
-        {/* Expected Level Income */}
-        <div className="stat-card pro-orders-kpi-card" style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.25rem', borderLeft: '4px solid #6d28d9', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>
-              Expected Level Pool
-            </span>
-            <span style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#ede9fe', color: '#7c3aed', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polygon points="12 2 2 7 12 12 22 7 12 2" />
-                <polyline points="2 17 12 22 22 17" />
-                <polyline points="2 12 12 17 22 12" />
-              </svg>
-            </span>
-          </div>
-          <div style={{ fontSize: '1.65rem', fontWeight: 800, color: '#7c3aed', marginTop: '0.5rem' }}>
-            {overview
-              ? `₹${Number(overview.total_expected_level_income || overview.totalExpectedLevelIncome || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
-              : '—'}
-          </div>
-          <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.25rem' }}>
-            Global 40% Level Allocation
-          </div>
-        </div>
-
-        {/* Distributed Level Income */}
-        <div className="stat-card pro-orders-kpi-card" style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.25rem', borderLeft: '4px solid #10b981', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>
-              Distributed Payout
-            </span>
-            <span style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#dcfce7', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                <polyline points="22 4 12 14.01 9 11.01" />
-              </svg>
-            </span>
-          </div>
-          <div style={{ fontSize: '1.65rem', fontWeight: 800, color: '#10b981', marginTop: '0.5rem' }}>
-            {overview
-              ? `₹${Number(overview.total_distributed_level_income || overview.totalDistributedLevelIncome || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
-              : '—'}
-          </div>
-          <div style={{ fontSize: '0.8rem', color: '#059669', marginTop: '0.25rem', fontWeight: 600 }}>
-            {overview ? `${overview.completion_percentage || overview.completionPercentage || 0}% Realized` : '—'}
-          </div>
-        </div>
-
-        {/* Pending Balance */}
-        <div className="stat-card pro-orders-kpi-card" style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.25rem', borderLeft: '4px solid #f59e0b', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>
-              Pending Balance
-            </span>
-            <span style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#fef3c7', color: '#f59e0b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10" />
-                <polyline points="12 6 12 12 16 14" />
-              </svg>
-            </span>
-          </div>
-          <div style={{ fontSize: '1.65rem', fontWeight: 800, color: overview?.total_pending_level_income > 0 ? '#f59e0b' : '#0f172a', marginTop: '0.5rem' }}>
-            {overview
-              ? `₹${Number(overview.total_pending_level_income || overview.totalPendingLevelIncome || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
-              : '—'}
-          </div>
-          <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.25rem' }}>
-            Pending milestone receipts
-          </div>
-        </div>
-
-        {/* Total Beneficiaries */}
-        <div className="stat-card pro-orders-kpi-card" style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.25rem', borderLeft: '4px solid #0284c7', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>
-              Beneficiaries
-            </span>
-            <span style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#e0f2fe', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-              </svg>
-            </span>
-          </div>
-          <div style={{ fontSize: '1.65rem', fontWeight: 800, color: '#0f172a', marginTop: '0.5rem' }}>
-            {overview ? (overview.total_beneficiaries_count || overview.totalBeneficiariesCount || 0) : '—'}
-          </div>
-          <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.25rem' }}>
-            {overview?.total_distributions_count || 0} Total distributions
-          </div>
-        </div>
-      </div>
-
-      {/* Level Breakdown Strip */}
-      {levelBreakdown && levelBreakdown.length > 0 && (
-        <div
-          style={{
-            backgroundColor: '#ffffff',
-            border: '1px solid #e2e8f0',
-            borderRadius: '14px',
-            padding: '1.15rem 1.25rem',
-            marginBottom: '1.25rem',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-            <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Level-wise Performance Summary
-            </span>
-            <span style={{ fontSize: '0.8rem', color: '#64748b' }}>
-              Levels 2 to 5 dynamic split distribution
-            </span>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.4rem', width: '100%', boxSizing: 'border-box' }}>
+      {/* 1. Executive 3D Luxury Hero Banner */}
+      <div className="adm-hero-banner">
+        <div className="adm-hero-top-row">
+          <div className="adm-hero-pod-3d adm-pod-purple">
+            <Layers size={32} strokeWidth={2.4} />
           </div>
 
-          <div className="pro-level-breakdown-grid">
-            {levelBreakdown.map((lvl) => (
-              <div
-                key={lvl.level}
-                onClick={() => setLevelFilter(String(lvl.level))}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem', flexWrap: 'wrap' }}>
+              <span
                 style={{
-                  backgroundColor: levelFilter === String(lvl.level) ? '#ede9fe' : '#f8fafc',
-                  border: `1.5px solid ${levelFilter === String(lvl.level) ? '#7c3aed' : '#e2e8f0'}`,
-                  borderRadius: '10px',
-                  padding: '0.85rem 1rem',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
+                  fontSize: '0.68rem',
+                  fontWeight: 800,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  color: '#7c3aed',
+                  background: 'rgba(124, 58, 237, 0.08)',
+                  padding: '3px 10px',
+                  borderRadius: '9999px',
+                  border: '1px solid rgba(124, 58, 237, 0.25)',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span
-                    style={{
-                      fontWeight: 800,
-                      fontSize: '0.85rem',
-                      color: levelFilter === String(lvl.level) ? '#6d28d9' : '#0f172a',
-                    }}
-                  >
-                    {lvl.level_label || `Level ${lvl.level}`}
-                  </span>
-                  <span
-                    style={{
-                      fontSize: '0.75rem',
-                      fontWeight: 700,
-                      backgroundColor: '#ffffff',
-                      padding: '0.15rem 0.45rem',
-                      borderRadius: '4px',
-                      color: '#64748b',
-                    }}
-                  >
-                    {lvl.count} recs
-                  </span>
-                </div>
-                <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#10b981', marginTop: '0.4rem' }}>
-                  ₹{Number(lvl.total_paid || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                </div>
-                <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.2rem' }}>
-                  Expected: ₹{Number(lvl.total_expected || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Platform Cross-Reconciliation Health Card */}
-      <div
-        className="pro-level-reconciliation-card"
-        style={{
-          backgroundColor: overview?.reconciliation_status === 'Reconciled' ? '#f0fdf4' : '#fffbeb',
-          border: `1px solid ${overview?.reconciliation_status === 'Reconciled' ? '#bbf7d0' : '#fde68a'}`,
-          borderRadius: '14px',
-          padding: '1.25rem 1.5rem',
-          marginBottom: '1.5rem',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-          <div
-            style={{
-              width: '42px',
-              height: '42px',
-              borderRadius: '10px',
-              backgroundColor: overview?.reconciliation_status === 'Reconciled' ? '#dcfce7' : '#fef3c7',
-              color: overview?.reconciliation_status === 'Reconciled' ? '#15803d' : '#b45309',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-            }}
-          >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-              <polyline points="22 4 12 14.01 9 11.01" />
-            </svg>
-          </div>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ fontWeight: 800, fontSize: '1rem', color: overview?.reconciliation_status === 'Reconciled' ? '#15803d' : '#b45309' }}>
-                Level Income 4-Way Reconciliation: {overview?.reconciliation_status || 'Reconciled'}
+                ● UPLINE TIERS (LEVEL 2 - 5)
               </span>
               <span
                 style={{
-                  fontSize: '0.75rem',
-                  fontWeight: 700,
-                  backgroundColor: '#ffffff',
-                  padding: '0.2rem 0.5rem',
-                  borderRadius: '6px',
-                  color: '#475569',
-                  border: '1px solid rgba(0,0,0,0.06)',
+                  fontSize: '0.68rem',
+                  fontWeight: 800,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  color: '#059669',
+                  background: 'rgba(5, 150, 105, 0.08)',
+                  padding: '3px 10px',
+                  borderRadius: '9999px',
+                  border: '1px solid rgba(5, 150, 105, 0.25)',
                 }}
               >
-                Variance: ₹{Number(overview?.reconciliation_difference || 0).toFixed(2)}
+                ● READ-ONLY AUDIT &amp; REPORTING
+              </span>
+              <span
+                style={{
+                  fontSize: '0.68rem',
+                  fontWeight: 800,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  color: '#334155',
+                  background: '#f1f5f9',
+                  padding: '3px 10px',
+                  borderRadius: '9999px',
+                  border: '1px solid #cbd5e1',
+                }}
+              >
+                ● {pagination.total} Level Records
               </span>
             </div>
-            <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.85rem', color: '#475569' }}>
-              {overview?.reconciliation_message ||
-                'All platform Level Income records match across total summaries, level income ledger installments, and wallet transfers with 0.00 variance.'}
+
+            <h1 style={{ margin: 0, fontSize: '1.65rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.025em' }}>
+              Level Income – Multi-Tier Overview
+            </h1>
+            <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#64748b', maxWidth: '680px', lineHeight: 1.5 }}>
+              Monitor multi-level commission allocations across upline network tiers (Level 2 to Level 5) and incremental installment payouts.
             </p>
+          </div>
+
+          <div style={{ display: 'flex', gap: '0.65rem', flexShrink: 0, flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={() => navigate('/orders')}
+              style={{
+                padding: '0.75rem 1.25rem',
+                backgroundColor: '#ffffff',
+                color: '#334155',
+                border: '1.5px solid #cbd5e1',
+                borderRadius: '12px',
+                fontSize: '0.84rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.45rem',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
+              }}
+            >
+              <ArrowLeft size={15} />
+              <span>Orders Management</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleExportCSV}
+              style={{
+                padding: '0.75rem 1.25rem',
+                backgroundColor: '#ffffff',
+                color: '#7c3aed',
+                border: '1.5px solid #ddd6fe',
+                borderRadius: '12px',
+                fontSize: '0.84rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.45rem',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
+              }}
+            >
+              <Download size={15} />
+              <span>Export CSV</span>
+            </button>
+
+            <button
+              type="button"
+              className="adm-hero-btn-primary"
+              onClick={() => {
+                loadOverview();
+                loadOrders();
+              }}
+              disabled={loadingOverview || loadingOrders}
+              style={{ padding: '0.75rem 1.4rem', fontSize: '0.84rem' }}
+            >
+              <RefreshCw size={15} strokeWidth={2.4} className={loadingOverview || loadingOrders ? 'animate-spin' : ''} />
+              <span>Refresh Overview</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Executive Auditing Notice Pod */}
+      <div
+        style={{
+          background: 'linear-gradient(135deg, rgba(245, 243, 255, 0.9) 0%, rgba(240, 249, 255, 0.8) 100%)',
+          border: '1.5px solid #c7d2fe',
+          borderRadius: '14px',
+          padding: '0.9rem 1.25rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '0.85rem',
+          boxShadow: '0 4px 14px rgba(99, 102, 241, 0.05)',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, minWidth: '280px' }}>
+          <div
+            style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: '10px',
+              background: 'linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)',
+              color: '#ffffff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 4px 10px rgba(124, 58, 237, 0.25)',
+              flexShrink: 0,
+            }}
+          >
+            <ShieldCheck size={20} strokeWidth={2.4} />
+          </div>
+          <div style={{ fontSize: '0.83rem', color: '#312e81', lineHeight: 1.45 }}>
+            <strong>Multi-Level Network Engine (Upline Tiers Level 2 to Level 5):</strong> Cross-reconciled distributions from <code>total_level_incomes</code> and <code>level_incomes</code>. To inspect orders or trigger commission distributions, use <strong>Sidebar → Orders &amp; Payments → Order Management</strong>.
           </div>
         </div>
 
-        {overview?.ledger_totals && (
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
-              Total Summaries: <strong style={{ color: '#0f172a' }}>₹{Number(overview.ledger_totals.total_level_incomes_paid || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</strong>
-            </div>
-            <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
-              Ledger Installments: <strong style={{ color: '#0f172a' }}>₹{Number(overview.ledger_totals.level_incomes_installments || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</strong>
-            </div>
-          </div>
-        )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
+          <span
+            style={{
+              background: '#ffffff',
+              color: '#7c3aed',
+              border: '1.5px solid #c7d2fe',
+              padding: '0.35rem 0.85rem',
+              borderRadius: '9999px',
+              fontWeight: 800,
+              fontSize: '0.75rem',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              boxShadow: '0 2px 5px rgba(0,0,0,0.03)',
+            }}
+          >
+            <CheckCircle2 size={13} color="#7c3aed" strokeWidth={2.6} />
+            <span>Audit Mode: Cross-Reconciled</span>
+          </span>
+        </div>
       </div>
 
-      {/* Filters & Search Toolbar */}
+      {/* 3. Global Level Income Financial Vaults (Row 1: 4 Cards) */}
+      <div className="adm-kpi-grid-4">
+        {/* Card 1: Distributed Level Income */}
+        <div className="adm-kpi-card adm-kpi-card-emerald">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <span
+                style={{
+                  fontSize: '0.66rem',
+                  fontWeight: 800,
+                  color: '#059669',
+                  background: 'rgba(5, 150, 105, 0.1)',
+                  padding: '2.5px 8px',
+                  borderRadius: '5px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                  display: 'inline-block',
+                  marginBottom: '0.35rem',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                ● WALLET CREDITED
+              </span>
+              <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                DISTRIBUTED LEVEL
+              </div>
+            </div>
+            <div className="adm-3d-pod adm-pod-emerald" style={{ width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0 }}>
+              <CheckCircle2 size={19} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
+            <div className="adm-kpi-val" style={{ fontSize: '1.5rem', color: '#059669' }}>
+              {loadingOverview ? '—' : formatCurrency(overview?.total_distributed_level_income ?? overview?.totalDistributedLevelIncome ?? 0)}
+            </div>
+          </div>
+          <div className="adm-kpi-footer">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.73rem', color: '#64748b' }}>
+              <CheckCircle2 size={13} color="#059669" />
+              <span>Credited to Wallets</span>
+            </span>
+            <span style={{ color: '#059669', fontWeight: 800, fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+              ● Completed
+            </span>
+          </div>
+        </div>
+
+        {/* Card 2: Expected Level Income */}
+        <div className="adm-kpi-card adm-kpi-card-purple">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <span
+                style={{
+                  fontSize: '0.66rem',
+                  fontWeight: 800,
+                  color: '#7c3aed',
+                  background: 'rgba(124, 58, 237, 0.1)',
+                  padding: '2.5px 8px',
+                  borderRadius: '5px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                  display: 'inline-block',
+                  marginBottom: '0.35rem',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                ● UPLINE TIERS SHARE
+              </span>
+              <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                EXPECTED LEVEL
+              </div>
+            </div>
+            <div className="adm-3d-pod adm-pod-purple" style={{ width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0 }}>
+              <Zap size={19} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
+            <div className="adm-kpi-val" style={{ fontSize: '1.5rem', color: '#7c3aed' }}>
+              {loadingOverview ? '—' : formatCurrency(overview?.total_expected_level_income ?? overview?.totalExpectedLevelIncome ?? 0)}
+            </div>
+          </div>
+          <div className="adm-kpi-footer">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.73rem', color: '#64748b' }}>
+              <Zap size={13} color="#7c3aed" />
+              <span>Multi-Level Network Pool</span>
+            </span>
+            <span style={{ color: '#7c3aed', fontWeight: 800, fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+              ● Target
+            </span>
+          </div>
+        </div>
+
+        {/* Card 3: Pending Level Income */}
+        <div className="adm-kpi-card adm-kpi-card-amber">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <span
+                style={{
+                  fontSize: '0.66rem',
+                  fontWeight: 800,
+                  color: '#d97706',
+                  background: 'rgba(217, 119, 6, 0.1)',
+                  padding: '2.5px 8px',
+                  borderRadius: '5px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                  display: 'inline-block',
+                  marginBottom: '0.35rem',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                ● UNALLOCATED / UNCOLLECTED
+              </span>
+              <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                PENDING LEVEL
+              </div>
+            </div>
+            <div className="adm-3d-pod adm-pod-amber" style={{ width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0 }}>
+              <Clock size={19} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
+            <div className="adm-kpi-val" style={{ fontSize: '1.5rem', color: '#d97706' }}>
+              {loadingOverview ? '—' : formatCurrency(overview?.total_pending_level_income ?? overview?.totalPendingLevelIncome ?? 0)}
+            </div>
+          </div>
+          <div className="adm-kpi-footer">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.73rem', color: '#64748b' }}>
+              <Clock size={13} color="#d97706" />
+              <span>Awaiting milestone settlement</span>
+            </span>
+            <span style={{ color: '#d97706', fontWeight: 800, fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+              ● Pending
+            </span>
+          </div>
+        </div>
+
+        {/* Card 4: Approved Dump Write-Off */}
+        <div className="adm-kpi-card adm-kpi-card-steel">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <span
+                style={{
+                  fontSize: '0.66rem',
+                  fontWeight: 800,
+                  color: '#475569',
+                  background: 'rgba(71, 85, 105, 0.1)',
+                  padding: '2.5px 8px',
+                  borderRadius: '5px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                  display: 'inline-block',
+                  marginBottom: '0.35rem',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                ● UNCOLLECTIBLE LOSS
+              </span>
+              <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                APPROVED DUMP WRITE-OFF
+              </div>
+            </div>
+            <div className="adm-3d-pod adm-pod-steel" style={{ width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0 }}>
+              <ShieldAlert size={19} strokeWidth={2.4} color="#64748b" />
+            </div>
+          </div>
+          <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
+            <div className="adm-kpi-val" style={{ fontSize: '1.5rem', color: '#475569' }}>
+              {loadingOverview ? '—' : formatCurrency(overview?.total_dump_level_income ?? overview?.totalDumpLevelIncome ?? 0)}
+            </div>
+          </div>
+          <div className="adm-kpi-footer">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.73rem', color: '#64748b' }}>
+              <ShieldAlert size={13} color="#64748b" />
+              <span>Extinguished loss portion</span>
+            </span>
+            <span style={{ color: '#475569', fontWeight: 800, fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+              ● Written-off
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* 4. Operational Network Metrics (Row 2: 4 Cards) */}
+      <div className="adm-kpi-grid-4">
+        {/* Card 5: Total Eligible Orders */}
+        <div className="adm-kpi-card adm-kpi-card-steel">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <span
+                style={{
+                  fontSize: '0.66rem',
+                  fontWeight: 800,
+                  color: '#3b82f6',
+                  background: 'rgba(59, 130, 246, 0.1)',
+                  padding: '2.5px 8px',
+                  borderRadius: '5px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                  display: 'inline-block',
+                  marginBottom: '0.35rem',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                ● ORDER VOLUME
+              </span>
+              <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                TOTAL ELIGIBLE ORDERS
+              </div>
+            </div>
+            <div className="adm-3d-pod adm-pod-steel" style={{ width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0 }}>
+              <FileText size={19} strokeWidth={2.4} color="#3b82f6" />
+            </div>
+          </div>
+          <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
+            <div className="adm-kpi-val" style={{ fontSize: '1.6rem', color: '#0f172a' }}>
+              {loadingOverview ? '—' : Number(overview?.total_eligible_orders ?? overview?.totalEligibleOrders ?? 0)}
+            </div>
+          </div>
+          <div className="adm-kpi-footer">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.73rem', color: '#64748b' }}>
+              <FileText size={13} color="#3b82f6" />
+              <span>Orders with uplines</span>
+            </span>
+            <span style={{ color: '#3b82f6', fontWeight: 800, fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+              ● Verified
+            </span>
+          </div>
+        </div>
+
+        {/* Card 6: Installment Payouts */}
+        <div className="adm-kpi-card adm-kpi-card-purple">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <span
+                style={{
+                  fontSize: '0.66rem',
+                  fontWeight: 800,
+                  color: '#7c3aed',
+                  background: 'rgba(124, 58, 237, 0.1)',
+                  padding: '2.5px 8px',
+                  borderRadius: '5px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                  display: 'inline-block',
+                  marginBottom: '0.35rem',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                ● PAYOUT EVENTS
+              </span>
+              <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                INSTALLMENT PAYOUTS
+              </div>
+            </div>
+            <div className="adm-3d-pod adm-pod-purple" style={{ width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0 }}>
+              <Layers size={19} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
+            <div className="adm-kpi-val" style={{ fontSize: '1.6rem', color: '#7c3aed' }}>
+              {loadingOverview ? '—' : Number(overview?.total_distributions_count ?? overview?.totalDistributionsCount ?? 0)}
+            </div>
+          </div>
+          <div className="adm-kpi-footer">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.73rem', color: '#64748b' }}>
+              <Layers size={13} color="#7c3aed" />
+              <span>level_incomes ledger</span>
+            </span>
+            <span style={{ color: '#7c3aed', fontWeight: 800, fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+              ● Processed
+            </span>
+          </div>
+        </div>
+
+        {/* Card 7: Beneficiary Uplines */}
+        <div className="adm-kpi-card adm-kpi-card-indigo">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <span
+                style={{
+                  fontSize: '0.66rem',
+                  fontWeight: 800,
+                  color: '#0891b2',
+                  background: 'rgba(8, 145, 178, 0.1)',
+                  padding: '2.5px 8px',
+                  borderRadius: '5px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                  display: 'inline-block',
+                  marginBottom: '0.35rem',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                ● ACTIVE BENEFICIARIES
+              </span>
+              <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                BENEFICIARY UPLINES
+              </div>
+            </div>
+            <div className="adm-3d-pod adm-pod-indigo" style={{ width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0 }}>
+              <Users size={19} strokeWidth={2.4} color="#0891b2" />
+            </div>
+          </div>
+          <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
+            <div className="adm-kpi-val" style={{ fontSize: '1.6rem', color: '#0891b2' }}>
+              {loadingOverview ? '—' : Number(overview?.total_beneficiaries_count ?? overview?.totalBeneficiariesCount ?? 0)}
+            </div>
+          </div>
+          <div className="adm-kpi-footer">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.73rem', color: '#64748b' }}>
+              <Users size={13} color="#0891b2" />
+              <span>total_level_incomes</span>
+            </span>
+            <span style={{ color: '#0891b2', fontWeight: 800, fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+              ● Qualified
+            </span>
+          </div>
+        </div>
+
+        {/* Card 8: Completion Rate */}
+        <div className="adm-kpi-card adm-kpi-card-emerald">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <span
+                style={{
+                  fontSize: '0.66rem',
+                  fontWeight: 800,
+                  color: '#10b981',
+                  background: 'rgba(16, 185, 129, 0.1)',
+                  padding: '2.5px 8px',
+                  borderRadius: '5px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                  display: 'inline-block',
+                  marginBottom: '0.35rem',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                ● SETTLEMENT VELOCITY
+              </span>
+              <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#475569', letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                COMPLETION RATE
+              </div>
+            </div>
+            <div className="adm-3d-pod adm-pod-emerald" style={{ width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0 }}>
+              <Award size={19} strokeWidth={2.4} />
+            </div>
+          </div>
+          <div style={{ margin: '0.65rem 0 0.35rem 0' }}>
+            <div className="adm-kpi-val" style={{ fontSize: '1.6rem', color: '#10b981' }}>
+              {loadingOverview ? '—' : `${Number(overview?.completion_percentage ?? overview?.completionPercentage ?? 0)}%`}
+            </div>
+          </div>
+          <div className="adm-kpi-footer">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.73rem', color: '#64748b' }}>
+              <Award size={13} color="#10b981" />
+              <span>Distributed / Expected</span>
+            </span>
+            <span style={{ color: '#10b981', fontWeight: 800, fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+              ● Real-time
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* 5. Executive Platform Four-Way Cross-Reconciliation Vault */}
       <div
         style={{
-          backgroundColor: '#ffffff',
-          border: '1px solid #e2e8f0',
-          borderRadius: '14px',
-          padding: '1.25rem',
-          marginBottom: '1.25rem',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '1rem',
+          background: isPlatformReconciled
+            ? 'linear-gradient(135deg, rgba(240, 253, 244, 0.95) 0%, rgba(240, 253, 250, 0.85) 100%)'
+            : 'linear-gradient(135deg, rgba(254, 242, 242, 0.95) 0%, rgba(255, 241, 242, 0.85) 100%)',
+          border: `1.5px solid ${isPlatformReconciled ? '#86efac' : '#fca5a5'}`,
+          borderRadius: '16px',
+          padding: '1.35rem',
+          boxShadow: '0 4px 18px rgba(0,0,0,0.03)',
         }}
       >
-        {/* Row 1: Search & Level Filter */}
-        <div className="pro-income-filter-grid-row1">
-          {/* Keyword Search */}
-          <div style={{ position: 'relative' }}>
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#94a3b8"
-              strokeWidth="2"
-              style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.85rem', marginBottom: '1.1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+            <div
+              style={{
+                width: '44px',
+                height: '44px',
+                borderRadius: '12px',
+                background: isPlatformReconciled
+                  ? 'linear-gradient(135deg, #059669 0%, #047857 100%)'
+                  : 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
+                color: '#ffffff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: isPlatformReconciled ? '0 4px 12px rgba(5, 150, 105, 0.25)' : '0 4px 12px rgba(220, 38, 38, 0.25)',
+                flexShrink: 0,
+              }}
             >
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
+              {isPlatformReconciled ? <ShieldCheck size={24} strokeWidth={2.4} /> : <AlertTriangle size={24} strokeWidth={2.4} />}
+            </div>
+            <div>
+              <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                Multi-Level Cross-Reconciliation Health
+              </div>
+              <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '0.15rem' }}>
+                Synchronized audit across <code>total_level_incomes</code>, <code>level_incomes</code> installments, and wallet transfer credits.
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            <span
+              style={{
+                padding: '0.4rem 0.95rem',
+                borderRadius: '8px',
+                fontSize: '0.82rem',
+                fontWeight: 800,
+                background: isPlatformReconciled ? '#dcfce7' : '#fee2e2',
+                color: isPlatformReconciled ? '#15803d' : '#b91c1c',
+                border: `1px solid ${isPlatformReconciled ? '#bbf7d0' : '#fca5a5'}`,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.45rem',
+              }}
+            >
+              {isPlatformReconciled ? <CheckCircle2 size={15} color="#15803d" /> : <AlertTriangle size={15} color="#b91c1c" />}
+              <span>{overview?.reconciliation_status || (isPlatformReconciled ? 'Reconciled' : 'Discrepancy')}</span>
+            </span>
+          </div>
+        </div>
+
+        {/* 4 Layers Grid */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '0.85rem',
+            marginBottom: '0.85rem',
+          }}
+        >
+          {/* Layer 1 */}
+          <div style={{ background: '#ffffff', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
+            <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+              1. total_level_incomes (Paid)
+            </div>
+            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', marginTop: '0.25rem' }}>
+              {formatCurrency(overview?.ledger_totals?.total_level_incomes_paid ?? overview?.total_distributed_level_income ?? 0)}
+            </div>
+          </div>
+
+          {/* Layer 2 */}
+          <div style={{ background: '#ffffff', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
+            <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+              2. level_incomes (Installments)
+            </div>
+            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', marginTop: '0.25rem' }}>
+              {formatCurrency(overview?.ledger_totals?.level_incomes_installments ?? overview?.total_distributed_level_income ?? 0)}
+            </div>
+          </div>
+
+          {/* Layer 3 */}
+          <div style={{ background: '#ffffff', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
+            <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+              3. Wallet Transfer Credits
+            </div>
+            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', marginTop: '0.25rem' }}>
+              {formatCurrency(overview?.ledger_totals?.wallet_transfers_level ?? overview?.total_distributed_level_income ?? 0)}
+            </div>
+          </div>
+
+          {/* Variance */}
+          <div style={{ background: '#ffffff', padding: '0.85rem 1rem', borderRadius: '12px', border: `1.5px solid ${isPlatformReconciled ? '#86efac' : '#fca5a5'}`, boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
+            <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+              Platform Variance
+            </div>
+            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: isPlatformReconciled ? '#059669' : '#dc2626', marginTop: '0.25rem' }}>
+              {formatCurrency(overview?.reconciliation_difference ?? overview?.reconciliationDifference ?? 0)}
+            </div>
+          </div>
+        </div>
+
+        <div style={{ fontSize: '0.8rem', color: isPlatformReconciled ? '#15803d' : '#991b1b', display: 'flex', alignItems: 'center', gap: '0.45rem', fontWeight: 600 }}>
+          <span>{isPlatformReconciled ? '✓' : '⚠️'}</span>
+          <span>{overview?.reconciliation_message || (isPlatformReconciled ? 'All multi-level financial records are mathematically balanced with ₹0.00 platform variance.' : `Variance of ₹${overview?.reconciliation_difference} detected.`)}</span>
+        </div>
+      </div>
+
+      {/* 6. Executive Search & Filter Toolbar (Unified Single-Row) */}
+      <div className="adm-toolbar-card">
+        <div className="adm-toolbar-filters">
+          {/* Status Tabs */}
+          <div style={{ display: 'inline-flex', background: '#f1f5f9', padding: '3px', borderRadius: '10px', border: '1px solid #e2e8f0', flexShrink: 0 }}>
+            {[
+              { id: 'all', label: 'All Records' },
+              { id: 'completed', label: '✓ Completed' },
+              { id: 'partial', label: '⏳ Partial' },
+              { id: 'pending', label: '⚠️ Pending' },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => {
+                  setStatusFilter(tab.id);
+                  setCurrentPage(1);
+                }}
+                style={{
+                  padding: '0.4rem 0.95rem',
+                  borderRadius: '7px',
+                  border: 'none',
+                  fontSize: '0.78rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  background: statusFilter === tab.id ? '#ffffff' : 'transparent',
+                  color: statusFilter === tab.id ? '#0f172a' : '#64748b',
+                  boxShadow: statusFilter === tab.id ? '0 1px 4px rgba(0,0,0,0.06)' : 'none',
+                  transition: 'all 0.15s ease',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Level Filter Dropdown */}
+          <select
+            value={levelFilter}
+            onChange={(e) => {
+              setLevelFilter(e.target.value);
+              setCurrentPage(1);
+            }}
+            style={{
+              padding: '0.5rem 0.85rem',
+              borderRadius: '10px',
+              border: '1.5px solid #e2e8f0',
+              fontSize: '0.8rem',
+              fontWeight: 700,
+              color: '#334155',
+              background: '#ffffff',
+              outline: 'none',
+              cursor: 'pointer',
+              flexShrink: 0,
+            }}
+          >
+            <option value="all">All Levels (L2 – L5)</option>
+            <option value="2">Level 2 Tier</option>
+            <option value="3">Level 3 Tier</option>
+            <option value="4">Level 4 Tier</option>
+            <option value="5">Level 5 Tier</option>
+          </select>
+
+          {/* Entity Type Dropdown */}
+          <select
+            value={entityTypeFilter}
+            onChange={(e) => {
+              setEntityTypeFilter(e.target.value);
+              setCurrentPage(1);
+            }}
+            style={{
+              padding: '0.5rem 0.85rem',
+              borderRadius: '10px',
+              border: '1.5px solid #e2e8f0',
+              fontSize: '0.8rem',
+              fontWeight: 700,
+              color: '#334155',
+              background: '#ffffff',
+              outline: 'none',
+              cursor: 'pointer',
+              flexShrink: 0,
+            }}
+          >
+            <option value="all">All Entity Types</option>
+            <option value="business">Registered Business</option>
+            <option value="freelancer">Freelancer Expert</option>
+          </select>
+
+          {/* Search Box */}
+          <div style={{ position: 'relative', minWidth: '260px', flex: 1 }}>
+            <Search size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
             <input
               type="text"
               placeholder="Search by Invoice #, Order ID, Buyer Member ID, Beneficiary Member ID, Entity..."
@@ -586,95 +1014,103 @@ function AdminLevelIncomePage() {
               onChange={(e) => setSearch(e.target.value)}
               style={{
                 width: '100%',
-                padding: '0.65rem 1rem 0.65rem 2.5rem',
-                border: '1px solid #cbd5e1',
-                borderRadius: '8px',
-                fontSize: '0.875rem',
+                padding: '0.52rem 0.85rem 0.52rem 2.25rem',
+                borderRadius: '10px',
+                border: '1.5px solid #e2e8f0',
+                fontSize: '0.82rem',
                 outline: 'none',
+                backgroundColor: '#ffffff',
+                boxSizing: 'border-box',
               }}
+              onFocus={(e) => (e.target.style.borderColor = '#7c3aed')}
+              onBlur={(e) => (e.target.style.borderColor = '#e2e8f0')}
             />
           </div>
 
-          {/* Level Filter */}
-          <div>
-            <select
-              value={levelFilter}
-              onChange={(e) => {
-                setLevelFilter(e.target.value);
-                setCurrentPage(1);
-              }}
-              style={{
-                width: '100%',
-                padding: '0.65rem 1rem',
-                border: '1px solid #cbd5e1',
-                borderRadius: '8px',
-                fontSize: '0.875rem',
-                outline: 'none',
-                backgroundColor: '#ffffff',
-              }}
-            >
-              <option value="all">All Levels (L2 - L5)</option>
-              <option value="2">Level 2</option>
-              <option value="3">Level 3</option>
-              <option value="4">Level 4</option>
-              <option value="5">Level 5</option>
-            </select>
-          </div>
+          {/* Advanced Filters Toggle */}
+          <button
+            type="button"
+            onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+            style={{
+              padding: '0.45rem 0.85rem',
+              borderRadius: '8px',
+              border: `1px solid ${showAdvancedFilters ? '#7c3aed' : '#cbd5e1'}`,
+              background: showAdvancedFilters ? '#ede9fe' : '#ffffff',
+              color: showAdvancedFilters ? '#7c3aed' : '#475569',
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              flexShrink: 0,
+            }}
+          >
+            <Filter size={13} />
+            <span>Dates &amp; Sorting</span>
+          </button>
 
-          {/* Status Filter */}
-          <div>
-            <select
-              value={statusFilter}
-              onChange={(e) => {
-                setStatusFilter(e.target.value);
-                setCurrentPage(1);
-              }}
+          {(search || levelFilter !== 'all' || statusFilter !== 'all' || entityTypeFilter !== 'all' || startDate || endDate) && (
+            <button
+              type="button"
+              onClick={handleResetFilters}
               style={{
-                width: '100%',
-                padding: '0.65rem 1rem',
-                border: '1px solid #cbd5e1',
+                padding: '0.45rem 0.85rem',
                 borderRadius: '8px',
-                fontSize: '0.875rem',
-                outline: 'none',
-                backgroundColor: '#ffffff',
+                border: '1px solid #cbd5e1',
+                background: '#ffffff',
+                color: '#64748b',
+                fontSize: '0.78rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                flexShrink: 0,
               }}
             >
-              <option value="all">All Distribution Statuses</option>
-              <option value="completed">Completed (Fully Paid)</option>
-              <option value="partial">Partial</option>
-              <option value="pending">Pending</option>
-            </select>
-          </div>
+              <RotateCcw size={13} />
+              <span>Reset</span>
+            </button>
+          )}
         </div>
 
-        {/* Row 2: Secondary Filters & Date Range */}
-        <div className="pro-income-filter-grid-row2">
-          {/* Entity Type */}
-          <div>
-            <select
-              value={entityTypeFilter}
-              onChange={(e) => {
-                setEntityTypeFilter(e.target.value);
-                setCurrentPage(1);
-              }}
-              style={{
-                width: '100%',
-                padding: '0.6rem 0.85rem',
-                border: '1px solid #cbd5e1',
-                borderRadius: '8px',
-                fontSize: '0.85rem',
-                outline: 'none',
-                backgroundColor: '#ffffff',
-              }}
-            >
-              <option value="all">All Entity Types</option>
-              <option value="business">Business</option>
-              <option value="individual">Individual</option>
-            </select>
-          </div>
+        <div className="adm-toolbar-actions">
+          <span
+            style={{
+              fontSize: '0.78rem',
+              color: '#334155',
+              background: '#f8fafc',
+              border: '1px solid #e2e8f0',
+              padding: '0.45rem 0.9rem',
+              borderRadius: '8px',
+              fontWeight: 800,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            ● {pagination.total} Level Records Ledger
+          </span>
+        </div>
+      </div>
 
-          {/* Start Date */}
+      {/* Advanced Filters Dropdown Panel */}
+      {showAdvancedFilters && (
+        <div
+          style={{
+            background: '#ffffff',
+            border: '1.5px solid #e2e8f0',
+            borderRadius: '14px',
+            padding: '1rem 1.25rem',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+            gap: '0.85rem',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.02)',
+          }}
+        >
           <div>
+            <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: '0.3rem' }}>
+              From Date
+            </label>
             <input
               type="date"
               value={startDate}
@@ -682,20 +1118,14 @@ function AdminLevelIncomePage() {
                 setStartDate(e.target.value);
                 setCurrentPage(1);
               }}
-              title="Start Date"
-              style={{
-                width: '100%',
-                padding: '0.6rem 0.85rem',
-                border: '1px solid #cbd5e1',
-                borderRadius: '8px',
-                fontSize: '0.85rem',
-                outline: 'none',
-              }}
+              style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '8px', border: '1.5px solid #e2e8f0', fontSize: '0.8rem' }}
             />
           </div>
 
-          {/* End Date */}
           <div>
+            <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: '0.3rem' }}>
+              To Date
+            </label>
             <input
               type="date"
               value={endDate}
@@ -703,425 +1133,476 @@ function AdminLevelIncomePage() {
                 setEndDate(e.target.value);
                 setCurrentPage(1);
               }}
-              title="End Date"
-              style={{
-                width: '100%',
-                padding: '0.6rem 0.85rem',
-                border: '1px solid #cbd5e1',
-                borderRadius: '8px',
-                fontSize: '0.85rem',
-                outline: 'none',
-              }}
+              style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '8px', border: '1.5px solid #e2e8f0', fontSize: '0.8rem' }}
             />
           </div>
 
-          {/* Reset Filters Button */}
           <div>
-            <button
-              onClick={handleResetFilters}
-              style={{
-                width: '100%',
-                padding: '0.6rem 0.85rem',
-                backgroundColor: '#f1f5f9',
-                border: '1px solid #cbd5e1',
-                borderRadius: '8px',
-                fontSize: '0.85rem',
-                fontWeight: 600,
-                color: '#475569',
-                cursor: 'pointer',
-              }}
+            <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: '0.3rem' }}>
+              Sort Metric
+            </label>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '8px', border: '1.5px solid #e2e8f0', fontSize: '0.8rem', background: '#ffffff', fontWeight: 700 }}
             >
-              Reset Filters
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Table Card */}
-      <div
-        className="pro-orders-table-wrapper table-responsive"
-        style={{
-          backgroundColor: '#ffffff',
-          border: '1px solid #e2e8f0',
-          borderRadius: '16px',
-          overflow: 'hidden',
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.03)',
-          marginBottom: '1.5rem',
-        }}
-      >
-        <div
-          style={{
-            padding: '1rem 1.5rem',
-            backgroundColor: '#f8fafc',
-            borderBottom: '1px solid #e2e8f0',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: '0.5rem',
-          }}
-        >
-          <div style={{ fontWeight: 800, fontSize: '1rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span>Level Income Records Ledger</span>
-            <span
-              style={{
-                fontSize: '0.75rem',
-                fontWeight: 700,
-                padding: '0.15rem 0.5rem',
-                borderRadius: '9999px',
-                backgroundColor: '#ede9fe',
-                color: '#6d28d9',
-              }}
-            >
-              {pagination.total} records
-            </span>
+              <option value="created_at">Latest Record Date</option>
+              <option value="order_id">Order ID</option>
+              <option value="invoice_number">Invoice Number</option>
+              <option value="level">Level Tier</option>
+              <option value="total_amount">Highest Expected</option>
+              <option value="paid_amount">Highest Distributed</option>
+              <option value="balance_amount">Highest Pending</option>
+            </select>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Per page:</span>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: '0.3rem' }}>
+              Sort Direction
+            </label>
+            <select
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+              style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '8px', border: '1.5px solid #e2e8f0', fontSize: '0.8rem', background: '#ffffff', fontWeight: 700 }}
+            >
+              <option value="desc">Descending (High to Low)</option>
+              <option value="asc">Ascending (Low to High)</option>
+            </select>
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: '0.3rem' }}>
+              Records Per Page
+            </label>
             <select
               value={perPage}
               onChange={(e) => {
                 setPerPage(Number(e.target.value));
                 setCurrentPage(1);
               }}
-              style={{
-                padding: '0.35rem 0.65rem',
-                border: '1px solid #cbd5e1',
-                borderRadius: '6px',
-                fontSize: '0.8rem',
-                backgroundColor: '#ffffff',
-                outline: 'none',
-              }}
+              style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '8px', border: '1.5px solid #e2e8f0', fontSize: '0.8rem', background: '#ffffff', fontWeight: 700 }}
             >
-              <option value={10}>10</option>
-              <option value={20}>20</option>
-              <option value={50}>50</option>
-              <option value={100}>100</option>
+              <option value={10}>10 records</option>
+              <option value={20}>20 records</option>
+              <option value={50}>50 records</option>
+              <option value={100}>100 records</option>
             </select>
           </div>
         </div>
+      )}
 
-        {/* Table Content */}
-        <div className="table-responsive-inner" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-          <table className="pro-orders-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem', minWidth: '1100px' }}>
-            <thead>
-              <tr style={{ backgroundColor: '#f1f5f9', color: '#475569', borderBottom: '1px solid #e2e8f0' }}>
-                <th style={{ padding: '0.85rem 1.25rem', fontWeight: 700 }}>Order & Invoice</th>
-                <th style={{ padding: '0.85rem 1.25rem', fontWeight: 700 }}>Date</th>
-                <th style={{ padding: '0.85rem 1.25rem', fontWeight: 700 }}>Entity</th>
-                <th style={{ padding: '0.85rem 1.25rem', fontWeight: 700 }}>Buyer Member</th>
-                <th style={{ padding: '0.85rem 1.25rem', fontWeight: 700 }}>Beneficiary</th>
-                <th style={{ padding: '0.85rem 1.25rem', fontWeight: 700, textAlign: 'center' }}>Level</th>
-                <th style={{ padding: '0.85rem 1.25rem', fontWeight: 700, textAlign: 'right' }}>Total Level</th>
-                <th style={{ padding: '0.85rem 1.25rem', fontWeight: 700, textAlign: 'right' }}>Paid</th>
-                <th style={{ padding: '0.85rem 1.25rem', fontWeight: 700, textAlign: 'right' }}>Balance</th>
-                <th style={{ padding: '0.85rem 1.25rem', fontWeight: 700, textAlign: 'center' }}>Status</th>
-                <th style={{ padding: '0.85rem 1.25rem', fontWeight: 700, textAlign: 'center' }}>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loadingOrders ? (
-                <tr>
-                  <td colSpan="11" style={{ padding: '3.5rem 1rem', textAlign: 'center' }}>
-                    <div
-                      style={{
-                        display: 'inline-block',
-                        width: '32px',
-                        height: '32px',
-                        border: '3px solid #ede9fe',
-                        borderTopColor: '#7c3aed',
-                        borderRadius: '50%',
-                        animation: 'spin 0.8s linear infinite',
-                      }}
-                    />
-                    <p style={{ marginTop: '0.75rem', color: '#64748b', fontSize: '0.875rem' }}>
-                      Loading level income ledger...
-                    </p>
-                  </td>
+      {/* 7. Luxury Level Income Data Table Card */}
+      <div className="adm-table-card">
+        {ordersError && (
+          <div style={{ padding: '2.5rem', textAlign: 'center', color: '#dc2626' }}>
+            <AlertTriangle size={32} style={{ margin: '0 auto 0.5rem auto' }} />
+            <div style={{ fontWeight: 800, fontSize: '1rem' }}>{ordersError}</div>
+            <button
+              type="button"
+              onClick={loadOrders}
+              style={{
+                marginTop: '0.75rem',
+                padding: '0.5rem 1.25rem',
+                borderRadius: '8px',
+                background: '#dc2626',
+                color: '#fff',
+                border: 'none',
+                cursor: 'pointer',
+                fontWeight: 700,
+                fontSize: '0.82rem',
+              }}
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
+        {loadingOrders && (
+          <div style={{ padding: '4rem 1rem', textAlign: 'center', color: '#64748b' }}>
+            <div style={{ display: 'inline-block', width: '32px', height: '32px', border: '3px solid #cbd5e1', borderTopColor: '#7c3aed', borderRadius: '50%', animation: 'spin 0.8s linear infinite', marginBottom: '0.75rem' }}></div>
+            <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#0f172a' }}>Loading Level Income Ledger...</div>
+            <div style={{ fontSize: '0.78rem', color: '#94a3b8', marginTop: '0.2rem' }}>Cross-reconciling total_level_incomes &amp; level_incomes...</div>
+          </div>
+        )}
+
+        {!loadingOrders && !ordersError && (
+          <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', minWidth: '1550px' }}>
+              <thead>
+                <tr
+                  style={{
+                    background: 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)',
+                    borderBottom: '1px solid #0f172a',
+                    color: '#f8fafc',
+                    textAlign: 'left',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  <th style={{ padding: '0.85rem 1rem', fontSize: '0.74rem', fontWeight: 800, letterSpacing: '0.04em' }}>ORDER &amp; INVOICE</th>
+                  <th style={{ padding: '0.85rem 1rem', fontSize: '0.74rem', fontWeight: 800, letterSpacing: '0.04em' }}>ORDER DATE</th>
+                  <th style={{ padding: '0.85rem 1rem', fontSize: '0.74rem', fontWeight: 800, letterSpacing: '0.04em' }}>SELLER ENTITY</th>
+                  <th style={{ padding: '0.85rem 1rem', fontSize: '0.74rem', fontWeight: 800, letterSpacing: '0.04em' }}>BUYER MEMBER</th>
+                  <th style={{ padding: '0.85rem 1rem', fontSize: '0.74rem', fontWeight: 800, letterSpacing: '0.04em' }}>BENEFICIARY UPLINE</th>
+                  <th style={{ padding: '0.85rem 1rem', fontSize: '0.74rem', fontWeight: 800, letterSpacing: '0.04em', textAlign: 'center' }}>LEVEL TIER</th>
+                  <th style={{ padding: '0.85rem 1rem', fontSize: '0.74rem', fontWeight: 800, letterSpacing: '0.04em', textAlign: 'right', color: '#93c5fd' }}>TOTAL LEVEL</th>
+                  <th style={{ padding: '0.85rem 1rem', fontSize: '0.74rem', fontWeight: 800, letterSpacing: '0.04em', textAlign: 'right', color: '#34d399' }}>PAID (DISTRIBUTED)</th>
+                  <th style={{ padding: '0.85rem 1rem', fontSize: '0.74rem', fontWeight: 800, letterSpacing: '0.04em', textAlign: 'right', color: '#fcd34d' }}>BALANCE DUE</th>
+                  <th style={{ padding: '0.85rem 1rem', fontSize: '0.74rem', fontWeight: 800, letterSpacing: '0.04em', textAlign: 'right', color: '#94a3b8' }}>DUMP</th>
+                  <th style={{ padding: '0.85rem 1rem', fontSize: '0.74rem', fontWeight: 800, letterSpacing: '0.04em', textAlign: 'center' }}>INSTALLMENTS</th>
+                  <th style={{ padding: '0.85rem 1rem', fontSize: '0.74rem', fontWeight: 800, letterSpacing: '0.04em', textAlign: 'center' }}>STATUS</th>
+                  <th style={{ padding: '0.85rem 1rem', fontSize: '0.74rem', fontWeight: 800, letterSpacing: '0.04em', textAlign: 'center' }}>RECONCILIATION</th>
+                  <th style={{ padding: '0.85rem 1rem', fontSize: '0.74rem', fontWeight: 800, letterSpacing: '0.04em', textAlign: 'center' }}>ACTIONS</th>
                 </tr>
-              ) : ordersError ? (
-                <tr>
-                  <td colSpan="11" style={{ padding: '2.5rem 1rem', textAlign: 'center', color: '#dc2626' }}>
-                    <p style={{ margin: 0, fontWeight: 600 }}>{ordersError}</p>
-                    <button
-                      onClick={loadOrders}
-                      style={{
-                        marginTop: '0.75rem',
-                        backgroundColor: '#dc2626',
-                        color: '#ffffff',
-                        border: 'none',
-                        padding: '0.4rem 1rem',
-                        borderRadius: '6px',
-                        cursor: 'pointer',
-                        fontSize: '0.8rem',
-                      }}
-                    >
-                      Retry
-                    </button>
-                  </td>
-                </tr>
-              ) : orders.length === 0 ? (
-                <tr>
-                  <td colSpan="11" style={{ padding: '3.5rem 1rem', textAlign: 'center', color: '#64748b' }}>
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="1.5" style={{ margin: '0 auto 0.75rem' }}>
-                      <polygon points="12 2 2 7 12 12 22 7 12 2" />
-                      <polyline points="2 17 12 22 22 17" />
-                      <polyline points="2 12 12 17 22 12" />
-                    </svg>
-                    <p style={{ margin: 0, fontWeight: 700, color: '#334155' }}>No Level Income records found</p>
-                    <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.8rem' }}>
-                      Try adjusting your search criteria, level filter, or date range.
-                    </p>
-                  </td>
-                </tr>
-              ) : (
-                orders.map((row) => (
-                  <tr
-                    key={row.id}
-                    onClick={() => navigate(`/income/level-orders/${row.order_id || row.id}`)}
-                    style={{
-                      borderBottom: '1px solid #f1f5f9',
-                      transition: 'background-color 0.15s ease',
-                      cursor: 'pointer',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#f8fafc';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                    }}
-                  >
-                    {/* Order & Invoice */}
-                    <td style={{ padding: '0.9rem 1.25rem' }}>
-                      <div style={{ fontWeight: 800, color: '#0f172a' }}>
-                        {row.invoice_number || `Order #${row.order_id}`}
+              </thead>
+              <tbody>
+                {orders.length === 0 ? (
+                  <tr>
+                    <td colSpan={14} style={{ padding: '4.5rem 1rem', textAlign: 'center', color: '#64748b' }}>
+                      <div style={{ fontSize: '2.4rem', marginBottom: '0.5rem' }}>📦</div>
+                      <div style={{ fontWeight: 800, fontSize: '1rem', color: '#0f172a' }}>No Level Income Records Found</div>
+                      <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '0.35rem' }}>
+                        Try clearing search queries or adjusting level and date filter parameters.
                       </div>
-                      <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.15rem' }}>
-                        Order ID: #{row.order_id}
-                      </div>
-                    </td>
-
-                    {/* Date */}
-                    <td style={{ padding: '0.9rem 1.25rem', whiteSpace: 'nowrap', color: '#475569', fontSize: '0.82rem' }}>
-                      {formatDate(row.order?.date || row.created_at)}
-                    </td>
-
-                    {/* Entity */}
-                    <td style={{ padding: '0.9rem 1.25rem' }}>
-                      <div style={{ fontWeight: 700, color: '#0f172a' }}>{row.order?.entity_name || 'N/A'}</div>
-                      <div style={{ fontSize: '0.75rem', color: '#64748b', textTransform: 'capitalize' }}>
-                        {row.order?.entity_type || 'business'}
-                      </div>
-                    </td>
-
-                    {/* Buyer Member */}
-                    <td style={{ padding: '0.9rem 1.25rem' }}>
-                      <div style={{ fontWeight: 700, color: '#0f172a' }}>
-                        {row.buyer?.name || row.level_id || 'N/A'}
-                      </div>
-                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                        Member ID: <strong>{row.buyer?.user_code || row.level_id}</strong>
-                      </div>
-                    </td>
-
-                    {/* Beneficiary Upline */}
-                    <td style={{ padding: '0.9rem 1.25rem' }}>
-                      <div style={{ fontWeight: 700, color: '#0f172a' }}>
-                        {row.beneficiary?.name || row.user_code || 'N/A'}
-                      </div>
-                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                        Member ID: <strong>{row.beneficiary?.user_code || row.user_code}</strong>
-                      </div>
-                    </td>
-
-                    {/* Level Badge */}
-                    <td style={{ padding: '0.9rem 1.25rem', textAlign: 'center' }}>
-                      <span
-                        style={{
-                          display: 'inline-block',
-                          padding: '0.25rem 0.65rem',
-                          borderRadius: '6px',
-                          fontSize: '0.78rem',
-                          fontWeight: 800,
-                          backgroundColor:
-                            row.level === 2
-                              ? '#ede9fe'
-                              : row.level === 3
-                              ? '#e0e7ff'
-                              : row.level === 4
-                              ? '#e0f2fe'
-                              : '#fef3c7',
-                          color:
-                            row.level === 2
-                              ? '#6d28d9'
-                              : row.level === 3
-                              ? '#4338ca'
-                              : row.level === 4
-                              ? '#0369a1'
-                              : '#b45309',
-                        }}
-                      >
-                        {row.level_label || `Level ${row.level}`}
-                      </span>
-                    </td>
-
-                    {/* Total Level Expected */}
-                    <td style={{ padding: '0.9rem 1.25rem', textAlign: 'right', fontWeight: 800, color: '#0f172a' }}>
-                      ₹{Number(row.total_amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                    </td>
-
-                    {/* Paid */}
-                    <td style={{ padding: '0.9rem 1.25rem', textAlign: 'right', fontWeight: 800, color: '#10b981' }}>
-                      ₹{Number(row.paid_amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                    </td>
-
-                    {/* Balance */}
-                    <td style={{ padding: '0.9rem 1.25rem', textAlign: 'right', fontWeight: 800, color: row.balance_amount > 0 ? '#f59e0b' : '#64748b' }}>
-                      ₹{Number(row.balance_amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                    </td>
-
-                    {/* Status */}
-                    <td style={{ padding: '0.9rem 1.25rem', textAlign: 'center' }}>
-                      <span
-                        style={{
-                          display: 'inline-block',
-                          padding: '0.25rem 0.65rem',
-                          borderRadius: '6px',
-                          fontSize: '0.75rem',
-                          fontWeight: 700,
-                          textTransform: 'capitalize',
-                          backgroundColor:
-                            row.status === 'completed'
-                              ? '#dcfce7'
-                              : row.status === 'partial'
-                              ? '#fef3c7'
-                              : '#fee2e2',
-                          color:
-                            row.status === 'completed'
-                              ? '#166534'
-                              : row.status === 'partial'
-                              ? '#b45309'
-                              : '#991b1b',
-                        }}
-                      >
-                        {row.status}
-                      </span>
-                    </td>
-
-                    {/* Action Button */}
-                    <td style={{ padding: '0.75rem 0.85rem', textAlign: 'center' }}>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/income/level-orders/${row.order_id || row.id}`);
-                        }}
-                        style={{
-                          padding: '0.35rem 0.65rem',
-                          borderRadius: '6px',
-                          background: '#ede9fe',
-                          color: '#6d28d9',
-                          border: '1px solid #ddd6fe',
-                          fontWeight: 600,
-                          fontSize: '0.75rem',
-                          cursor: 'pointer',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '0.35rem',
-                          whiteSpace: 'nowrap',
-                          transition: 'all 0.15s ease',
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = '#7c3aed';
-                          e.currentTarget.style.color = '#ffffff';
-                          e.currentTarget.style.borderColor = '#7c3aed';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = '#ede9fe';
-                          e.currentTarget.style.color = '#6d28d9';
-                          e.currentTarget.style.borderColor = '#ddd6fe';
-                        }}
-                      >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                          <circle cx="12" cy="12" r="3" />
-                        </svg>
-                        View Details
-                      </button>
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                ) : (
+                  orders.map((o) => (
+                    <tr
+                      key={o.id}
+                      className="adm-table-row"
+                      style={{ borderBottom: '1px solid #f1f5f9', whiteSpace: 'nowrap', cursor: 'pointer' }}
+                      onClick={() => navigate(`/income/level-orders/${o.order_id || o.id}`)}
+                    >
+                      {/* Order & Invoice */}
+                      <td style={{ padding: '0.85rem 1rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                          <span className="adm-code-chip" style={{ color: '#0f172a', fontWeight: 800 }}>
+                            #{o.order_id || o.id}
+                          </span>
+                          <span
+                            style={{
+                              fontWeight: 800,
+                              color: '#7c3aed',
+                              background: '#f5f3ff',
+                              padding: '2px 7px',
+                              borderRadius: '6px',
+                              border: '1px solid #ddd6fe',
+                              fontSize: '0.76rem',
+                            }}
+                          >
+                            {o.invoice_number || '—'}
+                          </span>
+                        </div>
+                      </td>
 
-        {/* Pagination Footer */}
-        {pagination.last_page > 1 && (
+                      {/* Order Date */}
+                      <td style={{ padding: '0.85rem 1rem', color: '#64748b', fontSize: '0.8rem' }}>
+                        {formatDate(o.order?.date || o.created_at)}
+                      </td>
+
+                      {/* Seller Entity */}
+                      <td style={{ padding: '0.85rem 1rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                          <Building2 size={14} color="#64748b" />
+                          <span style={{ fontWeight: 700, color: '#0f172a' }}>{o.order?.entity_name || 'N/A'}</span>
+                        </div>
+                        <span
+                          style={{
+                            fontSize: '0.68rem',
+                            padding: '1px 6px',
+                            borderRadius: '4px',
+                            background: '#f1f5f9',
+                            color: '#475569',
+                            textTransform: 'capitalize',
+                            fontWeight: 600,
+                          }}
+                        >
+                          {o.order?.entity_type || 'Business'}
+                        </span>
+                      </td>
+
+                      {/* Buyer Member */}
+                      <td style={{ padding: '0.85rem 1rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                          <div
+                            style={{
+                              width: '24px',
+                              height: '24px',
+                              borderRadius: '50%',
+                              background: '#e0e7ff',
+                              color: '#4338ca',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontSize: '0.7rem',
+                              fontWeight: 800,
+                            }}
+                          >
+                            {(o.buyer?.name || 'B')[0].toUpperCase()}
+                          </div>
+                          <div>
+                            <div style={{ fontWeight: 700, color: '#0f172a' }}>{o.buyer?.name || 'Member'}</div>
+                            <span style={{ fontSize: '0.72rem', color: '#2563eb', fontWeight: 700 }}>
+                              {o.buyer?.user_code || '—'}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Beneficiary Upline */}
+                      <td style={{ padding: '0.85rem 1rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                          <div
+                            style={{
+                              width: '24px',
+                              height: '24px',
+                              borderRadius: '50%',
+                              background: '#ede9fe',
+                              color: '#6d28d9',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontSize: '0.7rem',
+                              fontWeight: 800,
+                            }}
+                          >
+                            {(o.beneficiary?.name || 'U')[0].toUpperCase()}
+                          </div>
+                          <div>
+                            <div style={{ fontWeight: 700, color: '#0f172a' }}>{o.beneficiary?.name || 'Upline'}</div>
+                            <span style={{ fontSize: '0.72rem', color: '#7c3aed', fontWeight: 700 }}>
+                              {o.beneficiary?.user_code || o.user_code || '—'}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Level Tier */}
+                      <td style={{ padding: '0.85rem 1rem', textAlign: 'center' }}>
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            padding: '0.25rem 0.65rem',
+                            borderRadius: '6px',
+                            fontSize: '0.78rem',
+                            fontWeight: 800,
+                            backgroundColor: '#ede9fe',
+                            color: '#6d28d9',
+                            border: '1px solid #ddd6fe',
+                          }}
+                        >
+                          {o.level_label || `Level ${o.level}`}
+                        </span>
+                      </td>
+
+                      {/* Total Expected */}
+                      <td style={{ padding: '0.85rem 1rem', textAlign: 'right', fontWeight: 800, color: '#0f172a' }}>
+                        {formatCurrency(o.total_amount)}
+                      </td>
+
+                      {/* Paid */}
+                      <td style={{ padding: '0.85rem 1rem', textAlign: 'right', fontWeight: 800, color: '#059669' }}>
+                        {formatCurrency(o.paid_amount)}
+                      </td>
+
+                      {/* Balance */}
+                      <td style={{ padding: '0.85rem 1rem', textAlign: 'right', fontWeight: 800, color: o.balance_amount > 0 ? '#d97706' : '#64748b' }}>
+                        {formatCurrency(o.balance_amount)}
+                      </td>
+
+                      {/* Dump */}
+                      <td style={{ padding: '0.85rem 1rem', textAlign: 'right', color: '#64748b' }}>
+                        {formatCurrency(o.dump_amount)}
+                      </td>
+
+                      {/* Installments Count */}
+                      <td style={{ padding: '0.85rem 1rem', textAlign: 'center' }}>
+                        <span
+                          style={{
+                            fontSize: '0.74rem',
+                            fontWeight: 700,
+                            padding: '2px 8px',
+                            borderRadius: '6px',
+                            background: '#f1f5f9',
+                            color: '#334155',
+                            border: '1px solid #cbd5e1',
+                          }}
+                        >
+                          {o.distribution_count || 1} Payouts
+                        </span>
+                      </td>
+
+                      {/* Status */}
+                      <td style={{ padding: '0.85rem 1rem', textAlign: 'center' }}>
+                        <span
+                          style={{
+                            ...getBadgeStyle(o.status || o.distribution_status),
+                            fontSize: '0.74rem',
+                            fontWeight: 800,
+                            padding: '3px 8px',
+                            borderRadius: '6px',
+                            textTransform: 'capitalize',
+                          }}
+                        >
+                          {o.status || o.distribution_status || 'Pending'}
+                        </span>
+                      </td>
+
+                      {/* Reconciliation */}
+                      <td style={{ padding: '0.85rem 1rem', textAlign: 'center' }}>
+                        <span
+                          style={{
+                            fontSize: '0.72rem',
+                            fontWeight: 800,
+                            padding: '3px 8px',
+                            borderRadius: '6px',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.3rem',
+                            background: 'rgba(5, 150, 105, 0.08)',
+                            color: '#047857',
+                            border: '1px solid rgba(5, 150, 105, 0.25)',
+                          }}
+                        >
+                          <CheckCircle2 size={12} strokeWidth={2.6} />
+                          <span>Reconciled</span>
+                        </span>
+                      </td>
+
+                      {/* Actions */}
+                      <td style={{ padding: '0.85rem 1rem', textAlign: 'center' }}>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/income/level-orders/${o.order_id || o.id}`);
+                          }}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.35rem',
+                            padding: '0.42rem 0.85rem',
+                            background: '#ffffff',
+                            color: '#7c3aed',
+                            border: '1.5px solid #ddd6fe',
+                            borderRadius: '8px',
+                            fontSize: '0.78rem',
+                            fontWeight: 800,
+                            cursor: 'pointer',
+                            boxShadow: '0 1px 3px rgba(124, 58, 237, 0.08)',
+                            transition: 'all 0.15s ease',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = '#7c3aed';
+                            e.currentTarget.style.color = '#ffffff';
+                            e.currentTarget.style.borderColor = '#7c3aed';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = '#ffffff';
+                            e.currentTarget.style.color = '#7c3aed';
+                            e.currentTarget.style.borderColor = '#ddd6fe';
+                          }}
+                        >
+                          <span>Details</span>
+                          <ArrowRight size={13} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* 8. Luxury Pagination Bar */}
+        {!loadingOrders && !ordersError && pagination.total > 0 && (
           <div
-            className="pro-orders-pagination-bar"
             style={{
-              padding: '1rem 1.5rem',
-              backgroundColor: '#f8fafc',
-              borderTop: '1px solid #e2e8f0',
+              padding: '1rem 1.25rem',
               display: 'flex',
-              alignItems: 'center',
               justifyContent: 'space-between',
+              alignItems: 'center',
               flexWrap: 'wrap',
               gap: '0.75rem',
+              borderTop: '1px solid #f1f5f9',
+              background: '#f8fafc',
             }}
           >
-            <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
-              Showing page <strong>{pagination.current_page}</strong> of <strong>{pagination.last_page}</strong> ({pagination.total} records)
-            </span>
+            <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>
+              Showing{' '}
+              <strong style={{ color: '#0f172a' }}>
+                {(pagination.current_page - 1) * pagination.per_page + 1}
+              </strong>{' '}
+              to{' '}
+              <strong style={{ color: '#0f172a' }}>
+                {Math.min(pagination.current_page * pagination.per_page, pagination.total)}
+              </strong>{' '}
+              of <strong style={{ color: '#0f172a' }}>{pagination.total}</strong> entries
+            </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', gap: '0.45rem', alignItems: 'center' }}>
               <button
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                type="button"
                 disabled={pagination.current_page <= 1}
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 style={{
-                  padding: '0.4rem 0.85rem',
-                  backgroundColor: '#ffffff',
+                  padding: '0.4rem 0.8rem',
+                  borderRadius: '7px',
                   border: '1px solid #cbd5e1',
-                  borderRadius: '6px',
-                  fontSize: '0.85rem',
-                  fontWeight: 600,
+                  background: pagination.current_page <= 1 ? '#f1f5f9' : '#ffffff',
                   color: pagination.current_page <= 1 ? '#94a3b8' : '#334155',
+                  fontSize: '0.78rem',
+                  fontWeight: 700,
                   cursor: pagination.current_page <= 1 ? 'not-allowed' : 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.25rem',
                 }}
               >
-                Previous
+                <ChevronLeft size={14} />
+                <span>Prev</span>
               </button>
 
-              <button
-                onClick={() => setCurrentPage((p) => Math.min(pagination.last_page, p + 1))}
-                disabled={pagination.current_page >= pagination.last_page}
+              <span
                 style={{
-                  padding: '0.4rem 0.85rem',
-                  backgroundColor: '#ffffff',
-                  border: '1px solid #cbd5e1',
-                  borderRadius: '6px',
-                  fontSize: '0.85rem',
-                  fontWeight: 600,
-                  color: pagination.current_page >= pagination.last_page ? '#94a3b8' : '#334155',
-                  cursor: pagination.current_page >= pagination.last_page ? 'not-allowed' : 'pointer',
+                  fontSize: '0.78rem',
+                  color: '#475569',
+                  fontWeight: 700,
+                  padding: '0.4rem 0.75rem',
+                  background: '#ffffff',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '7px',
                 }}
               >
-                Next
+                Page {pagination.current_page} of {pagination.last_page || 1}
+              </span>
+
+              <button
+                type="button"
+                disabled={pagination.current_page >= pagination.last_page}
+                onClick={() => setCurrentPage((p) => Math.min(pagination.last_page, p + 1))}
+                style={{
+                  padding: '0.4rem 0.8rem',
+                  borderRadius: '7px',
+                  border: '1px solid #cbd5e1',
+                  background: pagination.current_page >= pagination.last_page ? '#f1f5f9' : '#ffffff',
+                  color: pagination.current_page >= pagination.last_page ? '#94a3b8' : '#334155',
+                  fontSize: '0.78rem',
+                  fontWeight: 700,
+                  cursor: pagination.current_page >= pagination.last_page ? 'not-allowed' : 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.25rem',
+                }}
+              >
+                <span>Next</span>
+                <ChevronRight size={14} />
               </button>
             </div>
           </div>
         )}
       </div>
-
-      {/* Drill-Down Audit Modal */}
-      {selectedOrderId && (
-        <AdminLevelIncomeDetailsModal
-          orderId={selectedOrderId}
-          onClose={() => setSelectedOrderId(null)}
-        />
-      )}
     </div>
   );
 }

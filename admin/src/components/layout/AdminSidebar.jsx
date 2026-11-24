@@ -8,6 +8,7 @@ import {
   ShoppingCart,
   CreditCard,
   Coins,
+  Layers,
   Users,
   ShieldCheck,
   Wallet,
@@ -380,6 +381,7 @@ function AdminSidebar({
         <div className="menu-group">
           {!collapsed && <div className="menu-group-title">INCOME &amp; COMMISSIONS</div>}
 
+          {/* Direct Income (Order-wise) */}
           <NavLink
             to="/income/direct-orders"
             className={({ isActive }) => `menu-item ${isActive ? 'active' : ''}`}
@@ -389,6 +391,18 @@ function AdminSidebar({
               <Coins size={16} strokeWidth={2.4} />
             </div>
             {!collapsed && <span className="menu-item-label">Direct Income (Order-wise)</span>}
+          </NavLink>
+
+          {/* Level Income */}
+          <NavLink
+            to="/income/level-orders"
+            className={({ isActive }) => `menu-item ${isActive ? 'active' : ''}`}
+            style={{ textDecoration: 'none' }}
+          >
+            <div className="adm-nav-pod-3d adm-nav-pod-purple">
+              <Layers size={16} strokeWidth={2.4} />
+            </div>
+            {!collapsed && <span className="menu-item-label">Level Income</span>}
           </NavLink>
         </div>
 
