@@ -1024,7 +1024,7 @@ function AdminProductsPage() {
         </div>
       ) : (
         /* GRID CARDS VIEW */
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.4rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 320px), 1fr))', gap: '1.4rem' }}>
           {filteredProducts.map((p) => {
             const ownerName = p.owner_name || p.ownerName;
             const ownerType = p.owner_type || p.ownerType || 'business';

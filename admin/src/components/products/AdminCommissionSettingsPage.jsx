@@ -666,7 +666,7 @@ function AdminCommissionSettingsPage() {
             )}
 
             <form onSubmit={handleSubmit} noValidate>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.4rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: '1.4rem' }}>
                 {/* 1. Direct Income Box */}
                 <div
                   style={{
