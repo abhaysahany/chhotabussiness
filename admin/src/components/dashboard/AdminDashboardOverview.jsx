@@ -867,20 +867,20 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
         <div className="adm-chart-card adm-chart-card-glow" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div style={{ minWidth: 0 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.85rem', marginBottom: '1rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', minWidth: 0, flex: '1 1 220px' }}>
-                <div className="adm-3d-pod adm-pod-steel" style={{ width: '48px', height: '48px', borderRadius: '14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', minWidth: 0, flex: '1 1 180px', maxWidth: '100%' }}>
+                <div className="adm-3d-pod adm-pod-steel" style={{ width: '48px', height: '48px', borderRadius: '14px', flexShrink: 0 }}>
                   <Activity size={22} strokeWidth={2.4} />
                 </div>
                 <div style={{ minWidth: 0, flex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem' }}>
-                    <span style={{ fontSize: '0.66rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#3569a7', background: 'rgba(53, 105, 167, 0.08)', padding: '2px 8px', borderRadius: '9999px', border: '1px solid rgba(53, 105, 167, 0.2)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem', flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: '0.66rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#3569a7', background: 'rgba(53, 105, 167, 0.08)', padding: '2px 8px', borderRadius: '9999px', border: '1px solid rgba(53, 105, 167, 0.2)', maxWidth: '100%' }}>
                       ● REAL-TIME TELEMETRY
                     </span>
                   </div>
-                  <h3 style={{ margin: 0, fontSize: 'clamp(0.95rem, 3vw, 1.08rem)', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.015em', lineHeight: 1.3 }}>
+                  <h3 style={{ margin: 0, fontSize: 'clamp(0.95rem, 3vw, 1.08rem)', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.015em', lineHeight: 1.3, overflowWrap: 'anywhere' }}>
                     Enterprise Cashflow &amp; Fee Settlement Curve
                   </h3>
-                  <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.76rem', color: '#64748b', lineHeight: 1.4 }}>
+                  <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.76rem', color: '#64748b', lineHeight: 1.4, overflowWrap: 'anywhere' }}>
                     Gross merchant volume, platform cut, and commission disbursements
                   </p>
                 </div>
@@ -992,20 +992,20 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
         <div className="adm-chart-card adm-chart-card-glow" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div style={{ minWidth: 0 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', minWidth: 0, flex: '1 1 200px' }}>
-                <div className="adm-3d-pod adm-pod-emerald" style={{ width: '48px', height: '48px', borderRadius: '14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', minWidth: 0, flex: '1 1 180px', maxWidth: '100%' }}>
+                <div className="adm-3d-pod adm-pod-emerald" style={{ width: '48px', height: '48px', borderRadius: '14px', flexShrink: 0 }}>
                   <PieIcon size={22} strokeWidth={2.4} />
                 </div>
                 <div style={{ minWidth: 0, flex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem' }}>
-                    <span style={{ fontSize: '0.66rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#0d9488', background: 'rgba(13, 148, 136, 0.08)', padding: '2px 8px', borderRadius: '9999px', border: '1px solid rgba(13, 148, 136, 0.2)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem', flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: '0.66rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#0d9488', background: 'rgba(13, 148, 136, 0.08)', padding: '2px 8px', borderRadius: '9999px', border: '1px solid rgba(13, 148, 136, 0.2)', maxWidth: '100%' }}>
                       ● MULTI-VERTICAL ALLOCATION
                     </span>
                   </div>
-                  <h3 style={{ margin: 0, fontSize: 'clamp(0.95rem, 3vw, 1.08rem)', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.015em', lineHeight: 1.3 }}>
+                  <h3 style={{ margin: 0, fontSize: 'clamp(0.95rem, 3vw, 1.08rem)', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.015em', lineHeight: 1.3, overflowWrap: 'anywhere' }}>
                     Revenue Share by Offering
                   </h3>
-                  <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.76rem', color: '#64748b', lineHeight: 1.4 }}>
+                  <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.76rem', color: '#64748b', lineHeight: 1.4, overflowWrap: 'anywhere' }}>
                     Revenue contribution across services, products &amp; packages
                   </p>
                 </div>
@@ -1016,7 +1016,7 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
               </span>
             </div>
 
-            <div className="adm-apex-wrap" style={{ minHeight: '230px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div className="adm-apex-wrap" style={{ minHeight: '230px' }}>
               <Chart
                 options={polarRevenueOptions}
                 series={polarRevenueSeries}
@@ -1104,32 +1104,32 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
         <div className="adm-chart-card adm-chart-card-glow" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div style={{ minWidth: 0 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.85rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', minWidth: 0, flex: '1 1 200px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', minWidth: 0, flex: '1 1 180px', maxWidth: '100%' }}>
                 <div className="adm-3d-pod adm-pod-steel" style={{ width: '46px', height: '46px', borderRadius: '13px', flexShrink: 0 }}>
                   <Target size={22} strokeWidth={2.4} />
                 </div>
                 <div style={{ minWidth: 0, flex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.15rem' }}>
-                    <span style={{ fontSize: '0.64rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#3569a7', background: 'rgba(53, 105, 167, 0.08)', padding: '2px 7px', borderRadius: '9999px', border: '1px solid rgba(53, 105, 167, 0.2)', whiteSpace: 'nowrap' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.15rem', flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: '0.64rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#3569a7', background: 'rgba(53, 105, 167, 0.08)', padding: '2px 7px', borderRadius: '9999px', border: '1px solid rgba(53, 105, 167, 0.2)', maxWidth: '100%' }}>
                       ● REVENUE TRAJECTORY
                     </span>
                   </div>
-                  <h3 style={{ margin: 0, fontSize: 'clamp(0.94rem, 3vw, 1.02rem)', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.015em', lineHeight: 1.3 }}>
+                  <h3 style={{ margin: 0, fontSize: 'clamp(0.94rem, 3vw, 1.02rem)', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.015em', lineHeight: 1.3, overflowWrap: 'anywhere' }}>
                     Monthly Platform GMV Target
                   </h3>
-                  <p style={{ margin: '0.15rem 0 0 0', fontSize: '0.74rem', color: '#64748b', lineHeight: 1.4 }}>
+                  <p style={{ margin: '0.15rem 0 0 0', fontSize: '0.74rem', color: '#64748b', lineHeight: 1.4, overflowWrap: 'anywhere' }}>
                     Overall platform revenue trajectory toward monthly target
                   </p>
                 </div>
               </div>
 
-              <div style={{ background: '#f8fafc', border: '1.5px solid #e2e8f0', padding: '0.35rem 0.75rem', borderRadius: '10px', display: 'inline-flex', alignItems: 'center', gap: '0.45rem', whiteSpace: 'nowrap', flexShrink: 0 }}>
+              <div style={{ background: '#f8fafc', border: '1.5px solid #e2e8f0', padding: '0.35rem 0.75rem', borderRadius: '10px', display: 'inline-flex', alignItems: 'center', gap: '0.45rem', whiteSpace: 'nowrap', flexShrink: 0, maxWidth: '100%' }}>
                 <span style={{ fontSize: '0.66rem', fontWeight: 700, color: '#64748b' }}>Target:</span>
                 <span style={{ fontSize: '0.76rem', fontWeight: 800, color: '#3569a7' }}>₹65 Lakhs</span>
               </div>
             </div>
 
-            <div className="adm-apex-wrap" style={{ minHeight: '215px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0.25rem 0' }}>
+            <div className="adm-apex-wrap" style={{ minHeight: '215px', margin: '0.25rem 0' }}>
               <Chart
                 options={radialTargetOptions}
                 series={radialTargetSeries}
@@ -1183,26 +1183,26 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
         <div className="adm-chart-card adm-chart-card-glow" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div style={{ minWidth: 0 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.85rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', minWidth: 0, flex: '1 1 200px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', minWidth: 0, flex: '1 1 180px', maxWidth: '100%' }}>
                 <div className="adm-3d-pod adm-pod-emerald" style={{ width: '46px', height: '46px', borderRadius: '13px', flexShrink: 0 }}>
                   <BarChart3 size={22} strokeWidth={2.4} />
                 </div>
                 <div style={{ minWidth: 0, flex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.15rem' }}>
-                    <span style={{ fontSize: '0.64rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#0d9488', background: 'rgba(13, 148, 136, 0.08)', padding: '2px 7px', borderRadius: '9999px', border: '1px solid rgba(13, 148, 136, 0.2)', whiteSpace: 'nowrap' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.15rem', flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: '0.64rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#0d9488', background: 'rgba(13, 148, 136, 0.08)', padding: '2px 7px', borderRadius: '9999px', border: '1px solid rgba(13, 148, 136, 0.2)', maxWidth: '100%' }}>
                       ● NETWORK EXPANSION
                     </span>
                   </div>
-                  <h3 style={{ margin: 0, fontSize: 'clamp(0.94rem, 3vw, 1.02rem)', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.015em', lineHeight: 1.3 }}>
+                  <h3 style={{ margin: 0, fontSize: 'clamp(0.94rem, 3vw, 1.02rem)', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.015em', lineHeight: 1.3, overflowWrap: 'anywhere' }}>
                     Affiliate Growth &amp; KYC Velocity
                   </h3>
-                  <p style={{ margin: '0.15rem 0 0 0', fontSize: '0.74rem', color: '#64748b', lineHeight: 1.4 }}>
+                  <p style={{ margin: '0.15rem 0 0 0', fontSize: '0.74rem', color: '#64748b', lineHeight: 1.4, overflowWrap: 'anywhere' }}>
                     Daily network signups vs compliance verified accounts
                   </p>
                 </div>
               </div>
 
-              <span style={{ fontSize: '0.72rem', background: 'rgba(13, 148, 136, 0.1)', color: '#0d9488', padding: '3px 9px', borderRadius: '8px', fontWeight: 800, border: '1px solid rgba(13, 148, 136, 0.2)', whiteSpace: 'nowrap', flexShrink: 0 }}>
+              <span style={{ fontSize: '0.72rem', background: 'rgba(13, 148, 136, 0.1)', color: '#0d9488', padding: '3px 9px', borderRadius: '8px', fontWeight: 800, border: '1px solid rgba(13, 148, 136, 0.2)', whiteSpace: 'nowrap', flexShrink: 0, maxWidth: '100%' }}>
                 Weekly Velocity
               </span>
             </div>
