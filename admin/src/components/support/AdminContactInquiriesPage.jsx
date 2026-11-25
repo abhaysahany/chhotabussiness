@@ -73,8 +73,10 @@ function AdminContactInquiriesPage() {
               key={c.id}
               style={{
                 display: 'flex',
-                justify: 'space-between',
+                justifyContent: 'space-between',
                 alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '0.75rem',
                 padding: '1rem',
                 borderRadius: '8px',
                 backgroundColor: 'var(--bg-main)',
@@ -91,7 +93,7 @@ function AdminContactInquiriesPage() {
                 </p>
               </div>
 
-              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
                 <span
                   style={{
                     fontSize: '0.75rem',

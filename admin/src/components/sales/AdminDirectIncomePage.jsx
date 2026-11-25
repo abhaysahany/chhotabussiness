@@ -296,7 +296,7 @@ function AdminDirectIncomePage() {
           boxShadow: '0 4px 14px rgba(99, 102, 241, 0.05)',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, minWidth: '280px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, minWidth: 'min(100%, 280px)' }}>
           <div
             style={{
               width: '36px',
@@ -896,7 +896,7 @@ function AdminDirectIncomePage() {
           </select>
 
           {/* Search Box */}
-          <div style={{ position: 'relative', minWidth: '260px', flex: 1 }}>
+          <div style={{ position: 'relative', minWidth: 'min(100%, 260px)', flex: 1 }}>
             <Search size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
             <input
               type="text"

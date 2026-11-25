@@ -305,7 +305,7 @@ function AdminPaymentHistoryPage() {
           boxShadow: '0 4px 14px rgba(5, 150, 105, 0.05)',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, minWidth: '280px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, minWidth: 'min(100%, 280px)' }}>
           <div
             style={{
               width: '36px',
@@ -676,7 +676,7 @@ function AdminPaymentHistoryPage() {
           </div>
 
           {/* Search Input Box */}
-          <div style={{ position: 'relative', minWidth: '280px', flex: 1 }}>
+          <div style={{ position: 'relative', minWidth: 'min(100%, 280px)', flex: 1 }}>
             <Search size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
             <input
               type="text"

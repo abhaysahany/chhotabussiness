@@ -38,6 +38,13 @@ function AdminSidebar({
   const [logoFailed, setLogoFailed] = useState(false);
   const location = useLocation();
   const currentPath = location.pathname;
+  const isCollapsed = collapsed && !mobileSidebarOpen;
+
+  const handleMobileNavClick = () => {
+    if (mobileSidebarOpen && setMobileSidebarOpen) {
+      setMobileSidebarOpen(false);
+    }
+  };
 
   useEffect(() => {
     setLogoFailed(false);
@@ -64,7 +71,7 @@ function AdminSidebar({
   }, [currentPath]);
 
   return (
-    <aside className={`sidebar-container ${collapsed ? 'collapsed' : ''} ${mobileSidebarOpen ? 'mobile-open' : ''}`}>
+    <aside className={`sidebar-container ${isCollapsed ? 'collapsed' : ''} ${mobileSidebarOpen ? 'mobile-open' : ''}`}>
       {/* Sidebar Top Logo */}
       <div className="sidebar-header" style={{ borderBottom: '1px solid rgba(226, 232, 240, 0.7)' }}>
         <div className="sidebar-brand">
@@ -76,7 +83,7 @@ function AdminSidebar({
                 maxHeight: '38px',
                 height: '38px',
                 width: 'auto',
-                maxWidth: collapsed ? '44px' : '170px',
+                maxWidth: isCollapsed ? '44px' : '170px',
                 objectFit: 'contain',
                 filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.06))',
               }}
@@ -101,7 +108,7 @@ function AdminSidebar({
               >
                 V
               </div>
-              {!collapsed && (
+              {!isCollapsed && (
                 <span className="sidebar-brand-name" style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a' }}>
                   {appName || 'VyaparAdNET'}
                 </span>
@@ -151,33 +158,35 @@ function AdminSidebar({
       <div className="sidebar-menu">
         {/* MAIN GROUP */}
         <div className="menu-group">
-          {!collapsed && <div className="menu-group-title">MAIN</div>}
+          {!isCollapsed && <div className="menu-group-title">MAIN</div>}
 
           <NavLink
             to="/dashboard"
+            onClick={handleMobileNavClick}
             className={({ isActive }) => `menu-item ${isActive ? 'active' : ''}`}
             style={{ textDecoration: 'none' }}
           >
             <div className="adm-nav-pod-3d adm-nav-pod-blue">
               <LayoutDashboard size={16} strokeWidth={2.4} />
             </div>
-            {!collapsed && <span className="menu-item-label">Dashboard</span>}
+            {!isCollapsed && <span className="menu-item-label">Dashboard</span>}
           </NavLink>
         </div>
 
         {/* BUSINESS GROUP */}
         <div className="menu-group">
-          {!collapsed && <div className="menu-group-title">BUSINESS</div>}
+          {!isCollapsed && <div className="menu-group-title">BUSINESS</div>}
 
           <NavLink
             to="/entities/categories"
+            onClick={handleMobileNavClick}
             className={({ isActive }) => `menu-item ${isActive ? 'active' : ''}`}
             style={{ textDecoration: 'none' }}
           >
             <div className="adm-nav-pod-3d adm-nav-pod-emerald">
               <Grid size={16} strokeWidth={2.4} />
             </div>
-            {!collapsed && <span className="menu-item-label">Categories</span>}
+            {!isCollapsed && <span className="menu-item-label">Categories</span>}
           </NavLink>
 
           <button
@@ -191,8 +200,8 @@ function AdminSidebar({
             <div className="adm-nav-pod-3d adm-nav-pod-purple">
               <Building2 size={16} strokeWidth={2.4} />
             </div>
-            {!collapsed && <span className="menu-item-label">Business Entities</span>}
-            {!collapsed && (
+            {!isCollapsed && <span className="menu-item-label">Business Entities</span>}
+            {!isCollapsed && (
               <ChevronDown
                 size={14}
                 strokeWidth={2.4}
@@ -206,10 +215,11 @@ function AdminSidebar({
           </button>
 
           {/* Collapsible Submenu */}
-          {!collapsed && entitiesOpen && (
+          {!isCollapsed && entitiesOpen && (
             <div className="submenu-list">
               <NavLink
                 to="/entities/businesses"
+                onClick={handleMobileNavClick}
                 className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
                 style={{ textDecoration: 'none' }}
               >
@@ -217,6 +227,7 @@ function AdminSidebar({
               </NavLink>
               <NavLink
                 to="/entities/freelancers"
+                onClick={handleMobileNavClick}
                 className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
                 style={{ textDecoration: 'none' }}
               >
@@ -237,8 +248,8 @@ function AdminSidebar({
             <div className="adm-nav-pod-3d adm-nav-pod-amber">
               <Package size={16} strokeWidth={2.4} />
             </div>
-            {!collapsed && <span className="menu-item-label">Products &amp; Services</span>}
-            {!collapsed && (
+            {!isCollapsed && <span className="menu-item-label">Products &amp; Services</span>}
+            {!isCollapsed && (
               <ChevronDown
                 size={14}
                 strokeWidth={2.4}
@@ -252,10 +263,11 @@ function AdminSidebar({
           </button>
 
           {/* Products & Services Collapsible Submenu */}
-          {!collapsed && productsOpen && (
+          {!isCollapsed && productsOpen && (
             <div className="submenu-list">
               <NavLink
                 to="/products/catalog"
+                onClick={handleMobileNavClick}
                 className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
                 style={{ textDecoration: 'none' }}
               >
@@ -263,6 +275,7 @@ function AdminSidebar({
               </NavLink>
               <NavLink
                 to="/products/services"
+                onClick={handleMobileNavClick}
                 className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
                 style={{ textDecoration: 'none' }}
               >
@@ -270,6 +283,7 @@ function AdminSidebar({
               </NavLink>
               <NavLink
                 to="/products/packages"
+                onClick={handleMobileNavClick}
                 className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
                 style={{ textDecoration: 'none' }}
               >
@@ -277,6 +291,7 @@ function AdminSidebar({
               </NavLink>
               <NavLink
                 to="/products/commission-settings"
+                onClick={handleMobileNavClick}
                 className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
                 style={{ textDecoration: 'none' }}
               >
@@ -288,7 +303,7 @@ function AdminSidebar({
 
         {/* ORDERS & PAYMENTS GROUP */}
         <div className="menu-group">
-          {!collapsed && <div className="menu-group-title">ORDERS &amp; PAYMENTS</div>}
+          {!isCollapsed && <div className="menu-group-title">ORDERS &amp; PAYMENTS</div>}
 
           <button
             type="button"
@@ -298,8 +313,8 @@ function AdminSidebar({
             <div className="adm-nav-pod-3d adm-nav-pod-indigo">
               <ShoppingCart size={16} strokeWidth={2.4} />
             </div>
-            {!collapsed && <span className="menu-item-label">Order Management</span>}
-            {!collapsed && (
+            {!isCollapsed && <span className="menu-item-label">Order Management</span>}
+            {!isCollapsed && (
               <ChevronDown
                 size={14}
                 strokeWidth={2.4}
@@ -313,10 +328,11 @@ function AdminSidebar({
           </button>
 
           {/* Collapsible Submenu */}
-          {!collapsed && salesOpen && (
+          {!isCollapsed && salesOpen && (
             <div className="submenu-list">
               <NavLink
                 to="/orders/pending"
+                onClick={handleMobileNavClick}
                 className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
                 style={{ textDecoration: 'none' }}
               >
@@ -325,6 +341,7 @@ function AdminSidebar({
               <NavLink
                 to="/orders"
                 end
+                onClick={handleMobileNavClick}
                 className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
                 style={{ textDecoration: 'none' }}
               >
@@ -332,6 +349,7 @@ function AdminSidebar({
               </NavLink>
               <NavLink
                 to="/orders/dumps"
+                onClick={handleMobileNavClick}
                 className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
                 style={{ textDecoration: 'none' }}
               >
@@ -349,8 +367,8 @@ function AdminSidebar({
             <div className="adm-nav-pod-3d adm-nav-pod-teal">
               <CreditCard size={16} strokeWidth={2.4} />
             </div>
-            {!collapsed && <span className="menu-item-label">Entity Payments</span>}
-            {!collapsed && (
+            {!isCollapsed && <span className="menu-item-label">Entity Payments</span>}
+            {!isCollapsed && (
               <ChevronDown
                 size={14}
                 strokeWidth={2.4}
@@ -364,10 +382,11 @@ function AdminSidebar({
           </button>
 
           {/* Payments Submenu */}
-          {!collapsed && paymentsOpen && (
+          {!isCollapsed && paymentsOpen && (
             <div className="submenu-list">
               <NavLink
                 to="/payments/history"
+                onClick={handleMobileNavClick}
                 className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
                 style={{ textDecoration: 'none' }}
               >
@@ -379,60 +398,64 @@ function AdminSidebar({
 
         {/* INCOME & COMMISSIONS GROUP */}
         <div className="menu-group">
-          {!collapsed && <div className="menu-group-title">INCOME &amp; COMMISSIONS</div>}
+          {!isCollapsed && <div className="menu-group-title">INCOME &amp; COMMISSIONS</div>}
 
           {/* Direct Income */}
           <NavLink
             to="/income/direct-orders"
+            onClick={handleMobileNavClick}
             className={({ isActive }) => `menu-item ${isActive ? 'active' : ''}`}
             style={{ textDecoration: 'none' }}
           >
             <div className="adm-nav-pod-3d adm-nav-pod-cyan">
               <Coins size={16} strokeWidth={2.4} />
             </div>
-            {!collapsed && <span className="menu-item-label">Direct Income</span>}
+            {!isCollapsed && <span className="menu-item-label">Direct Income</span>}
           </NavLink>
 
           {/* Level Income */}
           <NavLink
             to="/income/level-orders"
+            onClick={handleMobileNavClick}
             className={({ isActive }) => `menu-item ${isActive ? 'active' : ''}`}
             style={{ textDecoration: 'none' }}
           >
             <div className="adm-nav-pod-3d adm-nav-pod-purple">
               <Layers size={16} strokeWidth={2.4} />
             </div>
-            {!collapsed && <span className="menu-item-label">Level Income</span>}
+            {!isCollapsed && <span className="menu-item-label">Level Income</span>}
           </NavLink>
         </div>
 
         {/* USER MANAGEMENT GROUP */}
         <div className="menu-group">
-          {!collapsed && <div className="menu-group-title">USER MANAGEMENT</div>}
+          {!isCollapsed && <div className="menu-group-title">USER MANAGEMENT</div>}
 
           {/* User Details */}
           <NavLink
             to="/users"
             end
+            onClick={handleMobileNavClick}
             className={({ isActive }) => `menu-item ${isActive ? 'active' : ''}`}
             style={{ textDecoration: 'none' }}
           >
             <div className="adm-nav-pod-3d adm-nav-pod-blue">
               <Users size={16} strokeWidth={2.4} />
             </div>
-            {!collapsed && <span className="menu-item-label">User Details</span>}
+            {!isCollapsed && <span className="menu-item-label">User Details</span>}
           </NavLink>
 
           {/* User KYC System */}
           <NavLink
             to="/users/kyc"
+            onClick={handleMobileNavClick}
             className={({ isActive }) => `menu-item ${isActive ? 'active' : ''}`}
             style={{ textDecoration: 'none' }}
           >
             <div className="adm-nav-pod-3d adm-nav-pod-emerald">
               <ShieldCheck size={16} strokeWidth={2.4} />
             </div>
-            {!collapsed && <span className="menu-item-label">User KYC System</span>}
+            {!isCollapsed && <span className="menu-item-label">User KYC System</span>}
           </NavLink>
 
           {/* User Payout Dropdown Tab */}
@@ -444,8 +467,8 @@ function AdminSidebar({
             <div className="adm-nav-pod-3d adm-nav-pod-amber">
               <Wallet size={16} strokeWidth={2.4} />
             </div>
-            {!collapsed && <span className="menu-item-label">User Payout</span>}
-            {!collapsed && (
+            {!isCollapsed && <span className="menu-item-label">User Payout</span>}
+            {!isCollapsed && (
               <ChevronDown
                 size={14}
                 strokeWidth={2.4}
@@ -459,10 +482,11 @@ function AdminSidebar({
           </button>
 
           {/* User Payout Collapsible Submenu */}
-          {!collapsed && userPayoutsOpen && (
+          {!isCollapsed && userPayoutsOpen && (
             <div className="submenu-list">
               <NavLink
                 to="/payouts/requests"
+                onClick={handleMobileNavClick}
                 className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
                 style={{ textDecoration: 'none' }}
               >
@@ -470,6 +494,7 @@ function AdminSidebar({
               </NavLink>
               <NavLink
                 to="/payouts/history"
+                onClick={handleMobileNavClick}
                 className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
                 style={{ textDecoration: 'none' }}
               >
@@ -477,6 +502,7 @@ function AdminSidebar({
               </NavLink>
               <NavLink
                 to="/payouts/reports"
+                onClick={handleMobileNavClick}
                 className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
                 style={{ textDecoration: 'none' }}
               >
@@ -494,8 +520,8 @@ function AdminSidebar({
             <div className="adm-nav-pod-3d adm-nav-pod-gold">
               <Award size={16} strokeWidth={2.4} />
             </div>
-            {!collapsed && <span className="menu-item-label">User Rewards</span>}
-            {!collapsed && (
+            {!isCollapsed && <span className="menu-item-label">User Rewards</span>}
+            {!isCollapsed && (
               <ChevronDown
                 size={14}
                 strokeWidth={2.4}
@@ -509,11 +535,12 @@ function AdminSidebar({
           </button>
 
           {/* User Rewards Collapsible Submenu */}
-          {!collapsed && userRewardsOpen && (
+          {!isCollapsed && userRewardsOpen && (
             <div className="submenu-list">
               <NavLink
                 to="/rewards"
                 end
+                onClick={handleMobileNavClick}
                 className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
                 style={{ textDecoration: 'none' }}
               >
@@ -521,6 +548,7 @@ function AdminSidebar({
               </NavLink>
               <NavLink
                 to="/rewards/claims"
+                onClick={handleMobileNavClick}
                 className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
                 style={{ textDecoration: 'none' }}
               >
@@ -532,44 +560,47 @@ function AdminSidebar({
 
         {/* CONTENT MANAGEMENT GROUP */}
         <div className="menu-group">
-          {!collapsed && <div className="menu-group-title">CONTENT MANAGEMENT</div>}
+          {!isCollapsed && <div className="menu-group-title">CONTENT MANAGEMENT</div>}
 
           <NavLink
             to="/content/library"
+            onClick={handleMobileNavClick}
             className={({ isActive }) => `menu-item ${isActive ? 'active' : ''}`}
             style={{ textDecoration: 'none' }}
           >
             <div className="adm-nav-pod-3d adm-nav-pod-rose">
               <Image size={16} strokeWidth={2.4} />
             </div>
-            {!collapsed && <span className="menu-item-label">Content Library</span>}
+            {!isCollapsed && <span className="menu-item-label">Content Library</span>}
           </NavLink>
 
           <NavLink
             to="/content/support"
+            onClick={handleMobileNavClick}
             className={({ isActive }) => `menu-item ${isActive ? 'active' : ''}`}
             style={{ textDecoration: 'none' }}
           >
             <div className="adm-nav-pod-3d adm-nav-pod-purple">
               <HelpCircle size={16} strokeWidth={2.4} />
             </div>
-            {!collapsed && <span className="menu-item-label">Content Support</span>}
+            {!isCollapsed && <span className="menu-item-label">Content Support</span>}
           </NavLink>
         </div>
 
         {/* SUPPORT SYSTEM GROUP */}
         <div className="menu-group">
-          {!collapsed && <div className="menu-group-title">SUPPORT SYSTEM</div>}
+          {!isCollapsed && <div className="menu-group-title">SUPPORT SYSTEM</div>}
 
           <NavLink
             to="/notifications"
+            onClick={handleMobileNavClick}
             className={({ isActive }) => `menu-item ${isActive ? 'active' : ''}`}
             style={{ textDecoration: 'none' }}
           >
             <div className="adm-nav-pod-3d adm-nav-pod-indigo">
               <Bell size={16} strokeWidth={2.4} />
             </div>
-            {!collapsed && <span className="menu-item-label">Notifications</span>}
+            {!isCollapsed && <span className="menu-item-label">Notifications</span>}
           </NavLink>
 
           <button
@@ -580,8 +611,8 @@ function AdminSidebar({
             <div className="adm-nav-pod-3d adm-nav-pod-teal">
               <LifeBuoy size={16} strokeWidth={2.4} />
             </div>
-            {!collapsed && <span className="menu-item-label">Support System</span>}
-            {!collapsed && (
+            {!isCollapsed && <span className="menu-item-label">Support System</span>}
+            {!isCollapsed && (
               <ChevronDown
                 size={14}
                 strokeWidth={2.4}
@@ -595,10 +626,11 @@ function AdminSidebar({
           </button>
 
           {/* Collapsible Dropdown Submenu */}
-          {!collapsed && supportOpen && (
+          {!isCollapsed && supportOpen && (
             <div className="submenu-list">
               <NavLink
                 to="/support/tickets"
+                onClick={handleMobileNavClick}
                 className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
                 style={{ textDecoration: 'none' }}
               >
@@ -606,6 +638,7 @@ function AdminSidebar({
               </NavLink>
               <NavLink
                 to="/support/live"
+                onClick={handleMobileNavClick}
                 className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
                 style={{ textDecoration: 'none' }}
               >
@@ -613,6 +646,7 @@ function AdminSidebar({
               </NavLink>
               <NavLink
                 to="/support/contact"
+                onClick={handleMobileNavClick}
                 className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
                 style={{ textDecoration: 'none' }}
               >
@@ -620,6 +654,7 @@ function AdminSidebar({
               </NavLink>
               <NavLink
                 to="/support/kb"
+                onClick={handleMobileNavClick}
                 className={({ isActive }) => `submenu-item ${isActive ? 'active' : ''}`}
                 style={{ textDecoration: 'none' }}
               >
@@ -631,17 +666,18 @@ function AdminSidebar({
 
         {/* SYSTEM CONFIG GROUP */}
         <div className="menu-group">
-          {!collapsed && <div className="menu-group-title">SYSTEM CONFIG</div>}
+          {!isCollapsed && <div className="menu-group-title">SYSTEM CONFIG</div>}
 
           <NavLink
             to="/settings"
+            onClick={handleMobileNavClick}
             className={({ isActive }) => `menu-item ${isActive ? 'active' : ''}`}
             style={{ textDecoration: 'none' }}
           >
             <div className="adm-nav-pod-3d adm-nav-pod-steel">
               <Settings size={16} strokeWidth={2.4} />
             </div>
-            {!collapsed && <span className="menu-item-label">Settings</span>}
+            {!isCollapsed && <span className="menu-item-label">Settings</span>}
           </NavLink>
         </div>
       </div>
@@ -651,7 +687,7 @@ function AdminSidebar({
         className="sidebar-footer"
         style={{
           marginTop: 'auto',
-          padding: collapsed ? '0.75rem 0.5rem' : '0.85rem 0.85rem',
+          padding: isCollapsed ? '0.75rem 0.5rem' : '0.85rem 0.85rem',
           borderTop: '1px solid rgba(226, 232, 240, 0.7)',
           background: 'inherit',
         }}
@@ -659,12 +695,12 @@ function AdminSidebar({
         <button
           type="button"
           onClick={onLogout}
-          title={collapsed ? 'Logout Admin Session' : ''}
+          title={isCollapsed ? 'Logout Admin Session' : ''}
           style={{
             width: '100%',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: collapsed ? 'center' : 'flex-start',
+            justifyContent: isCollapsed ? 'center' : 'flex-start',
             gap: '0.65rem',
             padding: '0.55rem 0.75rem',
             borderRadius: '12px',
@@ -694,7 +730,7 @@ function AdminSidebar({
           <div className="adm-nav-pod-3d adm-nav-pod-crimson" style={{ width: '26px', height: '26px', borderRadius: '7px' }}>
             <LogOut size={14} strokeWidth={2.4} />
           </div>
-          {!collapsed && <span>Logout Admin</span>}
+          {!isCollapsed && <span>Logout Admin</span>}
         </button>
       </div>
     </aside>

@@ -358,7 +358,7 @@ function AdminPayoutRequestsPage() {
       {/* Filter and Search Bar */}
       <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', padding: '1.25rem', marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ flex: 1, minWidth: '240px' }}>
+          <div style={{ flex: 1, minWidth: 'min(100%, 240px)' }}>
             <input
               type="text"
               placeholder="Search by Payout Code, Member Code, Name, Bank, Account #, or UPI..."

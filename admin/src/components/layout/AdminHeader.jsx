@@ -319,7 +319,7 @@ function AdminHeader({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '1.5rem',
+            padding: '1rem',
             boxSizing: 'border-box',
           }}
         >
@@ -327,9 +327,11 @@ function AdminHeader({
             style={{
               background: '#ffffff',
               borderRadius: '20px',
-              padding: '2.5rem 2rem',
+              padding: 'clamp(1.35rem, 5vw, 2.5rem) clamp(1rem, 5vw, 2rem)',
               maxWidth: '420px',
               width: '100%',
+              maxHeight: 'calc(100dvh - 2rem)',
+              overflowY: 'auto',
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
               textAlign: 'center',
               boxSizing: 'border-box',
