@@ -1452,7 +1452,7 @@ function AdminBusinessPage({ onNavigate }) {
                 </button>
               </div>
             ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '1.4rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 360px), 1fr))', gap: '1.4rem' }}>
                 {filteredBusinesses.map((biz) => {
                   const initial = biz.name.charAt(0).toUpperCase();
 

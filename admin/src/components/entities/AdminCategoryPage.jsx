@@ -588,7 +588,7 @@ function AdminCategoryPage({ onNavigate }) {
             </button>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1.4rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 340px), 1fr))', gap: '1.4rem' }}>
             {filteredCategories.map((cat) => {
               const badgeColor = cat.badge_color || '#3569a7';
 

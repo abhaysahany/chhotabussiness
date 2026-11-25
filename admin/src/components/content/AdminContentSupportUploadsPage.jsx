@@ -326,7 +326,7 @@ function AdminContentSupportUploadsPage() {
 
       {/* GRID CARDS VIEW */}
       {!loading && topics.length > 0 && (
-        <div className="admin-content-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
+        <div className="admin-content-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: '1.5rem' }}>
           {topics.map((topic) => (
             <div key={topic.id} style={{ background: '#fff', borderRadius: '14px', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 2px 10px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column' }}>
               {/* Video Thumbnail Header */}

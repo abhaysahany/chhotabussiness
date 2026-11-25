@@ -1483,7 +1483,7 @@ function AdminFreelancerPage({ onNavigate }) {
                 </button>
               </div>
             ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '1.4rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 360px), 1fr))', gap: '1.4rem' }}>
                 {filteredFreelancers.map((free) => {
                   const initial = free.name.charAt(0).toUpperCase();
 
