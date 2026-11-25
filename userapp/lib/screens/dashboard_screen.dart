@@ -230,10 +230,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final kpis = _dashboardStats?['kpis'] as Map<String, dynamic>?;
     final transactions = _dashboardStats?['recentTransactions'] as List<dynamic>? ?? [];
 
-    final String name = _user['name']?.toString() ?? 'Partner User';
-    final String userCode = _user['user_code']?.toString() ?? _user['userCode']?.toString() ?? 'CB100201';
+    final String name = _user['name']?.toString() ?? 'Member';
+    final String userCode = _user['user_code']?.toString() ?? _user['userCode']?.toString() ?? '';
     final String email = _user['email']?.toString() ?? '';
-    final String rank = _user['rank']?.toString() ?? 'Gold Executive';
+    final String rank = _user['rank']?.toString() ?? 'Member';
 
     return RefreshIndicator(
       onRefresh: _fetchDashboardData,
@@ -367,10 +367,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Expanded(
                   child: _buildKpiCard(
                     title: 'Total Earnings',
-                    value: '₹${kpis?['totalEarnings'] ?? 14500}',
+                    value: '₹${kpis?['totalEarnings'] ?? 0}',
                     icon: Icons.account_balance_wallet_rounded,
                     color: AppColors.secondary,
-                    badgeText: '+18.4%',
+                    badgeText: 'Total',
                     badgeColor: AppColors.successLight,
                     badgeTextColor: AppColors.success,
                     onTap: () => _navigateTo(DirectIncomeScreen(user: _user)),
@@ -380,7 +380,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Expanded(
                   child: _buildKpiCard(
                     title: 'Commission Wallet',
-                    value: '₹${kpis?['commissionBalance'] ?? 14500}',
+                    value: '₹${kpis?['commissionBalance'] ?? 0}',
                     icon: Icons.payments_rounded,
                     color: AppColors.primary,
                     badgeText: 'Available',
@@ -398,7 +398,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Expanded(
                   child: _buildKpiCard(
                     title: 'Direct Partners',
-                    value: '${kpis?['directMembers'] ?? 3}',
+                    value: '${kpis?['directMembers'] ?? 0}',
                     icon: Icons.person_add_alt_1_rounded,
                     color: const Color(0xFF0284C7),
                     badgeText: 'Active',
@@ -411,7 +411,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Expanded(
                   child: _buildKpiCard(
                     title: 'Total Network',
-                    value: '${kpis?['totalTeamMembers'] ?? 18}',
+                    value: '${kpis?['totalTeamMembers'] ?? 0}',
                     icon: Icons.hub_rounded,
                     color: const Color(0xFF7C3AED),
                     badgeText: 'Downlines',
@@ -556,9 +556,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // -------------------------------------------------------------
   Widget _buildNetworkHubTab() {
     final kpis = _dashboardStats?['kpis'] as Map<String, dynamic>?;
-    final directCount = kpis?['directMembers'] ?? 3;
-    final totalTeam = kpis?['totalTeamMembers'] ?? 18;
-    final userCode = _user['user_code']?.toString() ?? _user['userCode']?.toString() ?? 'CB100201';
+    final directCount = kpis?['directMembers'] ?? 0;
+    final totalTeam = kpis?['totalTeamMembers'] ?? 0;
+    final userCode = _user['user_code']?.toString() ?? _user['userCode']?.toString() ?? '';
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -1063,11 +1063,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // TAB 4: ACCOUNT & SETTINGS HUB (REVAMPED PROFILE HERO & GROUPED TILES)
   // -------------------------------------------------------------
   Widget _buildAccountHubTab() {
-    final String name = _user['name']?.toString() ?? 'Partner Account';
-    final String userCode = _user['user_code']?.toString() ?? _user['userCode']?.toString() ?? 'CB100201';
+    final String name = _user['name']?.toString() ?? 'Member';
+    final String userCode = _user['user_code']?.toString() ?? _user['userCode']?.toString() ?? '';
     final String email = _user['email']?.toString() ?? '';
-    final String rank = _user['rank']?.toString() ?? 'Gold Executive';
-    final String kycStatus = _user['kyc_status']?.toString().toLowerCase() ?? 'verified';
+    final String rank = _user['rank']?.toString() ?? 'Member';
+    final String kycStatus = _user['kyc_status']?.toString().toLowerCase() ?? 'unverified';
     final bool isKyc = kycStatus == 'verified' || kycStatus == 'approved';
 
     return SingleChildScrollView(

@@ -9,93 +9,8 @@ function AdminProductsServicesPage({ initialTab = 'products-catalog', onNavigate
   const [showAddModal, setShowAddModal] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
 
-  // Sample Product & Service Items Data
-  const [items, setItems] = useState([
-    {
-      id: 1,
-      name: 'GST Registration & Tax Filing Package',
-      type: 'service',
-      category: 'Legal & Compliance',
-      price: 2999,
-      entityType: 'business',
-      entityName: 'AddNet Tax Advisory',
-      stockOrDuration: '1 Year Subscription',
-      status: 'active',
-      salesCount: 142,
-      image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=200&auto=format&fit=crop&q=80',
-      created_at: '2026-07-10',
-    },
-    {
-      id: 2,
-      name: 'Enterprise Cloud ERP Software Suite',
-      type: 'product',
-      category: 'Software & IT',
-      price: 14999,
-      entityType: 'business',
-      entityName: 'Skyline Technologies Pvt Ltd',
-      stockOrDuration: '50 Licenses Available',
-      status: 'active',
-      salesCount: 88,
-      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=200&auto=format&fit=crop&q=80',
-      created_at: '2026-07-15',
-    },
-    {
-      id: 3,
-      name: 'UI/UX Mobile App Design Consultation',
-      type: 'service',
-      category: 'Design & Creative',
-      price: 4999,
-      entityType: 'freelancer',
-      entityName: 'Priya Patel (UI/UX Freelancer)',
-      stockOrDuration: 'Per Project Basis',
-      status: 'active',
-      salesCount: 65,
-      image: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=200&auto=format&fit=crop&q=80',
-      created_at: '2026-07-20',
-    },
-    {
-      id: 4,
-      name: 'Professional Digital Marketing Starter Kit',
-      type: 'package',
-      category: 'Marketing & SEO',
-      price: 7999,
-      entityType: 'business',
-      entityName: 'GrowthX Media Solutions',
-      stockOrDuration: 'Monthly Recurring',
-      status: 'active',
-      salesCount: 110,
-      image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=200&auto=format&fit=crop&q=80',
-      created_at: '2026-08-01',
-    },
-    {
-      id: 5,
-      name: 'Custom E-Commerce Store Setup',
-      type: 'service',
-      category: 'Software & IT',
-      price: 12499,
-      entityType: 'freelancer',
-      entityName: 'Rohan Sharma (Full Stack Dev)',
-      stockOrDuration: 'Deliver in 7 Days',
-      status: 'inactive',
-      salesCount: 24,
-      image: 'https://images.unsplash.com/photo-1556742049-0a67daf4095a?w=200&auto=format&fit=crop&q=80',
-      created_at: '2026-08-05',
-    },
-    {
-      id: 6,
-      name: 'Corporate Brand Identity & Logo Suite',
-      type: 'product',
-      category: 'Design & Creative',
-      price: 3499,
-      entityType: 'business',
-      entityName: 'PixelCraft Studio',
-      stockOrDuration: 'Unlimited Downloads',
-      status: 'active',
-      salesCount: 205,
-      image: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?w=200&auto=format&fit=crop&q=80',
-      created_at: '2026-08-10',
-    },
-  ]);
+  // Product & Service Items State (no sample records)
+  const [items, setItems] = useState([]);
 
   // Form State for Adding New Item
   const [formData, setFormData] = useState({
@@ -165,7 +80,7 @@ function AdminProductsServicesPage({ initialTab = 'products-catalog', onNavigate
       stockOrDuration: formData.stockOrDuration || 'Standard Offering',
       status: 'active',
       salesCount: 0,
-      image: formData.image || 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=200',
+      image: formData.image || '',
       created_at: getTodayIndianDateString(),
     };
 

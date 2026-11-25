@@ -9,7 +9,7 @@ function EntityPayoutTransactionsPage() {
   const entityName =
     currentEntity?.entity_details?.business_name ||
     currentEntity?.name ||
-    'Skyline Technologies Pvt Ltd';
+    '';
 
   // State Management
   const [payoutsList, setPayoutsList] = useState([]);
@@ -202,8 +202,8 @@ function EntityPayoutTransactionsPage() {
   }, [filteredPayouts]);
 
   const computedTotalBalance = useMemo(() => {
-    // Current available balance: base entity settlement balance
-    return summaryData.balance || 48500.00;
+    // Current available balance from database settlement summary
+    return Number(summaryData.balance) || 0;
   }, [summaryData.balance]);
 
   const computedTotalTds = useMemo(() => {
@@ -347,24 +347,11 @@ function EntityPayoutTransactionsPage() {
       </div>
 
       {/* Sub-Navigation Tabs Bar */}
-      <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '2px solid #e2e8f0', marginBottom: '1.5rem', overflowX: 'auto' }}>
+      <div className="ent-subtabs-bar">
         <button
           type="button"
           onClick={() => navigate('/entity/payouts/transactions')}
-          style={{
-            padding: '0.65rem 1.2rem',
-            border: 'none',
-            background: 'none',
-            borderBottom: '3px solid #505726',
-            color: '#505726',
-            fontWeight: 800,
-            fontSize: '0.88rem',
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            marginBottom: '-2px',
-          }}
+          className="ent-subtab-btn active"
         >
           <span>💳</span> Payout Transactions
           <span style={{ background: '#f4f6e8', color: '#505726', padding: '1px 6px', borderRadius: '10px', fontSize: '0.7rem', fontWeight: 800 }}>
@@ -374,27 +361,14 @@ function EntityPayoutTransactionsPage() {
         <button
           type="button"
           onClick={() => navigate('/entity/payouts/reports')}
-          style={{
-            padding: '0.65rem 1.2rem',
-            border: 'none',
-            background: 'none',
-            borderBottom: '3px solid transparent',
-            color: '#64748b',
-            fontWeight: 600,
-            fontSize: '0.88rem',
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            marginBottom: '-2px',
-          }}
+          className="ent-subtab-btn"
         >
-          <span>📈</span> Payout Reports & Analytics
+          <span>📈</span> Payout Reports &amp; Analytics
         </button>
       </div>
 
       {/* Financial Metrics Cards: TOTAL PAID | BALANCE | DUMP AMOUNT | TRANSACTIONS */}
-      <div className="stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+      <div className="stat-grid ent-stat-auto">
         {/* 1. TOTAL PAID CARD */}
         <div
           className="stat-card"
@@ -547,7 +521,7 @@ function EntityPayoutTransactionsPage() {
         </div>
 
         {/* Multi-Criteria Filters Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.85rem' }}>
+        <div className="ent-grid-auto-180">
           {/* Custom Date Range: Start Date */}
           <div>
             <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>
@@ -951,7 +925,7 @@ function EntityPayoutTransactionsPage() {
               Showing {Math.min((currentPage - 1) * itemsPerPage + 1, filteredPayouts.length)} to{' '}
               {Math.min(currentPage * itemsPerPage, filteredPayouts.length)} of {filteredPayouts.length} payouts
             </div>
-            <div style={{ display: 'flex', gap: '0.35rem' }}>
+            <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', alignItems: 'center' }}>
               <button
                 type="button"
                 disabled={currentPage === 1}
@@ -1014,33 +988,22 @@ function EntityPayoutTransactionsPage() {
       {/* Payout Slip / Receipt Modal */}
       {selectedPayout && (
         <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(15, 23, 42, 0.6)',
-            backdropFilter: 'blur(4px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 99999,
-            padding: '1rem',
-          }}
+          className="ent-modal-backdrop"
           onClick={() => setSelectedPayout(null)}
         >
           <div
+            className="ent-modal-card"
             style={{
               background: '#ffffff',
               borderRadius: '16px',
               maxWidth: '560px',
-              width: '100%',
               boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
-              overflow: 'hidden',
               border: '1px solid #e2e8f0',
             }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <div style={{ background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)', color: '#ffffff', padding: '1.25rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className="ent-modal-body" style={{ background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)', color: '#ffffff', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem' }}>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', color: '#a3e635', fontWeight: 800, textTransform: 'uppercase' }}>
                   <span>✓</span> Verified Settlement Voucher
@@ -1071,9 +1034,9 @@ function EntityPayoutTransactionsPage() {
             </div>
 
             {/* Modal Body */}
-            <div style={{ padding: '1.5rem' }}>
+            <div className="ent-modal-body">
               {/* Voucher Code & Status Banner */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', marginBottom: '1.25rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', marginBottom: '1.25rem' }}>
                 <div>
                   <span style={{ fontSize: '0.7rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>
                     Payout Reference ID
@@ -1095,7 +1058,7 @@ function EntityPayoutTransactionsPage() {
               </div>
 
               {/* Payee Details Grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '1.25rem', fontSize: '0.82rem' }}>
+              <div className="ent-grid-2" style={{ gap: '0.75rem', marginBottom: '1.25rem', fontSize: '0.82rem' }}>
                 <div>
                   <span style={{ color: '#64748b', fontSize: '0.72rem', display: 'block' }}>Beneficiary Entity</span>
                   <strong style={{ color: '#0f172a' }}>{selectedPayout.beneficiary_name || selectedPayout.beneficiaryName || entityName}</strong>
@@ -1110,10 +1073,10 @@ function EntityPayoutTransactionsPage() {
                 </div>
                 <div>
                   <span style={{ color: '#64748b', fontSize: '0.72rem', display: 'block' }}>Account / UPI Details</span>
-                  <strong style={{ color: '#0f172a' }}>{selectedPayout.account_number || selectedPayout.accountNumber || selectedPayout.upi_id || selectedPayout.upiId}</strong>
+                  <strong style={{ color: '#0f172a', wordBreak: 'break-all' }}>{selectedPayout.account_number || selectedPayout.accountNumber || selectedPayout.upi_id || selectedPayout.upiId}</strong>
                 </div>
                 {selectedPayout.utr_number && (
-                  <div style={{ gridColumn: 'span 2', background: '#eff6ff', padding: '0.5rem 0.75rem', borderRadius: '6px', border: '1px solid #bfdbfe' }}>
+                  <div className="ent-grid-span-2" style={{ background: '#eff6ff', padding: '0.5rem 0.75rem', borderRadius: '6px', border: '1px solid #bfdbfe' }}>
                     <span style={{ color: '#1e40af', fontSize: '0.72rem', display: 'block', fontWeight: 700 }}>Bank Reference / UTR Number:</span>
                     <span style={{ fontFamily: 'monospace', fontWeight: 800, color: '#1e3a8a', fontSize: '0.88rem' }}>
                       {selectedPayout.utr_number || selectedPayout.utrNumber}
@@ -1149,7 +1112,7 @@ function EntityPayoutTransactionsPage() {
               </div>
 
               {/* Action Buttons */}
-              <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+              <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
                 <button
                   type="button"
                   onClick={() => {

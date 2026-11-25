@@ -39,20 +39,20 @@ function AdminContactInquiriesPage() {
       <div className="status-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.25rem', marginBottom: '1.5rem' }}>
         <div className="card" style={{ padding: '1.25rem' }}>
           <h4 style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>📞 TOLL-FREE HELPLINE</h4>
-          <div className="metric-value" style={{ fontSize: '1.15rem' }}>1800-123-4567</div>
-          <p className="metric-desc">Mon - Sat: 9:00 AM - 8:00 PM IST</p>
+          <div className="metric-value" style={{ fontSize: '1.15rem', color: '#64748b' }}>Not Configured</div>
+          <p className="metric-desc">Configure helpline number in database settings</p>
         </div>
 
         <div className="card" style={{ padding: '1.25rem' }}>
           <h4 style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>✉️ OFFICIAL SUPPORT EMAIL</h4>
-          <div className="metric-value" style={{ fontSize: '1.15rem' }}>support@addnet.com</div>
-          <p className="metric-desc">Auto-ticket conversion active</p>
+          <div className="metric-value" style={{ fontSize: '1.15rem', color: '#64748b' }}>Not Configured</div>
+          <p className="metric-desc">Uses database support ticket routing</p>
         </div>
 
         <div className="card" style={{ padding: '1.25rem' }}>
           <h4 style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>💬 WHATSAPP DESK</h4>
-          <div className="metric-value" style={{ fontSize: '1.15rem' }}>+91 98765 00000</div>
-          <p className="metric-desc">Instant bot & agent assistance</p>
+          <div className="metric-value" style={{ fontSize: '1.15rem', color: '#64748b' }}>Not Configured</div>
+          <p className="metric-desc">Configure desk number in database settings</p>
         </div>
       </div>
 

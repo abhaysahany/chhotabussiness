@@ -90,7 +90,7 @@ class BusinessEntityController extends Controller
             'address' => $request->address,
             'registration_no' => $request->registration_no,
             'description' => $request->description,
-            'logo_url' => $request->logo_url ?? 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=200&auto=format&fit=crop&q=60',
+            'logo_url' => $request->logo_url ?: null,
             'website' => $request->website,
             'verification_status' => $request->verification_status ?? 'verified',
             'featured' => $request->has('featured') ? (bool)$request->featured : true,

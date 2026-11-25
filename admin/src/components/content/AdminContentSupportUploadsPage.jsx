@@ -331,7 +331,9 @@ function AdminContentSupportUploadsPage() {
             <div key={topic.id} style={{ background: '#fff', borderRadius: '14px', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 2px 10px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column' }}>
               {/* Video Thumbnail Header */}
               <div style={{ height: '175px', backgroundColor: '#0f172a', position: 'relative', overflow: 'hidden', cursor: 'pointer' }} onClick={() => setInspectingTopic(topic)}>
-                <img src={topic.thumbnail || 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500'} alt={topic.title} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }} />
+                {topic.thumbnail ? (
+                  <img src={topic.thumbnail} alt={topic.title} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }} onError={(e) => { e.target.style.display = 'none'; }} />
+                ) : null}
                 <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(239, 68, 68, 0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.4rem', boxShadow: '0 4px 14px rgba(0,0,0,0.4)' }}>
                     ▶

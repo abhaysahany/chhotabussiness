@@ -281,7 +281,7 @@ function AdminBusinessPage({ onNavigate }) {
       ...form,
       documents: [
         ...form.documents,
-        { title: 'Additional Business Document', file_name: 'doc_file.pdf', url: 'https://via.placeholder.com/400x300?text=Uploaded+Doc', status: 'verified' },
+        { title: 'Additional Business Document', file_name: '', url: '', status: 'pending' },
       ],
     });
   };
@@ -734,7 +734,7 @@ function AdminBusinessPage({ onNavigate }) {
                       type="button"
                       onClick={() => setForm({
                         ...form,
-                        documents: [...form.documents, { title: 'GST Registration Certificate', file_name: 'gst_certificate.pdf', url: 'https://via.placeholder.com/400x300?text=GST+Certificate', status: 'verified' }]
+                        documents: [...form.documents, { title: 'GST Registration Certificate', file_name: '', url: '', status: 'pending' }]
                       })}
                       style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '6px', padding: '0.3rem 0.65rem', fontSize: '0.73rem', fontWeight: 700, color: '#3569a7', cursor: 'pointer' }}
                     >
@@ -744,7 +744,7 @@ function AdminBusinessPage({ onNavigate }) {
                       type="button"
                       onClick={() => setForm({
                         ...form,
-                        documents: [...form.documents, { title: 'Incorporation Document Proof', file_name: 'incorporation_doc.pdf', url: 'https://via.placeholder.com/400x300?text=Incorporation+Doc', status: 'verified' }]
+                        documents: [...form.documents, { title: 'Incorporation Document Proof', file_name: '', url: '', status: 'pending' }]
                       })}
                       style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '6px', padding: '0.3rem 0.65rem', fontSize: '0.73rem', fontWeight: 700, color: '#0d9488', cursor: 'pointer' }}
                     >

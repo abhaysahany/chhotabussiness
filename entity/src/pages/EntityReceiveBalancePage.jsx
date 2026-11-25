@@ -8,7 +8,7 @@ function EntityReceiveBalancePage() {
   const entityName =
     currentEntity?.entity_details?.business_name ||
     currentEntity?.name ||
-    'Skyline Technologies Pvt Ltd';
+    '';
 
   const [salesList, setSalesList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -257,71 +257,32 @@ function EntityReceiveBalancePage() {
       </div>
 
       {/* Navigation Sub-Tabs Bar */}
-      <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '2px solid #e2e8f0', marginBottom: '1.5rem', overflowX: 'auto' }}>
+      <div className="ent-subtabs-bar">
         <button
           type="button"
           onClick={() => navigate('/entity/payments/receive-balance')}
-          style={{
-            padding: '0.65rem 1.2rem',
-            border: 'none',
-            background: 'none',
-            borderBottom: '3px solid #636B2F',
-            color: '#636B2F',
-            fontWeight: 800,
-            fontSize: '0.88rem',
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            marginBottom: '-2px',
-          }}
+          className="ent-subtab-btn active"
         >
           <span>💳</span> Receive Balance Payments ({pendingBalanceSales.length})
         </button>
         <button
           type="button"
           onClick={() => navigate('/entity/payments/receipts-ledger')}
-          style={{
-            padding: '0.65rem 1.2rem',
-            border: 'none',
-            background: 'none',
-            borderBottom: '3px solid transparent',
-            color: '#64748b',
-            fontWeight: 600,
-            fontSize: '0.88rem',
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            marginBottom: '-2px',
-          }}
+          className="ent-subtab-btn"
         >
-          <span>🧾</span> Payment Receipts & Commission Ledger
+          <span>🧾</span> Payment Receipts &amp; Commission Ledger
         </button>
         <button
           type="button"
           onClick={() => navigate('/entity/payments/bank-settlements')}
-          style={{
-            padding: '0.65rem 1.2rem',
-            border: 'none',
-            background: 'none',
-            borderBottom: '3px solid transparent',
-            color: '#64748b',
-            fontWeight: 600,
-            fontSize: '0.88rem',
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            marginBottom: '-2px',
-          }}
+          className="ent-subtab-btn"
         >
-          <span>🏦</span> Bank Settlements & Payouts
+          <span>🏦</span> Bank Settlements &amp; Payouts
         </button>
       </div>
 
       {/* KPI Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+      <div className="ent-grid-auto-220" style={{ marginBottom: '1.5rem' }}>
         <div className="stat-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem', borderLeft: '4px solid #d97706' }}>
           <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>PENDING CLIENT BALANCES</div>
           <div style={{ fontSize: '1.45rem', fontWeight: 800, color: totalOutstandingBalance > 0 ? '#d97706' : '#16a34a', marginTop: '0.35rem' }}>
@@ -365,7 +326,7 @@ function EntityReceiveBalancePage() {
 
       {/* Filter & Search Bar */}
       <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', padding: '1rem', marginBottom: '1.5rem', display: 'flex', gap: '0.75rem', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' }}>
-        <div style={{ flex: 1, minWidth: '240px' }}>
+        <div style={{ flex: '1 1 220px', minWidth: 0 }}>
           <input
             type="text"
             placeholder="Search by Invoice #, Customer Name, Member ID, or Offering..."
@@ -387,7 +348,7 @@ function EntityReceiveBalancePage() {
 
       {/* Pending Balances Table */}
       <div className="content-card" style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', overflow: 'hidden', padding: 0 }}>
-        <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid #e2e8f0', background: '#fafaf9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid #e2e8f0', background: '#fafaf9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
           <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700, color: '#0f172a' }}>
             Active Projects with Pending Balance Due
           </h3>
@@ -517,31 +478,13 @@ function EntityReceiveBalancePage() {
 
       {/* Modal: Receive Balance Payment */}
       {selectedSaleForPayment && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(15, 23, 42, 0.75)',
-            backdropFilter: 'blur(4px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 99999,
-            padding: '1rem',
-          }}
-        >
+        <div className="ent-modal-backdrop">
           <div
+            className="ent-modal-card ent-modal-card-padded"
             style={{
               background: '#ffffff',
               borderRadius: '16px',
-              width: '100%',
               maxWidth: '560px',
-              maxHeight: '90vh',
-              overflowY: 'auto',
-              padding: '2rem',
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
             }}
           >
@@ -594,7 +537,7 @@ function EntityReceiveBalancePage() {
                     required
                     style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.95rem', fontWeight: 700 }}
                   />
-                  <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.35rem' }}>
+                  <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.35rem', flexWrap: 'wrap' }}>
                     <button
                       type="button"
                       onClick={() => setPaymentAmount(Number(selectedSaleForPayment.balanceDue ?? selectedSaleForPayment.balance_due ?? 0))}
@@ -612,7 +555,7 @@ function EntityReceiveBalancePage() {
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div className="ent-grid-2" style={{ gap: '0.75rem' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#334155', marginBottom: '0.35rem' }}>
                       Payment Method
@@ -667,12 +610,12 @@ function EntityReceiveBalancePage() {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                 <button
                   type="button"
                   onClick={() => setSelectedSaleForPayment(null)}
                   disabled={isProcessing}
-                  style={{ flex: 1, padding: '0.65rem 1rem', background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', borderRadius: '8px', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer' }}
+                  style={{ flex: '1 1 120px', padding: '0.65rem 1rem', background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', borderRadius: '8px', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer' }}
                 >
                   Cancel
                 </button>
@@ -680,7 +623,7 @@ function EntityReceiveBalancePage() {
                   type="submit"
                   disabled={isProcessing}
                   style={{
-                    flex: 2,
+                    flex: '2 1 180px',
                     padding: '0.65rem 1rem',
                     background: isProcessing ? '#94a3b8' : '#636B2F',
                     color: '#ffffff',
@@ -701,31 +644,13 @@ function EntityReceiveBalancePage() {
 
       {/* Modal: Report Dump Payment Request */}
       {selectedSaleForDump && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(15, 23, 42, 0.75)',
-            backdropFilter: 'blur(4px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 99999,
-            padding: '1rem',
-          }}
-        >
+        <div className="ent-modal-backdrop">
           <div
+            className="ent-modal-card ent-modal-card-padded"
             style={{
               background: '#ffffff',
               borderRadius: '16px',
-              width: '100%',
               maxWidth: '560px',
-              maxHeight: '90vh',
-              overflowY: 'auto',
-              padding: '2rem',
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
             }}
           >
@@ -791,7 +716,7 @@ function EntityReceiveBalancePage() {
                     placeholder="Enter uncollectible amount"
                     style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.95rem', fontWeight: 700 }}
                   />
-                  <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.35rem' }}>
+                  <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.35rem', flexWrap: 'wrap' }}>
                     <button
                       type="button"
                       onClick={() => setDumpAmount(String(Number(selectedSaleForDump.balanceDue ?? selectedSaleForDump.balance_due ?? 0)))}
@@ -830,12 +755,12 @@ function EntityReceiveBalancePage() {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                 <button
                   type="button"
                   onClick={() => setSelectedSaleForDump(null)}
                   disabled={submittingDump}
-                  style={{ flex: 1, padding: '0.65rem 1rem', background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', borderRadius: '8px', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer' }}
+                  style={{ flex: '1 1 120px', padding: '0.65rem 1rem', background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', borderRadius: '8px', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer' }}
                 >
                   Cancel
                 </button>
@@ -843,7 +768,7 @@ function EntityReceiveBalancePage() {
                   type="submit"
                   disabled={submittingDump}
                   style={{
-                    flex: 2,
+                    flex: '2 1 180px',
                     padding: '0.65rem 1rem',
                     background: submittingDump ? '#94a3b8' : '#e11d48',
                     color: '#ffffff',

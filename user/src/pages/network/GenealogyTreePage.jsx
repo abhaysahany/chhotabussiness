@@ -479,7 +479,8 @@ function GenealogyTreePage({ user, onNavigate }) {
               border: '1.5px solid #E2E8F0',
               borderRadius: '12px',
               padding: '0.45rem 0.85rem',
-              minWidth: '260px',
+              minWidth: 'min(100%, 240px)',
+              flex: '1 1 220px',
             }}
           >
             <Search size={15} color="#94A3B8" style={{ marginRight: '0.5rem', flexShrink: 0 }} />

@@ -51,13 +51,13 @@ function LiveHelpdesk({ user }) {
       const lower = text.toLowerCase();
 
       if (lower.includes('payout') || lower.includes('withdrawal') || lower.includes('pending')) {
-        botReplyText = "Bank withdrawals are processed in automated NEFT batches every 2 hours. Your current account status is Active and verified for IMPS settlements.";
+        botReplyText = "Please check the Payouts » Current Payouts or Payout History page in your portal to view your live database withdrawal status.";
       } else if (lower.includes('kyc') || lower.includes('approval') || lower.includes('document')) {
-        botReplyText = "Your KYC documents (Aadhaar & PAN) are 100% Approved and Verified in our compliance ledger.";
+        botReplyText = `Your current KYC status in the database is: ${(user?.kyc_status || 'unverified').toUpperCase()}. Please visit Profile » KYC Verification for details or document uploads.`;
       } else if (lower.includes('human') || lower.includes('agent') || lower.includes('speak')) {
         botReplyText = "To speak with a support specialist or track an issue, please submit an official Support Ticket via the Support Tickets menu. Our team responds during active business hours.";
       } else if (lower.includes('binary') || lower.includes('matching') || lower.includes('commission')) {
-        botReplyText = "Binary level matching bonus is calculated at 10% on the balanced business volume (BV) between your left and right leg team structure.";
+        botReplyText = "Commission rates are configured by Admin in real time. Please check Direct Income and Level Income pages for your database-calculated commission statements.";
       }
 
       setMessages((prev) => [

@@ -70,7 +70,7 @@ function WhyChooseUsSection() {
         </div>
 
         {/* 6 Feature Cards Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.75rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '1.75rem' }}>
           {features.map((feat, idx) => (
             <div key={idx} className="cb-card" style={{ padding: '2rem' }}>
               <div

@@ -20,7 +20,7 @@ import { generateQRSvg, downloadQRPng } from '../../utils/qrCode';
 import './network.css';
 
 function ReferralLinkPage({ user }) {
-  const userCode = user?.user_code || user?.custom_user_id || user?.user_id || user?.sponsor_id || 'CB100001';
+  const userCode = user?.user_code || user?.custom_user_id || user?.user_id || '';
   const baseUrl = window.location.origin || 'http://localhost:5174';
   const defaultLink = `${baseUrl}/register?ref=${userCode}`;
 

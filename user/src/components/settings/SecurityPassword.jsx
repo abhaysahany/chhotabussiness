@@ -37,20 +37,12 @@ function SecurityPassword({ user }) {
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [activeSessions, setActiveSessions] = useState([
     {
-      id: 'session-1',
-      device: 'Windows 11 • Chrome 124',
+      id: 'session-current',
+      device: typeof navigator !== 'undefined' ? (navigator.platform || 'Current Browser Session') : 'Current Browser Session',
       type: 'desktop',
-      location: 'Mumbai, India • IP: 103.21.124.5',
+      location: 'Authenticated Session',
       time: 'Active Now',
       isCurrent: true,
-    },
-    {
-      id: 'session-2',
-      device: 'Android App • Samsung Galaxy S23',
-      type: 'mobile',
-      location: 'Mumbai, India • IP: 103.21.124.5',
-      time: 'Last active 2 hours ago',
-      isCurrent: false,
     },
   ]);
 
@@ -168,9 +160,9 @@ function SecurityPassword({ user }) {
 
         <div className="van-security-hero-right">
           <div className="van-security-stat-pod">
-            <span className="van-security-stat-lbl">Security Score</span>
+            <span className="van-security-stat-lbl">Account Protection</span>
             <span className="van-security-stat-val" style={{ color: '#34D399' }}>
-              <Sparkles size={16} /> 95% Optimal
+              <Sparkles size={16} /> Active
             </span>
           </div>
           <div className="van-security-stat-pod">

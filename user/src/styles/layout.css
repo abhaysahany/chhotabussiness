@@ -56,11 +56,31 @@
   min-height: 64px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  gap: 0.5rem;
   padding: 0 0.75rem;
   background-color: var(--van-bg-card);
   border-bottom: 1px solid var(--van-border-subtle);
   flex-shrink: 0;
+}
+
+.sidebar-mobile-close-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--van-border-subtle);
+  background: var(--van-bg-surface);
+  color: var(--van-text-secondary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.sidebar-mobile-close-btn:hover {
+  background: #e2e8f0;
+  color: var(--van-brand-navy);
 }
 
 .van-sidebar-brand {

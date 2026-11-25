@@ -5,17 +5,25 @@ import DataTable from '../common/DataTable';
 
 function TeamCommission({ user }) {
   const [teamMembers, setTeamMembers] = useState([]);
+  const [levelStats, setLevelStats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedLevel, setSelectedLevel] = useState('all');
 
-  const userCode = user?.user_code || 'CB100001';
+  const userCode = user?.user_code || '';
 
   const fetchTeam = async () => {
+    if (!userCode) {
+      setTeamMembers([]);
+      setLevelStats([]);
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
       const res = await getTeamConnections({ user_code: userCode });
       if (res && res.status === 'success') {
         setTeamMembers(res.teamMembers || []);
+        setLevelStats(res.levelStats || []);
       }
     } catch (err) {
       console.error('Error fetching database team commissions:', err);
@@ -28,10 +36,12 @@ function TeamCommission({ user }) {
     fetchTeam();
   }, [user]);
 
-  // Aggregate real 10-Level breakdown from database records
+  // Aggregate real 10-Level breakdown from database records & configured rates
   const levelLogs = useMemo(() => {
-    const rate = 2.0; // 2% equal rate across 10 levels
     return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((lvl) => {
+      const stat = levelStats.find((s) => Number(s.level) === lvl);
+      const rateStr = stat?.commissionRate || '0%';
+      const rate = parseFloat(String(rateStr).replace('%', '')) || 0;
       const membersInLevel = teamMembers.filter((m) => Number(m.level) === lvl);
       const volume = membersInLevel.reduce(
         (sum, m) => sum + (Number(m.groupPv || m.groupBv || m.personalPv) || 0),
@@ -49,7 +59,7 @@ function TeamCommission({ user }) {
         status: membersInLevel.length > 0 ? 'Credited' : 'Active',
       };
     });
-  }, [teamMembers]);
+  }, [teamMembers, levelStats]);
 
   const totalTeamEarned = useMemo(() => {
     return levelLogs.reduce((acc, curr) => acc + curr.earned, 0);

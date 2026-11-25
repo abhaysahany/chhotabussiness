@@ -188,51 +188,25 @@ function EntityPayoutReportsPage() {
       </div>
 
       {/* Sub-Navigation Tabs Bar */}
-      <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '2px solid #e2e8f0', marginBottom: '1.5rem', overflowX: 'auto' }}>
+      <div className="ent-subtabs-bar">
         <button
           type="button"
           onClick={() => navigate('/entity/payouts/transactions')}
-          style={{
-            padding: '0.65rem 1.2rem',
-            border: 'none',
-            background: 'none',
-            borderBottom: '3px solid transparent',
-            color: '#64748b',
-            fontWeight: 600,
-            fontSize: '0.88rem',
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            marginBottom: '-2px',
-          }}
+          className="ent-subtab-btn"
         >
           <span>💳</span> Payout Transactions
         </button>
         <button
           type="button"
           onClick={() => navigate('/entity/payouts/reports')}
-          style={{
-            padding: '0.65rem 1.2rem',
-            border: 'none',
-            background: 'none',
-            borderBottom: '3px solid #505726',
-            color: '#505726',
-            fontWeight: 800,
-            fontSize: '0.88rem',
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            marginBottom: '-2px',
-          }}
+          className="ent-subtab-btn active"
         >
-          <span>📈</span> Payout Reports & Analytics
+          <span>📈</span> Payout Reports &amp; Analytics
         </button>
       </div>
 
       {/* Summary KPI Cards Grid: TOTAL PAID | BALANCE | DUMP AMOUNT | TDS DEDUCTIONS | SUCCESS RATE */}
-      <div className="stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+      <div className="stat-grid ent-stat-auto">
         {/* 1. TOTAL PAID */}
         <div
           className="stat-card"
@@ -334,7 +308,7 @@ function EntityPayoutReportsPage() {
             </div>
           </div>
           <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#323717', letterSpacing: '-0.02em' }}>
-            {summary.settlement_success_rate || 98.6}%
+            {Number(summary.settlement_success_rate) || 0}%
           </div>
           <div style={{ marginTop: '0.35rem', fontSize: '0.74rem', color: '#505726', fontWeight: 600 }}>
             <span>📈</span> Instant clearance & zero failure
@@ -343,7 +317,7 @@ function EntityPayoutReportsPage() {
       </div>
 
       {/* Analytics Visual Breakdown Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
+      <div className="ent-grid-2-lg" style={{ gap: '1.25rem', marginBottom: '1.5rem' }}>
         {/* Monthly Payout Trend Visual Bars */}
         <div
           style={{
@@ -505,19 +479,19 @@ function EntityPayoutReportsPage() {
               Periodic breakdown of gross earnings, total paid, pending balance, dump reserves, and TDS deductions.
             </p>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <div style={{ position: 'relative' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: '1 1 200px', justifyContent: 'flex-end', minWidth: 0 }}>
+            <div style={{ position: 'relative', width: '100%', maxWidth: '240px' }}>
               <input
                 type="text"
                 placeholder="Search statement period..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{
-                  padding: '0.4rem 0.65rem 0.4rem 1.8rem',
+                  padding: '0.45rem 0.65rem 0.45rem 1.85rem',
                   borderRadius: '6px',
                   border: '1px solid #cbd5e1',
-                  fontSize: '0.78rem',
-                  width: '200px',
+                  fontSize: '0.8rem',
+                  width: '100%',
                 }}
               />
               <span style={{ position: 'absolute', left: '6px', top: '50%', transform: 'translateY(-50%)', fontSize: '0.75rem', color: '#94a3b8' }}>
@@ -646,35 +620,24 @@ function EntityPayoutReportsPage() {
       {/* Statement Detail Modal */}
       {selectedStatement && (
         <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(15, 23, 42, 0.6)',
-            backdropFilter: 'blur(4px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 99999,
-            padding: '1rem',
-          }}
+          className="ent-modal-backdrop"
           onClick={() => setSelectedStatement(null)}
         >
           <div
+            className="ent-modal-card"
             style={{
               background: '#ffffff',
               borderRadius: '16px',
               maxWidth: '560px',
-              width: '100%',
               boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
-              overflow: 'hidden',
               border: '1px solid #e2e8f0',
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)', color: '#ffffff', padding: '1.25rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className="ent-modal-body" style={{ background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)', color: '#ffffff', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem' }}>
               <div>
                 <div style={{ fontSize: '0.75rem', color: '#a3e635', fontWeight: 800, textTransform: 'uppercase' }}>
-                  🏛️ Periodic Tax & Reconciliation Statement
+                  🏛️ Periodic Tax &amp; Reconciliation Statement
                 </div>
                 <h3 style={{ margin: '0.2rem 0 0 0', fontSize: '1.2rem', fontWeight: 800 }}>
                   {selectedStatement.period}
@@ -701,7 +664,7 @@ function EntityPayoutReportsPage() {
               </button>
             </div>
 
-            <div style={{ padding: '1.5rem' }}>
+            <div className="ent-modal-body">
               <div style={{ border: '1px solid #e2e8f0', borderRadius: '10px', overflow: 'hidden', marginBottom: '1.25rem' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
                   <tbody>
@@ -739,7 +702,7 @@ function EntityPayoutReportsPage() {
                 </table>
               </div>
 
-              <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+              <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
                 <button
                   type="button"
                   onClick={() => window.print()}

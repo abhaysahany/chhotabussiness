@@ -65,18 +65,20 @@ function AdminProfilePage({ currentAdmin }) {
               boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
             }}
           >
-            <img
-              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=160&q=80"
-              alt="Admin Profile"
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              onError={(e) => {
-                e.target.style.display = 'none';
-                if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
-              }}
-            />
+            {currentAdmin?.avatar ? (
+              <img
+                src={currentAdmin.avatar}
+                alt="Admin Profile"
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
+                }}
+              />
+            ) : null}
             <div
               style={{
-                display: 'none',
+                display: currentAdmin?.avatar ? 'none' : 'flex',
                 width: '100%',
                 height: '100%',
                 background: '#312e81',

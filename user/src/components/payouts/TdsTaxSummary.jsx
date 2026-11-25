@@ -678,7 +678,7 @@ function TdsTaxSummary({ user, onNavigate }) {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1.25rem', flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem', flex: '1 1 500px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem', flex: '1 1 min(100%, 500px)', minWidth: 0 }}>
             <div
               className="van-3d-kpi-icon van-3d-icon-blue"
               style={{ width: '42px', height: '42px', borderRadius: '11px', flexShrink: 0 }}

@@ -175,12 +175,12 @@ function PricingSection({ onSelectPlan }) {
             <strong style={{ fontSize: '1.1rem', color: '#0F4C81', display: 'block' }}>₹0 Upfront Registration</strong>
             <span style={{ fontSize: '0.8rem', color: '#64748b' }}>No setup or listing fees</span>
           </div>
-          <div style={{ width: '1px', height: '35px', background: '#e2e8f0' }} />
+          <div className="cb-pricing-divider" style={{ width: '1px', height: '35px', background: '#e2e8f0' }} />
           <div>
             <strong style={{ fontSize: '1.1rem', color: '#16A34A', display: 'block' }}>100% Direct Client Payment</strong>
             <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Client pays directly to provider</span>
           </div>
-          <div style={{ width: '1px', height: '35px', background: '#e2e8f0' }} />
+          <div className="cb-pricing-divider" style={{ width: '1px', height: '35px', background: '#e2e8f0' }} />
           <div>
             <strong style={{ fontSize: '1.1rem', color: '#FF7A00', display: 'block' }}>Pure Performance Model</strong>
             <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Commission only when you earn</span>

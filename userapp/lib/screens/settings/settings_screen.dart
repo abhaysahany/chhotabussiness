@@ -478,7 +478,7 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
   // 1. Personal Profile Tab
   Widget _buildProfileTab() {
     final email = _currentUser['email']?.toString() ?? '';
-    final userCode = _currentUser['user_code']?.toString() ?? _currentUser['userCode']?.toString() ?? 'CB100001';
+    final userCode = _currentUser['user_code']?.toString() ?? _currentUser['userCode']?.toString() ?? '';
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

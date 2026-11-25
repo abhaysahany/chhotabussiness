@@ -61,10 +61,10 @@ function DashboardOverview({ user, onNavigate }) {
   };
 
   const userCode = data?.user?.userCode || user?.user_code || user?.sponsor_id || '';
-  const userName = data?.user?.name || user?.name || 'Partner Account';
-  const userEmail = data?.user?.email || user?.email || `${userCode}@addnet.com`;
-  const userRank = data?.user?.rank || user?.rank || 'Partner Member';
-  const kycStatus = data?.user?.kycStatus || user?.kyc_status || 'verified';
+  const userName = data?.user?.name || user?.name || '';
+  const userEmail = data?.user?.email || user?.email || '';
+  const userRank = data?.user?.rank || user?.rank || 'Member';
+  const kycStatus = data?.user?.kycStatus || user?.kyc_status || 'unverified';
   const userInitial = userName.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase() || 'U';
   const userAvatarUrl = user?.avatar_url || user?.avatar || null;
 
@@ -101,13 +101,7 @@ function DashboardOverview({ user, onNavigate }) {
 
   // ApexCharts: Revenue Growth Options & Series
   const revenueChartOptions = useMemo(() => {
-    const categories = data?.charts?.revenue?.categories || (
-      chartPeriod === '6m'
-        ? ['Month 1', 'Month 2', 'Month 3', 'Month 4', 'Month 5', 'Month 6']
-        : chartPeriod === '30d'
-        ? ['Week 1', 'Week 2', 'Week 3', 'Week 4']
-        : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-    );
+    const categories = data?.charts?.revenue?.categories || [];
 
     return {
       chart: {
@@ -468,7 +462,7 @@ function DashboardOverview({ user, onNavigate }) {
 
         {/* Live Referral Link Copier Toolbar — Spacious Two-Column Layout */}
         <div className="van-sponsor-hub-3d">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.95rem', minWidth: '260px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.95rem', minWidth: 'min(100%, 240px)' }}>
             <div className="van-share-3d-badge" title="Official Referral Sponsor Link">
               <Share2 size={18} />
             </div>
@@ -482,7 +476,7 @@ function DashboardOverview({ user, onNavigate }) {
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap', flex: 1, justifyContent: 'flex-end', minWidth: '300px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap', flex: 1, justifyContent: 'flex-end', minWidth: 'min(100%, 260px)' }}>
             <div className="van-sponsor-url-container">
               <span className="van-sponsor-dot-live" title="Active Sponsor Link" />
               <span className="van-sponsor-url-text">
@@ -543,7 +537,7 @@ function DashboardOverview({ user, onNavigate }) {
           </button>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem', marginBottom: '1.25rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: '1.25rem', marginBottom: '1.25rem' }}>
           {/* Income Card 1: Today's Income */}
           <div className="van-stat-card-premium" style={{ borderTop: '3.5px solid #10b981' }}>
             <div className="van-stat-card-top">
@@ -651,7 +645,7 @@ function DashboardOverview({ user, onNavigate }) {
       </div>
 
       {/* 4 Core KPI Metric Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: '1.25rem' }}>
         {/* Core KPI 1: Available Wallet Balance */}
         <div className="van-stat-card-premium" style={{ borderTop: '3.5px solid #0284c7' }}>
           <div className="van-stat-card-top">

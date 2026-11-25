@@ -220,44 +220,54 @@ function UserSocialPlatformsPage({ user, onNavigate }) {
   };
 
   const platforms = useMemo(() => {
-    if (configuredLinks && typeof configuredLinks === 'object') {
-      if (Array.isArray(configuredLinks)) {
-        if (configuredLinks.length === 0) return [];
-        return configuredLinks.map((cfg, idx) => {
+    if (!configuredLinks || typeof configuredLinks !== 'object') {
+      return [];
+    }
+
+    if (Array.isArray(configuredLinks)) {
+      if (configuredLinks.length === 0) return [];
+      return configuredLinks
+        .filter((cfg) => cfg && cfg.enabled !== false && (cfg.url || cfg.channelUrl || cfg.profileUrl || cfg.companyUrl || cfg.pageUrl))
+        .map((cfg, idx) => {
           const match = DEFAULT_PLATFORMS.find((p) => p.id === cfg.id || p.id === cfg.platform) || DEFAULT_PLATFORMS[idx % DEFAULT_PLATFORMS.length];
           return {
             ...match,
             id: cfg.id || match.id,
             name: cfg.name || match.name,
-            url: cfg.url || cfg.channelUrl || cfg.profileUrl || match.url,
-            handle: cfg.handle || match.handle,
+            url: cfg.url || cfg.channelUrl || cfg.profileUrl || cfg.companyUrl || cfg.pageUrl || '',
+            handle: cfg.handle || '',
             badge: cfg.badge || match.badge,
             description: cfg.description || match.description,
             buttonText: cfg.buttonText || match.buttonText,
             perk: cfg.perk || match.perk,
           };
         });
-      }
-
-      return DEFAULT_PLATFORMS.map((p) => {
-        const cfg = configuredLinks[p.id];
-        if (!cfg) return p;
-        if (typeof cfg === 'string') {
-          return { ...p, url: cfg };
-        }
-        return {
-          ...p,
-          url: cfg.url || cfg.channelUrl || cfg.profileUrl || cfg.companyUrl || cfg.pageUrl || p.url,
-          handle: cfg.handle || p.handle,
-          badge: cfg.badge || p.badge,
-          description: cfg.description || p.description,
-          buttonText: cfg.buttonText || p.buttonText,
-          perk: cfg.perk || p.perk,
-        };
-      });
     }
 
-    return DEFAULT_PLATFORMS;
+    return DEFAULT_PLATFORMS.reduce((acc, p) => {
+      const cfg = configuredLinks[p.id];
+      if (!cfg) return acc;
+      if (typeof cfg === 'string') {
+        if (cfg.trim()) {
+          acc.push({ ...p, url: cfg.trim(), handle: '' });
+        }
+        return acc;
+      }
+      const resolvedUrl = cfg.url || cfg.channelUrl || cfg.profileUrl || cfg.companyUrl || cfg.pageUrl || '';
+      if (cfg.enabled === false || !String(resolvedUrl).trim()) {
+        return acc;
+      }
+      acc.push({
+        ...p,
+        url: resolvedUrl,
+        handle: cfg.handle || '',
+        badge: cfg.badge || p.badge,
+        description: cfg.description || p.description,
+        buttonText: cfg.buttonText || p.buttonText,
+        perk: cfg.perk || p.perk,
+      });
+      return acc;
+    }, []);
   }, [configuredLinks]);
 
   return (
@@ -331,7 +341,7 @@ function UserSocialPlatformsPage({ user, onNavigate }) {
 
       {/* Social Platforms Cards Grid */}
       {loading ? (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(330px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 290px), 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
           {[1, 2, 3].map((i) => (
             <div
               key={i}
@@ -393,7 +403,7 @@ function UserSocialPlatformsPage({ user, onNavigate }) {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(330px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 290px), 1fr))',
             gap: '1.5rem',
             marginBottom: '2.5rem',
           }}

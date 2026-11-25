@@ -18,128 +18,23 @@ function AdminReceivePaymentPage() {
   const [activeDistributionLog, setActiveDistributionLog] = useState(null);
 
   // Active Sales with Outstanding Balance Payments and Commission Parameters
-  const [balanceSales, setBalanceSales] = useState([
-    {
-      id: 'INV-2026-081',
-      date: '2026-08-17 18:30',
-      customer: 'Rahul Verma',
-      email: 'rahul.verma@example.com',
-      sponsor: 'Vikram Singh (ID: #1001)',
-      item: 'Enterprise Cloud ERP Suite',
-      businessEntity: 'Skyline Technologies Pvt Ltd',
-      totalValue: 17698,
-      advancePaid: 10000,
-      balanceDue: 7698,
-      directIncomePercent: 10,
-      levelIncomePercent: 7,
-      teamBizCountPercent: 100,
-      status: 'partial',
-    },
-    {
-      id: 'INV-2026-079',
-      date: '2026-08-15 11:45',
-      customer: 'Vikram Singh',
-      email: 'vikram.singh@example.com',
-      sponsor: 'Amit Shah (ID: #920)',
-      item: 'Digital Growth Accelerator Bundle',
-      businessEntity: 'GrowthX Media Solutions',
-      totalValue: 9438,
-      advancePaid: 0,
-      balanceDue: 9438,
-      directIncomePercent: 10,
-      levelIncomePercent: 7,
-      teamBizCountPercent: 100,
-      status: 'pending',
-    },
-    {
-      id: 'INV-2026-077',
-      date: '2026-08-14 10:15',
-      customer: 'Pooja Mehta',
-      email: 'pooja.m@example.com',
-      sponsor: 'Rohan Gupta (ID: #975)',
-      item: 'Custom E-Commerce Store Architecture',
-      businessEntity: 'Rohan Sharma (Full Stack Dev)',
-      totalValue: 14748,
-      advancePaid: 5000,
-      balanceDue: 9748,
-      directIncomePercent: 10,
-      levelIncomePercent: 7,
-      teamBizCountPercent: 100,
-      status: 'partial',
-    },
-    {
-      id: 'INV-2026-074',
-      date: '2026-08-10 16:20',
-      customer: 'Amit Patel',
-      email: 'amit.patel@example.com',
-      sponsor: 'Ankit Mehta (ID: #990)',
-      item: 'Smart POS Hardware Terminal Unit',
-      businessEntity: 'Apex Financial Systems',
-      totalValue: 21830,
-      advancePaid: 2000,
-      balanceDue: 19830,
-      directIncomePercent: 10,
-      levelIncomePercent: 7,
-      teamBizCountPercent: 100,
-      status: 'partial',
-    },
-  ]);
+  const [balanceSales, setBalanceSales] = useState([]);
 
   // Dumped Projects Archive Log
-  const [dumpedProjects, setDumpedProjects] = useState([
-    {
-      id: 'INV-2026-068',
-      date: '2026-08-02',
-      customer: 'Suresh Raina',
-      sponsor: 'GrowthX Agency',
-      item: 'Full Organic SEO Campaign',
-      businessEntity: 'GrowthX Media Solutions',
-      totalValue: 9438,
-      advancePaid: 2000,
-      lostBalance: 7438,
-      reason: 'Payment Deadline Exceeded (30+ Days Unresponsive)',
-      dumped_at: '2026-08-16',
-    },
-  ]);
+  const [dumpedProjects, setDumpedProjects] = useState([]);
 
   // Received Payments & Network Commission Clearance History Ledger
-  const [clearedLedger, setClearedLedger] = useState([
-    {
-      id: 'PAY-2026-990',
-      date: '2026-08-16 16:40',
-      payerName: 'Anita Sharma',
-      sponsor: 'Suresh Kumar (ID: #960)',
-      invoiceId: 'INV-2026-080',
-      item: 'GST Registration & Annual Tax Filing',
-      businessEntity: 'AddNet Tax Advisory',
-      amountReceived: 3538,
-      directIncome: 353.8,
-      levelIncomePool: 247.66,
-      perLevelIncome: 35.38,
-      teamBizVolume: 3538,
-      paymentMode: 'Credit Card (POS)',
-      account: 'Razorpay Gateway',
-      utr: 'UTR-PAY-441092',
-    },
-  ]);
+  const [clearedLedger, setClearedLedger] = useState([]);
 
   // 7 Upline Levels Network Chain
-  const uplineNetworkChain = [
-    { level: 1, title: '2nd Upline (Level 1)', name: 'Ankit Mehta', memberId: '#990' },
-    { level: 2, title: '3rd Upline (Level 2)', name: 'Neha Sharma', memberId: '#982' },
-    { level: 3, title: '4th Upline (Level 3)', name: 'Rohan Gupta', memberId: '#975' },
-    { level: 4, title: '5th Upline (Level 4)', name: 'Suresh Kumar', memberId: '#960' },
-    { level: 5, title: '6th Upline (Level 5)', name: 'Pooja Verma', memberId: '#952' },
-    { level: 6, title: '7th Upline (Level 6)', name: 'Deepak Joshi', memberId: '#940' },
-    { level: 7, title: '8th Upline (Level 7)', name: 'Amit Shah', memberId: '#920' },
-  ];
+  const uplineNetworkChain = [];
 
   // Currently Selected Balance Sale Form State
-  const [selectedSaleId, setSelectedSaleId] = useState(balanceSales[0]?.id || '');
-  const [receivedAmount, setReceivedAmount] = useState(balanceSales[0]?.balanceDue.toString() || '7698');
+  const [selectedSaleId, setSelectedSaleId] = useState('');
+  const [receivedAmount, setReceivedAmount] = useState('0');
   const [paymentMode, setPaymentMode] = useState('UPI / QR Code Scan');
-  const [depositAccount, setDepositAccount] = useState('AddNet HDFC Current A/C (*9812)');
-  const [utrReference, setUtrReference] = useState(`UTR-BAL-${Math.floor(100000 + Math.random() * 900000)}`);
+  const [depositAccount, setDepositAccount] = useState('');
+  const [utrReference, setUtrReference] = useState('');
 
   const activeSale = useMemo(() => {
     return balanceSales.find((s) => s.id === selectedSaleId) || balanceSales[0];

@@ -65,7 +65,7 @@ function DirectConnectionsPage({ user, onNavigate }) {
   };
 
   const copySponsorLink = () => {
-    const link = `${window.location.origin}/register?ref=${user?.user_code || 'CB100001'}`;
+    const link = `${window.location.origin}/register?ref=${user?.user_code || ''}`;
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2500);
 
@@ -344,20 +344,8 @@ function DirectConnectionsPage({ user, onNavigate }) {
           </div>
 
           {/* Bottom Row: Premium 3D Copy Sponsor Link Bar */}
-          <div
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              background: 'rgba(15, 23, 42, 0.45)',
-              border: '1px solid rgba(255, 255, 255, 0.22)',
-              backdropFilter: 'blur(10px)',
-              borderRadius: '16px',
-              padding: '0.38rem 0.45rem 0.38rem 1.15rem',
-              boxShadow: '0 8px 24px -4px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.25)',
-              gap: '0.95rem',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div className="van-directs-sponsor-pill-bar">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
               <span style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.8)', fontWeight: 600 }}>
                 Sponsor ID:
               </span>
@@ -374,13 +362,14 @@ function DirectConnectionsPage({ user, onNavigate }) {
                   border: '1px solid rgba(56, 189, 248, 0.25)',
                 }}
               >
-                {user?.user_code || 'CB100001'}
+                {user?.user_code || '—'}
               </span>
             </div>
 
             <button
               type="button"
               onClick={copySponsorLink}
+              className="van-directs-sponsor-copy-btn"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',

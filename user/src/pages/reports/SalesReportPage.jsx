@@ -776,13 +776,12 @@ function SalesReportPage({ user }) {
             <div style={{ padding: '1.4rem 1.6rem', display: 'flex', flexDirection: 'column', gap: '1.15rem', overflowY: 'auto', flex: '1 1 auto' }}>
               {/* 4-Grid Metadata */}
               <div
+                className="van-modal-split-grid"
                 style={{
                   background: '#F8FAFC',
                   padding: '1.15rem 1.25rem',
                   borderRadius: '14px',
                   border: '1.5px solid #E2E8F0',
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
                   gap: '1rem',
                 }}
               >

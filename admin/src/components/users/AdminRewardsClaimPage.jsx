@@ -300,11 +300,20 @@ function AdminRewardsClaimPage() {
 
                     <td style={{ padding: '1rem 1.25rem' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                        <img
-                          src={claim.reward_image || 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600'}
-                          alt={claim.reward_title}
-                          style={{ width: '40px', height: '40px', borderRadius: '6px', objectFit: 'cover' }}
-                        />
+                        {claim.reward_image ? (
+                          <img
+                            src={claim.reward_image}
+                            alt={claim.reward_title}
+                            style={{ width: '40px', height: '40px', borderRadius: '6px', objectFit: 'cover' }}
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                            }}
+                          />
+                        ) : (
+                          <div style={{ width: '40px', height: '40px', borderRadius: '6px', background: '#f3e8ff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>
+                            🎁
+                          </div>
+                        )}
                         <div>
                           <strong style={{ color: '#0f172a', display: 'block', fontSize: '0.82rem' }}>{claim.reward_title}</strong>
                         </div>

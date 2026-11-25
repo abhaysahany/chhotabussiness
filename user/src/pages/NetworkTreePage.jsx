@@ -15,34 +15,19 @@ function NetworkTreePage({ user }) {
       <div className="pro-card">
         <div className="pro-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2 className="card-box-title">Downline Member Tree</h2>
-          <span className="badge-connected">Sponsor: {user?.sponsor_id || 'CB100001'}</span>
+          <span className="badge-connected">Sponsor: {user?.sponsor_id || '—'}</span>
         </div>
 
         <div className="pro-card-body">
           <div className="network-tree-node root-node">
             <div className="node-card root">
               <span className="node-tag">YOU (ROOT)</span>
-              <strong>{user?.name || 'AddNet User'}</strong>
-              <span className="node-code">{user?.user_code || 'CB100001'}</span>
+              <strong>{user?.name || 'Member'}</strong>
+              <span className="node-code">{user?.user_code || '—'}</span>
             </div>
-            <div className="tree-connector"></div>
-            <div className="tree-children">
-              <div className="node-card child">
-                <span className="node-tag">LEVEL 1</span>
-                <strong>Team Leader 1</strong>
-                <span className="node-code">CB100002</span>
-              </div>
-              <div className="node-card child">
-                <span className="node-tag">LEVEL 1</span>
-                <strong>Team Leader 2</strong>
-                <span className="node-code">CB100003</span>
-              </div>
-              <div className="node-card child">
-                <span className="node-tag">LEVEL 1</span>
-                <strong>Team Leader 3</strong>
-                <span className="node-code">CB100004</span>
-              </div>
-            </div>
+            <p style={{ marginTop: '1rem', fontSize: '0.85rem', color: '#64748b' }}>
+              View live downlines under Network &gt; Genealogy Tree.
+            </p>
           </div>
 
         </div>

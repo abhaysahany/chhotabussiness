@@ -8,7 +8,7 @@ function EntityPaymentReceiptsPage() {
   const entityName =
     currentEntity?.entity_details?.business_name ||
     currentEntity?.name ||
-    'Skyline Technologies Pvt Ltd';
+    '';
 
   const [paymentHistory, setPaymentHistory] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -123,71 +123,32 @@ function EntityPaymentReceiptsPage() {
       </div>
 
       {/* Navigation Sub-Tabs Bar */}
-      <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '2px solid #e2e8f0', marginBottom: '1.5rem', overflowX: 'auto' }}>
+      <div className="ent-subtabs-bar">
         <button
           type="button"
           onClick={() => navigate('/entity/payments/receive-balance')}
-          style={{
-            padding: '0.65rem 1.2rem',
-            border: 'none',
-            background: 'none',
-            borderBottom: '3px solid transparent',
-            color: '#64748b',
-            fontWeight: 600,
-            fontSize: '0.88rem',
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            marginBottom: '-2px',
-          }}
+          className="ent-subtab-btn"
         >
           <span>💳</span> Receive Balance Payments
         </button>
         <button
           type="button"
           onClick={() => navigate('/entity/payments/receipts-ledger')}
-          style={{
-            padding: '0.65rem 1.2rem',
-            border: 'none',
-            background: 'none',
-            borderBottom: '3px solid #636B2F',
-            color: '#636B2F',
-            fontWeight: 800,
-            fontSize: '0.88rem',
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            marginBottom: '-2px',
-          }}
+          className="ent-subtab-btn active"
         >
-          <span>🧾</span> Payment Receipts & Commission Ledger ({paymentHistory.length})
+          <span>🧾</span> Payment Receipts &amp; Commission Ledger ({paymentHistory.length})
         </button>
         <button
           type="button"
           onClick={() => navigate('/entity/payments/bank-settlements')}
-          style={{
-            padding: '0.65rem 1.2rem',
-            border: 'none',
-            background: 'none',
-            borderBottom: '3px solid transparent',
-            color: '#64748b',
-            fontWeight: 600,
-            fontSize: '0.88rem',
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            marginBottom: '-2px',
-          }}
+          className="ent-subtab-btn"
         >
-          <span>🏦</span> Bank Settlements & Payouts
+          <span>🏦</span> Bank Settlements &amp; Payouts
         </button>
       </div>
 
       {/* KPI Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+      <div className="ent-grid-auto-220" style={{ marginBottom: '1.5rem' }}>
         <div className="stat-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem', borderLeft: '4px solid #2563eb' }}>
           <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>TOTAL RECEIPTS LOGGED</div>
           <div style={{ fontSize: '1.45rem', fontWeight: 800, color: '#2563eb', marginTop: '0.35rem' }}>
@@ -231,7 +192,7 @@ function EntityPaymentReceiptsPage() {
 
       {/* Filter & Search Bar */}
       <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', padding: '1rem', marginBottom: '1.5rem', display: 'flex', gap: '0.75rem', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' }}>
-        <div style={{ flex: 1, minWidth: '240px' }}>
+        <div style={{ flex: '1 1 220px', minWidth: 0 }}>
           <input
             type="text"
             placeholder="Search by Invoice #, Customer, UTR Ref, or Payment Method..."
@@ -265,7 +226,7 @@ function EntityPaymentReceiptsPage() {
 
       {/* Receipts Ledger Table */}
       <div className="content-card" style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', overflow: 'hidden', padding: 0 }}>
-        <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid #e2e8f0', background: '#fafaf9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid #e2e8f0', background: '#fafaf9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
           <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700, color: '#0f172a' }}>
             Payment Receipts & Facilitation Commission Ledger
           </h3>
@@ -375,29 +336,13 @@ function EntityPaymentReceiptsPage() {
 
       {/* Modal: View Receipt Details */}
       {selectedReceipt && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(15, 23, 42, 0.75)',
-            backdropFilter: 'blur(4px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 99999,
-            padding: '1rem',
-          }}
-        >
+        <div className="ent-modal-backdrop">
           <div
+            className="ent-modal-card ent-modal-card-padded"
             style={{
               background: '#ffffff',
               borderRadius: '16px',
-              width: '100%',
               maxWidth: '520px',
-              padding: '2rem',
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
             }}
           >

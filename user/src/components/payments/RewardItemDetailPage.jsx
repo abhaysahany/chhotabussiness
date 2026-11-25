@@ -543,14 +543,7 @@ function RewardItemDetailPage({ user, onNavigate }) {
         /* ============================================================== */
         /* SELECTED REWARD DETAIL & CLAIM VIEW                            */
         /* ============================================================== */
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'minmax(0, 1.05fr) minmax(0, 1.25fr)',
-            gap: '2rem',
-            alignItems: 'start',
-          }}
-        >
+        <div className="van-reward-detail-grid">
           {/* LEFT COLUMN: REWARD IMAGE & PRODUCT SPECIFICATIONS */}
           <div
             style={{
@@ -1093,7 +1086,7 @@ function RewardItemDetailPage({ user, onNavigate }) {
                   />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
+                <div className="van-form-two-col">
                   <div>
                     <label
                       style={{
@@ -1158,7 +1151,7 @@ function RewardItemDetailPage({ user, onNavigate }) {
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
+                <div className="van-form-two-col">
                   <div>
                     <label
                       style={{

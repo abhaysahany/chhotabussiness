@@ -13,9 +13,10 @@ import {
   ChevronLeft,
   ChevronRight,
   Layers,
+  X,
 } from 'lucide-react';
 
-function EntitySidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLogout }) {
+function EntitySidebar({ activeTab, setActiveTab, collapsed, setCollapsed, mobileOpen, onCloseMobile, onLogout }) {
   const { appName, logoUrl } = useBranding();
   const [logoFailed, setLogoFailed] = useState(false);
   const [salesOpen, setSalesOpen] = useState(true);
@@ -31,6 +32,7 @@ function EntitySidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLog
   const handleNav = (tab, path) => {
     if (setActiveTab) setActiveTab(tab);
     if (path) navigate(path);
+    if (onCloseMobile) onCloseMobile();
   };
 
   const currentPath = location.pathname;
@@ -40,7 +42,7 @@ function EntitySidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLog
   const entityInitials = entityName.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase() || 'EP';
 
   return (
-    <aside className={`sidebar-container ${collapsed ? 'collapsed' : ''}`}>
+    <aside className={`sidebar-container ${collapsed ? 'collapsed' : ''} ${mobileOpen ? 'mobile-open' : ''}`}>
       {/* Brand & Toggle Header */}
       <div className="sidebar-header">
         <div className="sidebar-brand" onClick={() => handleNav('dashboard', '/entity/dashboard')} style={{ cursor: 'pointer' }}>
@@ -70,11 +72,22 @@ function EntitySidebar({ activeTab, setActiveTab, collapsed, setCollapsed, onLog
         </div>
 
         <button
+          type="button"
           className="sidebar-toggle-btn"
           onClick={() => setCollapsed(!collapsed)}
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {collapsed ? <ChevronRight size={15} /> : <ChevronLeft size={15} />}
+        </button>
+
+        <button
+          type="button"
+          className="sidebar-close-btn"
+          onClick={onCloseMobile}
+          title="Close navigation menu"
+          aria-label="Close navigation menu"
+        >
+          <X size={16} />
         </button>
       </div>
 

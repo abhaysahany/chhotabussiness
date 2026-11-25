@@ -150,16 +150,18 @@ function AdminHeader({
               className="profile-btn"
               onClick={() => setShowProfileMenu(!showProfileMenu)}
             >
-              <img
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80"
-                alt="Admin Avatar"
-                className="profile-avatar-img"
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                  if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
-                }}
-              />
-              <div className="profile-avatar-fallback" style={{ display: 'none' }}>
+              {currentAdmin?.avatar ? (
+                <img
+                  src={currentAdmin.avatar}
+                  alt="Admin Avatar"
+                  className="profile-avatar-img"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
+                  }}
+                />
+              ) : null}
+              <div className="profile-avatar-fallback" style={{ display: currentAdmin?.avatar ? 'none' : 'flex' }}>
                 {currentAdmin?.name ? currentAdmin.name.charAt(0).toUpperCase() : 'A'}
               </div>
               <span className="profile-name">
@@ -348,16 +350,18 @@ function AdminHeader({
                 background: '#f8fafc',
               }}
             >
-              <img
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=160&q=80"
-                alt="Locked Admin"
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                  if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
-                }}
-              />
-              <div style={{ display: 'none', width: '100%', height: '100%', background: '#1e293b', color: '#fff', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', fontWeight: 800 }}>
+              {currentAdmin?.avatar ? (
+                <img
+                  src={currentAdmin.avatar}
+                  alt="Locked Admin"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
+                  }}
+                />
+              ) : null}
+              <div style={{ display: currentAdmin?.avatar ? 'none' : 'flex', width: '100%', height: '100%', background: '#1e293b', color: '#fff', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', fontWeight: 800 }}>
                 {currentAdmin?.name ? currentAdmin.name.charAt(0).toUpperCase() : 'A'}
               </div>
             </div>

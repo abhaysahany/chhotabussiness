@@ -1180,7 +1180,7 @@ function BankAccounts({ user, onNavigate }) {
                 </button>
               </div>
             ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.35rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '1.35rem' }}>
                 {bankAccounts.map((b) => (
                   <div
                     key={b.id}
@@ -1453,7 +1453,7 @@ function BankAccounts({ user, onNavigate }) {
                 </button>
               </div>
             ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.35rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '1.35rem' }}>
                 {upiAccounts.map((u) => (
                   <div
                     key={u.id}
@@ -1691,7 +1691,7 @@ function BankAccounts({ user, onNavigate }) {
                 <span style={{ fontSize: '0.7rem', color: '#64748b' }}>* Payouts are permitted only to accounts registered under your KYC verified name.</span>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+              <div className="van-form-two-col" style={{ gap: '0.75rem' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#475569', marginBottom: '0.25rem' }}>Bank Name *</label>
                   <input
@@ -1726,7 +1726,7 @@ function BankAccounts({ user, onNavigate }) {
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+              <div className="van-form-two-col" style={{ gap: '0.75rem' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#475569', marginBottom: '0.25rem' }}>Account Number *</label>
                   <input

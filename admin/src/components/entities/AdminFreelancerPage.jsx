@@ -95,8 +95,8 @@ function AdminFreelancerPage({ onNavigate }) {
     phone: '',
     password: '',
     title: '',
-    experience_years: 3,
-    hourly_rate: '₹850/hr',
+    experience_years: '',
+    hourly_rate: '',
     bio: '',
     avatar_url: '',
     portfolio_link: '',
@@ -114,8 +114,8 @@ function AdminFreelancerPage({ onNavigate }) {
       phone: '',
       password: generateRandomPassword(),
       title: '',
-      experience_years: 3,
-      hourly_rate: '₹850/hr',
+      experience_years: '',
+      hourly_rate: '',
       bio: '',
       avatar_url: '',
       portfolio_link: '',
@@ -175,8 +175,8 @@ function AdminFreelancerPage({ onNavigate }) {
         phone: free.phone || '',
         password: '', // Leave blank if keeping existing password
         title: free.title || '',
-        experience_years: free.experience_years || 3,
-        hourly_rate: free.hourly_rate || '₹850/hr',
+        experience_years: free.experience_years ?? '',
+        hourly_rate: free.hourly_rate || '',
         bio: free.bio || '',
         avatar_url: free.avatar_url || '',
         portfolio_link: free.portfolio_link || '',
@@ -281,7 +281,7 @@ function AdminFreelancerPage({ onNavigate }) {
       ...form,
       documents: [
         ...form.documents,
-        { title: 'Additional Verification Document', file_name: 'id_certificate.pdf', url: 'https://via.placeholder.com/400x300?text=Uploaded+Doc', status: 'verified' },
+        { title: 'Additional Verification Document', file_name: '', url: '', status: 'pending' },
       ],
     });
   };
@@ -763,7 +763,7 @@ function AdminFreelancerPage({ onNavigate }) {
                       type="button"
                       onClick={() => setForm({
                         ...form,
-                        documents: [...form.documents, { title: 'Identity Proof Document', file_name: 'gov_id_proof.pdf', url: 'https://via.placeholder.com/400x300?text=Government+ID', status: 'verified' }]
+                        documents: [...form.documents, { title: 'Identity Proof Document', file_name: '', url: '', status: 'pending' }]
                       })}
                       style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '6px', padding: '0.3rem 0.65rem', fontSize: '0.73rem', fontWeight: 700, color: '#3569a7', cursor: 'pointer' }}
                     >
@@ -773,7 +773,7 @@ function AdminFreelancerPage({ onNavigate }) {
                       type="button"
                       onClick={() => setForm({
                         ...form,
-                        documents: [...form.documents, { title: 'Degree / Certification Proof', file_name: 'skill_certificate.pdf', url: 'https://via.placeholder.com/400x300?text=Certification', status: 'verified' }]
+                        documents: [...form.documents, { title: 'Degree / Certification Proof', file_name: '', url: '', status: 'pending' }]
                       })}
                       style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '6px', padding: '0.3rem 0.65rem', fontSize: '0.73rem', fontWeight: 700, color: '#0d9488', cursor: 'pointer' }}
                     >

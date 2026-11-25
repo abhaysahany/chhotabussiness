@@ -398,7 +398,7 @@ function UserMediaContentPage({ user }) {
           </div>
 
           {/* Entity Dropdown */}
-          <div className="van-catalog-select-wrap" style={{ width: '220px', flexShrink: 0 }}>
+          <div className="van-catalog-select-wrap" style={{ width: 'min(100%, 220px)', flexShrink: 0 }}>
             <Filter size={14} className="van-catalog-select-icon" />
             <select
               value={entityTab}
@@ -417,7 +417,7 @@ function UserMediaContentPage({ user }) {
 
       {/* Loading Skeleton */}
       {loading && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 290px), 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
           {[1, 2, 3].map((i) => (
             <div
               key={i}
@@ -506,7 +506,7 @@ function UserMediaContentPage({ user }) {
 
       {/* Media Content Assets Grid */}
       {!loading && filteredAssets.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 290px), 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
           {filteredAssets.map((asset) => {
             const assetType = (asset.type || 'image').toLowerCase();
             const isImage = assetType === 'image';

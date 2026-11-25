@@ -112,13 +112,6 @@ function AdminServicesPage() {
         entCatData.value.categories.forEach((c) => c.name && categoryNames.add(c.name));
       }
 
-      if (categoryNames.size === 0) {
-        categoryNames.add('Software & IT');
-        categoryNames.add('Design & Creative');
-        categoryNames.add('Legal & Compliance');
-        categoryNames.add('Marketing & SEO');
-        categoryNames.add('Finance & Accounting');
-      }
       setCategoriesList(Array.from(categoryNames));
 
       if (bizData.status === 'fulfilled' && bizData.value?.businesses) {
@@ -171,7 +164,7 @@ function AdminServicesPage() {
     setEditingService(null);
     setFormErrors({});
     setFormBannerError('');
-    const defaultCat = categoriesList[0] || 'Legal & Compliance';
+    const defaultCat = categoriesList[0] || '';
     const defaultBiz = businessesList.length > 0 ? (businessesList[0].name || businessesList[0].business_name || '') : '';
 
     setFormData({
@@ -803,22 +796,40 @@ function AdminServicesPage() {
                     <tr key={s.id} className="adm-table-row">
                       <td style={{ padding: '0.9rem 1.15rem' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                          <img
-                            src={s.image || 'https://images.unsplash.com/photo-1450133064473-71024230f91b?w=400'}
-                            alt={s.name}
-                            style={{
-                              width: '42px',
-                              height: '42px',
-                              borderRadius: '10px',
-                              objectFit: 'cover',
-                              border: '1.5px solid #e2e8f0',
-                              boxShadow: '0 2px 6px rgba(0,0,0,0.04)',
-                              flexShrink: 0,
-                            }}
-                            onError={(e) => {
-                              e.target.src = 'https://images.unsplash.com/photo-1450133064473-71024230f91b?w=400';
-                            }}
-                          />
+                          {s.image ? (
+                            <img
+                              src={s.image}
+                              alt={s.name}
+                              style={{
+                                width: '42px',
+                                height: '42px',
+                                borderRadius: '10px',
+                                objectFit: 'cover',
+                                border: '1.5px solid #e2e8f0',
+                                boxShadow: '0 2px 6px rgba(0,0,0,0.04)',
+                                flexShrink: 0,
+                              }}
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                              }}
+                            />
+                          ) : (
+                            <div
+                              style={{
+                                width: '42px',
+                                height: '42px',
+                                borderRadius: '10px',
+                                background: '#f1f5f9',
+                                border: '1.5px solid #e2e8f0',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                flexShrink: 0,
+                              }}
+                            >
+                              <Briefcase size={18} color="#64748b" />
+                            </div>
+                          )}
                           <div>
                             <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.88rem' }}>
                               {s.name}
@@ -1020,15 +1031,19 @@ function AdminServicesPage() {
             return (
               <div key={s.id} className="adm-service-card-3d">
                 {/* 1. Media Header Showcase */}
-                <div className="adm-service-media-wrap">
-                  <img
-                    src={s.image || 'https://images.unsplash.com/photo-1450133064473-71024230f91b?w=400'}
-                    alt={s.name}
-                    className="adm-service-media-img"
-                    onError={(e) => {
-                      e.target.src = 'https://images.unsplash.com/photo-1450133064473-71024230f91b?w=400';
-                    }}
-                  />
+                <div className="adm-service-media-wrap" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f1f5f9' }}>
+                  {s.image ? (
+                    <img
+                      src={s.image}
+                      alt={s.name}
+                      className="adm-service-media-img"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                      }}
+                    />
+                  ) : (
+                    <Briefcase size={42} color="#64748b" />
+                  )}
                   <div className="adm-service-media-overlay" />
 
                   {/* Category Floating Pill (Glassmorphism) */}

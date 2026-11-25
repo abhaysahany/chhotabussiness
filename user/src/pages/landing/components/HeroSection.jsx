@@ -89,8 +89,9 @@ function HeroSection({ onFindServicesClick, onBecomePartnerClick }) {
                 top: '50%',
                 left: '50%',
                 transform: 'translate(-50%, -50%)',
-                width: '380px',
-                height: '380px',
+                width: 'min(380px, 100%)',
+                maxWidth: '100%',
+                height: 'min(380px, 100%)',
                 background: 'radial-gradient(circle, rgba(15, 76, 129, 0.12) 0%, rgba(255, 122, 0, 0.08) 60%, transparent 80%)',
                 filter: 'blur(30px)',
                 zIndex: 0,
@@ -110,7 +111,7 @@ function HeroSection({ onFindServicesClick, onBecomePartnerClick }) {
               }}
             >
               {/* Header Status */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid var(--cb-border)', paddingBottom: '1rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid var(--cb-border)', paddingBottom: '1rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#16A34A', boxShadow: '0 0 10px #16A34A' }} />
                   <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#0F4C81', textTransform: 'uppercase', letterSpacing: '0.5px' }}>

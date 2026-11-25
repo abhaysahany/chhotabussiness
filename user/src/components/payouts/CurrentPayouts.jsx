@@ -789,7 +789,7 @@ function CurrentPayouts({ user, onNavigate }) {
       <div className="van-dir-toolbar-3d" style={{ marginBottom: '1.75rem' }}>
         {/* Tier 1: Search Bar & Record Count */}
         <div className="van-dir-toolbar-top">
-          <div className="van-dir-search-wrap" style={{ flex: '1 1 380px' }}>
+          <div className="van-dir-search-wrap">
             <div className="van-dir-search-icon-pod">
               <Search size={16} color="#2563EB" />
             </div>

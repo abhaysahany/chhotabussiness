@@ -28,7 +28,7 @@ import {
 } from '../api/userNotificationService';
 
 function UserNotificationsPage({ user, onNavigate }) {
-  const userCode = user?.user_code || user?.sponsor_id || 'CB100001';
+  const userCode = user?.user_code || '';
 
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);

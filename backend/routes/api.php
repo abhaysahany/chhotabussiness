@@ -62,14 +62,18 @@ Route::get('/status', function () {
 
 // Admin Panel API Endpoint
 Route::get('/admin/info', function () {
-    $appName = \App\Models\SystemSetting::get('app_name', config('app.name', 'AddNet')) ?: 'AddNet';
+    $appName = \App\Models\SystemSetting::get('app_name', config('app.name', 'Vyapar AdNET')) ?: 'Vyapar AdNET';
+    $totalUsers = \App\Models\User::count();
+    $activeOrders = \App\Models\Order::where('status', '!=', 'cancelled')->count();
+    $revenueToday = (float) \App\Models\SalePayment::whereDate('created_at', \Carbon\Carbon::today('Asia/Kolkata'))->sum('amount');
+
     return response()->json([
         'panel' => 'Admin Panel',
         'message' => "Welcome to {$appName} Admin Backend API",
         'stats' => [
-            'total_users' => 128,
-            'active_orders' => 42,
-            'revenue_today' => '$2,450',
+            'total_users' => $totalUsers,
+            'active_orders' => $activeOrders,
+            'revenue_today' => '₹' . number_format($revenueToday, 2),
             'server_health' => 'Optimal',
         ],
         'features' => ['User Management', 'Analytics', 'System Settings', 'Database Logs'],
@@ -80,17 +84,15 @@ use App\Http\Controllers\UserDashboardController;
 
 // User Panel API Endpoints
 Route::get('/user/info', function () {
-    $appName = \App\Models\SystemSetting::get('app_name', config('app.name', 'AddNet')) ?: 'AddNet';
+    $appName = \App\Models\SystemSetting::get('app_name', config('app.name', 'Vyapar AdNET')) ?: 'Vyapar AdNET';
+    $services = \App\Models\Service::where('status', 'active')->orderBy('id', 'desc')->pluck('name')->values()->all();
+    $supportEmail = \App\Models\SystemSetting::get('support_email', config('mail.from.address')) ?: null;
+
     return response()->json([
         'panel' => 'User Panel',
         'message' => "Welcome to {$appName} Customer Portal API",
-        'services' => [
-            'Business Setup',
-            'GST Registration',
-            'Accounting & Bookkeeping',
-            'Tax Filing',
-        ],
-        'support_email' => 'support@addnet.com',
+        'services' => $services,
+        'support_email' => $supportEmail,
     ]);
 });
 Route::get('/user/dashboard-stats', [UserDashboardController::class, 'getDashboardStats']);

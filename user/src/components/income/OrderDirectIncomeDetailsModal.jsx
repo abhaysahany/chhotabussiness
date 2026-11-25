@@ -334,7 +334,7 @@ function OrderDirectIncomeDetailsModal({ orderId, isOpen, onClose }) {
               <div
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
                   gap: '1.25rem',
                   marginBottom: '1.5rem',
                 }}
@@ -365,7 +365,7 @@ function OrderDirectIncomeDetailsModal({ orderId, isOpen, onClose }) {
                     <span>Parent Order Financial Overview</span>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                  <div className="van-modal-split-grid" style={{ gap: '0.75rem' }}>
                     <div>
                       <div style={{ fontSize: '0.72rem', color: '#64748b' }}>Total Project Value</div>
                       <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a' }}>
@@ -426,7 +426,7 @@ function OrderDirectIncomeDetailsModal({ orderId, isOpen, onClose }) {
                     <span>Your Direct Referral Entitlements</span>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                  <div className="van-modal-split-grid" style={{ gap: '0.75rem' }}>
                     <div>
                       <div style={{ fontSize: '0.72rem', color: '#64748b' }}>Expected Direct Income</div>
                       <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a' }}>

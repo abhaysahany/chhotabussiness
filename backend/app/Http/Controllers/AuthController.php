@@ -129,7 +129,7 @@ class AuthController extends Controller
                 'name' => $member->name,
                 'email' => $member->email,
                 'phone' => $member->phone ?? '',
-                'sponsor_id' => $member->sponsor_id ?? 'CB100001',
+                'sponsor_id' => $member->sponsor_id ?? null,
             ],
         ], 200);
     }

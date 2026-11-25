@@ -67,12 +67,12 @@ class EntityCommissionSetting extends Model
     public static function defaultBusinessSettings(): array
     {
         return [
-            'direct_percent' => 10.0,
-            'level_2_percent' => 4.0,
-            'level_3_percent' => 3.0,
-            'level_4_percent' => 2.0,
-            'level_5_percent' => 1.0,
-            'reward_percent' => 5.0,
+            'direct_percent' => 0.0,
+            'level_2_percent' => 0.0,
+            'level_3_percent' => 0.0,
+            'level_4_percent' => 0.0,
+            'level_5_percent' => 0.0,
+            'reward_percent' => 0.0,
         ];
     }
 
@@ -185,7 +185,7 @@ class EntityCommissionSetting extends Model
             'network_levels_total' => $networkLevelsTotal,
             'total_commission_percent' => $totalCommission,
             'is_custom' => false,
-            'source' => 'system_default',
+            'source' => 'unconfigured',
             'setting_id' => null,
         ];
     }

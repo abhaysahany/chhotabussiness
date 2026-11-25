@@ -35,8 +35,8 @@ import {
 
 function LoginForm({ onLoginSuccess, onSwitchToRegister, onSocialClick, onBackToHome, onOpenLegalPage, onGoogleSuccess }) {
   const { appName, logoUrl } = useBranding();
-  const [email, setEmail] = useState('user@addnet.com');
-  const [password, setPassword] = useState('password123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);

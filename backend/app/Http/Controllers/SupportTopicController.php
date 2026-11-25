@@ -121,7 +121,7 @@ class SupportTopicController extends Controller
             'title' => $request->title,
             'category' => $request->category ?? 'Update Content',
             'youtube_url' => $youtubeUrl,
-            'thumbnail' => $request->thumbnail ?? 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500',
+            'thumbnail' => $request->thumbnail ?: null,
             'summary' => $request->summary,
             'article_body' => $request->article_body,
             'faq_question' => $request->faq_question,

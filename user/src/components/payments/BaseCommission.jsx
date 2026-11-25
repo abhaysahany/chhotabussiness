@@ -12,9 +12,14 @@ function BaseCommission({ user }) {
   const [datePreset, setDatePreset] = useState('All');
   const [toastMessage, setToastMessage] = useState('');
 
-  const userCode = user?.user_code || 'CB100001';
+  const userCode = user?.user_code || '';
 
   const fetchDirects = async () => {
+    if (!userCode) {
+      setDirects([]);
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
       const res = await getDirectConnections({ user_code: userCode });
@@ -53,21 +58,21 @@ function BaseCommission({ user }) {
 
   const commissionLogs = useMemo(() => {
     return directs.map((member, idx) => {
-      const vol = Number(member.personalPv || member.personalBv || 1000);
+      const vol = Number(member.personalPv || member.personalBv || 0);
       const rate = 10; // 10% direct commission
       const earned = Math.round((vol * rate) / 100);
       return {
-        id: `REF-${member.id || idx + 1000}`,
+        id: `REF-${member.id || idx + 1}`,
         buyer: member.name,
         userCode: member.id,
         email: member.email || 'N/A',
-        rank: member.rank || 'Bronze Starter',
+        rank: member.rank || 'Member',
         packageJoined: `Self Volume (${formatNumberIN(vol)} BV)`,
         rate: `${rate}%`,
         amount: earned,
         volume: vol,
-        date: member.joiningDate || '2026-08-10',
-        dateDisplay: member.joiningDate ? formatDate(member.joiningDate) : '10 Aug 2026',
+        date: member.joiningDate || '',
+        dateDisplay: member.joiningDate ? formatDate(member.joiningDate) : '—',
         status: member.status === 'active' ? 'Credited to Wallet' : 'Pending Verification',
       };
     });

@@ -7,10 +7,12 @@
 @media (max-width: 767.98px) {
   .pro-app-wrapper .pro-main-wrapper {
     margin-left: 0 !important;
+    padding-bottom: 4.5rem !important;
   }
 
   .pro-sidebar {
     transform: translateX(-100%);
+    width: min(270px, 85vw) !important;
     box-shadow: 0 0 24px rgba(15, 23, 42, 0.2);
     z-index: 1000;
   }
@@ -18,6 +20,10 @@
   /* When sidebar is explicitly opened on mobile */
   .pro-app-wrapper:not(.sidebar-is-collapsed) .pro-sidebar {
     transform: translateX(0);
+  }
+
+  .sidebar-mobile-close-btn {
+    display: inline-flex !important;
   }
 
   /* Mobile Sidebar Backdrop (Active only when drawer is open on mobile) */
@@ -34,14 +40,28 @@
 
   .pro-page-content,
   .pro-page-content.pro-curved-canvas {
-    padding: 0.85rem !important;
+    padding: 0.9rem 0.75rem 4.25rem 0.75rem !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
   }
 
   .header-search-wrapper {
-    width: 180px;
+    width: min(180px, 40vw);
+    max-width: 190px;
+  }
+
+  .header-search-input {
+    font-size: 0.78rem;
+  }
+
+  .profile-dropdown-menu {
+    width: min(240px, calc(100vw - 24px)) !important;
+    max-width: calc(100vw - 24px) !important;
+    right: 0 !important;
   }
 
   .van-card-header {
+    padding: 0.75rem 1rem;
     flex-direction: column;
     align-items: flex-start;
   }
@@ -60,20 +80,54 @@
 @media (max-width: 389.98px) {
   .header-search-wrapper {
     display: flex !important;
-    max-width: 140px;
+    max-width: 135px;
+    min-width: 90px;
   }
 
   .van-btn-sm {
     padding: 0 0.5rem;
   }
 
-  .pro-page-content {
-    padding: 0.65rem !important;
+  .pro-page-content,
+  .pro-page-content.pro-curved-canvas {
+    padding: 0.65rem 0.6rem 4.5rem 0.6rem !important;
+  }
+
+  .van-h1 {
+    font-size: 1.2rem;
+  }
+
+  .van-h2 {
+    font-size: 1rem;
   }
 }
 
 /* Tablet / Medium Screens (768px - 1023px) */
 @media (min-width: 768px) and (max-width: 1023.98px) {
+  .pro-sidebar {
+    width: 220px;
+  }
+
+  .pro-sidebar.collapsed {
+    width: var(--van-sidebar-collapsed-width);
+  }
+
+  .pro-app-wrapper:not(.sidebar-is-collapsed) .pro-main-wrapper {
+    margin-left: 220px;
+  }
+
+  .pro-app-wrapper.sidebar-is-collapsed .pro-main-wrapper {
+    margin-left: var(--van-sidebar-collapsed-width);
+  }
+
+  .pro-app-wrapper:not(.sidebar-is-collapsed) .pro-footer {
+    left: 220px;
+  }
+
+  .pro-app-wrapper.sidebar-is-collapsed .pro-footer {
+    left: var(--van-sidebar-collapsed-width);
+  }
+
   .header-search-wrapper {
     width: 220px;
   }

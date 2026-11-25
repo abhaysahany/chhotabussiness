@@ -92,9 +92,9 @@ function PrivacyPolicyPage({ onNavigate }) {
     : sections;
 
   return (
-    <div className="privacy-page-container" style={{ maxWidth: '1000px', margin: '0 auto', padding: '2rem 1.5rem', color: '#0f172a' }}>
+    <div className="privacy-page-container van-legal-page">
       {/* Top Header Banner */}
-      <div style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', color: '#ffffff', borderRadius: '16px', padding: '2rem', marginBottom: '2rem', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)' }}>
+      <div className="van-legal-hero" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(59, 130, 246, 0.2)', color: '#93c5fd', padding: '0.25rem 0.75rem', borderRadius: '20px', fontSize: '0.78rem', fontWeight: '700', marginBottom: '0.75rem' }}>
@@ -137,7 +137,7 @@ function PrivacyPolicyPage({ onNavigate }) {
       </div>
 
       {/* Main Content Layout */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 280px', gap: '2rem', alignItems: 'start' }}>
+      <div className="van-legal-layout">
         {/* Policy Sections */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           {filteredSections.length === 0 ? (
@@ -191,7 +191,7 @@ function PrivacyPolicyPage({ onNavigate }) {
         </div>
 
         {/* Sidebar Table of Contents */}
-        <div style={{ position: 'sticky', top: '1rem', background: '#ffffff', borderRadius: '14px', padding: '1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)' }}>
+        <div className="van-legal-toc">
           <h4 style={{ fontSize: '0.85rem', fontWeight: '800', textTransform: 'uppercase', color: '#64748b', marginBottom: '1rem', letterSpacing: '0.05em' }}>
             Policy Contents
           </h4>

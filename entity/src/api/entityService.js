@@ -390,15 +390,15 @@ export const getEntityPayouts = async (params = {}) => {
 
       summary: {
 
-        total_paid: 385450.00,
+        total_paid: 0,
 
-        balance: 48500.00,
+        balance: 0,
 
         dump_amount: 0.00,
 
-        total_tds: 19272.50,
+        total_tds: 0,
 
-        total_transactions: 6,
+        total_transactions: 0,
 
       },
 
@@ -432,15 +432,15 @@ export const getEntityPayoutReports = async (params = {}) => {
 
       summary: {
 
-        total_paid: 385450.00,
+        total_paid: 0,
 
-        balance: 48500.00,
+        balance: 0,
 
-        dump_amount: 12450.00,
+        dump_amount: 0.00,
 
-        total_tds: 19272.50,
+        total_tds: 0,
 
-        settlement_success_rate: 98.6,
+        settlement_success_rate: 0,
 
       },
 

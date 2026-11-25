@@ -338,13 +338,8 @@ class UserBankKycController extends Controller
             $user = User::where('email', $request->input('email'))->first();
         }
 
-        // Fallback: If not found, get the primary verified user
         if (!$user) {
-            $user = User::where('kyc_status', 'verified')->orderBy('id', 'asc')->first();
-        }
-
-        if (!$user) {
-            return response()->json(['status' => 'error', 'message' => 'User not found.'], 404);
+            return response()->json(['status' => 'error', 'message' => 'User not found. Please log in again.'], 401);
         }
 
         $kycStatus = strtolower($user->kyc_status ?? 'unverified');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CommissionSetting;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -23,23 +24,17 @@ class NetworkController extends Controller
     }
 
     /**
-     * Level Commission Percentages (10 Equal Levels - 2% per level)
+     * Level Commission Percentages resolved dynamically from database CommissionSetting
      */
     private function getLevelCommissionPct($level)
     {
-        $rates = [
-            1 => '2%',
-            2 => '2%',
-            3 => '2%',
-            4 => '2%',
-            5 => '2%',
-            6 => '2%',
-            7 => '2%',
-            8 => '2%',
-            9 => '2%',
-            10 => '2%',
-        ];
-        return $rates[$level] ?? '2%';
+        $setting = CommissionSetting::getGlobalRecord();
+        if (!$setting) {
+            return '0%';
+        }
+        $key = 'level_' . (int) $level . '_percent';
+        $pct = (float) ($setting->{$key} ?? 0);
+        return (round($pct, 2) == round($pct, 0) ? (int) $pct : round($pct, 2)) . '%';
     }
 
     /**
@@ -71,21 +66,20 @@ class NetworkController extends Controller
      */
     private function resolveUser(Request $request)
     {
-        if ($request->user()) {
-            return $request->user();
+        $authUser = auth('sanctum')->user() ?: $request->user();
+        if ($authUser) {
+            return $authUser;
         }
 
         $userCode = $request->input('user_code') ?? $request->input('userCode');
         if ($userCode) {
-            $u = User::whereRaw('LOWER(user_code) = ?', [strtolower($userCode)])
+            return User::whereRaw('LOWER(user_code) = ?', [strtolower($userCode)])
                 ->orWhere('id', $userCode)
                 ->orWhere('email', $userCode)
                 ->first();
-            if ($u) return $u;
         }
 
-        // Default to first user or root CB100001
-        return User::where('user_code', 'CB100001')->first() ?? User::first();
+        return null;
     }
 
     /**
@@ -118,22 +112,22 @@ class NetworkController extends Controller
                 'id' => $m->user_code ?? ('CB' . (100000 + $m->id)),
                 'db_id' => $m->id,
                 'name' => $m->name,
-                'avatar' => $m->avatar ?: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+                'avatar' => $m->avatar ?: null,
                 'email' => $m->email,
-                'phone' => $m->phone ?: '+91 98765 00000',
-                'joiningDate' => $m->created_at ? $m->created_at->format('Y-m-d') : '2026-06-12',
-                'rank' => $m->rank ?: 'Bronze Starter',
+                'phone' => $m->phone ?: null,
+                'joiningDate' => $m->created_at ? $m->created_at->format('Y-m-d') : null,
+                'rank' => $m->rank ?: 'Member',
                 'rankBadgeClass' => $this->getRankBadgeClass($m->rank),
-                'personalPv' => (int)($m->personal_pv ?: 500),
-                'personalBv' => (int)($m->personal_pv ?: 500),
-                'groupPv' => (int)($m->group_pv ?: 25000),
-                'groupBv' => (int)($m->group_pv ?: 25000),
-                'teamTurnover' => $this->formatIndianCurrency($m->group_pv ?: 25000),
+                'personalPv' => (int) ($m->personal_pv ?? 0),
+                'personalBv' => (int) ($m->personal_pv ?? 0),
+                'groupPv' => (int) ($m->group_pv ?? 0),
+                'groupBv' => (int) ($m->group_pv ?? 0),
+                'teamTurnover' => $this->formatIndianCurrency((float) ($m->group_pv ?? 0)),
                 'level2Count' => $level2Count,
-                'level1Bonus' => $this->formatIndianCurrency($m->commission_balance ?: ($m->personal_pv * 10)),
+                'level1Bonus' => $this->formatIndianCurrency((float) ($m->commission_balance ?? 0)),
                 'status' => $m->status ?: 'active',
                 'kycVerified' => $m->kyc_status === 'verified',
-                'location' => $m->location ?: 'India',
+                'location' => $m->location ?: null,
             ];
         });
 
@@ -150,7 +144,7 @@ class NetworkController extends Controller
             'user' => [
                 'name' => $user->name,
                 'user_code' => $user->user_code,
-                'rank' => $user->rank ?: 'Crown Diamond',
+                'rank' => $user->rank ?: 'Member',
             ],
             'directMembers' => $directMembers,
             'stats' => [
@@ -220,31 +214,31 @@ class NetworkController extends Controller
                 $isAct = ($m->status ?: 'active') === 'active';
                 if ($isAct) $levelActive++;
 
-                $levelPv += (int)($m->personal_pv ?: 500);
-                $levelGroupPv += (int)($m->group_pv ?: 10000);
+                $levelPv += (int) ($m->personal_pv ?? 0);
+                $levelGroupPv += (int) ($m->group_pv ?? 0);
 
                 $allTeamMembers[] = [
                     'id' => $m->user_code ?? ('CB' . (100000 + $m->id)),
                     'db_id' => $m->id,
                     'name' => $m->name,
-                    'avatar' => $m->avatar ?: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+                    'avatar' => $m->avatar ?: null,
                     'level' => $level,
                     'levelCommissionPct' => $this->getLevelCommissionPct($level),
                     'sponsorId' => $m->sponsor_id ?: $user->user_code,
                     'sponsorName' => $parentInfo['name'],
-                    'rank' => $m->rank ?: 'Bronze Starter',
+                    'rank' => $m->rank ?: 'Member',
                     'rankBadgeClass' => $this->getRankBadgeClass($m->rank),
-                    'personalPv' => (int)($m->personal_pv ?: 500),
-                    'personalBv' => (int)($m->personal_pv ?: 500),
-                    'groupPv' => (int)($m->group_pv ?: 15000),
-                    'groupBv' => (int)($m->group_pv ?: 15000),
-                    'groupBvFormatted' => $this->formatIndianCurrency($m->group_pv ?: 15000),
+                    'personalPv' => (int) ($m->personal_pv ?? 0),
+                    'personalBv' => (int) ($m->personal_pv ?? 0),
+                    'groupPv' => (int) ($m->group_pv ?? 0),
+                    'groupBv' => (int) ($m->group_pv ?? 0),
+                    'groupBvFormatted' => $this->formatIndianCurrency((float) ($m->group_pv ?? 0)),
                     'downlineCount' => $downlineCount,
                     'status' => $m->status ?: 'active',
-                    'joiningDate' => $m->created_at ? $m->created_at->format('Y-m-d') : '2026-06-12',
+                    'joiningDate' => $m->created_at ? $m->created_at->format('Y-m-d') : null,
                     'email' => $m->email,
-                    'phone' => $m->phone ?: '+91 98765 00000',
-                    'location' => $m->location ?: 'India',
+                    'phone' => $m->phone ?: null,
+                    'location' => $m->location ?: null,
                 ];
             }
 
@@ -272,7 +266,7 @@ class NetworkController extends Controller
             'user' => [
                 'name' => $user->name,
                 'user_code' => $user->user_code,
-                'rank' => $user->rank ?: 'Crown Diamond',
+                'rank' => $user->rank ?: 'Member',
             ],
             'teamMembers' => $allTeamMembers,
             'levelStats' => array_values($levelStats),
@@ -295,18 +289,18 @@ class NetworkController extends Controller
             'id' => $user->user_code ?? ('CB' . (100000 + $user->id)),
             'db_id' => $user->id,
             'name' => $user->name,
-            'rank' => $user->rank ?: ($level === 0 ? 'Crown Diamond' : 'Bronze Starter'),
-            'rankClass' => $this->getRankBadgeClass($user->rank ?: ($level === 0 ? 'Crown Diamond' : 'Bronze Starter')),
+            'rank' => $user->rank ?: 'Member',
+            'rankClass' => $this->getRankBadgeClass($user->rank),
             'level' => $level,
             'overridePct' => $level === 0 ? 'N/A (Root)' : $this->getLevelCommissionPct($level),
-            'avatar' => $user->avatar ?: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
-            'personalPv' => (int)($user->personal_pv ?: 1000),
-            'personalBv' => (int)($user->personal_pv ?: 1000),
-            'groupPv' => (int)($user->group_pv ?: 50000),
-            'groupBv' => (int)($user->group_pv ?: 50000),
-            'groupBvFormatted' => $this->formatIndianCurrency($user->group_pv ?: 50000),
+            'avatar' => $user->avatar ?: null,
+            'personalPv' => (int) ($user->personal_pv ?? 0),
+            'personalBv' => (int) ($user->personal_pv ?? 0),
+            'groupPv' => (int) ($user->group_pv ?? 0),
+            'groupBv' => (int) ($user->group_pv ?? 0),
+            'groupBvFormatted' => $this->formatIndianCurrency((float) ($user->group_pv ?? 0)),
             'status' => $user->status ?: 'active',
-            'joiningDate' => $user->created_at ? $user->created_at->format('Y-m-d') : '2026-01-10',
+            'joiningDate' => $user->created_at ? $user->created_at->format('Y-m-d') : null,
             'sponsor' => $parentName,
             'children' => [],
         ];
@@ -348,7 +342,7 @@ class NetworkController extends Controller
         $depth = (int)$request->input('depth', 10);
         if ($depth < 1 || $depth > 10) $depth = 10;
 
-        $treeData = $this->buildTreeNode($user, 0, $depth, 'System Master (CB000001)');
+        $treeData = $this->buildTreeNode($user, 0, $depth, $user->sponsor_id ?: 'Platform Root');
 
         // Count total nodes recursively in tree
         $countNodes = function ($n) use (&$countNodes) {

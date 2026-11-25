@@ -881,7 +881,7 @@ function RewardDetails({ user, onNavigate }) {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
             gap: '1.35rem',
             marginBottom: '2.5rem',
           }}
@@ -1059,7 +1059,7 @@ function RewardDetails({ user, onNavigate }) {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
               gap: '1.15rem',
             }}
           >

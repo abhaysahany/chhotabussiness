@@ -510,29 +510,13 @@ function EntityLogin({ onLoginSuccess }) {
 
       {/* FORGOT PASSWORD MODAL */}
       {showForgotModal && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(15, 23, 42, 0.65)',
-            backdropFilter: 'blur(6px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-            padding: '1rem',
-          }}
-        >
+        <div className="ent-modal-backdrop" style={{ zIndex: 1000 }}>
           <div
+            className="ent-modal-card ent-modal-card-padded"
             style={{
               background: '#ffffff',
               borderRadius: '16px',
-              width: '100%',
               maxWidth: '460px',
-              padding: '1.75rem',
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
               position: 'relative',
             }}
@@ -595,12 +579,12 @@ function EntityLogin({ onLoginSuccess }) {
                   <label style={{ display: 'block', fontWeight: '600', fontSize: '0.8125rem', color: '#334155', marginBottom: '0.5rem' }}>
                     Select Entity Type *
                   </label>
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                     <button
                       type="button"
                       onClick={() => setResetEntityType('business')}
                       style={{
-                        flex: 1,
+                        flex: '1 1 130px',
                         padding: '0.65rem 0.5rem',
                         borderRadius: '8px',
                         border: resetEntityType === 'business' ? '2px solid #636B2F' : '1px solid #cbd5e1',
@@ -621,7 +605,7 @@ function EntityLogin({ onLoginSuccess }) {
                       type="button"
                       onClick={() => setResetEntityType('freelancer')}
                       style={{
-                        flex: 1,
+                        flex: '1 1 130px',
                         padding: '0.65rem 0.5rem',
                         borderRadius: '8px',
                         border: resetEntityType === 'freelancer' ? '2px solid #636B2F' : '1px solid #cbd5e1',
@@ -657,7 +641,7 @@ function EntityLogin({ onLoginSuccess }) {
                   {forgotFieldErrors.email && (<span style={{ color: "#ef4444", fontSize: "0.75rem", marginTop: "0.25rem", display: "block", fontWeight: 600 }}>⚠️ {forgotFieldErrors.email}</span>)}
                 </div>
 
-                <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+                <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
                   <button
                     type="button"
                     onClick={() => setShowForgotModal(false)}
@@ -713,7 +697,7 @@ function EntityLogin({ onLoginSuccess }) {
                   {forgotFieldErrors.otp && (<span style={{ color: "#ef4444", fontSize: "0.75rem", marginTop: "0.25rem", display: "block", textAlign: "center", fontWeight: 600 }}>⚠️ {forgotFieldErrors.otp}</span>)}
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
                   <button
                     type="button"
                     onClick={() => setForgotStep(1)}
@@ -722,7 +706,7 @@ function EntityLogin({ onLoginSuccess }) {
                     ← Change Email / Type
                   </button>
 
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                     <button
                       type="button"
                       onClick={handleSendOtp}
@@ -791,7 +775,7 @@ function EntityLogin({ onLoginSuccess }) {
                   />
                 </div>
 
-                <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+                <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
                   <button
                     type="button"
                     onClick={() => setForgotStep(2)}

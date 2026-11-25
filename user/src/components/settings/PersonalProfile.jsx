@@ -13,13 +13,13 @@ function PersonalProfile({ user, onNavigate, onUpdateUser }) {
 
   const initialAvatar = user?.avatar_url || user?.avatar || null;
 
-  // Form State initialized with user props or realistic fallbacks
+  // Form State initialized strictly from database user props
   const [formData, setFormData] = useState({
-    name: user?.name || 'Partner Account',
-    email: user?.email || 'partner@addnet.com',
+    name: user?.name || '',
+    email: user?.email || '',
     phone: user?.phone || '',
     user_code: user?.user_code || '',
-    sponsor_id: user?.sponsor_id || 'Root Admin',
+    sponsor_id: user?.sponsor_id || '',
     dob: user?.dob || '',
     gender: user?.gender || 'Male',
     address: user?.address || '',
@@ -499,8 +499,8 @@ function PersonalProfile({ user, onNavigate, onUpdateUser }) {
               <div className="van-cred-card-content">
                 <span className="van-cred-card-lbl">Sponsor ID</span>
                 <div className="van-cred-card-val-row">
-                  <strong className="van-cred-card-val" style={{ color: '#1D4ED8' }}>{savedData.sponsor_id || 'CB100001'}</strong>
-                  <span className="van-cred-card-sub">(Root Admin)</span>
+                  <strong className="van-cred-card-val" style={{ color: '#1D4ED8' }}>{savedData.sponsor_id || '—'}</strong>
+                  {savedData.sponsor_id ? null : <span className="van-cred-card-sub">(Root)</span>}
                 </div>
               </div>
             </div>
@@ -848,8 +848,7 @@ function PersonalProfile({ user, onNavigate, onUpdateUser }) {
                   <div className="van-profile-field-pod">
                     <span className="van-profile-field-lbl">Sponsor ID</span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.15rem' }}>
-                      <span className="van-profile-field-val" style={{ color: '#7c3aed', fontWeight: 800 }}>{savedData.sponsor_id || 'CB100001'}</span>
-                      <span className="van-card-badge-pill purple" style={{ fontSize: '0.68rem', padding: '0.15rem 0.45rem' }}>Root Admin</span>
+                      <span className="van-profile-field-val" style={{ color: '#7c3aed', fontWeight: 800 }}>{savedData.sponsor_id || '—'}</span>
                     </div>
                   </div>
 
@@ -1097,7 +1096,7 @@ function PersonalProfile({ user, onNavigate, onUpdateUser }) {
               </div>
 
               {/* Action Buttons & Guidance */}
-              <div style={{ flex: 1, minWidth: '240px' }}>
+              <div style={{ flex: 1, minWidth: 'min(100%, 220px)' }}>
                 <h4 style={{ margin: '0 0 0.35rem 0', fontSize: '0.95rem', fontWeight: 800, color: '#0f172a' }}>
                   Official Profile Picture
                 </h4>

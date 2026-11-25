@@ -84,7 +84,7 @@ class RewardController extends Controller
         }
 
         if (empty($imageUrl)) {
-            $imageUrl = 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600';
+            $imageUrl = null;
         }
 
         $reward = Reward::create([
@@ -92,7 +92,7 @@ class RewardController extends Controller
             'required_bp' => (int) $request->input('required_bp'),
             'category' => $request->input('category') ?: 'Gadgets & Electronics',
             'image' => $imageUrl,
-            'description' => $request->input('description') ?: 'Exclusive network rewards program item.',
+            'description' => $request->input('description') ?: null,
             'reward_value_inr' => $request->input('reward_value_inr') ?: null,
             'status' => $request->input('status') ?: 'active',
         ]);
@@ -281,22 +281,6 @@ class RewardController extends Controller
      */
     public function indexUserRewards(Request $request)
     {
-        if (Reward::count() === 0) {
-            $defaultRewards = [
-                ['title' => 'Starter Welcome Kit', 'category' => 'Welcome', 'required_bp' => 100, 'reward_value_inr' => 2500, 'status' => 'active', 'description' => 'Executive leather notebook, premium pen set & company identity lapel pin.', 'image' => 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=500'],
-                ['title' => 'Fitness Smartwatch Pro', 'category' => 'Gadgets', 'required_bp' => 250, 'reward_value_inr' => 7500, 'status' => 'active', 'description' => 'Bluetooth Calling, AMOLED display, IP68 water resistance with heart-rate tracking.', 'image' => 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500'],
-                ['title' => '10.5" Android 5G Tablet PC', 'category' => 'Electronics', 'required_bp' => 500, 'reward_value_inr' => 18000, 'status' => 'active', 'description' => 'Octa-core 8GB RAM + 128GB Storage, high resolution screen with stylus support.', 'image' => 'https://images.unsplash.com/photo-1561154464-82e9adf32764?w=500'],
-                ['title' => 'Goa 3N/4D 5-Star Luxury Retreat', 'category' => 'Travel', 'required_bp' => 1200, 'reward_value_inr' => 45000, 'status' => 'active', 'description' => 'All-inclusive couple tour package with flight tickets, beach resort stay and gala dinner.', 'image' => 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=500'],
-                ['title' => 'Thailand International Tour (5D/4N)', 'category' => 'International Travel', 'required_bp' => 2500, 'reward_value_inr' => 110000, 'status' => 'active', 'description' => 'Bangkok & Pattaya luxury international holiday with visa support, flights, and 5-star hotel.', 'image' => 'https://images.unsplash.com/photo-1506665531195-3566af2b4dfa?w=500'],
-                ['title' => 'Royal Enfield Classic 350 Bike', 'category' => 'Automobile', 'required_bp' => 6000, 'reward_value_inr' => 240000, 'status' => 'active', 'description' => 'Brand new Royal Enfield 350cc motorcycle registered in winner’s name with 5-year insurance.', 'image' => 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=500'],
-                ['title' => 'Luxury SUV Car (Tata Harrier / Creta)', 'category' => 'Automobile', 'required_bp' => 15000, 'reward_value_inr' => 1800000, 'status' => 'active', 'description' => 'Grand Achievement Car award for Crown Leaders fully paid with on-road registration.', 'image' => 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=500'],
-            ];
-
-            foreach ($defaultRewards as $r) {
-                Reward::create($r);
-            }
-        }
-
         $rewards = Reward::where('status', 'active')->orderBy('required_bp', 'asc')->get();
 
         return response()->json([
@@ -454,10 +438,10 @@ class RewardController extends Controller
                 'points_deducted' => $requiredDiamonds,
                 'bp_balance_before' => $balanceBefore,
                 'bp_balance_after' => $balanceAfter,
-                'shipping_address' => $request->input('shipping_address') ?: ($user->location ?? 'Registered Profile Address'),
-                'shipping_city' => $request->input('shipping_city') ?: 'Registered City',
-                'shipping_state' => $request->input('shipping_state') ?: 'Registered State',
-                'shipping_pincode' => $request->input('shipping_pincode') ?: '400001',
+                'shipping_address' => $request->input('shipping_address') ?: ($user->location ?? ''),
+                'shipping_city' => $request->input('shipping_city') ?: '',
+                'shipping_state' => $request->input('shipping_state') ?: '',
+                'shipping_pincode' => $request->input('shipping_pincode') ?: null,
                 'status' => 'pending',
                 'claim_date' => now(),
             ]);

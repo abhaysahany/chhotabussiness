@@ -17,7 +17,7 @@ function Header({ onToggleSidebar, user, onLogout, onNavigate }) {
   const [unreadCount, setUnreadCount] = useState(0);
   const [loadingNotifications, setLoadingNotifications] = useState(false);
 
-  const userCode = user?.user_code || user?.sponsor_id || 'CB100001';
+  const userCode = user?.user_code || '';
 
   const loadNotifications = async () => {
     try {
@@ -106,6 +106,9 @@ function Header({ onToggleSidebar, user, onLogout, onNavigate }) {
 
         <div className="header-search-wrapper">
           <input
+            id="portal-header-search"
+            name="portalSearch"
+            aria-label="Search in portal"
             ref={searchInputRef}
             type="text"
             className="header-search-input"
@@ -123,6 +126,8 @@ function Header({ onToggleSidebar, user, onLogout, onNavigate }) {
           <button
             className="header-icon-btn notification-btn"
             type="button"
+            aria-label="Notifications"
+            title="Notifications"
             onClick={() => {
               setShowNotificationMenu(!showNotificationMenu);
               setShowProfileMenu(false);
@@ -158,7 +163,7 @@ function Header({ onToggleSidebar, user, onLogout, onNavigate }) {
           </button>
 
           {showNotificationMenu && (
-            <div className="notification-dropdown-menu" style={{ width: '340px', maxHeight: '460px', display: 'flex', flexDirection: 'column' }}>
+            <div className="notification-dropdown-menu" style={{ maxHeight: '460px', display: 'flex', flexDirection: 'column' }}>
               <div className="notification-dropdown-header">
                 <div className="notification-title-flex">
                   <span style={{ fontWeight: 700 }}>Notifications</span>

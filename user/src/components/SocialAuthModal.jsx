@@ -6,53 +6,7 @@ function SocialAuthModal({ provider, initialMode = 'login', onClose, onSocialSuc
   const isGoogle = provider === 'google';
   const [mode, setMode] = useState(initialMode); // 'login' | 'register'
 
-  const defaultAccounts = isGoogle
-    ? [
-        {
-          name: 'Alex Johnson',
-          email: 'alex.google@gmail.com',
-          provider_id: 'google_1092837482910',
-          avatar: 'https://lh3.googleusercontent.com/a/default-user',
-        },
-        {
-          name: 'Priya Sharma',
-          email: 'priya.sharma@gmail.com',
-          provider_id: 'google_9823471928374',
-          avatar: 'https://lh3.googleusercontent.com/a/default-user-2',
-        },
-        {
-          name: 'Demo Portal Member',
-          email: 'user@addnet.com',
-          provider_id: 'google_demo_user_001',
-          avatar: 'https://lh3.googleusercontent.com/a/default-user-3',
-        },
-      ]
-    : [
-        {
-          name: 'Rahul Verma',
-          email: 'rahul.verma@facebook.com',
-          provider_id: 'fb_8837492019482',
-          avatar: 'https://graph.facebook.com/default-user',
-        },
-        {
-          name: 'Sarah Connor',
-          email: 'sarah.connor@facebook.com',
-          provider_id: 'fb_1928374650192',
-          avatar: 'https://graph.facebook.com/default-user-2',
-        },
-        {
-          name: 'Vikram Roy (Phone-only FB)',
-          email: null, // Scenario where user registered on Facebook with only phone number
-          provider_id: 'fb_9948201928374',
-          avatar: 'https://graph.facebook.com/default-user-phone',
-        },
-        {
-          name: 'Demo Portal Member',
-          email: 'user@addnet.com',
-          provider_id: 'fb_demo_user_001',
-          avatar: 'https://graph.facebook.com/default-user-3',
-        },
-      ];
+  const defaultAccounts = [];
 
   // Sponsor state for Registration
   const [sponsorId, setSponsorId] = useState('');
@@ -603,7 +557,7 @@ function SocialAuthModal({ provider, initialMode = 'login', onClose, onSocialSuc
                 </button>
                 <div style={{ textAlign: 'center', margin: '0.5rem 0', fontSize: '0.75rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <div style={{ flex: 1, height: '1px', background: '#e2e8f0' }}></div>
-                  <span>or select a quick account below</span>
+                  <span>sign in using your real account above</span>
                   <div style={{ flex: 1, height: '1px', background: '#e2e8f0' }}></div>
                 </div>
               </div>

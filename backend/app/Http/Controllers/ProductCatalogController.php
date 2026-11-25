@@ -79,7 +79,7 @@ class ProductCatalogController extends Controller
         }
 
         if (!$imageUrl) {
-            $imageUrl = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&auto=format&fit=crop&q=80';
+            $imageUrl = null;
         }
 
         $ownerType = $request->input('owner_type') ?: 'business';
@@ -256,11 +256,11 @@ class ProductCatalogController extends Controller
         }
 
         if (!$imageUrl) {
-            $imageUrl = 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400&auto=format&fit=crop&q=80';
+            $imageUrl = null;
         }
 
         $ownerType = $request->input('owner_type') ?: 'business';
-        $ownerName = $request->input('owner_name') ?: 'ChhotaBusiness Tax Advisory';
+        $ownerName = $request->input('owner_name') ?: ($request->user()?->business_name ?? $request->user()?->name ?? null);
 
         $adminCommissionPercent = 15.0;
         if ($request->filled('admin_commission_percent') && is_numeric($request->input('admin_commission_percent'))) {
@@ -404,41 +404,6 @@ class ProductCatalogController extends Controller
     public function indexPackages(Request $request)
     {
         $packages = ProductPackage::orderBy('id', 'desc')->get();
-
-        if ($packages->isEmpty()) {
-            $defaultPackages = [
-                [
-                    'name' => 'Startup Launchpad Bundle (Web + App + Cloud)',
-                    'price' => 45000.00,
-                    'commission_percent' => 22.00,
-                    'description' => 'Comprehensive multi-platform architecture stack with cloud provisioning.',
-                    'items_included' => ['Full-Stack Web App', 'Cross-platform Mobile App', 'Cloud Setup'],
-                    'status' => 'active',
-                ],
-                [
-                    'name' => 'Digital Growth & Social Commerce Kit',
-                    'price' => 12000.00,
-                    'commission_percent' => 15.00,
-                    'description' => 'Automated marketing funnels, WhatsApp store integration and creative assets.',
-                    'items_included' => ['Social Ad Templates', 'WhatsApp Commerce Bot', 'Catalog Setup'],
-                    'status' => 'active',
-                ],
-                [
-                    'name' => 'Enterprise E-Commerce Suite',
-                    'price' => 75000.00,
-                    'commission_percent' => 25.00,
-                    'description' => 'Enterprise B2B/B2C storefront with multi-warehouse inventory and payment routes.',
-                    'items_included' => ['Custom Payment Gateway', 'Multi-vendor Portal', 'Inventory System'],
-                    'status' => 'active',
-                ],
-            ];
-
-            foreach ($defaultPackages as $pkg) {
-                ProductPackage::create($pkg);
-            }
-
-            $packages = ProductPackage::orderBy('id', 'desc')->get();
-        }
 
         return response()->json([
             'status' => 'success',
