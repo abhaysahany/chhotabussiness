@@ -1689,7 +1689,8 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
                 <StatusBadge status={selectedInvoice.status} fallback="Completed" />
               </div>
 
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.84rem', marginBottom: '1.35rem' }}>
+              <div style={{ overflowX: 'auto', marginBottom: '1.35rem' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
                 <tbody>
                   <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
                     <td style={{ padding: '0.55rem 0', color: '#64748b' }}>Merchant Entity</td>
@@ -1723,6 +1724,7 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
                   </tr>
                 </tbody>
               </table>
+              </div>
 
               <div style={{ display: 'flex', gap: '0.65rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
                 <button

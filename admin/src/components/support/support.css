@@ -213,11 +213,11 @@
 
   /* When stacked, adjust ticket queue height so users can reach chat thread */
   .pro-ticket-queue-card {
-    height: 380px !important;
+    height: 360px !important;
   }
 
   .pro-ticket-thread-card {
-    height: 560px !important;
+    height: 520px !important;
   }
 
   /* Support generic subpages status-grid 1fr 2fr */
@@ -335,13 +335,14 @@
   }
 
   .pro-ticket-queue-card {
-    height: 340px !important;
+    height: 320px !important;
   }
 
   .pro-ticket-thread-card {
-    height: 520px !important;
+    height: 480px !important;
   }
 
+  .pro-ticket-thread-card div[style*="align-self"],
   .pro-ticket-thread-card div[style*="alignSelf"] {
     max-width: 95% !important;
   }

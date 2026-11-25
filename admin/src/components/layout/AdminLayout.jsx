@@ -31,6 +31,26 @@ function AdminLayout({ currentAdmin, onLogout, activeTab, setActiveTab, children
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Lock background scroll and support Escape key when mobile drawer is open
+  useEffect(() => {
+    if (!mobileSidebarOpen) {
+      document.body.style.overflow = '';
+      return undefined;
+    }
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setMobileSidebarOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [mobileSidebarOpen]);
+
   return (
     <div className={`admin-app-layout ${darkMode ? 'dark-mode' : 'light-mode'}`}>
       {/* Mobile Drawer Backdrop Overlay */}

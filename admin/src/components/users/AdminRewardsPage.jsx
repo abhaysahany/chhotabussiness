@@ -315,7 +315,7 @@ function AdminRewardsPage() {
 
       {/* Filter and Search Bar */}
       <div className="pro-users-filter-bar">
-        <div style={{ flex: 1, minWidth: '260px' }}>
+        <div style={{ flex: 1, minWidth: 'min(100%, 260px)' }}>
           <input
             type="text"
             placeholder="Search rewards by title, specs, category..."
@@ -325,7 +325,7 @@ function AdminRewardsPage() {
           />
         </div>
 
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}

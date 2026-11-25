@@ -140,21 +140,21 @@ function AdminSupportDesk({ currentAdmin }) {
       </div>
 
       {/* Search & Filter Toolbar */}
-      <div className="card" style={{ padding: '1rem', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
-        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flex: 1 }}>
+      <div className="card pro-ticket-filter-bar" style={{ padding: '1rem', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap', flex: '1 1 240px', minWidth: 0 }}>
           <input
             type="text"
             className="form-input"
             placeholder="Search by ticket #, user name, or subject..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ maxWidth: '320px', height: '38px' }}
+            style={{ maxWidth: '320px', flex: '1 1 180px', minWidth: 0, height: '38px' }}
           />
           <select
             className="form-input"
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            style={{ width: '180px', height: '38px' }}
+            style={{ width: '180px', maxWidth: '100%', height: '38px' }}
           >
             <option value="All">All Statuses</option>
             <option value="Open">Open</option>
@@ -171,7 +171,7 @@ function AdminSupportDesk({ currentAdmin }) {
       {/* Main Support Grid Layout: Ticket Queue + Conversation Canvas */}
       <div className="status-grid" style={{ gridTemplateColumns: '1fr 2fr', gap: '1.5rem', alignItems: 'stretch' }}>
         {/* Left Column: Tickets Queue List */}
-        <div className="card" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', height: '580px' }}>
+        <div className="card pro-ticket-queue-card" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', height: '580px' }}>
           <h3 style={{ fontSize: '0.9375rem', fontWeight: 700, marginBottom: '1rem', color: 'var(--text-primary)', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
             Support Inquiries Queue ({tickets.length})
           </h3>
@@ -241,11 +241,11 @@ function AdminSupportDesk({ currentAdmin }) {
         </div>
 
         {/* Right Column: Active Conversation Canvas & Admin Reply Editor */}
-        <div className="card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', height: '580px' }}>
+        <div className="card pro-ticket-thread-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', height: '580px' }}>
           {selectedTicket ? (
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
               {/* Ticket Top Info Bar */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem', marginBottom: '1rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.65rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem', marginBottom: '1rem' }}>
                 <div>
                   <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#3569a7' }}>
                     {selectedTicket.ticket_code || selectedTicket.id} • {selectedTicket.category || 'General'}
@@ -355,7 +355,7 @@ function AdminSupportDesk({ currentAdmin }) {
                   required
                 ></textarea>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
                   <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                     Replying as: <strong>{adminName}</strong>
                   </span>

@@ -113,7 +113,7 @@ function AdminLiveHelpdeskPage({ currentAdmin }) {
       {/* Main Live Sessions Grid */}
       <div className="status-grid" style={{ gridTemplateColumns: '1fr 2fr', gap: '1.25rem', alignItems: 'stretch' }}>
         {/* Active Sessions Queue */}
-        <div className="card" style={{ padding: '1.25rem', height: '540px', display: 'flex', flexDirection: 'column' }}>
+        <div className="card pro-ticket-queue-card" style={{ padding: '1.25rem', height: '540px', display: 'flex', flexDirection: 'column' }}>
           <h3 style={{ fontSize: '0.9375rem', fontWeight: 700, marginBottom: '0.75rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>
             Online Chat Queue ({activeSessions.length})
           </h3>
@@ -155,10 +155,10 @@ function AdminLiveHelpdeskPage({ currentAdmin }) {
         </div>
 
         {/* Live Chat Monitor Canvas */}
-        <div className="card" style={{ padding: '1.25rem', height: '540px', display: 'flex', flexDirection: 'column' }}>
+        <div className="card pro-ticket-thread-card" style={{ padding: '1.25rem', height: '540px', display: 'flex', flexDirection: 'column' }}>
           {currentSess ? (
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem', marginBottom: '0.75rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem', marginBottom: '0.75rem' }}>
                 <div>
                   <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-primary)' }}>
                     Live Chat with {currentSess.userName}
@@ -200,7 +200,7 @@ function AdminLiveHelpdeskPage({ currentAdmin }) {
 
               {/* Reply Form */}
               <form onSubmit={handleSendLiveMessage} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                   <input
                     type="text"
                     className="form-input"
@@ -210,7 +210,7 @@ function AdminLiveHelpdeskPage({ currentAdmin }) {
                       setReplyText(e.target.value);
                       if (replyError) setReplyError('');
                     }}
-                    style={{ flex: 1, height: '40px', ...getInputErrorStyle(replyError) }}
+                    style={{ flex: '1 1 180px', minWidth: 0, height: '40px', ...getInputErrorStyle(replyError) }}
                   />
                   <button type="submit" className="btn-primary" style={{ height: '40px', padding: '0 1rem' }}>
                     Send

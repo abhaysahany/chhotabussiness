@@ -553,6 +553,7 @@ function AdminReceivePaymentPage() {
               <h3>Pending Balance Sales Directory ({balanceSales.length} Orders)</h3>
             </div>
 
+            <div className="table-responsive">
             <table className="pro-table">
               <thead>
                 <tr>
@@ -608,6 +609,7 @@ function AdminReceivePaymentPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         </>
       )}
@@ -619,6 +621,7 @@ function AdminReceivePaymentPage() {
             <h3>Cleared Balance Receipts & Network Income Log ({clearedLedger.length} Receipts)</h3>
           </div>
 
+          <div className="table-responsive">
           <table className="pro-table">
             <thead>
               <tr>
@@ -677,6 +680,7 @@ function AdminReceivePaymentPage() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 
@@ -687,6 +691,7 @@ function AdminReceivePaymentPage() {
             <h3>Dumped & Abandoned Projects Archive ({dumpedProjects.length} Records)</h3>
           </div>
 
+          <div className="table-responsive">
           <table className="pro-table">
             <thead>
               <tr>
@@ -730,6 +735,7 @@ function AdminReceivePaymentPage() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 
@@ -814,6 +820,7 @@ function AdminReceivePaymentPage() {
               👥 7-Level Upline Income & Team Biz Distribution
             </div>
 
+            <div className="table-responsive">
             <table className="pro-table" style={{ fontSize: '0.82rem' }}>
               <thead>
                 <tr>
@@ -842,6 +849,7 @@ function AdminReceivePaymentPage() {
                 ))}
               </tbody>
             </table>
+            </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1.25rem' }}>
               <button className="pro-btn-create" style={{ padding: '0.65rem 1.4rem' }} onClick={() => setShowNetworkModal(false)}>

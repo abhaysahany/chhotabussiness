@@ -321,7 +321,7 @@ function AdminProductsServicesPage({ initialTab = 'products-catalog', onNavigate
           marginBottom: '1.5rem',
         }}
       >
-        <div style={{ flex: 1, minWidth: '260px' }}>
+        <div style={{ flex: 1, minWidth: 'min(100%, 260px)' }}>
           <input
             type="text"
             placeholder="Search by Title, Category, or Provider Entity..."
@@ -338,7 +338,7 @@ function AdminProductsServicesPage({ initialTab = 'products-catalog', onNavigate
           />
         </div>
 
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}

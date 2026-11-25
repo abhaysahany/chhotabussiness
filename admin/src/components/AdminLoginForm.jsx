@@ -256,7 +256,7 @@ function AdminLoginForm({ onLoginSuccess, initialShowForgot = false }) {
     <div className="auth-page-container">
       {/* Brand Header */}
       <div className="auth-header">
-        <div className="brand-logo" style={{ justifyContent: 'center' }}>
+        <div className="brand-logo" style={{ justifyContent: 'center', flexWrap: 'wrap' }}>
           {logoUrl && !logoFailed ? (
             <img
               src={logoUrl}
@@ -470,7 +470,7 @@ function AdminLoginForm({ onLoginSuccess, initialShowForgot = false }) {
         </form>
 
         <div className="auth-card-footer" style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid #f1f5f9', textAlign: 'center' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: '#94a3b8', fontSize: '0.75rem', fontWeight: '500' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: '0.4rem', color: '#94a3b8', fontSize: '0.75rem', fontWeight: '500', lineHeight: 1.4 }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
               <path d="M7 11V7a5 5 0 0 1 10 0v4" />
