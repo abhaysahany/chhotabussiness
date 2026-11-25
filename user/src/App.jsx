@@ -492,9 +492,9 @@ function AppContent() {
         <Route
           path="/privacy"
           element={
-            <div style={{ minHeight: '100vh', background: '#f8fafc', padding: '2rem 1rem' }}>
-              <div style={{ maxWidth: '1000px', margin: '0 auto 1.5rem auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <div className="van-legal-shell">
+              <div className="van-legal-topbar">
+                <div className="van-legal-topbar-actions">
                   <button
                     type="button"
                     onClick={() => handleNavigate(user ? '/dashboard' : '/')}
@@ -529,9 +529,9 @@ function AppContent() {
         <Route
           path="/terms"
           element={
-            <div style={{ minHeight: '100vh', background: '#f8fafc', padding: '2rem 1rem' }}>
-              <div style={{ maxWidth: '1000px', margin: '0 auto 1.5rem auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <div className="van-legal-shell">
+              <div className="van-legal-topbar">
+                <div className="van-legal-topbar-actions">
                   <button
                     type="button"
                     onClick={() => handleNavigate(user ? '/dashboard' : '/')}

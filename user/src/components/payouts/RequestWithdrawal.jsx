@@ -583,7 +583,7 @@ function RequestWithdrawal({ user, onNavigate }) {
       {/* Main 2-Column Responsive Layout */}
       <div className="van-kyc-grid-layout" style={{ marginTop: 0 }}>
         {/* Left Column: Withdrawal Form Card */}
-        <div className="van-kyc-card van-kyc-card-accent-emerald" style={{ padding: '2.5rem 2.25rem' }}>
+        <div className="van-kyc-card van-kyc-card-accent-emerald van-kyc-card-pad" style={{ padding: '2.5rem 2.25rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.75rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '1.25rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <div className="van-3d-kpi-icon van-3d-icon-emerald van-3d-pod-float" style={{ width: '48px', height: '48px', borderRadius: '14px' }}>

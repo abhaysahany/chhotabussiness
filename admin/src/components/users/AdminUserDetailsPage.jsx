@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import api from '../../api/axios';
 import { getAdminUsers, updateAdminUser, toggleAdminUserStatus } from '../../api/adminService';
 import {
   isRequired,
@@ -20,16 +21,19 @@ function AdminUserDetailsPage() {
   const [editErrors, setEditErrors] = useState({});
   const [modalBannerError, setModalBannerError] = useState('');
 
-  // Dynamic 1 BP Value from Admin Settings
+  // Dynamic 1 BP Value from Database Admin Settings
   const [bpRate, setBpRate] = useState(10);
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem('chhota_admin_mlm_settings');
-      if (stored) {
-        const s = JSON.parse(stored);
-        if (s.bpValueInRupees) setBpRate(s.bpValueInRupees);
-      }
-    } catch (e) {}
+    const fetchSettingsRate = async () => {
+      try {
+        const res = await api.get('/settings?group=mlm');
+        const rate = res?.data?.settings?.bpValueInRupees;
+        if (rate !== undefined && rate !== null && Number(rate) > 0) {
+          setBpRate(Number(rate));
+        }
+      } catch (e) {}
+    };
+    fetchSettingsRate();
   }, []);
 
   // Fetch real users from MySQL database API

@@ -616,9 +616,9 @@ function KycVerification({ user, onNavigate }) {
               backdropFilter: 'blur(16px)',
               border: '1px solid rgba(255, 255, 255, 0.25)',
               borderRadius: '16px',
-              padding: '0.85rem 1.4rem',
+              padding: '0.85rem 1.25rem',
               textAlign: 'center',
-              minWidth: '220px',
+              minWidth: 'min(100%, 220px)',
               boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)',
             }}
           >
@@ -635,16 +635,16 @@ function KycVerification({ user, onNavigate }) {
               Registered Member
             </span>
             <div
+              className="van-kyc-hero-member-name"
               style={{
-                fontSize: '1.45rem',
+                fontSize: 'clamp(1.08rem, 4vw, 1.45rem)',
                 fontWeight: 900,
                 color: '#ffffff',
                 marginTop: '0.15rem',
                 textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                maxWidth: '220px',
+                wordBreak: 'break-word',
+                lineHeight: 1.25,
+                maxWidth: '100%',
               }}
               title={currentUser?.name || user?.name || 'Member'}
             >
@@ -712,6 +712,7 @@ function KycVerification({ user, onNavigate }) {
       {/* STATUS BANNER 1: UNDER PROCESS / PENDING */}
       {isPending && !isEditing && (
         <div
+          className="van-kyc-section-box"
           style={{
             background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)',
             border: '1.5px solid #fde68a',
@@ -727,7 +728,7 @@ function KycVerification({ user, onNavigate }) {
             boxShadow: '0 8px 24px -4px rgba(245, 158, 11, 0.15)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', minWidth: 0, flex: '1 1 240px' }}>
             <div
               style={{
                 width: '48px',
@@ -744,12 +745,12 @@ function KycVerification({ user, onNavigate }) {
             >
               <Clock size={26} strokeWidth={2.4} />
             </div>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', marginBottom: '0.2rem' }}>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.45rem', marginBottom: '0.25rem' }}>
                 <strong style={{ color: '#92400e', fontSize: '1.1rem', fontWeight: 800 }}>
                   KYC Verification Under Review
                 </strong>
-                <span style={{ background: '#f59e0b', color: '#ffffff', fontSize: '0.7rem', fontWeight: 800, padding: '0.15rem 0.55rem', borderRadius: '12px', textTransform: 'uppercase' }}>
+                <span style={{ background: '#f59e0b', color: '#ffffff', fontSize: '0.7rem', fontWeight: 800, padding: '0.15rem 0.55rem', borderRadius: '12px', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
                   Under Process ⏳
                 </span>
               </div>
@@ -785,6 +786,7 @@ function KycVerification({ user, onNavigate }) {
       {/* STATUS BANNER 2: VERIFIED */}
       {isVerified && !isEditing && (
         <div
+          className="van-kyc-section-box"
           style={{
             background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
             border: '1.5px solid #bbf7d0',
@@ -800,7 +802,7 @@ function KycVerification({ user, onNavigate }) {
             boxShadow: '0 8px 24px -4px rgba(22, 163, 74, 0.15)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', minWidth: 0, flex: '1 1 240px' }}>
             <div
               style={{
                 width: '48px',
@@ -817,12 +819,12 @@ function KycVerification({ user, onNavigate }) {
             >
               <CheckCircle2 size={26} strokeWidth={2.4} />
             </div>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', marginBottom: '0.2rem' }}>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.45rem', marginBottom: '0.25rem' }}>
                 <strong style={{ color: '#15803d', fontSize: '1.1rem', fontWeight: 800 }}>
                   KYC Verification Approved & Active
                 </strong>
-                <span style={{ background: '#16a34a', color: '#ffffff', fontSize: '0.7rem', fontWeight: 800, padding: '0.15rem 0.55rem', borderRadius: '12px', textTransform: 'uppercase' }}>
+                <span style={{ background: '#16a34a', color: '#ffffff', fontSize: '0.7rem', fontWeight: 800, padding: '0.15rem 0.55rem', borderRadius: '12px', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
                   Verified ✓
                 </span>
               </div>
@@ -859,6 +861,7 @@ function KycVerification({ user, onNavigate }) {
       {/* STATUS BANNER 3: REJECTED */}
       {isRejected && !isEditing && (
         <div
+          className="van-kyc-section-box"
           style={{
             background: 'linear-gradient(135deg, #fff1f2 0%, #fee2e2 100%)',
             border: '1.5px solid #fecdd3',
@@ -874,7 +877,7 @@ function KycVerification({ user, onNavigate }) {
             boxShadow: '0 8px 24px -4px rgba(225, 29, 72, 0.15)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', minWidth: 0, flex: '1 1 240px' }}>
             <div
               style={{
                 width: '48px',
@@ -891,12 +894,12 @@ function KycVerification({ user, onNavigate }) {
             >
               <AlertTriangle size={26} strokeWidth={2.4} />
             </div>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', marginBottom: '0.2rem' }}>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.45rem', marginBottom: '0.25rem' }}>
                 <strong style={{ color: '#9f1239', fontSize: '1.1rem', fontWeight: 800 }}>
                   KYC Verification Rejected
                 </strong>
-                <span style={{ background: '#e11d48', color: '#ffffff', fontSize: '0.7rem', fontWeight: 800, padding: '0.15rem 0.55rem', borderRadius: '12px', textTransform: 'uppercase' }}>
+                <span style={{ background: '#e11d48', color: '#ffffff', fontSize: '0.7rem', fontWeight: 800, padding: '0.15rem 0.55rem', borderRadius: '12px', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
                   Action Required
                 </span>
               </div>
@@ -1087,19 +1090,19 @@ function KycVerification({ user, onNavigate }) {
             <div className="van-kyc-review-body">
               <div className="van-kyc-field-stack">
                 <div className="van-kyc-field-pod">
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.35rem' }}>
                     <span className="van-profile-field-lbl">Registered Full Name</span>
-                    <span className="van-card-badge-pill blue" style={{ fontSize: '0.64rem', padding: '0.1rem 0.45rem' }}>Primary Beneficiary</span>
+                    <span className="van-card-badge-pill blue" style={{ fontSize: '0.64rem', padding: '0.1rem 0.45rem', whiteSpace: 'nowrap' }}>Primary Beneficiary</span>
                   </div>
-                  <strong style={{ color: '#0F172A', fontSize: '0.98rem', fontWeight: 800 }}>
+                  <strong style={{ color: '#0F172A', fontSize: '0.98rem', fontWeight: 800, wordBreak: 'break-word' }}>
                     {currentUser?.name || user?.name || 'Member'}
                   </strong>
                 </div>
 
                 <div className="van-kyc-field-pod">
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.35rem' }}>
                     <span className="van-profile-field-lbl">PAN Card Number (Income Tax)</span>
-                    <span className="van-card-badge-pill teal" style={{ fontSize: '0.64rem', padding: '0.1rem 0.45rem' }}>TDS 5% Active</span>
+                    <span className="van-card-badge-pill teal" style={{ fontSize: '0.64rem', padding: '0.1rem 0.45rem', whiteSpace: 'nowrap' }}>TDS 5% Active</span>
                   </div>
                   <span style={{ color: '#1D4ED8', fontFamily: 'monospace', fontWeight: 850, fontSize: '1.05rem', letterSpacing: '0.04em' }}>
                     {currentUser?.pan_number || 'N/A'}
@@ -1107,9 +1110,9 @@ function KycVerification({ user, onNavigate }) {
                 </div>
 
                 <div className="van-kyc-field-pod">
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.35rem' }}>
                     <span className="van-profile-field-lbl">12-Digit Aadhaar Identification</span>
-                    <span className="van-card-badge-pill purple" style={{ fontSize: '0.64rem', padding: '0.1rem 0.45rem' }}>UIDAI Masked</span>
+                    <span className="van-card-badge-pill purple" style={{ fontSize: '0.64rem', padding: '0.1rem 0.45rem', whiteSpace: 'nowrap' }}>UIDAI Masked</span>
                   </div>
                   <span style={{ color: '#0369A1', fontFamily: 'monospace', fontWeight: 850, fontSize: '1.02rem', letterSpacing: '0.05em' }}>
                     {formatAadhaarDisplay(currentUser?.aadhaar_number)}
@@ -1117,12 +1120,12 @@ function KycVerification({ user, onNavigate }) {
                 </div>
 
                 <div className="van-kyc-field-pod">
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.35rem' }}>
                     <span className="van-profile-field-lbl">Submission Date & Audit Trail</span>
-                    <span className="van-card-badge-pill green" style={{ fontSize: '0.64rem', padding: '0.1rem 0.45rem' }}>Encrypted Vault</span>
+                    <span className="van-card-badge-pill green" style={{ fontSize: '0.64rem', padding: '0.1rem 0.45rem', whiteSpace: 'nowrap' }}>Encrypted Vault</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: '#334155', fontWeight: 650, fontSize: '0.88rem' }}>
-                    <Clock size={15} style={{ color: '#64748B' }} />
+                    <Clock size={15} style={{ color: '#64748B', flexShrink: 0 }} />
                     <span>{currentUser?.kyc_submitted_at ? formatDateTime(currentUser.kyc_submitted_at) : '18 Nov 2026, 01:32 pm'}</span>
                   </div>
                 </div>
@@ -1304,17 +1307,17 @@ function KycVerification({ user, onNavigate }) {
         /* KYC SUBMISSION / EDIT FORM (Active for Unverified or In Editing Mode) */
         <div className="van-kyc-grid-layout">
           {/* Left Column: Form Box */}
-          <div className="van-kyc-card van-kyc-card-accent-blue" style={{ padding: '2.5rem 2.25rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.75rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '1.25rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <div className="van-3d-kpi-icon van-3d-icon-blue van-3d-pod-float" style={{ width: '48px', height: '48px', borderRadius: '14px' }}>
+          <div className="van-kyc-card van-kyc-card-accent-blue van-kyc-card-pad" style={{ padding: '2.5rem 2.25rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.85rem', marginBottom: '1.75rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '1.25rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem', flex: '1 1 200px', minWidth: 0 }}>
+                <div className="van-3d-kpi-icon van-3d-icon-blue van-3d-pod-float" style={{ width: '48px', height: '48px', borderRadius: '14px', flexShrink: 0 }}>
                   <FileCheck size={24} />
                 </div>
-                <div>
-                  <h2 style={{ fontSize: '1.35rem', fontWeight: 900, color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>
+                <div style={{ minWidth: 0 }}>
+                  <h2 style={{ fontSize: '1.35rem', fontWeight: 900, color: '#0f172a', margin: 0, letterSpacing: '-0.02em', lineHeight: 1.25 }}>
                     {isEditing ? 'Resubmit / Edit KYC Identification' : 'Submit KYC Identification'}
                   </h2>
-                  <span style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '0.2rem', display: 'block' }}>
+                  <span style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '0.2rem', display: 'block', lineHeight: 1.4 }}>
                     Government proof for statutory tax deduction and commission payouts
                   </span>
                 </div>
@@ -1340,31 +1343,32 @@ function KycVerification({ user, onNavigate }) {
               )}
             </div>
 
-            <form onSubmit={handleKycSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+            <form onSubmit={handleKycSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '1.45rem' }}>
               {/* Registered Full Name Banner */}
               <div
+                className="van-kyc-name-banner"
                 style={{
                   background: 'linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%)',
                   padding: '1.15rem 1.35rem',
                   borderRadius: '16px',
                   border: '1.5px solid #dbeafe',
                   display: 'flex',
-                  alignItems: 'center',
+                  alignItems: 'flex-start',
                   gap: '1rem',
                   boxShadow: '0 2px 8px rgba(37, 99, 235, 0.04)',
                 }}
               >
-                <div className="van-3d-kpi-icon van-3d-icon-cyan van-3d-pod-float" style={{ width: '42px', height: '42px', borderRadius: '12px' }}>
+                <div className="van-3d-kpi-icon van-3d-icon-cyan van-3d-pod-float" style={{ width: '42px', height: '42px', borderRadius: '12px', flexShrink: 0 }}>
                   <UserCheck size={20} />
                 </div>
-                <div style={{ flex: 1 }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     Registered Profile Name
                   </div>
-                  <strong style={{ color: '#0f172a', fontSize: '1.05rem', letterSpacing: '-0.01em', display: 'block', marginTop: '0.1rem' }}>
+                  <strong style={{ color: '#0f172a', fontSize: '1.05rem', letterSpacing: '-0.01em', display: 'block', marginTop: '0.15rem', wordBreak: 'break-word', lineHeight: 1.3 }}>
                     {currentUser?.name || user?.name || 'Member'}
                   </strong>
-                  <div style={{ fontSize: '0.74rem', color: '#b45309', marginTop: '0.2rem', fontWeight: 600 }}>
+                  <div style={{ fontSize: '0.74rem', color: '#b45309', marginTop: '0.25rem', fontWeight: 600, lineHeight: 1.4 }}>
                     * Important: Name on PAN and Aadhaar must match this record exactly.
                   </div>
                 </div>
@@ -1372,6 +1376,7 @@ function KycVerification({ user, onNavigate }) {
 
               {/* Requirement 1: PAN Card Box */}
               <div
+                className="van-kyc-section-box"
                 style={{
                   border: errors.pan_number || errors.pan_card_image ? '1.5px solid #fca5a5' : '1.5px solid #e2e8f0',
                   borderRadius: '18px',
@@ -1381,19 +1386,19 @@ function KycVerification({ user, onNavigate }) {
                   transition: 'all 0.25s ease',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                    <div className="van-3d-kpi-icon van-3d-icon-blue van-3d-pod-float" style={{ width: '40px', height: '40px', borderRadius: '11px' }}>
+                <div className="van-kyc-section-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', marginBottom: '1.25rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flex: '1 1 180px', minWidth: 0 }}>
+                    <div className="van-3d-kpi-icon van-3d-icon-blue van-3d-pod-float" style={{ width: '40px', height: '40px', borderRadius: '11px', flexShrink: 0 }}>
                       <FileText size={18} />
                     </div>
-                    <div>
-                      <strong style={{ fontSize: '1rem', color: '#0f172a', display: 'block', fontWeight: 800 }}>
+                    <div style={{ minWidth: 0 }}>
+                      <strong style={{ fontSize: '1rem', color: '#0f172a', display: 'block', fontWeight: 800, lineHeight: 1.3 }}>
                         1. PAN Card (Section 194H TDS)
                       </strong>
-                      <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Statutory tax deduction compliance</span>
+                      <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block', marginTop: '0.1rem' }}>Statutory tax deduction compliance</span>
                     </div>
                   </div>
-                  <span style={{ background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe', padding: '0.25rem 0.65rem', borderRadius: '8px', fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.02em' }}>
+                  <span style={{ background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe', padding: '0.25rem 0.65rem', borderRadius: '8px', fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.02em', whiteSpace: 'nowrap', flexShrink: 0 }}>
                     Required *
                   </span>
                 </div>
@@ -1449,18 +1454,18 @@ function KycVerification({ user, onNavigate }) {
                       <span style={{ fontSize: '0.74rem', color: '#64748b', marginTop: '0.25rem' }}>Supports JPG, PNG, WEBP • Max 5MB (Auto-compressed)</span>
                     </label>
                   ) : (
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f8fafc', border: '1.5px solid #cbd5e1', borderRadius: '14px', padding: '0.9rem 1.15rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', background: '#f8fafc', border: '1.5px solid #cbd5e1', borderRadius: '14px', padding: '0.9rem 1.15rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', minWidth: 0 }}>
                         <img
                           src={panPreview}
                           alt="PAN Scan"
                           onClick={() => setModalImage({ title: 'PAN Card Scan Proof', src: panPreview })}
-                          style={{ width: '70px', height: '46px', objectFit: 'cover', borderRadius: '8px', border: '1.5px solid #cbd5e1', cursor: 'pointer', boxShadow: '0 2px 6px rgba(0,0,0,0.06)' }}
+                          style={{ width: '70px', height: '46px', objectFit: 'cover', borderRadius: '8px', border: '1.5px solid #cbd5e1', cursor: 'pointer', boxShadow: '0 2px 6px rgba(0,0,0,0.06)', flexShrink: 0 }}
                         />
-                        <div>
+                        <div style={{ minWidth: 0 }}>
                           <strong style={{ fontSize: '0.86rem', color: '#0f172a', display: 'block', fontWeight: 800 }}>PAN Scan Attached</strong>
-                          <span style={{ fontSize: '0.74rem', color: '#16a34a', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.25rem', marginTop: '0.15rem' }}>
-                            <Check size={13} /> {panFileName || 'Verified Image File'}
+                          <span style={{ fontSize: '0.74rem', color: '#16a34a', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.25rem', marginTop: '0.15rem', wordBreak: 'break-word' }}>
+                            <Check size={13} style={{ flexShrink: 0 }} /> {panFileName || 'Verified Image File'}
                           </span>
                         </div>
                       </div>
@@ -1494,6 +1499,7 @@ function KycVerification({ user, onNavigate }) {
 
               {/* Requirement 2: Aadhaar Card Box */}
               <div
+                className="van-kyc-section-box"
                 style={{
                   border: errors.aadhaar_number || errors.aadhaar_front_image || errors.aadhaar_back_image ? '1.5px solid #fca5a5' : '1.5px solid #e2e8f0',
                   borderRadius: '18px',
@@ -1503,30 +1509,30 @@ function KycVerification({ user, onNavigate }) {
                   transition: 'all 0.25s ease',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                    <div className="van-3d-kpi-icon van-3d-icon-cyan van-3d-pod-float" style={{ width: '40px', height: '40px', borderRadius: '11px' }}>
+                <div className="van-kyc-section-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', marginBottom: '1.25rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flex: '1 1 180px', minWidth: 0 }}>
+                    <div className="van-3d-kpi-icon van-3d-icon-cyan van-3d-pod-float" style={{ width: '40px', height: '40px', borderRadius: '11px', flexShrink: 0 }}>
                       <CreditCard size={18} />
                     </div>
-                    <div>
-                      <strong style={{ fontSize: '1rem', color: '#0f172a', display: 'block', fontWeight: 800 }}>
+                    <div style={{ minWidth: 0 }}>
+                      <strong style={{ fontSize: '1rem', color: '#0f172a', display: 'block', fontWeight: 800, lineHeight: 1.3 }}>
                         2. Aadhaar Card (UIDAI Identity Proof)
                       </strong>
-                      <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Residential address & identity verification</span>
+                      <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block', marginTop: '0.1rem' }}>Residential address & identity verification</span>
                     </div>
                   </div>
-                  <span style={{ background: '#f0f9ff', color: '#0369a1', border: '1px solid #bae6fd', padding: '0.25rem 0.65rem', borderRadius: '8px', fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.02em' }}>
+                  <span style={{ background: '#f0f9ff', color: '#0369a1', border: '1px solid #bae6fd', padding: '0.25rem 0.65rem', borderRadius: '8px', fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.02em', whiteSpace: 'nowrap', flexShrink: 0 }}>
                     Required *
                   </span>
                 </div>
 
                 {/* Aadhaar Number Input */}
                 <div style={{ marginBottom: '1.35rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.45rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.35rem', marginBottom: '0.45rem' }}>
                     <label htmlFor="aadhaar_number_input" style={{ fontSize: '0.76rem', fontWeight: 800, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                       12-Digit Aadhaar Card Number *
                     </label>
-                    <span style={{ fontSize: '0.74rem', color: aadhaarNumber.length === 12 ? '#16a34a' : '#64748b', fontWeight: 800 }}>
+                    <span style={{ fontSize: '0.74rem', color: aadhaarNumber.length === 12 ? '#16a34a' : '#64748b', fontWeight: 800, whiteSpace: 'nowrap' }}>
                       {aadhaarNumber.length} / 12 Digits
                     </span>
                   </div>
@@ -1554,7 +1560,7 @@ function KycVerification({ user, onNavigate }) {
                 </div>
 
                 {/* Aadhaar Front & Back Upload Zones */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1.15rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 210px), 1fr))', gap: '1.15rem' }}>
                   {/* Front Side */}
                   <div ref={aadhaarFrontDocRef}>
                     <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 800, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.45rem' }}>
@@ -1581,15 +1587,15 @@ function KycVerification({ user, onNavigate }) {
                         <span style={{ fontSize: '0.7rem', color: '#64748b', marginTop: '0.15rem' }}>Photo & Name Details</span>
                       </label>
                     ) : (
-                      <div style={{ background: '#f8fafc', border: '1.5px solid #cbd5e1', borderRadius: '12px', padding: '0.75rem 0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <div style={{ background: '#f8fafc', border: '1.5px solid #cbd5e1', borderRadius: '12px', padding: '0.75rem 0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.65rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: 0 }}>
                           <img
                             src={aadhaarFrontPreview}
                             alt="Aadhaar Front"
                             onClick={() => setModalImage({ title: 'Aadhaar Card Front Side', src: aadhaarFrontPreview })}
-                            style={{ width: '56px', height: '38px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #cbd5e1', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.06)' }}
+                            style={{ width: '56px', height: '38px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #cbd5e1', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.06)', flexShrink: 0 }}
                           />
-                          <div>
+                          <div style={{ minWidth: 0 }}>
                             <strong style={{ fontSize: '0.8rem', color: '#0f172a', display: 'block', fontWeight: 800 }}>Front Scan</strong>
                             <span style={{ fontSize: '0.7rem', color: '#16a34a', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}>
                               <Check size={11} /> Attached
@@ -1650,15 +1656,15 @@ function KycVerification({ user, onNavigate }) {
                         <span style={{ fontSize: '0.7rem', color: '#64748b', marginTop: '0.15rem' }}>Full Address Side</span>
                       </label>
                     ) : (
-                      <div style={{ background: '#f8fafc', border: '1.5px solid #cbd5e1', borderRadius: '12px', padding: '0.75rem 0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <div style={{ background: '#f8fafc', border: '1.5px solid #cbd5e1', borderRadius: '12px', padding: '0.75rem 0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.65rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: 0 }}>
                           <img
                             src={aadhaarBackPreview}
                             alt="Aadhaar Back"
                             onClick={() => setModalImage({ title: 'Aadhaar Card Back Side', src: aadhaarBackPreview })}
-                            style={{ width: '56px', height: '38px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #cbd5e1', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.06)' }}
+                            style={{ width: '56px', height: '38px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #cbd5e1', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.06)', flexShrink: 0 }}
                           />
-                          <div>
+                          <div style={{ minWidth: 0 }}>
                             <strong style={{ fontSize: '0.8rem', color: '#0f172a', display: 'block', fontWeight: 800 }}>Back Scan</strong>
                             <span style={{ fontSize: '0.7rem', color: '#16a34a', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}>
                               <Check size={11} /> Attached
@@ -1741,13 +1747,13 @@ function KycVerification({ user, onNavigate }) {
           {/* Right Column: Guidelines & Stepper */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.85rem' }}>
             {/* Visual Lifecycle Stepper */}
-            <div className="van-kyc-card van-kyc-card-accent-amber" style={{ padding: '2.25rem 2rem' }}>
+            <div className="van-kyc-card van-kyc-card-accent-amber van-kyc-card-pad" style={{ padding: '2.25rem 2rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem', marginBottom: '1.5rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '1.15rem' }}>
-                <div className="van-3d-kpi-icon van-3d-icon-amber van-3d-pod-float" style={{ width: '46px', height: '46px', borderRadius: '13px' }}>
+                <div className="van-3d-kpi-icon van-3d-icon-amber van-3d-pod-float" style={{ width: '46px', height: '46px', borderRadius: '13px', flexShrink: 0 }}>
                   <Zap size={22} />
                 </div>
-                <div>
-                  <h3 style={{ fontSize: '1.18rem', fontWeight: 900, color: '#0f172a', margin: 0, letterSpacing: '-0.01em' }}>
+                <div style={{ minWidth: 0 }}>
+                  <h3 style={{ fontSize: '1.18rem', fontWeight: 900, color: '#0f172a', margin: 0, letterSpacing: '-0.01em', lineHeight: 1.3 }}>
                     KYC Verification Lifecycle
                   </h3>
                   <span style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '0.15rem', display: 'block' }}>
@@ -1758,16 +1764,16 @@ function KycVerification({ user, onNavigate }) {
 
               <div className="van-kyc-stepper-track">
                 {/* Step 1 */}
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
+                <div style={{ display: 'flex', gap: '0.85rem', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
                   <div className="van-3d-kpi-icon van-3d-icon-blue van-3d-pod-float" style={{ width: '44px', height: '44px', borderRadius: '50%', flexShrink: 0, fontSize: '0.9rem', fontWeight: 900 }}>
                     1
                   </div>
-                  <div style={{ background: '#f8fafc', padding: '1rem 1.2rem', borderRadius: '14px', border: '1.5px solid #e2e8f0', flex: 1, boxShadow: '0 2px 8px rgba(15, 23, 42, 0.02)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
-                      <strong style={{ color: '#1d4ed8', fontSize: '0.92rem', fontWeight: 800 }}>
+                  <div className="van-kyc-step-pod" style={{ background: '#f8fafc', padding: '1rem 1.2rem', borderRadius: '14px', border: '1.5px solid #e2e8f0', flex: 1, minWidth: 0, boxShadow: '0 2px 8px rgba(15, 23, 42, 0.02)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.35rem', marginBottom: '0.3rem' }}>
+                      <strong style={{ color: '#1d4ed8', fontSize: '0.92rem', fontWeight: 800, lineHeight: 1.3 }}>
                         Submit PAN & Aadhaar Records
                       </strong>
-                      <span style={{ background: '#eff6ff', color: '#1d4ed8', fontSize: '0.68rem', fontWeight: 800, padding: '0.15rem 0.5rem', borderRadius: '6px' }}>
+                      <span style={{ background: '#eff6ff', color: '#1d4ed8', fontSize: '0.68rem', fontWeight: 800, padding: '0.15rem 0.5rem', borderRadius: '6px', whiteSpace: 'nowrap' }}>
                         Step 1
                       </span>
                     </div>
@@ -1778,16 +1784,16 @@ function KycVerification({ user, onNavigate }) {
                 </div>
 
                 {/* Step 2 */}
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
+                <div style={{ display: 'flex', gap: '0.85rem', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
                   <div className="van-3d-kpi-icon van-3d-icon-amber van-3d-pod-float" style={{ width: '44px', height: '44px', borderRadius: '50%', flexShrink: 0, fontSize: '0.9rem', fontWeight: 900 }}>
                     2
                   </div>
-                  <div style={{ background: '#fffdf5', padding: '1rem 1.2rem', borderRadius: '14px', border: '1.5px solid #fef3c7', flex: 1, boxShadow: '0 2px 8px rgba(245, 158, 11, 0.03)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
-                      <strong style={{ color: '#b45309', fontSize: '0.92rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                        Status: Under Process <Clock size={14} color="#d97706" />
+                  <div className="van-kyc-step-pod" style={{ background: '#fffdf5', padding: '1rem 1.2rem', borderRadius: '14px', border: '1.5px solid #fef3c7', flex: 1, minWidth: 0, boxShadow: '0 2px 8px rgba(245, 158, 11, 0.03)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.35rem', marginBottom: '0.3rem' }}>
+                      <strong style={{ color: '#b45309', fontSize: '0.92rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.35rem', lineHeight: 1.3 }}>
+                        Status: Under Process <Clock size={14} color="#d97706" style={{ flexShrink: 0 }} />
                       </strong>
-                      <span style={{ background: '#fef3c7', color: '#b45309', fontSize: '0.68rem', fontWeight: 800, padding: '0.15rem 0.5rem', borderRadius: '6px' }}>
+                      <span style={{ background: '#fef3c7', color: '#b45309', fontSize: '0.68rem', fontWeight: 800, padding: '0.15rem 0.5rem', borderRadius: '6px', whiteSpace: 'nowrap' }}>
                         Step 2
                       </span>
                     </div>
@@ -1798,16 +1804,16 @@ function KycVerification({ user, onNavigate }) {
                 </div>
 
                 {/* Step 3 */}
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
+                <div style={{ display: 'flex', gap: '0.85rem', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
                   <div className="van-3d-kpi-icon van-3d-icon-emerald van-3d-pod-float" style={{ width: '44px', height: '44px', borderRadius: '50%', flexShrink: 0, fontSize: '0.9rem', fontWeight: 900 }}>
                     3
                   </div>
-                  <div style={{ background: '#f0fdf4', padding: '1rem 1.2rem', borderRadius: '14px', border: '1.5px solid #bbf7d0', flex: 1, boxShadow: '0 2px 8px rgba(16, 185, 129, 0.03)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
-                      <strong style={{ color: '#15803d', fontSize: '0.92rem', fontWeight: 800 }}>
+                  <div className="van-kyc-step-pod" style={{ background: '#f0fdf4', padding: '1rem 1.2rem', borderRadius: '14px', border: '1.5px solid #bbf7d0', flex: 1, minWidth: 0, boxShadow: '0 2px 8px rgba(16, 185, 129, 0.03)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.35rem', marginBottom: '0.3rem' }}>
+                      <strong style={{ color: '#15803d', fontSize: '0.92rem', fontWeight: 800, lineHeight: 1.3 }}>
                         Admin Verifies & Unlocks Vault
                       </strong>
-                      <span style={{ background: '#dcfce7', color: '#15803d', fontSize: '0.68rem', fontWeight: 800, padding: '0.15rem 0.5rem', borderRadius: '6px' }}>
+                      <span style={{ background: '#dcfce7', color: '#15803d', fontSize: '0.68rem', fontWeight: 800, padding: '0.15rem 0.5rem', borderRadius: '6px', whiteSpace: 'nowrap' }}>
                         Step 3
                       </span>
                     </div>
@@ -1820,12 +1826,12 @@ function KycVerification({ user, onNavigate }) {
             </div>
 
             {/* Checklist Card */}
-            <div className="van-kyc-card van-kyc-card-accent-emerald" style={{ padding: '2rem' }}>
+            <div className="van-kyc-card van-kyc-card-accent-emerald van-kyc-card-pad" style={{ padding: '2rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '1rem' }}>
-                <div className="van-3d-kpi-icon van-3d-icon-emerald van-3d-pod-float" style={{ width: '44px', height: '44px', borderRadius: '12px' }}>
+                <div className="van-3d-kpi-icon van-3d-icon-emerald van-3d-pod-float" style={{ width: '44px', height: '44px', borderRadius: '12px', flexShrink: 0 }}>
                   <ShieldCheck size={20} />
                 </div>
-                <div>
+                <div style={{ minWidth: 0 }}>
                   <h4 style={{ fontSize: '1.08rem', fontWeight: 900, color: '#0f172a', margin: 0, letterSpacing: '-0.01em' }}>
                     Verification Checklist
                   </h4>

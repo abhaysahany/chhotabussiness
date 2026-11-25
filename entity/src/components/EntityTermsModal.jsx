@@ -29,29 +29,13 @@ function EntityTermsModal({ currentEntity, onAccept, onLogout }) {
   };
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(15, 23, 42, 0.85)',
-        backdropFilter: 'blur(8px)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 99999,
-        padding: '1.25rem',
-      }}
-    >
+    <div className="ent-modal-backdrop">
       <div
+        className="ent-modal-card"
         style={{
           background: '#ffffff',
           borderRadius: '20px',
-          width: '100%',
           maxWidth: '750px',
-          maxHeight: '90vh',
           display: 'flex',
           flexDirection: 'column',
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.35)',
@@ -62,16 +46,18 @@ function EntityTermsModal({ currentEntity, onAccept, onLogout }) {
       >
         {/* Modal Top Header */}
         <div
+          className="ent-modal-body"
           style={{
-            padding: '1.5rem 1.75rem',
             background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
             color: '#ffffff',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '0.75rem',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', minWidth: 0 }}>
             <div
               style={{
                 width: '42px',
@@ -83,13 +69,14 @@ function EntityTermsModal({ currentEntity, onAccept, onLogout }) {
                 justifyContent: 'center',
                 fontSize: '1.3rem',
                 color: '#ffffff',
+                flexShrink: 0,
               }}
             >
               📋
             </div>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '800' }}>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: '800', lineHeight: 1.25 }}>
                   Entity Partner Agreement
                 </h3>
                 <span
@@ -106,15 +93,15 @@ function EntityTermsModal({ currentEntity, onAccept, onLogout }) {
                   MANDATORY
                 </span>
               </div>
-              <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.8rem', color: '#94a3b8' }}>
-                Terms of Service & Operational Governance for <strong>{entityName}</strong> ({entityType})
+              <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.8rem', color: '#94a3b8', lineHeight: 1.4 }}>
+                Terms of Service &amp; Operational Governance for <strong>{entityName}</strong> ({entityType})
               </p>
             </div>
           </div>
         </div>
 
         {/* Tab switch & Welcome banner */}
-        <div style={{ padding: '0.85rem 1.75rem', background: '#f8fafc', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+        <div style={{ padding: '0.85rem 1.25rem', background: '#f8fafc', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
           <div style={{ fontSize: '0.8rem', color: '#475569' }}>
             🔔 Please review and accept these terms to unlock your Entity Dashboard.
           </div>
@@ -197,8 +184,8 @@ function EntityTermsModal({ currentEntity, onAccept, onLogout }) {
 
         {/* Scrollable Terms Body */}
         <div
+          className="ent-modal-body"
           style={{
-            padding: '1.75rem',
             overflowY: 'auto',
             flex: 1,
             fontSize: '0.875rem',
@@ -279,8 +266,8 @@ function EntityTermsModal({ currentEntity, onAccept, onLogout }) {
 
         {/* Modal Bottom Acceptance Action */}
         <div
+          className="ent-modal-body"
           style={{
-            padding: '1.25rem 1.75rem',
             background: '#f8fafc',
             borderTop: '1px solid #e2e8f0',
             display: 'flex',

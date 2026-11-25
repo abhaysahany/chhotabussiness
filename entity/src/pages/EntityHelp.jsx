@@ -55,7 +55,7 @@ function EntityHelp() {
       </div>
 
       {/* Help Topics Grid */}
-      <div className="help-topics-grid" style={{ marginTop: '1.5rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
+      <div className="help-topics-grid">
         <div className="help-topic-card">
           <div className="help-topic-icon">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

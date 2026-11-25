@@ -302,7 +302,7 @@ function AdminContentLibraryPage() {
     type: 'image',
     category: 'Marketing Banners',
     entity_type: 'chhota_business',
-    entity_name: 'AddNet System Entity',
+    entity_name: '',
     file_url: '',
     tags: '',
   });

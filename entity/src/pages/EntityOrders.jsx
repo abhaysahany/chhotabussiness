@@ -1121,41 +1121,25 @@ function EntityOrders() {
         const collected = Number(o.advancePayment ?? o.advance_payment ?? 0);
         const balance = Number(o.balanceDue ?? o.balance_due ?? 0);
         return (
-          <div
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: 'rgba(15, 23, 42, 0.65)',
-              backdropFilter: 'blur(6px)',
-              WebkitBackdropFilter: 'blur(6px)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 9999,
-              padding: '16px',
-            }}
-          >
+          <div className="ent-modal-backdrop">
             <div
+              className="ent-modal-card"
               style={{
                 backgroundColor: '#ffffff',
                 borderRadius: '18px',
                 maxWidth: '540px',
-                width: '100%',
                 boxShadow: '0 25px 60px rgba(0, 0, 0, 0.25)',
-                overflow: 'hidden',
                 border: '1px solid #e2e8f0',
               }}
             >
               <div
+                className="ent-modal-body"
                 style={{
-                  padding: '18px 24px',
                   borderBottom: '1px solid #e2e8f0',
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
+                  gap: '0.75rem',
                   background: 'linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)',
                 }}
               >
@@ -1194,7 +1178,7 @@ function EntityOrders() {
                 </button>
               </div>
 
-              <form onSubmit={handleReportDumpSubmit} style={{ padding: '24px' }}>
+              <form onSubmit={handleReportDumpSubmit} className="ent-modal-body">
                 {dumpError && (
                   <div
                     style={{
@@ -1214,10 +1198,8 @@ function EntityOrders() {
 
                 {/* Financial Overview mini pods */}
                 <div
+                  className="ent-modal-metrics-3"
                   style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr 1fr',
-                    gap: '10px',
                     backgroundColor: '#f8fafc',
                     padding: '12px',
                     borderRadius: '12px',
@@ -1329,7 +1311,7 @@ function EntityOrders() {
                   <strong style={{ color: '#0f172a' }}>Important:</strong> Dump Payment is NOT a cash receipt. It will be submitted to the Admin review queue. The balance will only be updated upon Admin verification.
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', flexWrap: 'wrap' }}>
                   <button
                     type="button"
                     onClick={() => setSelectedOrderForDump(null)}
@@ -1380,21 +1362,7 @@ function EntityOrders() {
         return (
           <>
             <div
-              style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: 'rgba(15, 23, 42, 0.65)',
-                backdropFilter: 'blur(6px)',
-                WebkitBackdropFilter: 'blur(6px)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 99999,
-                padding: '1rem',
-              }}
+              className="ent-modal-backdrop"
               onClick={(e) => {
                 if (e.target === e.currentTarget) {
                   setSelectedInvoice(null);
@@ -1402,14 +1370,11 @@ function EntityOrders() {
               }}
             >
               <div
+                className="ent-modal-card ent-modal-card-padded"
                 style={{
                   background: '#ffffff',
                   borderRadius: '20px',
-                  width: '100%',
                   maxWidth: '740px',
-                  maxHeight: '90vh',
-                  overflowY: 'auto',
-                  padding: '2rem',
                   boxShadow: '0 25px 60px rgba(0, 0, 0, 0.25)',
                   border: '1px solid #e2e8f0',
                 }}
@@ -1420,6 +1385,7 @@ function EntityOrders() {
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'flex-start',
+                    flexWrap: 'wrap',
                     borderBottom: '2px solid #f1f5f9',
                     paddingBottom: '1.25rem',
                     marginBottom: '1.25rem',
@@ -1614,10 +1580,8 @@ function EntityOrders() {
 
                 {/* Seller & Customer Details */}
                 <div
+                  className="ent-grid-2"
                   style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
-                    gap: '1rem',
                     fontSize: '0.84rem',
                     marginBottom: '1.25rem',
                     background: '#f8fafc',
@@ -1804,7 +1768,7 @@ function EntityOrders() {
                 )}
 
                 {/* Modal Footer */}
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1.5rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', flexWrap: 'wrap', marginTop: '1.5rem' }}>
                   <button
                     type="button"
                     onClick={handlePrintInvoice}

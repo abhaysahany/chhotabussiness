@@ -166,10 +166,10 @@ function DataTable({
             )}
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap', width: '100%' }}>
             {actions}
             {searchable && (
-              <div style={{ position: 'relative', minWidth: '220px' }}>
+              <div style={{ position: 'relative', minWidth: 'min(100%, 220px)', flex: '1 1 220px', maxWidth: '100%' }}>
                 <input
                   type="text"
                   placeholder={searchPlaceholder}
@@ -306,7 +306,7 @@ function DataTable({
             Showing <strong>{startEntry}</strong> to <strong>{endEntry}</strong> of <strong>{totalEntries}</strong> entries
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', flexWrap: 'wrap' }}>
             <button
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={safeCurrentPage === 1}

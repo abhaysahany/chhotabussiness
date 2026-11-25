@@ -571,7 +571,7 @@ function LevelIncomeDetailsPage({ user, onNavigate }) {
         
         {/* Tier 1: Search Bar & Refresh Action */}
         <div className="van-dir-toolbar-top">
-          <div className="van-dir-search-wrap" style={{ flex: '1 1 360px' }}>
+          <div className="van-dir-search-wrap">
             <Search size={18} className="van-dir-search-icon" />
             <input
               type="text"

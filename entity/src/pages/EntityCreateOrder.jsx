@@ -34,7 +34,7 @@ function EntityCreateOrder() {
   const entityName =
     currentEntity?.entity_details?.business_name ||
     currentEntity?.name ||
-    'Skyline Technologies Pvt Ltd';
+    '';
   const entityType =
     currentEntity?.entity_details?.entity_type === 'freelancer' ? 'freelance' : 'business';
   const entityId =
@@ -144,7 +144,7 @@ function EntityCreateOrder() {
   // Payment Details
   const [paymentTypeOption, setPaymentTypeOption] = useState('full'); // 'full' | 'partial'
   const [paymentMethod, setPaymentMethod] = useState('UPI / QR Code');
-  const [advancePayment, setAdvancePayment] = useState(2999);
+  const [advancePayment, setAdvancePayment] = useState(0);
   const [referenceNo, setReferenceNo] = useState(`UTR-${Math.floor(100000 + Math.random() * 900000)}`);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState({});
@@ -274,7 +274,7 @@ function EntityCreateOrder() {
       customer: `${customerName} (${cleanUserCode})`,
       customer_user_code: cleanUserCode,
       customerUserCode: cleanUserCode,
-      sponsor: customerSponsor || 'CB100001',
+      sponsor: customerSponsor || null,
       customerSponsor,
       item: customItemName,
       item_type: offeringType,
@@ -412,12 +412,12 @@ function EntityCreateOrder() {
 
       {/* Main 2-Column Grid Layout */}
       <form onSubmit={handleSubmitSale}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.4fr) minmax(320px, 1fr)', gap: '1.5rem', alignItems: 'start' }}>
+        <div className="ent-create-order-grid">
           {/* Left Column: Sale & Customer Info */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.35rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.35rem', minWidth: 0 }}>
             {/* 1. Offering Type & Item Selection */}
             <div className="ent-3d-form-card ent-3d-form-card-olive">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.65rem', marginBottom: '1.25rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                   <div className="ent-3d-pod ent-3d-pod-sm ent-pod-olive">
                     <Package size={20} />
@@ -437,7 +437,7 @@ function EntityCreateOrder() {
               </div>
 
               {/* Type Switcher Buttons */}
-              <div style={{ display: 'flex', gap: '0.65rem', marginBottom: '1.25rem' }}>
+              <div className="ent-offering-type-group">
                 {[
                   { id: 'service', label: 'Services', icon: Briefcase },
                   { id: 'product', label: 'Products', icon: Package },
@@ -504,7 +504,7 @@ function EntityCreateOrder() {
                   )}
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.85rem' }}>
+                <div className="ent-grid-3">
                   <div>
                     <label className="ent-form-label">
                       <span>Price (₹) <span style={{ color: '#ef4444' }}>*</span></span>
@@ -647,7 +647,7 @@ function EntityCreateOrder() {
               </div>
 
               {/* Auto-filled details */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="ent-grid-2">
                 <div>
                   <label className="ent-form-label">
                     <span>Customer Full Name <span style={{ color: '#ef4444' }}>*</span></span>
@@ -757,7 +757,7 @@ function EntityCreateOrder() {
                 </div>
 
                 {/* Tactile Full vs Partial Switcher */}
-                <div style={{ display: 'inline-flex', background: '#f1f5f9', padding: '3.5px', borderRadius: '10px', gap: '3px', border: '1px solid #e2e8f0' }}>
+                <div style={{ display: 'inline-flex', flexWrap: 'wrap', background: '#f1f5f9', padding: '3.5px', borderRadius: '10px', gap: '3px', border: '1px solid #e2e8f0', maxWidth: '100%' }}>
                   <button
                     type="button"
                     onClick={() => {
@@ -805,7 +805,7 @@ function EntityCreateOrder() {
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+              <div className="ent-grid-3" style={{ gap: '1rem' }}>
                 <div>
                   <label className="ent-form-label">
                     <span>Payment Mode</span>
@@ -864,7 +864,7 @@ function EntityCreateOrder() {
               </div>
 
               {paymentTypeOption === 'partial' && (
-                <div style={{ marginTop: '1.25rem', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '12px', padding: '0.85rem 1.15rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.84rem', boxShadow: '0 2px 6px rgba(217, 119, 6, 0.1)' }}>
+                <div style={{ marginTop: '1.25rem', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '12px', padding: '0.85rem 1.15rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', fontSize: '0.84rem', boxShadow: '0 2px 6px rgba(217, 119, 6, 0.1)' }}>
                   <span style={{ color: '#92400e', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
                     <Clock size={15} /> Remaining Balance to Collect Later:
                   </span>
@@ -877,7 +877,7 @@ function EntityCreateOrder() {
           </div>
 
           {/* Right Column: Invoice Breakdown & Dynamic Commission to Admin */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', minWidth: 0 }}>
             {/* Invoice & Admin Commission Card */}
             <div className="ent-3d-summary-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.85rem', marginBottom: '1.25rem' }}>
@@ -985,26 +985,13 @@ function EntityCreateOrder() {
 
       {/* Success Modal */}
       {showSuccessModal && createdSaleData && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(15, 23, 42, 0.75)',
-            backdropFilter: 'blur(6px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 99999,
-            padding: '1rem',
-          }}
-        >
+        <div className="ent-modal-backdrop">
           <div
+            className="ent-modal-card ent-modal-card-padded"
             style={{
               background: '#ffffff',
               borderRadius: '20px',
-              width: '100%',
               maxWidth: '560px',
-              padding: '2rem',
               boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.3)',
               textAlign: 'center',
               border: '1px solid rgba(226, 232, 240, 0.9)',
@@ -1081,7 +1068,7 @@ function EntityCreateOrder() {
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
               <button
                 type="button"
                 onClick={() => {

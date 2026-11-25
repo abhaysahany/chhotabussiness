@@ -112,13 +112,6 @@ function AdminProductsPage() {
         entCatData.value.categories.forEach((c) => c.name && categoryNames.add(c.name));
       }
 
-      if (categoryNames.size === 0) {
-        categoryNames.add('Software & IT');
-        categoryNames.add('Design & Creative');
-        categoryNames.add('Legal & Compliance');
-        categoryNames.add('Marketing & SEO');
-        categoryNames.add('Electronics & Hardware');
-      }
       setCategoriesList(Array.from(categoryNames));
 
       // Registered Businesses from Database
@@ -173,7 +166,7 @@ function AdminProductsPage() {
     setEditingProduct(null);
     setFormErrors({});
     setFormBannerError('');
-    const defaultCat = categoriesList[0] || 'Software & IT';
+    const defaultCat = categoriesList[0] || '';
     const defaultBiz = businessesList.length > 0 ? (businessesList[0].name || businessesList[0].business_name || '') : '';
 
     setFormData({
@@ -812,22 +805,40 @@ function AdminProductsPage() {
                     <tr key={p.id} className="adm-table-row">
                       <td style={{ padding: '0.9rem 1.15rem' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                          <img
-                            src={p.image || 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=400'}
-                            alt={p.name}
-                            style={{
-                              width: '42px',
-                              height: '42px',
-                              borderRadius: '10px',
-                              objectFit: 'cover',
-                              border: '1.5px solid #e2e8f0',
-                              boxShadow: '0 2px 6px rgba(0,0,0,0.04)',
-                              flexShrink: 0,
-                            }}
-                            onError={(e) => {
-                              e.target.src = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400';
-                            }}
-                          />
+                          {p.image ? (
+                            <img
+                              src={p.image}
+                              alt={p.name}
+                              style={{
+                                width: '42px',
+                                height: '42px',
+                                borderRadius: '10px',
+                                objectFit: 'cover',
+                                border: '1.5px solid #e2e8f0',
+                                boxShadow: '0 2px 6px rgba(0,0,0,0.04)',
+                                flexShrink: 0,
+                              }}
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                              }}
+                            />
+                          ) : (
+                            <div
+                              style={{
+                                width: '42px',
+                                height: '42px',
+                                borderRadius: '10px',
+                                background: '#f1f5f9',
+                                border: '1.5px solid #e2e8f0',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                flexShrink: 0,
+                              }}
+                            >
+                              <Package size={18} color="#64748b" />
+                            </div>
+                          )}
                           <div>
                             <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.88rem' }}>
                               {p.name}
@@ -1034,15 +1045,19 @@ function AdminProductsPage() {
               >
                 <div>
                   {/* Media Header */}
-                  <div style={{ position: 'relative', height: '170px', overflow: 'hidden', background: '#f1f5f9' }}>
-                    <img
-                      src={p.image || 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=400'}
-                      alt={p.name}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      onError={(e) => {
-                        e.target.src = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400';
-                      }}
-                    />
+                  <div style={{ position: 'relative', height: '170px', overflow: 'hidden', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {p.image ? (
+                      <img
+                        src={p.image}
+                        alt={p.name}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <Package size={42} color="#64748b" />
+                    )}
                     <div style={{ position: 'absolute', top: '10px', left: '10px', display: 'flex', gap: '0.35rem' }}>
                       <span
                         style={{

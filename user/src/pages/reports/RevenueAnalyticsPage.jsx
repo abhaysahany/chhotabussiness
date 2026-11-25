@@ -545,9 +545,8 @@ function RevenueAnalyticsPage({ user }) {
 
                   {/* Dual Breakdown Box (Received vs Balance) */}
                   <div
+                    className="van-modal-split-grid"
                     style={{
-                      display: 'grid',
-                      gridTemplateColumns: '1fr 1fr',
                       gap: '0.85rem',
                       background: '#F8FAFC',
                       padding: '0.85rem 1rem',

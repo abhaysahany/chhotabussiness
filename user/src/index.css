@@ -21,7 +21,6 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 html, body {
@@ -1676,7 +1675,7 @@ body {
 /* Dashboard Legacy Compatibility */
 .status-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   gap: 1.5rem;
 }
 
@@ -1778,7 +1777,7 @@ body {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
 
   /* Main wrapper takes 100% width on mobile */
   .pro-app-wrapper:not(.sidebar-is-collapsed) .pro-main-wrapper,
@@ -1793,7 +1792,7 @@ body {
     top: 0;
     left: 0;
     bottom: 0;
-    width: 260px !important;
+    width: min(270px, 85vw) !important;
     z-index: 1000;
     box-shadow: 4px 0 24px rgba(15, 23, 42, 0.15);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -1803,7 +1802,7 @@ body {
   .pro-sidebar.collapsed,
   .pro-app-wrapper.sidebar-is-collapsed .pro-sidebar {
     transform: translateX(-100%) !important;
-    width: 260px !important;
+    width: min(270px, 85vw) !important;
   }
 
   .pro-app-wrapper:not(.sidebar-is-collapsed) .pro-sidebar {
@@ -1910,15 +1909,12 @@ body {
   }
 
   /* Mobile Page Content Canvas */
-  .pro-page-content {
-    padding: 0.5rem 0.5rem 3.5rem 0.5rem !important;
-  }
-
+  .pro-page-content,
   .pro-page-content.pro-curved-canvas {
-    border-radius: 14px !important;
-    margin: 0.25rem 0.5rem 0.5rem 0.5rem !important;
-    min-height: calc(100vh - var(--header-height) - 60px);
-    padding-bottom: 3.5rem !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 0.9rem 0.75rem 4.25rem 0.75rem !important;
+    min-height: calc(100vh - var(--van-header-height, 64px));
   }
 
   .gen-ai-header-row {
@@ -2799,7 +2795,7 @@ body {
 /* Security & KYC Cards Box */
 .security-options-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   gap: 1rem;
 }
 
@@ -3547,9 +3543,27 @@ body {
   background: #f8fafc !important;
 }
 
+.profile-cards-grid.contact-split {
+  grid-template-columns: 1fr 1.3fr;
+  align-items: stretch;
+}
+
+.contact-office-pills-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 1.25rem;
+}
+
 /* Responsive Overrides */
 @media (max-width: 900px) {
-  .profile-cards-grid {
+  .profile-cards-grid,
+  .profile-cards-grid.contact-split {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 420px) {
+  .contact-office-pills-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -3751,13 +3765,18 @@ div:has(input[placeholder*="Search entity name"]) ~ div:has(> table) {
   box-sizing: border-box !important;
 }
 
-/* Report Table Minimum Width to prevent column squeezing on smaller viewports */
-.page-container table,
-.page-container div > table,
+/* Report Table Minimum Width to prevent column squeezing on smaller viewports (excludes compact modal tables) */
+.page-container table:not(.van-modal-card table),
+.page-container div > table:not(.van-modal-card table),
 div:has(input[placeholder*="Search entity name"]) ~ div > table {
   width: 100% !important;
   min-width: 820px !important;
   border-collapse: separate !important;
+}
+
+.van-modal-card table {
+  min-width: 0 !important;
+  width: 100% !important;
 }
 
 /* All Column Headers */
@@ -4281,7 +4300,7 @@ div[style*="z-index:99999"][style*="rgb(15, 23, 42)"]:not(:has(form)):not(:has(d
   transform: translateX(-50%) !important;
   width: auto !important;
   max-width: min(420px, calc(100vw - 32px)) !important;
-  min-width: 260px !important;
+  min-width: min(260px, calc(100vw - 32px)) !important;
   box-sizing: border-box !important;
   padding: 0.65rem 1.15rem !important;
   font-size: 0.835rem !important;
@@ -5093,7 +5112,7 @@ div[style*="fixed"]:has(img[alt="UPI QR Full"]) > div {
 /* 2. Main Two-Column Layout (Desktop) */
 .support-tickets-grid {
   display: grid !important;
-  grid-template-columns: minmax(320px, 1fr) 2fr !important;
+  grid-template-columns: minmax(min(100%, 300px), 1fr) 2fr !important;
   gap: 1.5rem !important;
   align-items: flex-start !important;
   width: 100% !important;

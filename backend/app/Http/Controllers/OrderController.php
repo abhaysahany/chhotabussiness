@@ -373,7 +373,7 @@ class OrderController extends Controller
         }
 
         // Selling entity takes precedence over catalog owner
-        $finalEntityName = $entityName ?: ($catalogItem?->owner_name ?: (BusinessEntity::first()?->name ?: 'Vyapar AdNET Entity'));
+        $finalEntityName = $entityName ?: ($catalogItem?->owner_name ?: (\App\Models\SystemSetting::get('app_name', config('app.name', 'Platform Managed')) ?: 'Platform Managed'));
         $finalEntityType = $entityType ?: ($catalogItem?->owner_type ?: 'business');
         $finalEntityId = $entityId ? (int) $entityId : ($catalogItem?->owner_id ?: null);
 

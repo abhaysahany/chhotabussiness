@@ -18,30 +18,10 @@ function BusinessSalesReportPage({ user, initialTab = 'reports-sales' }) {
     }
   }, [initialTab]);
 
-  // Sample Sales Report Data
-  const salesTransactions = [
-    { id: 'ORD-9821', customer: 'Apex Advisory Pvt Ltd', service: 'GST Registration & Filing', category: 'Tax & Compliance', amount: 15400, commission: 2310, status: 'Completed', date: '2026-08-16' },
-    { id: 'ORD-9822', customer: 'Rohan Sen (Freelancer)', service: 'Trademark Registration', category: 'Legal Services', amount: 8500, commission: 1275, status: 'Completed', date: '2026-08-15' },
-    { id: 'ORD-9823', customer: 'BlueShift Technologies', service: 'Private Limited Incorporation', category: 'Corporate Setup', amount: 24000, commission: 3600, status: 'Completed', date: '2026-08-14' },
-    { id: 'ORD-9824', customer: 'Priya Sharma (CA)', service: 'Annual ROC Compliance', category: 'Tax & Compliance', amount: 12500, commission: 1875, status: 'Processing', date: '2026-08-14' },
-    { id: 'ORD-9825', customer: 'GreenTech Innovations', service: 'ISO 9001 Certification', category: 'Quality & Audit', amount: 18000, commission: 2700, status: 'Completed', date: '2026-08-12' },
-    { id: 'ORD-9826', customer: 'DesignCraft Studio', service: 'MSME Udyam Registration', category: 'Government Schemes', amount: 4500, commission: 675, status: 'Completed', date: '2026-08-10' },
-  ];
-
-  const categoryPerformance = [
-    { category: 'Tax & Compliance', salesCount: 54, totalRevenue: 245000, growth: '+22.4%', color: '#6366f1' },
-    { category: 'Corporate Setup', salesCount: 38, totalRevenue: 182000, growth: '+15.8%', color: '#0284c7' },
-    { category: 'Legal Services', salesCount: 29, totalRevenue: 98500, growth: '+12.1%', color: '#7c3aed' },
-    { category: 'Quality & Audit', salesCount: 16, totalRevenue: 64000, growth: '+8.5%', color: '#10b981' },
-    { category: 'Government Schemes', salesCount: 42, totalRevenue: 52000, growth: '+31.0%', color: '#f59e0b' },
-  ];
-
-  const teamPerformance = [
-    { rank: 1, name: 'Sanjay Kumar', level: 'Diamond Executive', directSales: 18, teamSales: 64, volume: 184000, commissionEarned: 27600 },
-    { rank: 2, name: 'Neha Gupta', level: 'Platinum Director', directSales: 14, teamSales: 48, volume: 142000, commissionEarned: 21300 },
-    { rank: 3, name: 'Vikram Mehta', level: 'Gold Leader', directSales: 11, teamSales: 32, volume: 96000, commissionEarned: 14400 },
-    { rank: 4, name: 'Ananya Roy', level: 'Silver Specialist', directSales: 9, teamSales: 22, volume: 68000, commissionEarned: 10200 },
-  ];
+  // Database-driven Sales Report State
+  const salesTransactions = [];
+  const categoryPerformance = [];
+  const teamPerformance = [];
 
   const handleExport = (format) => {
     setExportSuccessMsg(`Report exported successfully as ${format.toUpperCase()}! Download starting...`);
@@ -339,7 +319,7 @@ function BusinessSalesReportPage({ user, initialTab = 'reports-sales' }) {
 
       {/* TAB 2: CATEGORY REVENUE BREAKDOWN */}
       {activeTab === 'revenue-analytics' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '1.5rem' }}>
           {categoryPerformance.map((cat, idx) => (
             <div key={idx} style={{ background: '#fff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '1.5rem', borderTop: `4px solid ${cat.color}`, boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
@@ -473,7 +453,7 @@ function BusinessSalesReportPage({ user, initialTab = 'reports-sales' }) {
                     Select your preferred format to export the sales performance and revenue audit summary.
                   </p>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '1.25rem' }}>
+                  <div className="van-modal-split-grid" style={{ gap: '0.75rem', marginBottom: '1.25rem' }}>
                     <button
                       onClick={() => handleExport('pdf')}
                       style={{ background: '#f8fafc', border: '1px solid #cbd5e1', padding: '1rem', borderRadius: '10px', textAlign: 'center', cursor: 'pointer', fontWeight: '700', color: '#0f172a' }}

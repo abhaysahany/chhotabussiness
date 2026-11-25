@@ -261,7 +261,7 @@ function AvailableRewards({ user, onNavigate }) {
               borderRadius: '16px',
               padding: '0.9rem 1.4rem',
               textAlign: 'center',
-              minWidth: '220px',
+              minWidth: 'min(100%, 200px)',
               boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)',
             }}
           >
@@ -352,15 +352,7 @@ function AvailableRewards({ user, onNavigate }) {
       </div>
 
       {/* 4 Premium 3D KPI Summary Pods - Strictly 1 Row */}
-      <div
-        className="van-rewards-kpi-row"
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
-          gap: '1.25rem',
-          marginBottom: '2rem',
-        }}
-      >
+      <div className="van-rewards-kpi-row">
         {/* Card 1: Total Catalog Rewards */}
         <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #3B82F6, #1D4ED8)' }} />
@@ -491,7 +483,7 @@ function AvailableRewards({ user, onNavigate }) {
       <div className="van-dir-toolbar-3d" style={{ marginBottom: '2rem' }}>
         {/* Tier 1: Search Bar & Count Action */}
         <div className="van-dir-toolbar-top">
-          <div className="van-dir-search-wrap" style={{ flex: '1 1 380px' }}>
+          <div className="van-dir-search-wrap">
             <div className="van-dir-search-icon-pod">
               <Search size={16} color="#2563EB" />
             </div>

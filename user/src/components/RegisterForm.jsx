@@ -95,7 +95,7 @@ function RegisterForm({ onRegisterSuccess, onSwitchToLogin, onSocialClick, onOpe
     } catch (e) {
       console.warn('Error reading referral code:', e);
     }
-    return 'CB100001';
+    return '';
   };
 
   const [sponsorId, setSponsorId] = useState(getInitialSponsorId);

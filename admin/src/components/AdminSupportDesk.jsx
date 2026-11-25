@@ -5,8 +5,6 @@ import {
   updateTicketStatus,
 } from '../api/adminService';
 
-const LOCAL_STORAGE_KEY = 'vyapar_support_tickets_v1';
-
 function AdminSupportDesk({ currentAdmin }) {
   const [tickets, setTickets] = useState([]);
   const [stats, setStats] = useState({ total: 0, open: 0, in_progress: 0, resolved: 0 });
@@ -22,50 +20,12 @@ function AdminSupportDesk({ currentAdmin }) {
     ? `${currentAdmin.name} (Admin)`
     : 'Senior Admin Support';
 
-  // Fetch Tickets from Database API + merge localStorage user tickets
+  // Fetch Tickets strictly from Database API
   const fetchTicketsData = async () => {
     setLoading(true);
     try {
-      // 1. Fetch from Laravel DB API
       const apiRes = await getSupportTickets(filterStatus, searchQuery);
-      let loadedTickets = apiRes.tickets || [];
-
-      // 2. Check localStorage for any tickets generated in user portal
-      const localData = localStorage.getItem(LOCAL_STORAGE_KEY) || localStorage.getItem('chhota_support_tickets_v1');
-      if (localData) {
-        try {
-          const parsedLocal = JSON.parse(localData);
-          if (Array.isArray(parsedLocal)) {
-            // Merge local tickets if not already in DB list
-            parsedLocal.forEach((lt) => {
-              const exists = loadedTickets.some(
-                (t) => t.ticket_code === lt.id || t.id === lt.id
-              );
-              if (!exists) {
-                loadedTickets.push({
-                  id: lt.id,
-                  ticket_code: lt.id,
-                  user_name: lt.user?.name || 'User',
-                  user_email: lt.user?.email || 'user@example.com',
-                  subject: lt.subject,
-                  category: lt.category || 'General',
-                  priority: lt.priority || 'Medium',
-                  status: lt.status || 'Open',
-                  messages: lt.messages.map((m) => ({
-                    id: m.id,
-                    sender_type: m.sender,
-                    sender_name: m.senderName || m.sender,
-                    message: m.text,
-                    created_at: m.timestamp || 'Just Now',
-                  })),
-                });
-              }
-            });
-          }
-        } catch (e) {
-          console.error('Error parsing localStorage support tickets:', e);
-        }
-      }
+      const loadedTickets = apiRes.tickets || [];
 
       setTickets(loadedTickets);
       if (apiRes.stats) {
@@ -106,35 +66,8 @@ function AdminSupportDesk({ currentAdmin }) {
 
     setSending(true);
     try {
-      // If ticket is integer ID, post to DB API
-      if (typeof selectedTicket.id === 'number') {
-        const res = await sendSupportReply(selectedTicket.id, adminReplyText, adminName);
-        if (res.status === 'success') {
-          setToastMessage(`Response sent to ${selectedTicket.user_name}!`);
-        }
-      } else {
-        // Handle local ticket update
-        const updated = tickets.map((t) => {
-          if (t.id === selectedTicket.id) {
-            return {
-              ...t,
-              status: 'In Progress',
-              messages: [
-                ...t.messages,
-                {
-                  id: `msg-${Date.now()}`,
-                  sender_type: 'admin',
-                  sender_name: adminName,
-                  message: adminReplyText,
-                  created_at: 'Just Now',
-                },
-              ],
-            };
-          }
-          return t;
-        });
-        setTickets(updated);
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+      const res = await sendSupportReply(selectedTicket.id, adminReplyText, adminName);
+      if (res.status === 'success') {
         setToastMessage(`Response sent to ${selectedTicket.user_name}!`);
       }
 
@@ -152,18 +85,7 @@ function AdminSupportDesk({ currentAdmin }) {
   const handleStatusChange = async (newStatus) => {
     if (!selectedTicket) return;
     try {
-      if (typeof selectedTicket.id === 'number') {
-        await updateTicketStatus(selectedTicket.id, newStatus);
-      } else {
-        const updated = tickets.map((t) => {
-          if (t.id === selectedTicket.id) {
-            return { ...t, status: newStatus };
-          }
-          return t;
-        });
-        setTickets(updated);
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
-      }
+      await updateTicketStatus(selectedTicket.id, newStatus);
       setToastMessage(`Ticket status updated to ${newStatus}`);
       fetchTicketsData();
     } catch (err) {

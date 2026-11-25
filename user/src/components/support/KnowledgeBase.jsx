@@ -56,64 +56,25 @@ function KnowledgeBase({ onNavigate }) {
     'Direct Referrals',
   ];
 
-  const defaultFaqs = [
-    {
-      id: 'd1',
-      category: 'Payouts & Wallet',
-      question: 'When are commission withdrawals processed?',
-      answer: 'Withdrawal requests are processed in automated IMPS/NEFT batches every 2 hours on working business days. Transfers usually credit to your verified bank account within 30 minutes of initiation.',
-    },
-    {
-      id: 'd2',
-      category: 'KYC & Verification',
-      question: 'What documents are required for KYC approval?',
-      answer: 'You need to upload clear, non-blurred photos of your PAN Card (for 5% TDS statutory tax deduction compliance) and 12-digit Aadhaar Card (front side with photo & back side with address). Admin verification is typically completed within 2 to 4 business hours.',
-    },
-    {
-      id: 'd3',
-      category: 'Commission Plan',
-      question: 'How is Team Level Matching Bonus calculated?',
-      answer: 'Team matching bonus is calculated on the balanced business volume (BV) across your active network legs. Daily matching cuts off at 11:59 PM IST and credits directly to your Available Commission Wallet.',
-    },
-    {
-      id: 'd4',
-      category: 'Commission Plan',
-      question: 'Where can I see my direct referral bonus statements?',
-      answer: 'Go to Business Reports » Network Earnings & Commissions in your sidebar layout to view itemized commission ledgers, TDS deductions under Section 194H, and downloadable payout vouchers.',
-    },
-    {
-      id: 'd5',
-      category: 'Payouts & Wallet',
-      question: 'Can I add multiple bank accounts or UPI IDs?',
-      answer: 'Yes! You can register up to 3 bank accounts and 2 UPI IDs under Settings » Bank & Payout Accounts. You can designate any one as your Primary destination for 1-click withdrawals.',
-    },
-    {
-      id: 'd6',
-      category: 'KYC & Verification',
-      question: 'What should I do if my KYC is marked "Rejected"?',
-      answer: 'If your KYC is rejected, check the reason displayed in your KYC dashboard (e.g., blurred image or name mismatch). Click "Resubmit KYC Details" to upload corrected proof documents.',
-    },
-  ];
-
   useEffect(() => {
     const loadFaqs = async () => {
       try {
         setLoading(true);
         const res = await getUserSupportTopics();
-        if (res && res.status === 'success' && res.topics && res.topics.length > 0) {
+        if (res && res.status === 'success' && Array.isArray(res.topics)) {
           const dbFaqs = res.topics.map((t) => ({
             id: t.id,
             category: t.category,
             question: t.faq_question || t.title,
             answer: t.faq_answer || t.article_body || t.summary || '',
           }));
-          setFaqs([...dbFaqs, ...defaultFaqs]);
+          setFaqs(dbFaqs);
         } else {
-          setFaqs(defaultFaqs);
+          setFaqs([]);
         }
       } catch (err) {
         console.error('Error fetching FAQs:', err);
-        setFaqs(defaultFaqs);
+        setFaqs([]);
       } finally {
         setLoading(false);
       }
@@ -322,7 +283,7 @@ function KnowledgeBase({ onNavigate }) {
 
       {/* Support Desk Callout Bar at Bottom */}
       <div className="van-kb-support-bar">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.15rem', flex: 1, minWidth: '260px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.15rem', flex: 1, minWidth: 'min(100%, 240px)' }}>
           <div className="van-3d-kpi-icon van-3d-icon-cyan" style={{ width: '48px', height: '48px', borderRadius: '14px', flexShrink: 0 }}>
             <Headphones size={24} strokeWidth={2.3} />
           </div>

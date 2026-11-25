@@ -732,7 +732,7 @@ function PayoutHistory({ user, onNavigate }) {
           {/* Custom Date Pickers + Status Dropdown */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
             {/* Custom From / To */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', background: '#f8fafc', padding: '0.3rem 0.65rem', borderRadius: '10px', border: '1.5px solid #e2e8f0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap', maxWidth: '100%', background: '#f8fafc', padding: '0.3rem 0.65rem', borderRadius: '10px', border: '1.5px solid #e2e8f0' }}>
               <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 700 }}>From:</span>
               <input
                 type="date"

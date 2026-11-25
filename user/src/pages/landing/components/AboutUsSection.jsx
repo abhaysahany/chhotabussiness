@@ -42,7 +42,7 @@ function AboutUsSection() {
         </div>
 
         {/* 3 Core Pillar Cards: Who We Are, Mission, Vision */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem', marginBottom: '3.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '2rem', marginBottom: '3.5rem' }}>
           {/* Who We Are */}
           <div className="cb-card" style={{ borderTop: '4px solid #0F4C81' }}>
             <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: '#e8f1f8', color: '#0F4C81', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
@@ -89,7 +89,7 @@ function AboutUsSection() {
             Our Growth Trajectory
           </h3>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))', gap: '1.5rem' }}>
             {milestones.map((m, idx) => (
               <div key={idx} style={{ background: '#ffffff', border: '1px solid var(--cb-border)', borderRadius: '14px', padding: '1.5rem' }}>
                 <span style={{ fontSize: '1.4rem', fontWeight: 900, color: '#0F4C81', fontFamily: 'Poppins, sans-serif' }}>

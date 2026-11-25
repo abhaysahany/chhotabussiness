@@ -70,34 +70,34 @@ function EntitySettings() {
 
         <form onSubmit={handleSave} className="auth-form" noValidate>
           <div className="form-group" style={{ marginBottom: '1rem' }}>
-            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: '#334155', marginBottom: '0.35rem' }}>
+            <label className="ent-field-label">
               Entity Owner / Sponsor Name <span style={{ color: '#ef4444' }}>*</span>
             </label>
             <input
               className="form-input"
               value={ownerName}
               onChange={(e) => { setOwnerName(e.target.value); setError(''); }}
-              style={{ width: '100%', border: error ? '2px solid #ef4444' : '1px solid #cbd5e1' }}
+              style={{ width: '100%', borderColor: error ? '#ef4444' : undefined }}
             />
             {error && (
-              <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block', fontWeight: 600 }}>
+              <span className="ent-field-error">
                 ⚠️ {error}
               </span>
             )}
           </div>
 
           <div className="form-group" style={{ marginBottom: '1rem' }}>
-            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: '#334155', marginBottom: '0.35rem' }}>
+            <label className="ent-field-label">
               Registered Email (Primary Authentication)
             </label>
-            <input className="form-input" value={rawUser.email || 'partner@addnet.com'} disabled style={{ width: '100%', background: '#f1f5f9', cursor: 'not-allowed' }} />
+            <input className="form-input" value={rawUser.email || ''} disabled style={{ width: '100%', background: 'var(--bg-hover)', cursor: 'not-allowed', opacity: 0.85 }} />
           </div>
 
           <div className="form-group" style={{ marginBottom: '1.25rem' }}>
-            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: '#334155', marginBottom: '0.35rem' }}>
+            <label className="ent-field-label">
               Member ID / Entity Code
             </label>
-            <input className="form-input" value={rawUser.user_code || 'CB100001'} disabled style={{ width: '100%', background: '#f1f5f9', cursor: 'not-allowed' }} />
+            <input className="form-input" value={rawUser.user_code || ''} disabled style={{ width: '100%', background: 'var(--bg-hover)', cursor: 'not-allowed', opacity: 0.85 }} />
           </div>
 
           <button

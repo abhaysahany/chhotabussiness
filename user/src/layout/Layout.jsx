@@ -48,6 +48,7 @@ function Layout({ children, activePage, onNavigate, user, onLogout }) {
         collapsed={sidebarCollapsed}
         activePage={activePage || location?.pathname}
         onNavigate={onNavigate}
+        onCloseDrawer={() => setSidebarCollapsed(true)}
         user={user}
         onLogout={onLogout}
       />

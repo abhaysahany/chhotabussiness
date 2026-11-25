@@ -36,7 +36,7 @@ function InfographicSection() {
         {/* Infographic Main Container */}
         <div className="cb-infographic-box">
           {/* Top 3 Pillar Flow */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto 1fr', gap: '1rem', alignItems: 'center' }}>
+          <div className="cb-infographic-flow">
             {/* Pillar 1: Service Providers */}
             <div className="cb-flow-node highlight-provider">
               <div style={{ width: '50px', height: '50px', borderRadius: '12px', background: '#0F4C81', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem auto' }}>

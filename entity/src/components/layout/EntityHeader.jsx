@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Search,
@@ -10,13 +10,26 @@ import {
   User,
   HelpCircle,
   LogOut,
+  Menu,
 } from 'lucide-react';
 
-function EntityHeader({ currentEntity, onLogout, darkMode, setDarkMode }) {
+function EntityHeader({ currentEntity, onLogout, darkMode, setDarkMode, onOpenMobile }) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
+  const headerRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (headerRef.current && !headerRef.current.contains(e.target)) {
+        setShowProfileMenu(false);
+        setShowNotifications(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -28,13 +41,30 @@ function EntityHeader({ currentEntity, onLogout, darkMode, setDarkMode }) {
     }
   };
 
+  const handleHeaderSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate('/entity/orders');
+    }
+  };
+
   const user = currentEntity || JSON.parse(localStorage.getItem('entity_user') || '{}');
 
   return (
-    <header className="topbar-header">
-      {/* Left Section: Search Bar */}
+    <header className="topbar-header" ref={headerRef}>
+      {/* Left Section: Mobile Drawer Toggle & Search Bar */}
       <div className="topbar-left">
-        <div className="search-box">
+        <button
+          type="button"
+          className="mobile-menu-btn"
+          onClick={onOpenMobile}
+          title="Open navigation menu"
+          aria-label="Open navigation menu"
+        >
+          <Menu size={19} />
+        </button>
+
+        <form className="search-box" onSubmit={handleHeaderSearch}>
           <input
             type="text"
             className="search-input"
@@ -42,16 +72,17 @@ function EntityHeader({ currentEntity, onLogout, darkMode, setDarkMode }) {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <button className="search-btn" title="Search">
+          <button type="submit" className="search-btn" title="Search">
             <Search size={14} />
           </button>
-        </div>
+        </form>
       </div>
 
       {/* Right Section: Utility Tools & Profile Dropdown */}
       <div className="topbar-right">
         {/* Theme Toggle Button */}
         <button
+          type="button"
           className="topbar-icon-btn"
           onClick={() => setDarkMode(!darkMode)}
           title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
@@ -62,8 +93,12 @@ function EntityHeader({ currentEntity, onLogout, darkMode, setDarkMode }) {
         {/* Notifications Icon with Badge */}
         <div className="notification-wrapper">
           <button
+            type="button"
             className="topbar-icon-btn"
-            onClick={() => setShowNotifications(!showNotifications)}
+            onClick={() => {
+              setShowNotifications((prev) => !prev);
+              setShowProfileMenu(false);
+            }}
             title="Notifications"
           >
             <Bell size={17} />
@@ -87,15 +122,24 @@ function EntityHeader({ currentEntity, onLogout, darkMode, setDarkMode }) {
         </div>
 
         {/* Fullscreen Toggle */}
-        <button className="topbar-icon-btn" onClick={toggleFullscreen} title="Fullscreen Toggle">
+        <button
+          type="button"
+          className="topbar-icon-btn topbar-fullscreen-btn"
+          onClick={toggleFullscreen}
+          title="Fullscreen Toggle"
+        >
           <Maximize2 size={17} />
         </button>
 
         {/* Profile Avatar & Dropdown */}
         <div className="profile-wrapper">
           <button
+            type="button"
             className="profile-btn"
-            onClick={() => setShowProfileMenu(!showProfileMenu)}
+            onClick={() => {
+              setShowProfileMenu((prev) => !prev);
+              setShowNotifications(false);
+            }}
           >
             <div className="profile-avatar-fallback entity-avatar-fallback">
               {user?.name ? user.name.substring(0, 2).toUpperCase() : 'ML'}

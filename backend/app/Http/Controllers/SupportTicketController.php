@@ -28,13 +28,18 @@ class SupportTicketController extends Controller
             $q->orderBy('created_at', 'asc');
         }]);
 
-        if ($user) {
-            $query->where(function ($q) use ($user) {
-                $q->where('user_id', $user->id)
-                  ->orWhere('user_email', $user->email)
-                  ->orWhere('user_name', $user->name);
-            });
+        if (!$user) {
+            return response()->json([
+                'status' => 'success',
+                'tickets' => [],
+            ]);
         }
+
+        $query->where(function ($q) use ($user) {
+            $q->where('user_id', $user->id)
+              ->orWhere('user_email', $user->email)
+              ->orWhere('user_name', $user->name);
+        });
 
         if ($request->filled('status') && $request->input('status') !== 'All') {
             $query->where('status', $request->input('status'));
@@ -94,9 +99,16 @@ class SupportTicketController extends Controller
             $category = "Others: " . trim($customCategory);
         }
 
-        $userId = $user ? $user->id : 1;
-        $userName = $user ? $user->name : ($request->input('user_name') ?: 'Registered Member');
-        $userEmail = $user ? $user->email : ($request->input('user_email') ?: 'member@vyaparadnet.com');
+        $userId = $user ? $user->id : null;
+        $userName = $user ? $user->name : trim((string) $request->input('user_name', ''));
+        $userEmail = $user ? $user->email : trim((string) $request->input('user_email', ''));
+
+        if (!$userId && (empty($userName) || empty($userEmail))) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Authenticated user or valid name and email is required.',
+            ], 422);
+        }
 
         DB::beginTransaction();
         try {

@@ -31,7 +31,7 @@ function GenAiDashboard() {
         <div className="welcome-banner-card">
           <div className="welcome-text-content">
             <span className="welcome-subtitle">Welcome !</span>
-            <h2 className="welcome-user-name">Noah Russell 👋</h2>
+            <h2 className="welcome-user-name">Partner Workspace</h2>
             <p className="welcome-desc">Step into the next era of productivity.</p>
             <button className="btn-studio" onClick={() => alert('Opening AI Studio...')}>
               Open AI Studio →
@@ -58,10 +58,9 @@ function GenAiDashboard() {
           </div>
           <span className="metric-label">AI Models</span>
           <div className="metric-number-row">
-            <span className="metric-value">134</span>
-            <span className="trend-badge green">▲ 5.15%</span>
+            <span className="metric-value">0</span>
           </div>
-          <span className="metric-subtext">Increases This month</span>
+          <span className="metric-subtext">Configured in database</span>
         </div>
 
         {/* API Requests Card */}
@@ -77,10 +76,9 @@ function GenAiDashboard() {
           </div>
           <span className="metric-label">API Requests</span>
           <div className="metric-number-row">
-            <span className="metric-value">564</span>
-            <span className="trend-badge red">▼ 2.58%</span>
+            <span className="metric-value">0</span>
           </div>
-          <span className="metric-subtext">Decreases This month</span>
+          <span className="metric-subtext">Configured in database</span>
         </div>
 
         {/* Avg Response Card */}
@@ -96,10 +94,9 @@ function GenAiDashboard() {
           </div>
           <span className="metric-label">Avg Response</span>
           <div className="metric-number-row">
-            <span className="metric-value">86%</span>
-            <span className="trend-badge red">▼ 4.3%</span>
+            <span className="metric-value">0%</span>
           </div>
-          <span className="metric-subtext">Decreases This month</span>
+          <span className="metric-subtext">Configured in database</span>
         </div>
       </div>
 

@@ -1,100 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-// Shared localStorage Key so Admin Panel & User Panel sync automatically
-const STORAGE_KEY = 'chhota_support_tickets_v1';
-
-// Initial Seed Support Tickets for rich demonstration
-const initialTickets = [
-  {
-    id: 'TK-8042',
-    subject: 'Payout Withdrawal Pending for HDFC Bank Account',
-    category: 'Payouts & Withdrawals',
-    priority: 'Urgent',
-    status: 'In Progress',
-    createdAt: '2026-08-16T10:15:00',
-    updatedAt: '2026-08-16T11:45:00',
-    user: {
-      name: 'Tom Phillip',
-      email: 'tom.phillip@addnet.com',
-      user_code: 'CB100001',
-    },
-    messages: [
-      {
-        id: 'msg-1',
-        sender: 'user',
-        senderName: 'Tom Phillip',
-        text: 'Hi Support Team, I requested a withdrawal of ₹25,000 to my registered HDFC bank account 2 hours ago. The status shows pending in payout history. Could you please check?',
-        timestamp: '10:15 AM, Today',
-        attachment: null,
-      },
-      {
-        id: 'msg-2',
-        sender: 'admin',
-        senderName: 'Rajesh Kumar (Senior Support Admin)',
-        text: 'Hello Tom, thank you for reaching out. We have verified your NEFT batch. The banking gateway experienced a temporary delay. Your transaction #TXN981244 has been approved and funds will credit within 30 minutes.',
-        timestamp: '11:45 AM, Today',
-        attachment: null,
-      },
-    ],
-  },
-  {
-    id: 'TK-8039',
-    subject: 'KYC Document Approval Confirmation Request',
-    category: 'KYC & Compliance',
-    priority: 'High',
-    status: 'Resolved',
-    createdAt: '2026-08-15T14:20:00',
-    updatedAt: '2026-08-15T16:10:00',
-    user: {
-      name: 'Tom Phillip',
-      email: 'tom.phillip@addnet.com',
-      user_code: 'CB100001',
-    },
-    messages: [
-      {
-        id: 'msg-101',
-        sender: 'user',
-        senderName: 'Tom Phillip',
-        text: 'I submitted my updated PAN card and Aadhaar front & back photos yesterday. Please confirm if compliance audit is complete.',
-        timestamp: '02:20 PM, Yesterday',
-        attachment: 'pan_card_front.pdf',
-      },
-      {
-        id: 'msg-102',
-        sender: 'admin',
-        senderName: 'Priya Sharma (KYC Compliance Team)',
-        text: 'Hi Tom, your documents have passed our compliance verification. Your KYC status is now 100% Verified and active.',
-        timestamp: '04:10 PM, Yesterday',
-        attachment: null,
-      },
-    ],
-  },
-  {
-    id: 'TK-8025',
-    subject: 'Team Network Commission Query',
-
-    category: 'Commission Earnings',
-    priority: 'Medium',
-    status: 'Open',
-    createdAt: '2026-08-16T14:00:00',
-    updatedAt: '2026-08-16T14:00:00',
-    user: {
-      name: 'Tom Phillip',
-      email: 'tom.phillip@addnet.com',
-      user_code: 'CB100001',
-    },
-    messages: [
-      {
-        id: 'msg-201',
-        sender: 'user',
-        senderName: 'Tom Phillip',
-        text: 'I noticed my left leg team volume increased by 5,000 BV today. Will the level matching bonus reflect in tonight’s 12 AM payout cycle?',
-        timestamp: '02:00 PM, Today',
-        attachment: null,
-      },
-    ],
-  },
-];
+const initialTickets = [];
 
 function SupportSystem({ user, defaultView = 'tickets' }) {
   const [tickets, setTickets] = useState([]);
@@ -120,25 +26,12 @@ function SupportSystem({ user, defaultView = 'tickets' }) {
 
   const [toastMessage, setToastMessage] = useState('');
 
-  // Load from localStorage or set initial seed tickets
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        setTickets(JSON.parse(stored));
-      } catch (err) {
-        setTickets(initialTickets);
-      }
-    } else {
-      setTickets(initialTickets);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(initialTickets));
-    }
+    setTickets(initialTickets);
   }, []);
 
-  // Sync state to localStorage whenever tickets change
   const updateTicketsState = (updatedList) => {
     setTickets(updatedList);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedList));
   };
 
   const selectedTicket = tickets.find((t) => t.id === selectedTicketId) || tickets[0];
@@ -151,7 +44,7 @@ function SupportSystem({ user, defaultView = 'tickets' }) {
     const newMessage = {
       id: `msg-${Date.now()}`,
       sender: 'user',
-      senderName: user?.name || 'Tom Phillip',
+      senderName: user?.name || 'Member',
       text: replyText,
       timestamp: 'Just Now',
       attachment: replyFile ? replyFile.name : null,
@@ -232,15 +125,15 @@ function SupportSystem({ user, defaultView = 'tickets' }) {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       user: {
-        name: user?.name || 'Tom Phillip',
-        email: user?.email || 'tom.phillip@addnet.com',
-        user_code: user?.user_code || 'CB100001',
+        name: user?.name || 'Member',
+        email: user?.email || '',
+        user_code: user?.user_code || '',
       },
       messages: [
         {
           id: `msg-initial-${Date.now()}`,
           sender: 'user',
-          senderName: user?.name || 'Tom Phillip',
+          senderName: user?.name || 'Member',
           text: newTicket.description,
           timestamp: 'Just Now',
           attachment: newTicket.attachment ? newTicket.attachment.name : null,

@@ -145,8 +145,8 @@ class NotificationController extends Controller
      */
     public function indexUser(Request $request)
     {
-        $user = $request->user();
-        $userCode = $request->input('user_code');
+        $user = auth('sanctum')->user() ?: $request->user();
+        $userCode = $request->input('user_code') ?: $user?->user_code;
         $userId = $user?->id;
 
         if (!$user && $userCode) {
@@ -154,10 +154,12 @@ class NotificationController extends Controller
             $userId = $user?->id;
         }
 
-        if (!$user) {
-            $user = User::first();
-            $userId = $user?->id;
-            $userCode = $user?->user_code;
+        if (!$user && !$userCode) {
+            return response()->json([
+                'status' => 'success',
+                'notifications' => [],
+                'unread_count' => 0,
+            ]);
         }
 
         $isVerified = ($user && $user->kyc_status === 'verified');
@@ -256,17 +258,12 @@ class NotificationController extends Controller
      */
     public function markAllAsRead(Request $request)
     {
-        $user = $request->user();
-        $userCode = $request->input('user_code');
+        $user = auth('sanctum')->user() ?: $request->user();
+        $userCode = $request->input('user_code') ?: $user?->user_code;
         $userId = $user?->id;
 
         if (!$user && $userCode) {
             $user = User::where('user_code', $userCode)->first();
-            $userId = $user?->id;
-        }
-
-        if (!$userId) {
-            $user = User::first();
             $userId = $user?->id;
         }
 

@@ -113,7 +113,7 @@ p, .van-body {
 
 .van-badge-error {
   background-color: var(--van-status-error-bg);
-  color: var(--van-status-error-border);
+  color: var(--van-status-error-text);
   border: 1px solid var(--van-status-error-border);
 }
 

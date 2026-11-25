@@ -22,7 +22,7 @@ import {
   Percent,
 } from 'lucide-react';
 import api from '../../api/axios';
-import { getBusinessEntities, getFreelancers } from '../../api/adminEntityService';
+import { getEntityCategories, getBusinessEntities, getFreelancers } from '../../api/adminEntityService';
 import { formatDate } from '../../utils/timezone';
 import {
   isRequired,
@@ -33,13 +33,11 @@ import {
   extractBackendErrors,
 } from '../../utils/validation';
 
-const DEFAULT_PACKAGE_IMAGE = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400';
-
 const getCategoryLabel = (category) => {
   if (typeof category === 'object' && category !== null) {
-    return String(category.name || category.title || 'Package Bundle');
+    return String(category.name || category.title || 'Uncategorized');
   }
-  return String(category || 'Package Bundle');
+  return String(category || 'Uncategorized');
 };
 
 const normalizePackage = (pkg) => {
@@ -48,7 +46,7 @@ const normalizePackage = (pkg) => {
   const parsedCommission =
     rawCommission !== undefined && rawCommission !== null && rawCommission !== ''
       ? Number(rawCommission)
-      : 18;
+      : 0;
 
   return {
     ...safePkg,
@@ -56,7 +54,7 @@ const normalizePackage = (pkg) => {
     name: String(safePkg.name || 'Untitled Package'),
     category: getCategoryLabel(safePkg.category),
     price: Number(safePkg.price) || 0,
-    adminCommissionPercent: Number.isFinite(parsedCommission) ? parsedCommission : 18,
+    adminCommissionPercent: Number.isFinite(parsedCommission) ? parsedCommission : 0,
     billingCycle: String(safePkg.billingCycle || safePkg.billing_cycle || 'Monthly Recurring'),
     ownerType: String(safePkg.ownerType || safePkg.owner_type || 'business'),
     ownerName: String(safePkg.ownerName || safePkg.owner_name || 'Platform Managed'),
@@ -64,7 +62,7 @@ const normalizePackage = (pkg) => {
     status: String(safePkg.status || 'active').toLowerCase(),
     description: String(safePkg.description || ''),
     itemsIncluded: Array.isArray(safePkg.items_included) ? safePkg.items_included : [],
-    image: String(safePkg.image || DEFAULT_PACKAGE_IMAGE),
+    image: safePkg.image ? String(safePkg.image) : '',
     created_at: safePkg.created_at,
   };
 };
@@ -86,14 +84,8 @@ function AdminPackagesPage() {
   const [modalErrors, setModalErrors] = useState({});
   const [modalBannerError, setModalBannerError] = useState('');
 
-  // Categories list
-  const categoriesList = [
-    'Marketing & SEO',
-    'Software & IT',
-    'Legal & Compliance',
-    'Business Growth',
-    'Package Bundle',
-  ];
+  // Database-loaded Categories List
+  const [categoriesList, setCategoriesList] = useState([]);
 
   // Registered Businesses & Freelancers from Database
   const [registeredBusinesses, setRegisteredBusinesses] = useState([]);
@@ -110,11 +102,24 @@ function AdminPackagesPage() {
     setLoading(true);
     setApiError('');
     try {
-      const [pkgRes, bizRes, freeRes] = await Promise.allSettled([
+      const [pkgRes, bizRes, freeRes, catRes, entCatRes] = await Promise.allSettled([
         api.get('/catalog/packages'),
         getBusinessEntities(),
         getFreelancers(),
+        api.get('/catalog/categories'),
+        getEntityCategories(),
       ]);
+
+      const categoryNames = new Set();
+      if (catRes.status === 'fulfilled' && Array.isArray(catRes.value?.data?.categories)) {
+        catRes.value.data.categories.forEach((c) => c?.name && categoryNames.add(c.name));
+      } else if (catRes.status === 'fulfilled' && Array.isArray(catRes.value?.data)) {
+        catRes.value.data.forEach((c) => c?.name && categoryNames.add(c.name));
+      }
+      if (entCatRes.status === 'fulfilled' && Array.isArray(entCatRes.value?.categories)) {
+        entCatRes.value.categories.forEach((c) => c?.name && categoryNames.add(c.name));
+      }
+      setCategoriesList(Array.from(categoryNames));
 
       if (bizRes.status === 'fulfilled' && Array.isArray(bizRes.value?.businesses)) {
         setRegisteredBusinesses(
@@ -157,11 +162,11 @@ function AdminPackagesPage() {
   // Modal Form State
   const [formData, setFormData] = useState({
     name: '',
-    category: categoriesList[0],
+    category: '',
     ownerType: 'business',
     ownerName: '',
     price: '',
-    adminCommissionPercent: 18,
+    adminCommissionPercent: 0,
     billingCycle: 'Monthly Recurring',
     description: '',
     image: '',
@@ -171,11 +176,11 @@ function AdminPackagesPage() {
     const bizList = businessesOverride || registeredBusinesses;
     setFormData({
       name: '',
-      category: categoriesList[0],
+      category: categoriesList[0] || '',
       ownerType: 'business',
       ownerName: bizList[0] || '',
       price: '',
-      adminCommissionPercent: 18,
+      adminCommissionPercent: 0,
       billingCycle: 'Monthly Recurring',
       description: '',
       image: '',
@@ -194,11 +199,11 @@ function AdminPackagesPage() {
     setEditingPackage(pkg);
     setFormData({
       name: pkg.name || '',
-      category: categoriesList.includes(pkg.category) ? pkg.category : categoriesList[0],
+      category: categoriesList.includes(pkg.category) ? pkg.category : (categoriesList[0] || pkg.category || ''),
       ownerType: pkg.ownerType === 'freelancer' ? 'freelancer' : 'business',
       ownerName: pkg.ownerName || registeredBusinesses[0] || '',
       price: String(pkg.price ?? ''),
-      adminCommissionPercent: pkg.adminCommissionPercent ?? 18,
+      adminCommissionPercent: pkg.adminCommissionPercent ?? 0,
       billingCycle: pkg.billingCycle || 'Monthly Recurring',
       description: pkg.description || '',
       image: pkg.image || '',
@@ -326,7 +331,7 @@ function AdminPackagesPage() {
           ownerName: formData.ownerName || editingPackage.ownerName,
           billingCycle: formData.billingCycle,
           description: descriptionPayload,
-          image: formData.image || editingPackage.image || DEFAULT_PACKAGE_IMAGE,
+          image: formData.image || editingPackage.image || '',
         });
 
         setPackages((prev) =>
@@ -349,7 +354,7 @@ function AdminPackagesPage() {
             ownerType: formData.ownerType,
             ownerName: formData.ownerName || 'Platform Managed',
             billingCycle: formData.billingCycle,
-            image: formData.image || DEFAULT_PACKAGE_IMAGE,
+            image: formData.image || '',
           });
           setPackages((prev) => [saved, ...prev]);
           showToast('New package bundle created successfully!', 'success');
@@ -865,27 +870,45 @@ function AdminPackagesPage() {
                 ) : (
                   filteredPackages.map((pkg) => {
                     const priceNum = Number(pkg.price) || 0;
-                    const commPercent = Number(pkg.adminCommissionPercent) || 18;
+                    const commPercent = Number(pkg.adminCommissionPercent) || 0;
 
                     return (
                       <tr key={pkg.id} className="adm-table-row">
                         <td style={{ padding: '0.9rem 1.15rem' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                            <img
-                              src={pkg.image || DEFAULT_PACKAGE_IMAGE}
-                              alt={pkg.name}
-                              style={{
-                                width: '44px',
-                                height: '44px',
-                                borderRadius: '10px',
-                                objectFit: 'cover',
-                                border: '1.5px solid #e2e8f0',
-                                flexShrink: 0,
-                              }}
-                              onError={(e) => {
-                                e.currentTarget.src = DEFAULT_PACKAGE_IMAGE;
-                              }}
-                            />
+                            {pkg.image ? (
+                              <img
+                                src={pkg.image}
+                                alt={pkg.name}
+                                style={{
+                                  width: '44px',
+                                  height: '44px',
+                                  borderRadius: '10px',
+                                  objectFit: 'cover',
+                                  border: '1.5px solid #e2e8f0',
+                                  flexShrink: 0,
+                                }}
+                                onError={(e) => {
+                                  e.currentTarget.style.display = 'none';
+                                }}
+                              />
+                            ) : (
+                              <div
+                                style={{
+                                  width: '44px',
+                                  height: '44px',
+                                  borderRadius: '10px',
+                                  background: '#eef2ff',
+                                  border: '1.5px solid #e2e8f0',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  flexShrink: 0,
+                                }}
+                              >
+                                <Package size={20} color="#4f46e5" />
+                              </div>
+                            )}
                             <div>
                               <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.88rem' }}>
                                 {pkg.name}
@@ -1113,21 +1136,36 @@ function AdminPackagesPage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1.5rem' }}>
           {filteredPackages.map((pkg) => {
             const priceNum = Number(pkg.price) || 0;
-            const commPercent = Number(pkg.adminCommissionPercent) || 18;
+            const commPercent = Number(pkg.adminCommissionPercent) || 0;
             const adminCutAmount = (priceNum * commPercent) / 100;
 
             return (
               <div key={pkg.id} className="adm-service-card-3d">
                 {/* 1. Media Header Showcase */}
                 <div className="adm-service-media-wrap">
-                  <img
-                    src={pkg.image || DEFAULT_PACKAGE_IMAGE}
-                    alt={pkg.name}
-                    className="adm-service-media-img"
-                    onError={(e) => {
-                      e.currentTarget.src = DEFAULT_PACKAGE_IMAGE;
-                    }}
-                  />
+                  {pkg.image ? (
+                    <img
+                      src={pkg.image}
+                      alt={pkg.name}
+                      className="adm-service-media-img"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: 'linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%)',
+                      }}
+                    >
+                      <Package size={42} color="#6366f1" />
+                    </div>
+                  )}
                   <div className="adm-service-media-overlay" />
 
                   {/* Category Floating Pill (Glassmorphism) */}

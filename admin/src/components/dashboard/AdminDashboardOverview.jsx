@@ -164,13 +164,7 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
 
   // 1. ApexCharts: Enterprise Financial Cashflow Curve (Spline Area)
   const cashflowChartOptions = useMemo(() => {
-    const categories = data?.charts?.revenueCategories || (
-      timelinePeriod === '6m'
-        ? ['Mar 2026', 'Apr 2026', 'May 2026', 'Jun 2026', 'Jul 2026', 'Aug 2026']
-        : timelinePeriod === '30d'
-        ? ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5']
-        : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-    );
+    const categories = data?.charts?.revenueCategories || [];
 
     return {
       chart: {
@@ -333,7 +327,7 @@ function AdminDashboardOverview({ currentAdmin, onNavigate }) {
     if (kpis.totalGmv > 0) {
       return Math.min(100, Number(((kpis.totalGmv / 6500000) * 100).toFixed(1)));
     }
-    return 12.7;
+    return 0;
   }, [data, kpis.totalGmv]);
 
   const radialTargetSeries = [targetPercent];

@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useBranding } from '../utils/branding';
 import BrandLogo from '../components/common/BrandLogo';
 
-function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
+function Sidebar({ collapsed, activePage, onNavigate, onCloseDrawer, user, onLogout }) {
   const { appName, logoUrl } = useBranding();
   const location = useLocation();
   const navigate = useNavigate();
@@ -102,8 +102,22 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
       {/* Brand & System Logo Header (Logo-Only Presentation) */}
       <div className="van-sidebar-header">
         <div className="van-sidebar-brand" onClick={() => handleNav('/dashboard')} title={`${appName} Dashboard`} style={{ cursor: 'pointer' }}>
-          <BrandLogo size={44} mobileSize={36} maxWidth={collapsed ? 48 : 190} alt={`${appName} Logo`} className="van-sidebar-logo-img" />
+          <BrandLogo size={44} mobileSize={36} maxWidth={collapsed ? 48 : 180} alt={`${appName} Logo`} className="van-sidebar-logo-img" />
         </div>
+        {!collapsed && (
+          <button
+            type="button"
+            className="sidebar-mobile-close-btn"
+            onClick={() => onCloseDrawer && onCloseDrawer()}
+            aria-label="Close navigation menu"
+            title="Close menu"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        )}
       </div>
 
       {/* Navigation Links */}
@@ -137,6 +151,8 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
           <button
             className={`nav-link ${openMenus.contents || currentPath.startsWith('/content') ? 'active-parent-pill' : ''}`}
             onClick={() => toggleMenu('contents')}
+            title="Content Management"
+            aria-label="Content Management"
           >
             <span className="nav-icon van-3d-icon-purple">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
@@ -190,6 +206,8 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
           <button
             className={`nav-link ${openMenus.connections || currentPath.startsWith('/network') ? 'active-parent-pill' : ''}`}
             onClick={() => toggleMenu('connections')}
+            title="Network & Connections"
+            aria-label="Network & Connections"
           >
             <span className="nav-icon van-3d-icon-cyan">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
@@ -245,6 +263,8 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
           <button
             className={`nav-link ${openMenus.businessEntities || currentPath.startsWith('/business') ? 'active-parent-pill' : ''}`}
             onClick={() => toggleMenu('businessEntities')}
+            title="Business"
+            aria-label="Business"
           >
             <span className="nav-icon van-3d-icon-amber">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
@@ -288,6 +308,8 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
           <button
             className={`nav-link ${openMenus.businessReports || currentPath.startsWith('/reports') ? 'active-parent-pill' : ''}`}
             onClick={() => toggleMenu('businessReports')}
+            title="Business Reports"
+            aria-label="Business Reports"
           >
             <span className="nav-icon van-3d-icon-rose">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
@@ -328,6 +350,8 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
           <button
             className={`nav-link ${openMenus.income || currentPath.includes('income') ? 'active-parent-pill' : ''}`}
             onClick={() => toggleMenu('income')}
+            title="My Income"
+            aria-label="My Income"
           >
             <span className="nav-icon van-3d-icon-emerald">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
@@ -364,6 +388,8 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
           <button
             className={`nav-link ${openMenus.rewards || currentPath.startsWith('/payments/reward') || activePage?.startsWith('reward') ? 'active-parent-pill' : ''}`}
             onClick={() => toggleMenu('rewards')}
+            title="Rewards"
+            aria-label="Rewards"
           >
             <span className="nav-icon van-3d-icon-amber">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
@@ -410,6 +436,8 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
           <button
             className={`nav-link ${openMenus.payments || currentPath.startsWith('/payments/transaction') || currentPath === '/payments' || activePage?.startsWith('payment-transaction') ? 'active-parent-pill' : ''}`}
             onClick={() => toggleMenu('payments')}
+            title="Payments"
+            aria-label="Payments"
           >
             <span className="nav-icon van-3d-icon-sky">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
@@ -439,6 +467,8 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
           <button
             className={`nav-link ${openMenus.payouts || currentPath.startsWith('/payouts') ? 'active-parent-pill' : ''}`}
             onClick={() => toggleMenu('payouts')}
+            title="Payouts"
+            aria-label="Payouts"
           >
             <span className="nav-icon van-3d-icon-teal">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
@@ -480,6 +510,8 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
           <button
             className={`nav-link ${openMenus.settings || currentPath.startsWith('/profile') ? 'active-parent-pill' : ''}`}
             onClick={() => toggleMenu('settings')}
+            title="Settings"
+            aria-label="Settings"
           >
             <span className="nav-icon van-3d-icon-indigo">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
@@ -518,6 +550,8 @@ function Sidebar({ collapsed, activePage, onNavigate, user, onLogout }) {
           <button
             className={`nav-link ${openMenus.support || currentPath.startsWith('/support') || currentPath === '/notifications' ? 'active-parent-pill' : ''}`}
             onClick={() => toggleMenu('support')}
+            title="Support"
+            aria-label="Support"
           >
             <span className="nav-icon van-3d-icon-cyan">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">

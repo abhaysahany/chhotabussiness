@@ -83,10 +83,10 @@ class AppDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String name = user['name']?.toString() ?? 'Partner User';
+    final String name = user['name']?.toString() ?? 'Member';
     final String email = user['email']?.toString() ?? '';
-    final String userCode = user['user_code']?.toString() ?? user['userCode']?.toString() ?? 'CB100001';
-    final String rank = user['rank']?.toString() ?? 'Gold Executive';
+    final String userCode = user['user_code']?.toString() ?? user['userCode']?.toString() ?? '';
+    final String rank = user['rank']?.toString() ?? 'Member';
 
     return Drawer(
       backgroundColor: Colors.white,

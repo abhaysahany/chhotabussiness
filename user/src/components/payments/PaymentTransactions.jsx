@@ -35,7 +35,7 @@ function PaymentTransactions({ user }) {
   const [statusFilter, setStatusFilter] = useState('all');
   const [payModeFilter, setPayModeFilter] = useState('all');
 
-  const userCode = user?.user_code || 'CB100001';
+  const userCode = user?.user_code || '';
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -443,15 +443,7 @@ function PaymentTransactions({ user }) {
       </div>
 
       {/* 4 Premium 3D KPI Summary Pods - Strictly 1 Row */}
-      <div
-        className="van-rewards-kpi-row"
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
-          gap: '1.25rem',
-          marginBottom: '2rem',
-        }}
-      >
+      <div className="van-rewards-kpi-row">
         {/* Card 1: Total Transactions Value */}
         <div className="van-stat-card-premium" style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3.5px', background: 'linear-gradient(90deg, #3B82F6, #1D4ED8)' }} />
@@ -572,7 +564,7 @@ function PaymentTransactions({ user }) {
         }}
       >
         {/* Left: Search Bar with 3D Icon Pod */}
-        <div className="van-dir-search-wrap" style={{ flex: '1 1 360px', minWidth: '260px' }}>
+        <div className="van-dir-search-wrap">
           <div className="van-dir-search-icon-pod">
             <Search size={16} color="#2563EB" />
           </div>
@@ -796,9 +788,8 @@ function PaymentTransactions({ user }) {
 
             {/* Issuer & Customer Details */}
             <div
+              className="van-modal-split-grid"
               style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
                 gap: '1.5rem',
                 background: '#f8fafc',
                 padding: '1.25rem 1.4rem',

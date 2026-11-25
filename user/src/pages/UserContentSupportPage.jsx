@@ -180,9 +180,9 @@ function UserContentSupportPage({ user, onNavigate }) {
 
       {/* 2-Tier Structured Filter & Search Toolbar */}
       <div className="van-library-toolbar-3d">
-        {/* Tier 1: Category Tabs + Total Counter (Clean Single-Line Alignment) */}
-        <div className="van-library-toolbar-top" style={{ flexWrap: 'nowrap', gap: '1rem' }}>
-          <div className="van-catalog-segmented-switch" style={{ flex: 1, minWidth: 0 }}>
+        {/* Tier 1: Category Tabs + Total Counter */}
+        <div className="van-library-toolbar-top" style={{ gap: '0.85rem' }}>
+          <div className="van-catalog-segmented-switch" style={{ flex: '1 1 280px', minWidth: 0 }}>
             {CATEGORY_TABS.map((tab) => {
               const IconComp = tab.icon;
               const isActive = activeCategory === tab.id;
@@ -268,7 +268,7 @@ function UserContentSupportPage({ user, onNavigate }) {
 
       {/* Loading Skeleton */}
       {loading && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 290px), 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
           {[1, 2, 3].map((i) => (
             <div
               key={i}
@@ -356,7 +356,7 @@ function UserContentSupportPage({ user, onNavigate }) {
 
       {/* Support Topic Cards Grid */}
       {!loading && supportTopics.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 290px), 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
           {supportTopics.map((topic) => (
             <div key={topic.id} className="van-product-card-3d">
               {/* Video Thumbnail Header */}

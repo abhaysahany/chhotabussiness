@@ -16,12 +16,12 @@ function AdminLoginForm({ onLoginSuccess, initialShowForgot = false }) {
   const isForgotRoute = location.pathname.includes('/forgot-password') || location.pathname.includes('/reset-password');
   const { appName, logoUrl } = useBranding();
   const [logoFailed, setLogoFailed] = useState(false);
-  const [login, setLogin] = useState('admin');
+  const [login, setLogin] = useState('');
 
   useEffect(() => {
     setLogoFailed(false);
   }, [logoUrl]);
-  const [password, setPassword] = useState('123456');
+  const [password, setPassword] = useState('');
   const [loginFieldErrors, setLoginFieldErrors] = useState({});
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);

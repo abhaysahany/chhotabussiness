@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 
 function ContactSupport({ user }) {
   const [callbackForm, setCallbackForm] = useState({
-    name: user?.name || 'Tom Phillip',
-    phone: '+91 98765 43210',
+    name: user?.name || '',
+    phone: user?.phone || '',
     timeSlot: 'Morning (10 AM - 1 PM)',
     topic: 'Payout & Financial Query',
   });
@@ -92,7 +92,7 @@ function ContactSupport({ user }) {
       </div>
 
       {/* Hero Contact Channel Bar */}
-      <div className="profile-metrics-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))' }}>
+      <div className="profile-metrics-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 230px), 1fr))' }}>
         {/* Helpline */}
         <div className="metric-box" style={{ cursor: 'pointer' }} onClick={() => copyToClipboard('+91 1800-244-6822', 'Toll-Free Helpline')}>
           <div className="metric-icon purple">📞</div>
@@ -135,7 +135,7 @@ function ContactSupport({ user }) {
       </div>
 
       {/* Main Grid: Request Executive Callback + Interactive Office Directory */}
-      <div className="profile-cards-grid" style={{ gridTemplateColumns: '1fr 1.3fr', alignItems: 'stretch' }}>
+      <div className="profile-cards-grid contact-split">
         {/* Left Column: Request Instant Executive Callback */}
         <div className="pro-card">
           <div className="pro-card-header flex-between">
@@ -248,7 +248,7 @@ function ContactSupport({ user }) {
 
             <div className="pro-card-body">
               {/* Location Selector Buttons */}
-              <div className="doc-type-pills-grid" style={{ marginBottom: '1.25rem', gridTemplateColumns: 'repeat(3, 1fr)' }}>
+              <div className="doc-type-pills-grid contact-office-pills-grid">
                 {offices.map((off) => (
                   <button
                     key={off.id}

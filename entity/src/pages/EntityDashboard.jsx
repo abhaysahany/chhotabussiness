@@ -495,8 +495,9 @@ function EntityDashboard() {
         <div
           style={{
             position: 'fixed',
-            top: '24px',
-            right: '24px',
+            top: '20px',
+            right: '16px',
+            maxWidth: 'calc(100vw - 32px)',
             background: 'linear-gradient(135deg, #09170e 0%, #15291b 100%)',
             color: '#ffffff',
             padding: '0.85rem 1.35rem',
@@ -521,12 +522,12 @@ function EntityDashboard() {
       <div className="ent-dash-hero">
         <div className="ent-hero-content">
           {/* Merchant Identity */}
-          <div className="ent-merchant-profile">
+          <div className="ent-merchant-profile" style={{ minWidth: 0, flex: '1 1 320px' }}>
             <div className="ent-3d-pod ent-3d-pod-hero ent-pod-olive">
               {entityDetails?.entity_type === 'freelancer' ? <Briefcase size={32} /> : <Building2 size={32} />}
             </div>
 
-            <div>
+            <div style={{ minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '0.35rem' }}>
                 <span className="ent-glass-badge ent-badge-olive">
                   <ShieldCheck size={13} /> VERIFIED MERCHANT PARTNER
@@ -539,12 +540,12 @@ function EntityDashboard() {
                 </span>
               </div>
 
-              <h1 style={{ fontSize: '1.75rem', fontWeight: 800, margin: '0.2rem 0 0.25rem 0', color: '#ffffff', letterSpacing: '-0.025em' }}>
+              <h1 style={{ fontSize: '1.75rem', fontWeight: 800, margin: '0.2rem 0 0.25rem 0', color: '#ffffff', letterSpacing: '-0.025em', lineHeight: 1.25, wordBreak: 'break-word' }}>
                 {entityDetails?.business_name || entityDetails?.name || storedUser?.business_name || storedUser?.name || 'Merchant Entity'}
               </h1>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap', fontSize: '0.82rem', color: '#cbd5e1' }}>
-                <span>{storedUser?.email}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem 0.65rem', flexWrap: 'wrap', fontSize: '0.82rem', color: '#cbd5e1', lineHeight: 1.4 }}>
+                <span style={{ wordBreak: 'break-all' }}>{storedUser?.email}</span>
                 <span style={{ opacity: 0.35 }}>•</span>
                 {entityDetails?.registration_no && (
                   <>
@@ -1106,7 +1107,7 @@ function EntityDashboard() {
       </div>
 
       {/* Secondary Chart Row: Horizontal Deliverables Bar & Stacked Velocity Column */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.35rem' }}>
+      <div className="ent-grid-charts-secondary">
         {/* Chart 3: Horizontal Revenue Distribution Bar */}
         <div className="ent-3d-chart-card ent-3d-chart-card-olive">
           <div>
@@ -1357,7 +1358,7 @@ function EntityDashboard() {
       </div>
 
       {/* 4. Merchant Operations Hub & Fast Action Shortcuts */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '1.15rem' }}>
+      <div className="ent-grid-auto-220" style={{ gap: '1.15rem' }}>
         <button
           type="button"
           onClick={() => navigate('/entity/orders/create')}
@@ -1418,9 +1419,9 @@ function EntityDashboard() {
       </div>
 
       {/* 5. Recent Customer Invoices Table & Live Activity Feed */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.35rem', alignItems: 'stretch' }}>
-        {/* Recent Invoices Table (62% on desktop, stacked on mobile) */}
-        <div className="ent-3d-table-card" style={{ flex: '2 1 600px', minWidth: '320px' }}>
+      <div className="ent-dash-bottom-grid">
+        {/* Recent Invoices Table (stacked on tablet/mobile) */}
+        <div className="ent-3d-table-card" style={{ minWidth: 0 }}>
           <div>
             <div className="ent-table-header-bar">
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
@@ -1587,8 +1588,8 @@ function EntityDashboard() {
           </div>
         </div>
 
-        {/* Live Activity Feed (38% on desktop, stacked on mobile) */}
-        <div className="ent-3d-activity-card" style={{ flex: '1 1 340px', minWidth: '300px' }}>
+        {/* Live Activity Feed (stacked on tablet/mobile) */}
+        <div className="ent-3d-activity-card" style={{ minWidth: 0 }}>
           <div>
             <div className="ent-chart-header" style={{ marginBottom: '0.75rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
@@ -1682,39 +1683,29 @@ function EntityDashboard() {
       {/* Printable Invoice Modal */}
       {selectedInvoice && (
         <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(15, 23, 42, 0.65)',
-            backdropFilter: 'blur(6px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 99999,
-            padding: '1rem',
-          }}
+          className="ent-modal-backdrop"
           onClick={() => setSelectedInvoice(null)}
         >
           <div
+            className="ent-modal-card"
             style={{
               background: '#ffffff',
               borderRadius: '20px',
               maxWidth: '540px',
-              width: '100%',
               boxShadow: '0 25px 60px -15px rgba(0,0,0,0.3)',
-              overflow: 'hidden',
               border: '1px solid rgba(226, 232, 240, 0.9)',
             }}
             onClick={(e) => e.stopPropagation()}
           >
             <div
+              className="ent-modal-body"
               style={{
                 background: 'linear-gradient(135deg, #09170e 0%, #15291b 100%)',
                 color: '#ffffff',
-                padding: '1.4rem 1.75rem',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
+                gap: '0.75rem',
                 borderBottom: '1px solid rgba(74, 222, 128, 0.2)',
               }}
             >
@@ -1744,7 +1735,7 @@ function EntityDashboard() {
               </button>
             </div>
 
-            <div style={{ padding: '1.5rem' }}>
+            <div className="ent-modal-body">
               <div
                 style={{
                   background: '#f4f6ec',
@@ -1755,6 +1746,8 @@ function EntityDashboard() {
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: '0.5rem',
                 }}
               >
                 <div>
@@ -1805,7 +1798,7 @@ function EntityDashboard() {
                 </tbody>
               </table>
 
-              <div style={{ display: 'flex', gap: '0.65rem', justifyContent: 'flex-end' }}>
+              <div style={{ display: 'flex', gap: '0.65rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
                 <button
                   type="button"
                   onClick={() => window.print()}

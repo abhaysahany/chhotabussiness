@@ -8,7 +8,7 @@ function EntityBankSettlementsPage() {
   const entityName =
     currentEntity?.entity_details?.business_name ||
     currentEntity?.name ||
-    'Skyline Technologies Pvt Ltd';
+    '';
 
   const [salesList, setSalesList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -108,71 +108,32 @@ function EntityBankSettlementsPage() {
       </div>
 
       {/* Navigation Sub-Tabs Bar */}
-      <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '2px solid #e2e8f0', marginBottom: '1.5rem', overflowX: 'auto' }}>
+      <div className="ent-subtabs-bar">
         <button
           type="button"
           onClick={() => navigate('/entity/payments/receive-balance')}
-          style={{
-            padding: '0.65rem 1.2rem',
-            border: 'none',
-            background: 'none',
-            borderBottom: '3px solid transparent',
-            color: '#64748b',
-            fontWeight: 600,
-            fontSize: '0.88rem',
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            marginBottom: '-2px',
-          }}
+          className="ent-subtab-btn"
         >
           <span>💳</span> Receive Balance Payments
         </button>
         <button
           type="button"
           onClick={() => navigate('/entity/payments/receipts-ledger')}
-          style={{
-            padding: '0.65rem 1.2rem',
-            border: 'none',
-            background: 'none',
-            borderBottom: '3px solid transparent',
-            color: '#64748b',
-            fontWeight: 600,
-            fontSize: '0.88rem',
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            marginBottom: '-2px',
-          }}
+          className="ent-subtab-btn"
         >
-          <span>🧾</span> Payment Receipts & Commission Ledger
+          <span>🧾</span> Payment Receipts &amp; Commission Ledger
         </button>
         <button
           type="button"
           onClick={() => navigate('/entity/payments/bank-settlements')}
-          style={{
-            padding: '0.65rem 1.2rem',
-            border: 'none',
-            background: 'none',
-            borderBottom: '3px solid #636B2F',
-            color: '#636B2F',
-            fontWeight: 800,
-            fontSize: '0.88rem',
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            marginBottom: '-2px',
-          }}
+          className="ent-subtab-btn active"
         >
           <span>🏦</span> Bank Settlements
         </button>
       </div>
 
       {/* KPI Financial Overview Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+      <div className="ent-grid-auto-220" style={{ marginBottom: '1.5rem' }}>
         <div className="stat-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem', borderLeft: '4px solid #16a34a' }}>
           <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>NET REALIZED REVENUE</div>
           <div style={{ fontSize: '1.45rem', fontWeight: 800, color: '#16a34a', marginTop: '0.35rem' }}>
@@ -215,10 +176,10 @@ function EntityBankSettlementsPage() {
       </div>
 
       {/* Main Bank Account & Settlement Policy Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.5rem' }}>
+      <div className="ent-grid-2-lg">
         {/* Verified Bank Account Card */}
-        <div className="content-card" style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '1.75rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.85rem' }}>
+        <div className="content-card ent-modal-body" style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.25rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.85rem' }}>
             <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <span>🏦</span> Registered Bank Account Details
             </h3>
@@ -228,35 +189,35 @@ function EntityBankSettlementsPage() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', fontSize: '0.88rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px dashed #f1f5f9', paddingBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.25rem 0.75rem', borderBottom: '1px dashed #f1f5f9', paddingBottom: '0.5rem' }}>
               <span style={{ color: '#64748b' }}>Account Holder / Beneficiary:</span>
               <strong style={{ color: '#0f172a' }}>{entityName}</strong>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px dashed #f1f5f9', paddingBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.25rem 0.75rem', borderBottom: '1px dashed #f1f5f9', paddingBottom: '0.5rem' }}>
               <span style={{ color: '#64748b' }}>Bank Name:</span>
               <strong style={{ color: '#0f172a' }}>HDFC Bank Ltd</strong>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px dashed #f1f5f9', paddingBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.25rem 0.75rem', borderBottom: '1px dashed #f1f5f9', paddingBottom: '0.5rem' }}>
               <span style={{ color: '#64748b' }}>Account Number:</span>
               <span style={{ fontFamily: 'monospace', fontWeight: 700, color: '#0f172a', letterSpacing: '0.5px' }}>
                 50200038919842
               </span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px dashed #f1f5f9', paddingBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.25rem 0.75rem', borderBottom: '1px dashed #f1f5f9', paddingBottom: '0.5rem' }}>
               <span style={{ color: '#64748b' }}>IFSC Code:</span>
               <span style={{ fontFamily: 'monospace', fontWeight: 700, color: '#2563eb' }}>
                 HDFC0001824
               </span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px dashed #f1f5f9', paddingBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.25rem 0.75rem', borderBottom: '1px dashed #f1f5f9', paddingBottom: '0.5rem' }}>
               <span style={{ color: '#64748b' }}>Account Type:</span>
               <span style={{ fontWeight: 600 }}>Current Account</span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px dashed #f1f5f9', paddingBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.25rem 0.75rem', borderBottom: '1px dashed #f1f5f9', paddingBottom: '0.5rem' }}>
               <span style={{ color: '#64748b' }}>Branch Name:</span>
               <span>Connaught Place, New Delhi - 110001</span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.25rem 0.75rem' }}>
               <span style={{ color: '#64748b' }}>Payout Routing:</span>
               <span style={{ color: '#16a34a', fontWeight: 700 }}>Direct Bank Transfer (IMPS / NEFT)</span>
             </div>
@@ -274,8 +235,8 @@ function EntityBankSettlementsPage() {
         </div>
 
         {/* Settlement Cycle & Compliance Information */}
-        <div className="content-card" style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '1.75rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.85rem' }}>
+        <div className="content-card ent-modal-body" style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.25rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.85rem' }}>
             <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <span>📜</span> Settlement Policy & Guidelines
             </h3>

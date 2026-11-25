@@ -375,12 +375,19 @@ function AdminRewardsPage() {
                 flexDirection: 'column',
               }}
             >
-              <div style={{ position: 'relative', height: '170px', overflow: 'hidden' }}>
-                <img
-                  src={reward.image || 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600'}
-                  alt={reward.title}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
+              <div style={{ position: 'relative', height: '170px', overflow: 'hidden', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {reward.image ? (
+                  <img
+                    src={reward.image}
+                    alt={reward.title}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                ) : (
+                  <span style={{ fontSize: '2.5rem' }}>💎</span>
+                )}
                 <div style={{ position: 'absolute', top: '10px', right: '10px', background: reward.status === 'active' ? '#dcfce7' : '#fee2e2', color: reward.status === 'active' ? '#15803d' : '#b91c1c', padding: '0.2rem 0.6rem', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 700 }}>
                   {reward.status === 'active' ? '● Active' : '○ Inactive'}
                 </div>

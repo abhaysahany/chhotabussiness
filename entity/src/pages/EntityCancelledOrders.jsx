@@ -95,7 +95,7 @@ function EntityCancelledOrders() {
   }, [cancelledOrders]);
 
   return (
-    <div className="page-container" style={{ width: '100%', padding: '1.5rem', maxWidth: '1400px', margin: '0 auto' }}>
+    <div className="page-container" style={{ maxWidth: '1400px', margin: '0 auto' }}>
       {/* Header Banner */}
       <div
         className="page-subheader"
@@ -109,8 +109,8 @@ function EntityCancelledOrders() {
         }}
       >
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <h1 className="page-title" style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: '#0f172a' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+            <h1 className="page-title" style={{ margin: 0 }}>
               Cancelled Orders
             </h1>
             <span
@@ -127,12 +127,12 @@ function EntityCancelledOrders() {
               {totalCount} Cancelled
             </span>
           </div>
-          <p className="page-description" style={{ margin: '0.35rem 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>
+          <p className="page-description" style={{ margin: '0.35rem 0 0 0' }}>
             View orders cancelled by Admin and review the official reason for cancellation.
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
           <button
             type="button"
             onClick={loadCancelledOrders}
@@ -174,14 +174,7 @@ function EntityCancelledOrders() {
       </div>
 
       {/* KPI Cards */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: '1rem',
-          marginBottom: '1.5rem',
-        }}
-      >
+      <div className="ent-grid-auto-220" style={{ marginBottom: '1.5rem' }}>
         <div
           className="content-card"
           style={{
@@ -283,7 +276,7 @@ function EntityCancelledOrders() {
           gap: '0.75rem',
         }}
       >
-        <div style={{ flex: 1, minWidth: '260px' }}>
+        <div style={{ flex: '1 1 220px', minWidth: 0 }}>
           <input
             type="text"
             placeholder="Search cancelled orders by Invoice #, Customer, Member ID, or Offering..."
@@ -339,6 +332,8 @@ function EntityCancelledOrders() {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '0.75rem',
           }}
         >
           <div>
@@ -529,6 +524,8 @@ function EntityCancelledOrders() {
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '0.75rem',
               borderTop: '1px solid #e2e8f0',
               background: '#f8fafc',
               fontSize: '0.85rem',
@@ -537,7 +534,7 @@ function EntityCancelledOrders() {
             <div style={{ color: '#64748b' }}>
               Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, filteredOrders.length)} of {filteredOrders.length} cancelled orders
             </div>
-            <div style={{ display: 'flex', gap: '0.4rem' }}>
+            <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', alignItems: 'center' }}>
               <button
                 type="button"
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
@@ -581,20 +578,7 @@ function EntityCancelledOrders() {
       {/* Cancelled Order Details Modal */}
       {selectedOrderForDetails && (
         <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(15, 23, 42, 0.75)',
-            backdropFilter: 'blur(5px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 99999,
-            padding: '1rem',
-          }}
+          className="ent-modal-backdrop"
           onClick={(e) => {
             if (e.target === e.currentTarget) {
               setSelectedOrderForDetails(null);
@@ -602,21 +586,18 @@ function EntityCancelledOrders() {
           }}
         >
           <div
+            className="ent-modal-card ent-modal-card-padded"
             style={{
               background: '#ffffff',
               borderRadius: '16px',
-              width: '100%',
               maxWidth: '680px',
-              maxHeight: '92vh',
-              overflowY: 'auto',
-              padding: '1.75rem',
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
             }}
           >
             {/* Modal Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #fee2e2', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem', borderBottom: '1px solid #fee2e2', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                   <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: '#991b1b' }}>
                     Cancelled Order #{selectedOrderForDetails.invoice_number || selectedOrderForDetails.invoiceNumber}
                   </h2>
@@ -712,13 +693,12 @@ function EntityCancelledOrders() {
 
             {/* Contract Specifications Grid */}
             <div
+              className="ent-grid-2"
               style={{
                 background: '#f8fafc',
                 border: '1px solid #e2e8f0',
                 borderRadius: '10px',
                 padding: '1.15rem',
-                display: 'grid',
-                gridTemplateColumns: 'repeat(2, 1fr)',
                 gap: '0.85rem',
                 fontSize: '0.825rem',
                 marginBottom: '1.5rem',

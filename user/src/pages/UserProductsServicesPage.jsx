@@ -37,7 +37,7 @@ function UserProductsServicesPage({ user, onNavigate }) {
   const [dbItems, setDbItems] = useState([]);
   const [categoriesList, setCategoriesList] = useState([]);
 
-  const userCode = user?.user_code || 'CB100001';
+  const userCode = user?.user_code || '';
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -65,10 +65,10 @@ function UserProductsServicesPage({ user, onNavigate }) {
         badge: p.stock < 10 ? 'Limited Stock' : 'Verified',
         image: p.image || '/logo.png',
         description: p.description || 'Quality verified commercial product with direct distributor warranty.',
-        vendor: p.owner_name || 'Skyline Technologies Pvt Ltd',
-        referralCommissionPercent: 40,
-        referralBonusAmount: Math.round(Number(p.price) * 0.05) || 250,
-        teamPointsBp: Math.max(10, Math.round(Number(p.price) / 400)),
+        vendor: p.owner_name || '',
+        referralCommissionPercent: Number(p.admin_commission_percent) || 0,
+        referralBonusAmount: 0,
+        teamPointsBp: 0,
         features: ['Immediate delivery', 'GST billing supported', '24/7 Dedicated Support', 'Vendor warranty included'],
       }));
 
@@ -84,10 +84,10 @@ function UserProductsServicesPage({ user, onNavigate }) {
         badge: s.duration || 'Certified Service',
         image: s.image || '/logo.png',
         description: s.description || 'Professional end-to-end execution by verified industry experts.',
-        vendor: s.owner_name || 'AddNet Tax Advisory',
-        referralCommissionPercent: 40,
-        referralBonusAmount: Math.round(Number(s.price) * 0.06) || 300,
-        teamPointsBp: Math.max(15, Math.round(Number(s.price) / 350)),
+        vendor: s.owner_name || '',
+        referralCommissionPercent: Number(s.admin_commission_percent) || 0,
+        referralBonusAmount: 0,
+        teamPointsBp: 0,
         features: [`Turnaround: ${s.duration || '3 Days'}`, 'Government portal filing', 'Dedicated account manager', '100% On-time guarantee'],
       }));
 
@@ -296,7 +296,7 @@ function UserProductsServicesPage({ user, onNavigate }) {
 
       {/* Loading Skeleton */}
       {loading && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(330px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 290px), 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
           {[1, 2, 3].map((i) => (
             <div
               key={i}
@@ -383,7 +383,7 @@ function UserProductsServicesPage({ user, onNavigate }) {
 
       {/* Products & Services Grid */}
       {!loading && filteredItems.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(330px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 290px), 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
           {filteredItems.map((item) => {
             const isProduct = item.type === 'product';
             // Clean title by removing trailing random hashes/uuids if present
@@ -672,7 +672,7 @@ function UserProductsServicesPage({ user, onNavigate }) {
               <span style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#64748B', marginBottom: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Instant Share to Social Channels
               </span>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.65rem' }}>
+              <div className="van-share-social-grid">
                 <a
                   href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`Check out ${selectedItemForShare.title} on Vyapar AdNET! https://addnet.com/items/${selectedItemForShare.dbId}?type=${selectedItemForShare.type}&ref=${userCode}`)}`}
                   target="_blank"
@@ -869,19 +869,7 @@ function UserProductsServicesPage({ user, onNavigate }) {
             </p>
 
             {/* Commercial Summary Banner */}
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(3, 1fr)',
-                gap: '0.65rem',
-                background: '#F8FAFC',
-                border: '1px solid #E2E8F0',
-                borderRadius: '14px',
-                padding: '0.85rem',
-                marginBottom: '1.25rem',
-                textAlign: 'center',
-              }}
-            >
+            <div className="van-commerce-summary-grid">
               <div>
                 <div style={{ fontSize: '0.7rem', color: '#64748B', fontWeight: 600, textTransform: 'uppercase' }}>Client Price</div>
                 <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0F172A', marginTop: '0.15rem' }}>₹{selectedItemForDetails.price.toLocaleString('en-IN')}</div>

@@ -144,15 +144,15 @@ function MlmEarningsPage({ user }) {
   // Direct / Base Commission Logs
   const baseCommissionLogs = useMemo(() => {
     return directMembers.map((member, idx) => {
-      const vol = Number(member.personalPv || member.personalBv || 1000);
+      const vol = Number(member.personalPv || member.personalBv || 0);
       const commRate = 10;
       const earned = Math.round((vol * commRate) / 100);
       return {
         id: `BC-${member.id}-${idx + 1}`,
         memberId: member.id,
         memberName: member.name,
-        rank: member.rank || 'Bronze Starter',
-        joiningDate: member.joiningDate || '2026-08-10',
+        rank: member.rank || 'Member',
+        joiningDate: member.joiningDate || '',
         businessVolume: vol,
         commPercent: `${commRate}%`,
         earnedCommission: earned,
@@ -161,21 +161,21 @@ function MlmEarningsPage({ user }) {
     });
   }, [directMembers]);
 
-  // Team Commission Logs (10 Generations at 2% Override per level)
+  // Team Commission Logs
   const teamCommissionLogs = useMemo(() => {
     return teamMembers.map((member, idx) => {
-      const vol = Number(member.groupPv || member.groupBv || member.personalPv || 5000);
+      const vol = Number(member.groupPv || member.groupBv || member.personalPv || 0);
       const level = member.level || 1;
-      const rate = 2;
+      const rate = parseFloat(String(member.levelCommissionPct || '0').replace('%', '')) || 0;
       const earned = Math.round((vol * rate) / 100);
       return {
         id: `TC-L${level}-${member.id}-${idx + 1}`,
         level: level,
         memberId: member.id,
         memberName: member.name,
-        rank: member.rank || 'Silver Leader',
-        sponsorName: member.sponsorName || 'Direct Team',
-        joiningDate: member.joiningDate || '2026-08-10',
+        rank: member.rank || 'Member',
+        sponsorName: member.sponsorName || '',
+        joiningDate: member.joiningDate || '',
         personalPv: member.personalPv || 0,
         groupPv: vol,
         overrideRate: `${rate}%`,

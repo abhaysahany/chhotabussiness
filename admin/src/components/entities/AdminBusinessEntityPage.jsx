@@ -67,10 +67,7 @@ function AdminBusinessEntityPage() {
     website: '',
     verification_status: 'verified',
     featured: true,
-    documents: [
-      { title: 'GST Registration Certificate', file_name: 'gst_certificate.pdf', url: 'https://via.placeholder.com/400x300?text=GST+Certificate', status: 'verified' },
-      { title: 'Incorporation Document', file_name: 'incorporation_proof.pdf', url: 'https://via.placeholder.com/400x300?text=Incorporation+Proof', status: 'verified' },
-    ],
+    documents: [],
   });
 
   // Form States - Freelancer
@@ -80,17 +77,14 @@ function AdminBusinessEntityPage() {
     email: '',
     phone: '',
     title: '',
-    experience_years: 3,
-    hourly_rate: '₹850/hr',
+    experience_years: '',
+    hourly_rate: '',
     bio: '',
     avatar_url: '',
     portfolio_link: '',
     verification_status: 'verified',
     featured: true,
-    documents: [
-      { title: 'Government ID Proof', file_name: 'id_proof.pdf', url: 'https://via.placeholder.com/400x300?text=ID+Proof', status: 'verified' },
-      { title: 'Skill Certification / Resume', file_name: 'certificate.pdf', url: 'https://via.placeholder.com/400x300?text=Certification', status: 'verified' },
-    ],
+    documents: [],
   });
 
   // Load all initial data
@@ -200,9 +194,7 @@ function AdminBusinessEntityPage() {
         website: biz.website || '',
         verification_status: biz.verification_status || 'verified',
         featured: biz.featured !== undefined ? biz.featured : true,
-        documents: biz.documents && biz.documents.length > 0 ? biz.documents : [
-          { title: 'GST Registration Certificate', file_name: 'gst_certificate.pdf', url: 'https://via.placeholder.com/400x300?text=GST+Cert', status: 'verified' },
-        ],
+        documents: Array.isArray(biz.documents) ? biz.documents : [],
       });
     } else {
       setEditingBusiness(null);
@@ -219,10 +211,7 @@ function AdminBusinessEntityPage() {
         website: '',
         verification_status: 'verified',
         featured: true,
-        documents: [
-          { title: 'GST Registration Certificate', file_name: 'gst_certificate.pdf', url: 'https://via.placeholder.com/400x300?text=GST+Cert', status: 'verified' },
-          { title: 'Incorporation Document', file_name: 'incorporation_proof.pdf', url: 'https://via.placeholder.com/400x300?text=Incorporation+Proof', status: 'verified' },
-        ],
+        documents: [],
       });
     }
     setShowBusinessModal(true);
@@ -288,7 +277,7 @@ function AdminBusinessEntityPage() {
       ...businessForm,
       documents: [
         ...businessForm.documents,
-        { title: 'New Registration Document', file_name: 'doc_file.pdf', url: 'https://via.placeholder.com/400x300?text=Uploaded+Document', status: 'verified' },
+        { title: 'New Registration Document', file_name: '', url: '', status: 'pending' },
       ],
     });
   };
@@ -310,16 +299,14 @@ function AdminBusinessEntityPage() {
         email: free.email,
         phone: free.phone,
         title: free.title,
-        experience_years: free.experience_years || 3,
-        hourly_rate: free.hourly_rate || '₹850/hr',
+        experience_years: free.experience_years ?? '',
+        hourly_rate: free.hourly_rate || '',
         bio: free.bio || '',
         avatar_url: free.avatar_url || '',
         portfolio_link: free.portfolio_link || '',
         verification_status: free.verification_status || 'verified',
         featured: free.featured !== undefined ? free.featured : true,
-        documents: free.documents && free.documents.length > 0 ? free.documents : [
-          { title: 'Government ID Proof', file_name: 'id_proof.pdf', url: 'https://via.placeholder.com/400x300?text=ID+Proof', status: 'verified' },
-        ],
+        documents: Array.isArray(free.documents) ? free.documents : [],
       });
     } else {
       setEditingFreelancer(null);
@@ -329,17 +316,14 @@ function AdminBusinessEntityPage() {
         email: '',
         phone: '',
         title: '',
-        experience_years: 3,
-        hourly_rate: '₹850/hr',
+        experience_years: '',
+        hourly_rate: '',
         bio: '',
         avatar_url: '',
         portfolio_link: '',
         verification_status: 'verified',
         featured: true,
-        documents: [
-          { title: 'Government ID Proof', file_name: 'id_proof.pdf', url: 'https://via.placeholder.com/400x300?text=ID+Proof', status: 'verified' },
-          { title: 'Skill Certification / Resume', file_name: 'certificate.pdf', url: 'https://via.placeholder.com/400x300?text=Certification', status: 'verified' },
-        ],
+        documents: [],
       });
     }
     setShowFreelancerModal(true);
@@ -405,7 +389,7 @@ function AdminBusinessEntityPage() {
       ...freelancerForm,
       documents: [
         ...freelancerForm.documents,
-        { title: 'Additional Verification Document', file_name: 'id_certificate.pdf', url: 'https://via.placeholder.com/400x300?text=Uploaded+Doc', status: 'verified' },
+        { title: 'Additional Verification Document', file_name: '', url: '', status: 'pending' },
       ],
     });
   };
@@ -770,11 +754,17 @@ function AdminBusinessEntityPage() {
                         <tr key={biz.id}>
                           <td>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                              <img
-                                src={biz.logo_url || 'https://via.placeholder.com/60'}
-                                alt={biz.name}
-                                style={{ width: '42px', height: '42px', borderRadius: '8px', objectFit: 'cover', border: '1px solid #e2e8f0' }}
-                              />
+                              {biz.logo_url ? (
+                                <img
+                                  src={biz.logo_url}
+                                  alt={biz.name}
+                                  style={{ width: '42px', height: '42px', borderRadius: '8px', objectFit: 'cover', border: '1px solid #e2e8f0' }}
+                                />
+                              ) : (
+                                <div style={{ width: '42px', height: '42px', borderRadius: '8px', background: '#f1f5f9', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#475569' }}>
+                                  {(biz.name || 'B').charAt(0).toUpperCase()}
+                                </div>
+                              )}
                               <div>
                                 <div style={{ fontWeight: '700', color: '#1e293b' }}>{biz.name}</div>
                                 <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Owner: {biz.owner_name}</div>
@@ -949,11 +939,17 @@ function AdminBusinessEntityPage() {
                         <tr key={free.id}>
                           <td>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                              <img
-                                src={free.avatar_url || 'https://via.placeholder.com/60'}
-                                alt={free.name}
-                                style={{ width: '42px', height: '42px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #e2e8f0' }}
-                              />
+                              {free.avatar_url ? (
+                                <img
+                                  src={free.avatar_url}
+                                  alt={free.name}
+                                  style={{ width: '42px', height: '42px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #e2e8f0' }}
+                                />
+                              ) : (
+                                <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: '#eef2ff', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#4f46e5' }}>
+                                  {(free.name || 'F').charAt(0).toUpperCase()}
+                                </div>
+                              )}
                               <div>
                                 <div style={{ fontWeight: '700', color: '#1e293b' }}>{free.name}</div>
                                 <div style={{ fontSize: '0.8rem', color: '#6366f1', fontWeight: '500' }}>{free.title}</div>

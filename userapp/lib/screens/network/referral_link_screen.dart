@@ -28,7 +28,7 @@ class _ReferralLinkScreenState extends State<ReferralLinkScreen> {
 
   Future<void> _fetchStats() async {
     try {
-      final userCode = widget.user['user_code']?.toString() ?? widget.user['userCode']?.toString() ?? 'CB100001';
+      final userCode = widget.user['user_code']?.toString() ?? widget.user['userCode']?.toString() ?? '';
       final results = await Future.wait([
         NetworkService.getDirectConnections(userCode: userCode),
         NetworkService.getTeamConnections(userCode: userCode),
@@ -63,7 +63,7 @@ class _ReferralLinkScreenState extends State<ReferralLinkScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final userCode = widget.user['user_code']?.toString() ?? widget.user['userCode']?.toString() ?? 'CB100001';
+    final userCode = widget.user['user_code']?.toString() ?? widget.user['userCode']?.toString() ?? '';
     final referralUrl = 'https://vyaparadnet.com/register?ref=$userCode';
 
     return Scaffold(
